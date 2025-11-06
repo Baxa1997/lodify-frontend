@@ -5,11 +5,11 @@ include:
 
   - project: 'ucode/ops/ci-cd'
     ref: master
-    file: 'microservices/ci.gitlab-ci.yml'
+    file: 'frontend/ci.gitlab-ci.yml'
 
   - project: 'ucode/ops/ci-cd'
     ref: master
-    file: 'microservices/cd.gitlab-ci.yml'
+    file: 'frontend/cd.gitlab-ci.yml'
 
 stages:
   - vault
