@@ -1,0 +1,1 @@
+export { ConnectedCard } from "./ConnectedCard";

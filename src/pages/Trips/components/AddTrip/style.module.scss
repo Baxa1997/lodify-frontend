@@ -1,0 +1,18 @@
+.deliveryAccordionButton {
+  background: linear-gradient(90deg, #dae6ff 0%, #fff 39.78%);
+  padding: 20px 24px;
+
+  &:hover {
+    background: linear-gradient(90deg, #dae6ff 0%, #fff 39.78%) !important;
+  }
+}
+
+.pickupAccordionButton {
+  background: linear-gradient(90deg, #daffeb 0%, #fff 39.78%);
+
+  padding: 20px 24px;
+
+  &:hover {
+    background: linear-gradient(90deg, #daffeb 0%, #fff 39.78%) !important;
+  }
+}

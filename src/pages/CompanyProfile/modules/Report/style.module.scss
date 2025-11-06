@@ -1,0 +1,21 @@
+@use "../../../../styles/variables.scss" as *;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-top: 32px;
+  border-bottom: 1px solid $border-color;
+}
+
+.formSection {
+  display: flex;
+  align-items: start;
+  gap: 32px;
+  padding: 20px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border-color;
+  }
+}

@@ -1,0 +1,1 @@
+export { FieldPermissionsModal } from "./FieldPermissionsModal";

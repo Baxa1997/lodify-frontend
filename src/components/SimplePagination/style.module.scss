@@ -1,0 +1,43 @@
+@use "../../styles/variables" as *;
+
+.paginationContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.selectContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.select {
+  padding: 8px 12px;
+  padding-right: 21px;
+  border-radius: 8px;
+  border: 1px solid $border-primary-color;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgba(10, 13, 18, 0.05);
+}
+
+.selectLabel {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.paginationActions {
+  display: flex;
+  gap: 12px;
+}
+
+.actionBtn {
+  border: 1px solid $border-primary-color;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgba(10, 13, 18, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 14px;
+}

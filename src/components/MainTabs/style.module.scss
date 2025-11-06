@@ -1,0 +1,116 @@
+/* Custom styling for react-tabs to match the design */
+.tabsContainer {
+  width: 100%;
+}
+
+.tabList {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: white;
+}
+
+.tab {
+  padding: 4px 4px 4px 4px !important;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  color: #6b7280;
+  border: none;
+  background: none;
+  position: relative;
+  transition: color 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+.tab:hover {
+  color: #3b82f6;
+}
+
+.tab:focus {
+  outline: none;
+}
+
+.tab[aria-selected="true"] {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #3b82f6;
+  border-radius: 1px;
+}
+
+.tabPanel {
+  padding: 24px 0;
+}
+
+.tabPanel[aria-hidden="true"] {
+  display: none;
+}
+
+.tabsContainer {
+  :global(.react-tabs__tab-list) {
+    border-bottom: 1px solid #e2e8f0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    list-style: none !important;
+    background: white !important;
+  }
+
+  :global(.react-tabs__tab) {
+    border: none !important;
+    background: none !important;
+    padding: 4px 4px 12px 4px !important;
+    margin-right: 12px !important;
+    cursor: pointer !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    color: #6b7280 !important;
+    position: relative !important;
+    transition: color 0.2s ease !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif !important;
+  }
+
+  :global(.react-tabs__tab:hover) {
+    color: #3b82f6 !important;
+  }
+
+  :global(.react-tabs__tab--selected) {
+    color: #3b82f6 !important;
+    // font-weight: 600 !important;
+    border-bottom: 2px solid #3b82f6 !important;
+  }
+
+  :global(.react-tabs__tab--selected::after) {
+    content: "" !important;
+    position: absolute !important;
+    bottom: -1px !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 2px !important;
+    background-color: #3b82f6 !important;
+    border-radius: 1px !important;
+  }
+
+  :global(.react-tabs__tab-panel) {
+    padding: 0px 0 !important;
+  }
+
+  :global(.react-tabs__tab-panel--selected) {
+    display: block !important;
+  }
+}

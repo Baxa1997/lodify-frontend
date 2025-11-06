@@ -1,0 +1,19 @@
+.dateSeparator {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.dateText {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+}

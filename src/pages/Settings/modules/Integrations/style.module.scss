@@ -1,0 +1,26 @@
+@use "src/styles/variables.scss" as *;
+
+.integrationsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 32px;
+}
+
+.integrationsTitleText {
+  color: $primary-color;
+}
+
+.integrationsTitleDescription {
+  color: $secondary-color;
+}
+
+.integrationsActions {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 16px;
+}
+
+.tabsContainer {
+  margin-top: 24px;
+}

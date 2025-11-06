@@ -1,0 +1,192 @@
+.mapContainer {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 200px);
+  border-radius: 8px;
+  margin-top: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.focusButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.marker {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.markerInner {
+  width: 24px;
+  height: 24px;
+  background: #3182ce;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.markerDot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.infoPopup {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  min-width: 300px;
+  max-width: 400px;
+  z-index: 20;
+  border: 1px solid #e2e8f0;
+}
+
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.driverId {
+  font-size: 16px;
+  font-weight: 600;
+  color: #181d27;
+  margin: 0;
+}
+
+.closeButton {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f7fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #4a5568;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: #edf2f7;
+  }
+}
+
+.popupContent {
+  padding: 12px 20px 12px;
+}
+
+.driverName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #181d27;
+  margin: 0 0 12px 0;
+}
+
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.statusText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #10b981;
+  margin: 0;
+}
+
+.speedText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #181d27;
+  margin: 0;
+}
+
+.locationText {
+  font-size: 14px;
+  color: #374151;
+  margin: 0;
+}
+
+.mileageText {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.lastUpdatedText {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .mapContainer {
+    height: 400px;
+  }
+
+  .infoPopup {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+    min-width: auto;
+    max-width: none;
+  }
+
+  .popupHeader {
+    padding: 12px 16px 8px;
+  }
+
+  .popupContent {
+    padding: 12px 16px 16px;
+  }
+
+  .driverName {
+    font-size: 16px;
+  }
+}
+
+:global(.gm-style-cc) {
+  display: none !important;
+}
+
+:global(.gm-style .gm-style-iw-c) {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+:global(.gm-style .gm-style-iw-tc::after) {
+  background: white !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}

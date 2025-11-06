@@ -1,0 +1,632 @@
+$primary-color: #3b82f6;
+$primary-hover: #2563eb;
+$success-color: #10b981;
+$text-primary: #1e293b;
+$text-secondary: #414651;
+$text-muted: #64748b;
+$background-light: #f8fafc;
+$white: white;
+$border-color: #d5d7da;
+$disabled-bg: #e2e8f0;
+$disabled-text: #9ca3af;
+$sidebar-bg: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+$sidebar-text: #cbd5e1;
+$sidebar-text-muted: #94a3b8;
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$shadow-light: 0 4px 20px rgba(0, 0, 0, 0.1);
+$shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+.multiStepContainer {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 300px;
+  background: linear-gradient(to bottom, #0b2432, #015261);
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 30px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0px 0;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 40px;
+    width: 2px;
+    height: 20px;
+    background: #ff5b04;
+    z-index: 1;
+    transition: background 0.3s ease;
+  }
+
+  &.pending:not(:last-child)::after {
+    background: #9ca3af;
+  }
+
+  .stepIndicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    border: 2px solid #ff5b04;
+  }
+
+  .checkmark {
+    color: $white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .activeDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $white;
+  }
+
+  .pendingDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #9ca3af;
+  }
+
+  .stepTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    transition: color 0.3s ease;
+  }
+
+  &.active {
+    .stepIndicator {
+      background: #ff5b04;
+      border: 2px solid #ff5b04;
+      outline: 2px solid #ff944d;
+      outline-offset: 2px;
+    }
+
+    .stepTitle {
+      color: $white;
+    }
+  }
+
+  &.completed {
+    .stepIndicator {
+      background: #ff5b04;
+      border: 2px solid #ff5b04;
+    }
+
+    .stepTitle {
+      color: $white;
+    }
+  }
+
+  &.pending {
+    .stepIndicator {
+      background: transparent;
+      border: 2px solid #d5d7da;
+    }
+
+    .stepTitle {
+      color: #fff;
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 1;
+
+    .stepTitle {
+      color: #fff;
+    }
+  }
+}
+
+.sidebarFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: $sidebar-text-muted;
+  margin-top: 40px;
+}
+
+.footerLeft,
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: #fff;
+  position: relative;
+  background-image: url("/img/registerBg.png");
+  background-size: contain;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  padding-bottom: 24px;
+}
+
+.formContainer {
+  margin-top: 90px;
+  min-width: 420px;
+  min-height: 320px;
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: #dcdbdb 0px 1px 6px 6px;
+  border: 1px solid rgba(213, 215, 218, 1);
+}
+
+.stepContent {
+  width: 100%;
+  text-align: justify;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-secondary;
+    margin-bottom: 6px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .formLabel {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-secondary;
+    margin-bottom: 6px;
+    text-align: left;
+    width: 100%;
+
+    span {
+      color: #1570ef;
+    }
+  }
+
+  input,
+  select {
+    height: 44px;
+    width: 360px;
+    padding: 10px 14px;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    background: $white;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  small {
+    display: block;
+    color: $text-muted;
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: left;
+    width: 100%;
+  }
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  .formGroup {
+    width: 100%;
+    margin-bottom: 0;
+
+    input,
+    select {
+      width: 100%;
+    }
+  }
+}
+
+.inputWithDropdown {
+  position: relative;
+
+  input {
+    padding-right: 40px;
+  }
+}
+
+.dropdownIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $text-muted;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.verificationContent {
+  width: 360px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+
+  h3 {
+    font-size: 30px;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    color: $text-muted;
+    font-size: 16px;
+    margin: 0 0 30px 0;
+  }
+}
+
+.verificationContentOtp {
+  width: 360px;
+  margin: 0 auto;
+}
+
+.verificationIcon {
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.verificationCode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  width: 360px;
+  gap: 4px !important;
+  margin: 0 auto 30px auto;
+
+  div {
+    width: 360px;
+    gap: 4px !important;
+    display: flex;
+    justify-content: center;
+  }
+
+  input {
+    width: 80px;
+    height: 80px;
+    border: 2px solid $border-color;
+    border-radius: $border-radius;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    background: $background-light;
+
+    &:focus {
+      border-color: $primary-color;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+}
+
+.verifyBtn {
+  width: 360px;
+  background: $primary-color;
+  color: $white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: $border-radius;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+
+  &:hover {
+    background: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-button;
+  }
+}
+
+.resendText {
+  color: $text-muted;
+  font-size: 14px;
+  margin: 0;
+}
+
+.resendLink {
+  color: $primary-color;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: $primary-hover;
+  }
+}
+
+.continueBtn {
+  width: 360px;
+  height: 44px;
+  padding: 0 24px;
+  background: $primary-color;
+  color: $white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-button;
+  }
+
+  &:disabled {
+    background: $disabled-bg;
+    color: $disabled-text;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.stepDots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $border-color;
+  transition: background-color 0.3s ease;
+
+  &.active {
+    background: $primary-color;
+  }
+}
+
+.backLink {
+  text-align: center;
+
+  a {
+    color: $primary-color;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .multiStepContainer {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .steps {
+    flex-direction: row;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .step {
+    flex-direction: column;
+    text-align: center;
+    min-width: 100px;
+
+    .stepTitle {
+      font-size: 12px;
+      text-align: center;
+    }
+  }
+
+  .mainContent {
+    padding: 20px;
+  }
+
+  .formContainer {
+    padding: 30px 20px;
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .stepContent {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .formGroup {
+    width: 100%;
+    max-width: 360px;
+
+    input {
+      width: 100%;
+    }
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 360px;
+
+    .formGroup {
+      width: 100%;
+
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .verificationContent {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .verificationContentOtp {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .verificationCode {
+    width: 100%;
+    max-width: 360px;
+    gap: 8px;
+
+    div {
+      width: 100%;
+    }
+
+    input {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
+  }
+
+  .verifyBtn,
+  .continueBtn {
+    width: 100%;
+    max-width: 360px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formContainer {
+    padding: 20px 15px;
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .stepContent {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .formGroup {
+    width: 100%;
+    max-width: 360px;
+
+    input {
+      width: 100%;
+    }
+  }
+
+  .formRow {
+    width: 100%;
+    max-width: 360px;
+
+    .formGroup {
+      width: 100%;
+
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .verificationContent {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .verificationContentOtp {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .verificationCode {
+    width: 100%;
+    max-width: 360px;
+
+    div {
+      width: 100%;
+    }
+
+    input {
+      width: 45px;
+      height: 45px;
+      font-size: 18px;
+    }
+  }
+
+  .verifyBtn,
+  .continueBtn {
+    width: 100%;
+    max-width: 360px;
+  }
+}

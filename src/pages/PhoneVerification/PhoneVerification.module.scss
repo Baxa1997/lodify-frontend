@@ -1,0 +1,358 @@
+// Phone Verification Styles
+$primary-color: #3b82f6;
+$primary-hover: #2563eb;
+$success-color: #10b981;
+$text-primary: #1e293b;
+$text-muted: #64748b;
+$background-light: #f8fafc;
+$white: white;
+$border-color: #e2e8f0;
+$disabled-bg: #e2e8f0;
+$disabled-text: #9ca3af;
+$sidebar-bg: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+$sidebar-text: #cbd5e1;
+$sidebar-text-muted: #94a3b8;
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$shadow-light: 0 4px 20px rgba(0, 0, 0, 0.1);
+$shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+.phoneVerificationContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: $background-light;
+}
+
+// Sidebar Styles
+.sidebar {
+  width: 300px;
+  background: $sidebar-bg;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 30px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0px 0;
+  position: relative;
+
+  // Add connecting line after each step (except the last one)
+  &:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 15px; // Center of the circle (32px / 2 = 16px, minus 1px for border)
+    top: 32px; // Below the circle
+    width: 2px;
+    height: 30px; // Gap between steps
+    background: #3a3d42; // Dark grey connecting lines
+    z-index: 1;
+  }
+
+  .stepIndicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    background: #2d3035; // Darker grey for inactive
+    color: $white;
+    border: 2px solid #3a3d42; // Dark grey border for inactive
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); // No glow for inactive
+
+    // Inner dot
+    &::before {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #606468; // Medium grey dot for inactive
+      transition: all 0.3s ease;
+    }
+  }
+
+  .stepTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: $sidebar-text;
+    transition: color 0.3s ease;
+  }
+
+  &.active {
+    .stepIndicator {
+      background: #4285f4; // Vibrant blue background
+      border: 2px solid #3a7ae0; // Darker blue border
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8),
+        // White outer ring/glow
+        0 0 20px rgba(255, 255, 255, 0.3); // Subtle glow effect
+
+      &::before {
+        background: $white; // White dot for active
+      }
+    }
+
+    .stepTitle {
+      color: $white;
+    }
+  }
+
+  &.completed {
+    .stepIndicator {
+      background: #2d3035; // Dark grey for completed (same as inactive)
+      border: 2px solid #3a3d42; // Dark grey border
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); // No glow for completed
+
+      &::before {
+        background: #606468; // Medium grey dot for completed
+      }
+    }
+
+    .stepTitle {
+      color: $sidebar-text; // Muted text for completed
+    }
+  }
+}
+
+.sidebarFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: $sidebar-text-muted;
+  margin-top: 40px;
+}
+
+.footerLeft,
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// Main Content Styles
+.mainContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.verificationContainer {
+  width: 100%;
+  max-width: 500px;
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: 40px;
+  box-shadow: $shadow-light;
+  text-align: center;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    color: $text-muted;
+    font-size: 16px;
+    margin: 0 0 30px 0;
+  }
+}
+
+.verificationIcon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+// Verification Code Styles
+.verificationCode {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.codeInput {
+  width: 60px;
+  height: 60px;
+  border: 2px solid $border-color;
+  border-radius: $border-radius;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  background: $background-light;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    background: $white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &:not(:placeholder-shown) {
+    background: $white;
+    border-color: $primary-color;
+  }
+}
+
+// Button Styles
+.verifyBtn {
+  background: $primary-color;
+  color: $white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: $border-radius;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+  width: 100%;
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-button;
+  }
+
+  &:disabled {
+    background: $disabled-bg;
+    color: $disabled-text;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.resendText {
+  color: $text-muted;
+  font-size: 14px;
+  margin: 0 0 30px 0;
+}
+
+.resendLink {
+  color: $primary-color;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: $primary-hover;
+  }
+}
+
+.stepDots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $border-color;
+  transition: background-color 0.3s ease;
+
+  &.active {
+    background: $primary-color;
+  }
+}
+
+.backLink {
+  text-align: center;
+
+  a {
+    color: $primary-color;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .phoneVerificationContainer {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .steps {
+    flex-direction: row;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .step {
+    flex-direction: column;
+    text-align: center;
+    min-width: 100px;
+
+    .stepTitle {
+      font-size: 12px;
+      text-align: center;
+    }
+  }
+
+  .mainContent {
+    padding: 20px;
+  }
+
+  .verificationContainer {
+    padding: 30px 20px;
+  }
+
+  .verificationCode {
+    gap: 8px;
+  }
+
+  .codeInput {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .verificationContainer {
+    padding: 20px 15px;
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .codeInput {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+}

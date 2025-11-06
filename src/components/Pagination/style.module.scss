@@ -1,0 +1,10 @@
+@use "../../styles/variables" as *;
+
+.select {
+  padding: 8px 12px;
+  padding-right: 21px;
+  border-radius: 8px;
+  border: 1px solid $border-primary-color;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgba(10, 13, 18, 0.05);
+}
