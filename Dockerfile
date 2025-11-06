@@ -11,7 +11,7 @@ RUN export $(cat .env | xargs) && \
     NODE_OPTIONS=--max_old_space_size=4096 yarn build --mode $ENVIRONMENT
 
 FROM nginx:alpine
-COPY --from=builder /app/build /build
+COPY --from=builder /app/dist /build
 COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
