@@ -159,7 +159,7 @@ function TransitTab({tripType = ""}) {
     ? Math.ceil(tripsData.total / pageSize)
     : 0;
   const trips = tripsData?.data || tripsData || [];
-  console.log("tripstrips", trips);
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -181,11 +181,11 @@ function TransitTab({tripType = ""}) {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}>
-          <CTableHead zIndex={999999}>
+          <CTableHead zIndex={1}>
             <Box as={"tr"}>
               {tableElements.map((element) => (
                 <CTableTh
-                  zIndex={999999}
+                  zIndex={-1}
                   maxW="334px"
                   sortable={element.sortable}
                   sortDirection={

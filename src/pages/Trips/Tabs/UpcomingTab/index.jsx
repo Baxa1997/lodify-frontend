@@ -168,7 +168,7 @@ function UpcomingTab({tripType = ""}) {
     ? Math.ceil(tripsData.total / pageSize)
     : 0;
   const trips = tripsData?.data || tripsData || [];
-  console.log("tripstripstrips", trips);
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent

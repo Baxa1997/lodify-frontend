@@ -16,7 +16,7 @@ function PickupFields({control, index, removePickup, field}) {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-  console.log("field", field);
+
   const normalizeFieldType = (type) => {
     return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";
   };
