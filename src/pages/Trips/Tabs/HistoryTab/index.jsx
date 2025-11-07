@@ -42,7 +42,6 @@ function HistoryTab({tripType = ""}) {
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
-  const userId = useSelector((state) => state.auth.userId);
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );

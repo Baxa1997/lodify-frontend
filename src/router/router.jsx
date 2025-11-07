@@ -7,7 +7,6 @@ import AdminLayout from "../layouts/AdminLayout";
 import Dashboard from "../pages/Dashboard";
 import Settings from "../pages/Settings";
 import SingleAssets from "../pages/AssetsPage/SingleAssets";
-import CompanyProfile from "../pages/CompanyProfile";
 import UpcomingTabSinglePage from "../pages/Trips/UpcomingTabSinglePage";
 import AddTrip from "../pages/Trips/components/AddTrip/AddTrip";
 import Shipper from "../pages/Shipper";
