@@ -26,7 +26,7 @@ const Trips = () => {
 
         <Tabs className={styles.tabsContainer}>
           <TabList>
-            <Tab onClick={() => setTripType("tender")}>Tender Invitations</Tab>
+            {/* <Tab onClick={() => setTripType("tender")}>Tender Invitations</Tab> */}
 
             <Tab>Actions Needed</Tab>
             <Tab onClick={() => setTripType("upcoming")}>Upcoming</Tab>
@@ -37,10 +37,10 @@ const Trips = () => {
                 : "Completed"}
             </Tab>
           </TabList>
-
+          {/* 
           <TabPanel>
             <TenderInvitations tripType={tripType} />
-          </TabPanel>
+          </TabPanel> */}
 
           <TabPanel>
             <ActionsNeeded />
