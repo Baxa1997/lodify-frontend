@@ -32,6 +32,12 @@ export const menuItems = [
         label: "Accept / Decline",
         path: "accept-decline",
       },
+
+      {
+        id: "accept-decline",
+        label: "Tender Invitations",
+        path: "tender-invitations",
+      },
     ],
   },
   {
