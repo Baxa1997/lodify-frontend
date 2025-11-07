@@ -63,7 +63,7 @@ export const tableElements = [
   {
     id: 10,
     name: "Driver 2",
-    key: "actions",
+    key: "driver2",
     sortable: true,
   },
 

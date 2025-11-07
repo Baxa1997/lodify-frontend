@@ -679,6 +679,18 @@ function HistoryTab({tripType = ""}) {
                       </CTableTd>
 
                       <CTableTd>
+                        {trip?.driver_type?.[0] === "Team" ? (
+                          <Flex alignItems="center" gap={2}>
+                            <Text color="#535862" fontWeight="400">
+                              {trip?.drivers_2?.first_name}
+                            </Text>
+                          </Flex>
+                        ) : (
+                          <Text color="#535862" fontWeight="400"></Text>
+                        )}
+                      </CTableTd>
+
+                      <CTableTd>
                         <Text>${trip?.total_rates}</Text>
                       </CTableTd>
 
