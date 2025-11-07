@@ -9,6 +9,10 @@ import {
   VStack,
   Spinner,
   Center,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import React, {useState} from "react";
 import {useQuery} from "@tanstack/react-query";
@@ -29,6 +33,7 @@ import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import {formatDate} from "@utils/dateFormats";
 import TripRowDetails from "./TripRowDetails";
 import AssignDriver from "./components/AssignDriver";
+import {BsThreeDotsVertical} from "react-icons/bs";
 
 function UpcomingTab({tripType = ""}) {
   const navigate = useNavigate();
@@ -163,7 +168,7 @@ function UpcomingTab({tripType = ""}) {
     ? Math.ceil(tripsData.total / pageSize)
     : 0;
   const trips = tripsData?.data || tripsData || [];
-
+  console.log("tripstripstrips", trips);
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -662,9 +667,20 @@ function UpcomingTab({tripType = ""}) {
                       <CTableTd>
                         <Flex alignItems="center" gap={2}>
                           {trip?.drivers?.first_name ? (
-                            <Text color="#535862" fontWeight="400">
-                              {trip?.drivers?.first_name}
-                            </Text>
+                            <Flex alignItems="center" gap={2}>
+                              <Text color="#535862" fontWeight="400">
+                                {trip?.drivers?.first_name}
+                              </Text>
+
+                              <ReAssignDriverButton
+                                driverType="solo"
+                                trip={trip}
+                                setSelectedRow={setSelectedRow}
+                                setIsAssignDriverModalOpen={
+                                  setIsAssignDriverModalOpen
+                                }
+                              />
+                            </Flex>
                           ) : (
                             clientType?.id !==
                               "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
@@ -678,13 +694,62 @@ function UpcomingTab({tripType = ""}) {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setIsAssignDriverModalOpen(true);
-                                  setSelectedRow(trip);
+                                  setSelectedRow({
+                                    trip: trip,
+                                    driverType: "solo",
+                                  });
                                 }}>
                                 Assign
                               </Button>
                             )
                           )}
                         </Flex>
+                      </CTableTd>
+
+                      <CTableTd>
+                        {trip?.driver_type?.[0] === "Team" ? (
+                          <Flex alignItems="center" gap={2}>
+                            {trip?.drivers_2?.first_name ? (
+                              <Flex alignItems="center" gap={2}>
+                                <Text color="#535862" fontWeight="400">
+                                  {trip?.drivers_2?.first_name}
+                                </Text>
+
+                                <ReAssignDriverButton
+                                  driverType="team"
+                                  trip={trip}
+                                  setSelectedRow={setSelectedRow}
+                                  setIsAssignDriverModalOpen={
+                                    setIsAssignDriverModalOpen
+                                  }
+                                />
+                              </Flex>
+                            ) : (
+                              clientType?.id !==
+                                "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
+                                <Button
+                                  bg="none"
+                                  border="none"
+                                  color="#EF6820"
+                                  fontWeight="600"
+                                  px="0"
+                                  _hover={{bg: "none"}}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsAssignDriverModalOpen(true);
+                                    setSelectedRow({
+                                      trip: trip,
+                                      driverType: "team",
+                                    });
+                                  }}>
+                                  Assign
+                                </Button>
+                              )
+                            )}
+                          </Flex>
+                        ) : (
+                          <Text color="#535862" fontWeight="400"></Text>
+                        )}
                       </CTableTd>
 
                       <CTableTd>
@@ -741,6 +806,7 @@ function UpcomingTab({tripType = ""}) {
       </Box>
 
       <AssignDriver
+        trip={selectedRow?.trip}
         isOpen={isAssignDriverModalOpen}
         onClose={() => setIsAssignDriverModalOpen(false)}
         selectedRow={selectedRow}
@@ -902,6 +968,46 @@ const TripDriverVerification = ({trip = {}}) => {
         </Box>
       </Flex>
     </Flex>
+  );
+};
+
+const ReAssignDriverButton = ({
+  driverType = "solo",
+  trip,
+  setSelectedRow = () => {},
+  setIsAssignDriverModalOpen = () => {},
+}) => {
+  return (
+    <>
+      <Menu>
+        <MenuButton
+          p="0"
+          maxWidth="22px"
+          width="22px"
+          minWidth="22px"
+          height="22px"
+          bg="none"
+          onClick={(e) => e.stopPropagation()}
+          as={Button}>
+          <BsThreeDotsVertical style={{width: "22px", height: "14px"}} />
+        </MenuButton>
+        <MenuList>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsAssignDriverModalOpen(true);
+              setSelectedRow({
+                trip: trip,
+                driverType: driverType,
+              });
+            }}>
+            <Text color="#535862" fontWeight="600">
+              Re-Assign Driver
+            </Text>
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    </>
   );
 };
 

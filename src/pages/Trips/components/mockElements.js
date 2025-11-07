@@ -61,6 +61,13 @@ export const tableElements = [
   },
 
   {
+    id: 10,
+    name: "Driver 2",
+    key: "actions",
+    sortable: true,
+  },
+
+  {
     id: 11,
     name: "Rate",
     key: "rate",

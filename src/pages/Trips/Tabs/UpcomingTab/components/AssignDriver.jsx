@@ -24,8 +24,9 @@ const AssignDriver = ({isOpen, onClose, selectedRow = {}}) => {
     setLoading(true);
     const computedData = {
       data: {
-        guid: selectedRow.guid,
-        drivers_id: data?.driver,
+        guid: selectedRow?.trip?.guid,
+        [selectedRow?.driverType === "solo" ? "drivers_id" : "drivers_id_2"]:
+          data?.driver,
       },
     };
     tripsService
