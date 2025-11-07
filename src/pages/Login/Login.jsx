@@ -1,16 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import {useEffect, useMemo, useState} from "react";
+import {Link, useNavigate, useLocation} from "react-router-dom";
+import {useForm} from "react-hook-form";
 import styles from "./Auth.module.scss";
 import authService from "../../services/auth/authService";
-import { useQuery } from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import connectionService from "../../services/connectionService";
-import { authActions } from "../../store/auth/auth.slice";
-import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "../../store/alert/alert.thunk";
+import {authActions} from "../../store/auth/auth.slice";
+import {useDispatch, useSelector} from "react-redux";
+import {showAlert} from "../../store/alert/alert.thunk";
 import listToOptions from "../../utils/listTopOptions";
-import { loginAction } from "../../store/auth/auth.thunk";
-import { Box, Button, Text } from "@chakra-ui/react";
+import {loginAction} from "../../store/auth/auth.thunk";
+import {Box, Button, Text} from "@chakra-ui/react";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -21,11 +21,12 @@ const Login = () => {
   const [isUserId, setIsUserId] = useState();
   const [companies, setCompanies] = useState([]);
   const [connectionCheck, setConnectionCheck] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {errors},
     watch,
     setValue,
   } = useForm({
@@ -45,7 +46,7 @@ const Login = () => {
   useEffect(() => {
     if (isAuth) {
       const from = location.state?.from?.pathname || "/admin/dashboard";
-      navigate(from, { replace: true });
+      navigate(from, {replace: true});
     }
   }, [isAuth, navigate, location.state]);
 
@@ -57,7 +58,7 @@ const Login = () => {
   //=======COMPUTE PROJECTS
   const computedProjects = useMemo(() => {
     const company = companies?.find(
-      (company) => company.id === selectedCompanyID,
+      (company) => company.id === selectedCompanyID
     );
     return listToOptions(company?.projects, "name");
   }, [companies, selectedCompanyID]);
@@ -65,10 +66,10 @@ const Login = () => {
   //=======COMPUTE ENVIRONMENTS
   const computedEnvironments = useMemo(() => {
     const company = companies?.find(
-      (company) => company.id === selectedCompanyID,
+      (company) => company.id === selectedCompanyID
     );
     const companyProject = company?.projects?.find(
-      (el) => el?.id === selectedProjectID,
+      (el) => el?.id === selectedProjectID
     );
 
     return companyProject?.resource_environments?.map((item) => ({
@@ -81,14 +82,14 @@ const Login = () => {
   //======COMPUTE CLIENTTYPES
   const computedClientTypes = useMemo(() => {
     const company = companies?.find(
-      (company) => company.id === selectedCompanyID,
+      (company) => company.id === selectedCompanyID
     );
     const companyProject = company?.projects?.find(
-      (el) => el?.id === selectedProjectID,
+      (el) => el?.id === selectedProjectID
     );
 
     const companyEnvironment = companyProject?.resource_environments?.find(
-      (el) => el?.environment_id === selectedEnvID,
+      (el) => el?.environment_id === selectedEnvID
     );
 
     return companyEnvironment?.client_types?.response?.map((item) => ({
@@ -104,9 +105,9 @@ const Login = () => {
   } = useQuery({
     queryKey: [
       "GET_CONNECTION_LIST",
-      { "project-id": selectedProjectID },
-      { "environment-id": selectedEnvID },
-      { "user-id": isUserId },
+      {"project-id": selectedProjectID},
+      {"environment-id": selectedEnvID},
+      {"user-id": isUserId},
     ],
     queryFn: () => {
       return connectionService.getList(
@@ -115,7 +116,7 @@ const Login = () => {
           client_type_id: selectedClientTypeID,
           "user-id": isUserId,
         },
-        { "environment-id": selectedEnvID },
+        {"environment-id": selectedEnvID}
       );
     },
     enabled: !!selectedClientTypeID,
@@ -176,18 +177,18 @@ const Login = () => {
           computeCompanyElement(res?.companies ?? "");
           localStorage.setItem(
             "new_router",
-            res?.companies?.[0]?.projects?.[0]?.new_router || "false",
+            res?.companies?.[0]?.projects?.[0]?.new_router || "false"
           );
           localStorage.setItem(
             "newUi",
-            res?.companies?.[0]?.projects?.[0]?.new_design || false,
+            res?.companies?.[0]?.projects?.[0]?.new_design || false
           );
           res?.companies?.[0]?.projects?.[0]?.new_layout
             ? localStorage.setItem("detailPage", "SidePeek")
             : localStorage.setItem("detailPage", "");
           localStorage.setItem(
             "newLayout",
-            res?.companies?.[0]?.projects?.[0]?.new_layout || false,
+            res?.companies?.[0]?.projects?.[0]?.new_layout || false
           );
         } else {
           dispatch(showAlert("The company does not exist", "error"));
@@ -269,14 +270,14 @@ const Login = () => {
           setValue(
             "environment_id",
             company?.[0]?.projects?.[0]?.resource_environments?.[0]
-              ?.environment_id,
+              ?.environment_id
           );
         }
       }
     } else {
       setValue(
         "environment_id",
-        company?.[0]?.projects?.[0]?.resource_environments?.[0]?.environment_id,
+        company?.[0]?.projects?.[0]?.resource_environments?.[0]?.environment_id
       );
     }
 
@@ -290,7 +291,7 @@ const Login = () => {
             setValue(
               "client_type",
               company?.[0]?.projects?.[0]?.resource_environments?.[0]
-                ?.client_types?.response?.[0]?.guid,
+                ?.client_types?.response?.[0]?.guid
             );
           } else if (
             company?.[0]?.projects?.[0]?.resource_environments?.[0]
@@ -299,7 +300,7 @@ const Login = () => {
             setValue(
               "client_type",
               company?.[0]?.projects?.[0]?.resource_environments?.[0]
-                ?.client_types?.response?.[0]?.guid,
+                ?.client_types?.response?.[0]?.guid
             );
           }
         }
@@ -314,7 +315,7 @@ const Login = () => {
             setValue(
               "client_type",
               company?.[0]?.projects?.[0]?.resource_environments?.[0]
-                ?.client_types?.response?.[0]?.guid,
+                ?.client_types?.response?.[0]?.guid
             );
           }
         }
@@ -328,16 +329,16 @@ const Login = () => {
       type: values?.phone
         ? "phone"
         : values?.email
-          ? "email"
-          : values?.type === "google"
-            ? "google"
-            : undefined,
+        ? "email"
+        : values?.type === "google"
+        ? "google"
+        : undefined,
     };
     const computedProject = companies[0]?.projects
       ?.find((item) => item?.id === selectedProjectID)
       ?.resource_environments?.map((el) => el?.environment_id);
     const computedEnv = computedEnvironments?.find(
-      (item) => item?.value === selectedEnvID,
+      (item) => item?.value === selectedEnvID
     );
 
     dispatch(authActions.setStatus(computedEnv?.access_type));
@@ -345,7 +346,7 @@ const Login = () => {
       loginAction({
         ...data,
         environment_ids: computedProject,
-      }),
+      })
     );
   };
 
@@ -422,13 +423,11 @@ const Login = () => {
             <p>Description</p>
           </div>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className={styles.authForm}>
+          <form onSubmit={handleSubmit(onSubmit)} className={styles.authForm}>
             <div className={styles.formGroup}>
               <label htmlFor="username">
                 Email or mobile phone number{" "}
-                <span style={{ color: "#EF6820" }}>*</span>
+                <span style={{color: "#EF6820"}}>*</span>
               </label>
               <input
                 type="text"
@@ -451,7 +450,7 @@ const Login = () => {
 
             <div className={styles.formGroup}>
               <label htmlFor="password">
-                Password <span style={{ color: "#EF6820" }}>*</span>
+                Password <span style={{color: "#EF6820"}}>*</span>
               </label>
               <input
                 type="password"
@@ -479,9 +478,7 @@ const Login = () => {
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
 
-            <Link
-              to="/forgot-password"
-              className={styles.forgotLink}>
+            <Link to="/forgot-password" className={styles.forgotLink}>
               Forgot password?
             </Link>
           </form>
@@ -501,10 +498,7 @@ const Login = () => {
               }}>
               Create an account
             </Button>
-            <Text
-              textAlign="center"
-              color="#535862"
-              fontWeight="400">
+            <Text textAlign="center" color="#535862" fontWeight="400">
               New to Lodify?
             </Text>
             {/* <p>
