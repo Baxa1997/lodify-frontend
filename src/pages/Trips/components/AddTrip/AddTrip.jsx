@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import HeadBreadCrumb from "../../../../components/HeadBreadCrumb";
 import {Box, Flex, Text, useToast, Button, Spinner} from "@chakra-ui/react";
 import {useForm} from "react-hook-form";
@@ -115,7 +115,6 @@ function AddTrip({tripData = {}}) {
       return tripsService.updateTrip(id, data);
     },
     onSuccess: (response) => {
-      console.log("Update response:", response);
       toast({
         title: "Trip Updated Successfully",
         description: "The trip has been updated successfully.",
@@ -188,10 +187,14 @@ function AddTrip({tripData = {}}) {
   };
 
   useEffect(() => {
-    setValue(
-      "created_by",
-      `${userData?.first_name ?? ""} ${userData?.last_name ?? ""}`
-    );
+    if (userData?.first_name || userData?.last_name) {
+      setValue(
+        "created_by",
+        `${userData?.first_name ?? ""} ${userData?.last_name ?? ""}`
+      );
+    } else {
+      setValue("created_by", `${userData?.full_name ?? ""}`);
+    }
   }, []);
 
   useEffect(() => {

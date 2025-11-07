@@ -75,9 +75,14 @@ export const transformFileData = (data) => {
       country: stop?.country === "USA" ? "United States" : stop?.country,
       equipment_type:
         data?.equipment_type === "53' Van" ? "Dry Van 53" : "Dry Van 48",
+      type: [capitalize(stop?.stop_type)],
       field_type: stop?.stop_type,
     })),
 
     accessorials: Array.isArray(data.accessorials) ? data.accessorials : [],
   };
 };
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

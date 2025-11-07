@@ -7,7 +7,7 @@ import {
   Spinner,
   Center,
 } from "@chakra-ui/react";
-import SimpleTimer from "@components/SimpleTimer";
+
 import {
   CTable,
   CTableBody,
@@ -31,6 +31,7 @@ import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
 import {tableActionsNeeded} from "../components/mockElements";
 import TripsFiltersComponent from "../modules/TripsFiltersComponent";
+import TimeCounter from "@components/TimeCounter";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
@@ -336,14 +337,10 @@ function ActionsNeeded() {
                                   color="#181D27"
                                   cursor="pointer"
                                   _hover={{textDecoration: "underline"}}>
-                                  {`${trip.origin?.address ?? ""} / ${
-                                    trip?.origin?.address_2 ?? ""
-                                  }` || ""}
+                                  {`${trip.origin?.address ?? ""}` || ""}
                                 </Text>
                                 <Text h="20px">
-                                  {formatDate(
-                                    trip?.origin?.[0]?.depart_at ?? ""
-                                  )}
+                                  {formatDate(trip?.origin?.arrive_by ?? "")}
                                 </Text>
                               </>
                             </Tooltip>
@@ -391,13 +388,11 @@ function ActionsNeeded() {
                                   color="#181D27"
                                   cursor="pointer"
                                   _hover={{textDecoration: "underline"}}>
-                                  {`${trip.stop?.address ?? ""} / ${
-                                    trip?.stop?.address_2 ?? ""
-                                  }` || ""}
+                                  {`${trip.stop?.address ?? ""}` || ""}
                                 </Text>
                               </Tooltip>
                               <Text h="20px">
-                                {formatDate(trip?.stop?.[0]?.arrive_by ?? "")}
+                                {formatDate(trip?.stop?.arrive_by ?? "")}
                               </Text>
                             </Box>
                           </Flex>
@@ -405,18 +400,24 @@ function ActionsNeeded() {
                       </CTableTd>
 
                       <CTableTd>
-                        <SimpleTimer
-                          timeFromAPI={
-                            trip?.origin?.[0]?.arrive_by ||
-                            trip?.stop?.[0]?.arrive_by ||
-                            trip?.deadline ||
-                            "2025-10-08T12:33:00"
-                          }
+                        <TimeCounter
+                          arriveBy={trip?.stop?.arrive_by}
                           onTimeUp={() => {
                             console.log(`Timer finished for trip ${trip.id}`);
                           }}
                         />
                       </CTableTd>
+
+                      {/* <CTableTd>
+                        <ArrivalTimer
+                          arriveBy={trip?.stop?.arrive_by}
+                          onTimeUp={() => {
+                            console.log(
+                              `Arrival timer finished for trip ${trip.id}`
+                            );
+                          }}
+                        />
+                      </CTableTd> */}
 
                       <CTableTd>
                         <Tooltip
@@ -460,8 +461,8 @@ function ActionsNeeded() {
                           <Text
                             color={getActionButtonColor(
                               calculateTimeDifference(
-                                trip?.origin?.[0]?.arrive_by ||
-                                  trip?.stop?.[0]?.arrive_by ||
+                                trip?.origin?.arrive_by ||
+                                  trip?.stop?.arrive_by ||
                                   trip?.deadline ||
                                   trip.timer_seconds
                               )
@@ -469,8 +470,8 @@ function ActionsNeeded() {
                             fontWeight="600">
                             {getActionButtonText(
                               calculateTimeDifference(
-                                trip?.origin?.[0]?.arrive_by ||
-                                  trip?.stop?.[0]?.arrive_by ||
+                                trip?.origin?.arrive_by ||
+                                  trip?.stop?.arrive_by ||
                                   trip?.deadline ||
                                   trip.timer_seconds
                               )

@@ -21,12 +21,10 @@ function PickupFields({control, index, removePickup, field}) {
     return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";
   };
 
-  const isPickup =
-    normalizeFieldType(field?.type || [field?.stop_type]) === "pickup";
+  const isPickup = normalizeFieldType([field?.stop_type]) === "pickup";
 
   const isPickupAndDelivery =
-    normalizeFieldType(field?.type || [field?.stop_type]) ===
-    "pickup and delivery";
+    normalizeFieldType([field?.stop_type]) === "pickup and delivery";
   return (
     <Accordion
       overflow="hidden"

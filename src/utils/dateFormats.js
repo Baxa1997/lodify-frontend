@@ -10,7 +10,9 @@ export function formatDate(dateString) {
     return "";
   }
 
-  return format(date, "MMM dd, HH:mm zzz");
+  const dateWithFiveHours = new Date(date.getTime() + 5 * 60 * 60 * 1000);
+
+  return format(dateWithFiveHours, "MMM dd, HH:mm zzz");
 }
 
 export const calculateTimeHoursDifferenceInTimeZone = (timestamp, timeZone) => {

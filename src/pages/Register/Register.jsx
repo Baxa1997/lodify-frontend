@@ -51,6 +51,7 @@ const Register = () => {
       type: "phone",
       client_type_id: "706337d3-80dc-4aca-80b3-67fad16cd0d6",
       role_id: "abc236d0-8a9a-4b10-9f44-6b51fcb35e9f",
+      register_user_type: localStorage.getItem("register_user_type"),
     },
     mode: "onChange",
   });
