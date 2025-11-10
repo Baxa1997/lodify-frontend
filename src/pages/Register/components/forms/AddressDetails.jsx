@@ -31,7 +31,6 @@ const AddressDetails = ({control, errors, watch, onNext, setValue}) => {
   const formData = watch();
 
   const handlePhoneCodeChange = (value) => {
-    console.log("phoneCodephoneCode", phoneCode);
     setPhoneCode(value);
   };
 
@@ -98,8 +97,6 @@ const AddressDetails = ({control, errors, watch, onNext, setValue}) => {
           session_info: sessionInfo,
           provider: "firebase",
         });
-
-        console.log("Phone verification successful");
 
         toast({
           title: "Phone Verified Successfully!",

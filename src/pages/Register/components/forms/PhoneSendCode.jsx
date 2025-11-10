@@ -146,7 +146,7 @@ function PhoneSendCode({
             Phone number <span style={{color: "#EF6820"}}>*</span>
           </Text>
 
-          <HFPhoneInput disabled={false} name="phone" control={control} />
+          <HFPhoneInput disabled={true} name="phone" control={control} />
         </Box>
 
         <Button
