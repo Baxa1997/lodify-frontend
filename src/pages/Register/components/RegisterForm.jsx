@@ -1,20 +1,16 @@
 import React from "react";
-import { Box, Text, Button, Flex } from "@chakra-ui/react";
+import {Box, Text, Flex} from "@chakra-ui/react";
 import StepRenderer from "./StepRenderer";
 import styles from "../MultiStepRegister.module.scss";
 
 const RegisterForm = ({
   currentStep,
-  steps,
   errors,
   control,
   watch,
   setValue,
   handleSubmit,
   onNext = () => {},
-  onBack = () => {},
-  isLoading,
-  getStepValidation,
   registerSuccess = false,
   onSubmit = () => {},
   getValues = () => {},
@@ -37,34 +33,23 @@ const RegisterForm = ({
           w="52px"
           h="53px"
           borderRadius="12px">
-          <img
-            src="/img/registerUserIcon.svg"
-            alt=""
-            width="28px"
-            h="28px" />
+          <img src="/img/registerUserIcon.svg" alt="" width="28px" h="28px" />
         </Flex>
 
         <Box>
-          <Text
-            color="#181D27"
-            fontWeight="600"
-            fontSize="16px">
+          <Text color="#181D27" fontWeight="600" fontSize="16px">
             Create your account
           </Text>
-          <Text
-            mt="4px"
-            color="#535862"
-            fontSize="13px"
-            fontWeight="400">
-            Select Carrier
+          <Text mt="4px" color="#535862" fontSize="13px" fontWeight="400">
+            Select{" "}
+            {localStorage.getItem("register_user_type") === "carrier"
+              ? "Carrier"
+              : "Broker"}
           </Text>
         </Box>
       </Flex>
       <Box className={styles.formContainer}>
-        <Box
-          width="100%"
-          as="form"
-          onSubmit={handleSubmit}>
+        <Box width="100%" as="form" onSubmit={handleSubmit}>
           <StepRenderer
             control={control}
             currentStep={currentStep}

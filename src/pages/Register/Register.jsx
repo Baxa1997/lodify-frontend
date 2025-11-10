@@ -128,7 +128,11 @@ const Register = () => {
   const steps = [
     {
       id: 1,
-      title: "Select Carrier",
+      title: `Select ${
+        localStorage.getItem("register_user_type") === "carrier"
+          ? "Carrier"
+          : "Broker"
+      }`,
       completed: completedSteps.has(1),
       active: currentStep === 1,
     },
@@ -146,7 +150,11 @@ const Register = () => {
     },
     {
       id: 4,
-      title: "Join Carrier",
+      title: `Join ${
+        localStorage.getItem("register_user_type") === "carrier"
+          ? "Carrier"
+          : "Broker"
+      }`,
       completed: completedSteps.has(4),
       active: currentStep === 4,
     },

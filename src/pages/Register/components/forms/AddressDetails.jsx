@@ -719,7 +719,7 @@ const AddressDetails = ({control, errors, watch, onNext, setValue}) => {
             Contact us
           </Link>
         </Text>
-        <Flex align="center" gap="8px">
+        <Flex cursor="pointer" align="center" gap="8px">
           <img src="/img/backArrow.svg" alt="arrow-left" />
           <Text fontSize="16px" color="#6B7280" cursor="pointer">
             Back to Select Carrier
