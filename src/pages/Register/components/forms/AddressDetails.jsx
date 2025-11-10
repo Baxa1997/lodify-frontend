@@ -16,7 +16,7 @@ import styles from "../../MultiStepRegister.module.scss";
 import authService from "../../../../services/auth/authService";
 import PhoneSendCode from "./PhoneSendCode";
 
-const AddressDetails = ({control, errors, watch, onNext, setValue}) => {
+const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
   const [currentSubStep, setCurrentSubStep] = useState("form");
   const [phoneCode, setPhoneCode] = useState("");
   const [emailCode, setEmailCode] = useState("");
@@ -719,10 +719,13 @@ const AddressDetails = ({control, errors, watch, onNext, setValue}) => {
             Contact us
           </Link>
         </Text>
-        <Flex cursor="pointer" align="center" gap="8px">
+        <Flex onClick={onBack} cursor="pointer" align="center" gap="8px">
           <img src="/img/backArrow.svg" alt="arrow-left" />
           <Text fontSize="16px" color="#6B7280" cursor="pointer">
-            Back to Select Carrier
+            Back to Select{" "}
+            {localStorage.getItem("register_user_type") === "carrier"
+              ? "Carrier"
+              : "Broker"}
           </Text>
         </Flex>
       </VStack>

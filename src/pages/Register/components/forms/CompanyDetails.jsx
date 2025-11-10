@@ -159,6 +159,9 @@ const SearchToggle = ({
               <Text fontWeight="400" color="#181D27">
                 US DOT# {companyData?.dot_number || "03472971"}
               </Text>
+              {/* <Text color="#535862" fontSize="14px">
+                MC# {companyData?.mc_number || "1137291"}
+              </Text> */}
             </Box>
           </Box>
 
@@ -190,7 +193,10 @@ const SearchToggle = ({
             }}>
             <img src={"/img/backArrow.svg"} alt="arrow-left" />
             <Text fontSize="14px" fontWeight="400" color="#535862">
-              Back to Select Carrier
+              Back to Select{" "}
+              {localStorage.getItem("register_user_type") === "carrier"
+                ? "Carrier"
+                : "Broker"}
             </Text>
           </Flex>
         </>
@@ -262,7 +268,10 @@ const SearchToggle = ({
             }}>
             <img src={"/img/backArrow.svg"} alt="arrow-left" />
             <Text fontSize="14px" fontWeight="400" color="#535862">
-              Back to Select Carrier
+              Back to Select{" "}
+              {localStorage.getItem("register_user_type") === "carrier"
+                ? "Carrier"
+                : "Broker"}
             </Text>
           </Flex>
         </>
@@ -309,7 +318,7 @@ const SearchToggle = ({
             <Text fontSize="14px" fontWeight="400" color="#535862">
               Don't have a DOT or MC number?
             </Text>
-            <Button
+            {/* <Button
               _hover={{bg: "transparent"}}
               bg="transparent"
               border="none"
@@ -319,7 +328,7 @@ const SearchToggle = ({
               <Text fontSize="14px" fontWeight="400" color="#EF6820">
                 Skip this step
               </Text>
-            </Button>
+            </Button> */}
           </Box>
         </>
       )}

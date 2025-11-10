@@ -11,6 +11,7 @@ const RegisterForm = ({
   setValue,
   handleSubmit,
   onNext = () => {},
+  onBack = () => {},
   registerSuccess = false,
   onSubmit = () => {},
   getValues = () => {},
@@ -60,6 +61,7 @@ const RegisterForm = ({
             getValues={getValues}
             reset={reset}
             onNext={onNext}
+            onBack={onBack}
             handleStepChange={handleStepChange}
             registerSuccess={registerSuccess}
           />
