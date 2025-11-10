@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {showAlert} from "../../store/alert/alert.thunk";
 import listToOptions from "../../utils/listTopOptions";
 import {loginAction} from "../../store/auth/auth.thunk";
-import {Box, Button, Text} from "@chakra-ui/react";
+import {Button, Text} from "@chakra-ui/react";
 
 const Login = () => {
   const dispatch = useDispatch();

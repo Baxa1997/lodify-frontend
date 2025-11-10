@@ -169,6 +169,12 @@ export const brokerMenuItems = [
         label: "All Loads",
         path: "trips",
       },
+
+      {
+        id: "accept-decline",
+        label: "Tender Invitations",
+        path: "tender-invitations",
+      },
       // {
       //   id: "all-loads",
       //   label: "All Loads",
