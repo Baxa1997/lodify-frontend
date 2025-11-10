@@ -20,6 +20,7 @@ export const SocketProvider = ({children}) => {
   const [connectionError, setConnectionError] = useState(null);
   const [socket, setSocket] = useState(null);
   const userId = useSelector((state) => state.auth.userInfo?.id);
+  const projectId = useSelector((state) => state.auth.projectId);
 
   useEffect(() => {
     if (!socketRef.current) {
@@ -104,7 +105,7 @@ export const SocketProvider = ({children}) => {
 
   useEffect(() => {
     if (socket && isConnected && userId) {
-      socket.emit("connected", {row_id: userId});
+      socket.emit("connected", {row_id: userId, project_id: projectId});
     }
   }, [socket, isConnected, userId]);
 

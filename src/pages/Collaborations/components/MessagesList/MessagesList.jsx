@@ -12,6 +12,7 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
   const [isNewMessage, setIsNewMessage] = useState(false);
   const loggedInUser = useSelector((state) => state.auth.user_data?.login);
   const userId = useSelector((state) => state.auth.userInfo?.id);
+  const projectId = useSelector((state) => state.auth.projectId);
   const prevMessageCountRef = useRef(0);
   const isInitialLoadRef = useRef(false);
   const isLoadingPaginationRef = useRef(false);
@@ -183,6 +184,7 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
           socket.emit("message:read", {
             row_id: userId,
             room_id: conversation.id,
+            project_id: projectId,
           });
         }
 
@@ -260,7 +262,10 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
       limit: 20,
       offset: 0,
     });
-    socket.emit("presence:get", {row_id: conversation.to_row_id});
+    socket.emit("presence:get", {
+      row_id: conversation.to_row_id,
+      project_id: projectId,
+    });
   }, [socket, conversation?.id, userId]);
 
   const groupMessagesByDate = (messages) => {

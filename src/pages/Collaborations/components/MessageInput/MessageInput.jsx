@@ -141,7 +141,6 @@ const MessageInput = ({
 
   const handleFileSend = async () => {
     if (!selectedFile) {
-      console.warn("No file selected");
       return;
     }
 

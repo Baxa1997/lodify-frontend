@@ -33,11 +33,11 @@ const Chat = () => {
 
   useEffect(() => {
     if (!socket || !userId || !isConnected) return;
-    socket.emit("presence:ping", {row_id: userId});
+    socket.emit("presence:ping", {row_id: userId, project_id: projectId});
 
     const pingInterval = setInterval(() => {
       if (socket && socket.connected) {
-        socket.emit("presence:ping", {row_id: userId});
+        socket.emit("presence:ping", {row_id: userId, project_id: projectId});
       }
     }, 10000);
 
@@ -46,6 +46,7 @@ const Chat = () => {
       if (socket && socket.connected) {
         socket.emit("disconnected", {
           row_id: userId,
+          project_id: projectId,
         });
       }
     };
@@ -55,6 +56,7 @@ const Chat = () => {
       if (socket && socket.connected) {
         socket.emit("disconnected", {
           row_id: userId,
+          project_id: projectId,
         });
       }
     };
@@ -76,7 +78,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (!socket || !isConnected || !userId) return;
-    socket.emit("rooms list", {row_id: userId});
+    socket.emit("rooms list", {row_id: userId, project_id: projectId});
 
     const handleRoomsList = (data) => {
       const roomsData = data || [];
@@ -128,15 +130,7 @@ const Chat = () => {
     ) {
       setIsInitializing(true);
       setHasProcessedTripId(true);
-      console.log("CREATING ROOM", {
-        name: "",
-        type: "group",
-        row_id: userId,
-        item_id: tripId,
-        from_name: loginName,
-        project_id: projectId,
-        to_name: tripName,
-      });
+
       socket.emit(
         "create room",
         {
@@ -188,6 +182,7 @@ const Chat = () => {
       from: loginUser,
       type: type,
       author_row_id: userId,
+      project_id: projectId,
       file: fileInfo?.url || "",
     };
 
