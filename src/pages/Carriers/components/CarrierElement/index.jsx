@@ -11,10 +11,35 @@ import {
 } from "@chakra-ui/react";
 import {ExternalLinkIcon, StarIcon} from "@chakra-ui/icons";
 import {format} from "date-fns";
+import carrierService from "@services/carrierService";
+import {useSelector} from "react-redux";
 
-const CarrierElement = ({carrier, allCarriers = false}) => {
+const CarrierElement = ({
+  carrier,
+  allCarriers = false,
+  onView = () => {},
+  refetch = () => {},
+}) => {
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const {logo, legal_name, company_name, rating, connected_date, email} =
     carrier;
+
+  const handleAddCarrier = (carrier) => {
+    const data = {
+      joined_at: new Date().toISOString(),
+      brokers_id: brokersId,
+      companies_id: carrier?.guid,
+    };
+    carrierService
+      .addCarrier(data)
+      .then(() => {
+        refetch();
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+
   return (
     <Flex
       flexDirection="column"
@@ -101,9 +126,14 @@ const CarrierElement = ({carrier, allCarriers = false}) => {
           p="0"
           h="auto"
           _hover={{bg: "transparent", textDecoration: "underline"}}
-          //   onClick={onView}
-        >
-          View
+          onClick={() => {
+            if (allCarriers) {
+              handleAddCarrier(carrier);
+            } else {
+              onView(carrier);
+            }
+          }}>
+          {allCarriers ? "Add" : "View"}
         </Button>
       </Flex>
     </Flex>

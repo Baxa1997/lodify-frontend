@@ -199,7 +199,7 @@ export const brokerMenuItems = [
     id: "shippers",
     label: "Shippers",
     icon: "/img/user.svg",
-    path: "#",
+    path: "shipper",
   },
 
   {

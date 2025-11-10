@@ -9,7 +9,11 @@ const AllCarriers = () => {
   const envId = useSelector((state) => state.auth.environmentId);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
 
-  const {data: carriersData = [], isLoading} = useQuery({
+  const {
+    data: carriersData = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["ALL_CARRIERS"],
     queryFn: () =>
       tripsService.getList({
@@ -53,6 +57,7 @@ const AllCarriers = () => {
           allCarriers={true}
           key={carrier.guid}
           carrier={carrier}
+          refetch={refetch}
         />
       ))}
     </Box>

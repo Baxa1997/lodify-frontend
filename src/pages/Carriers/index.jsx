@@ -30,6 +30,10 @@ const Carriers = () => {
           <TabPanel>
             <AllCarriers />
           </TabPanel>
+
+          <TabPanel>
+            <AllCarriers />
+          </TabPanel>
           {/* <TabPanel>
             <Invitations />
           </TabPanel> */}

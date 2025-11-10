@@ -2,7 +2,6 @@ import CompanyDetails from "./forms/CompanyDetails";
 import AddressDetails from "./forms/AddressDetails";
 import ContactDetails from "./forms/ContactDetails";
 import VerificationStep from "./forms/VerificationStep";
-import {useGetLodify} from "@services/lodify-user.service";
 
 const StepRenderer = ({
   currentStep,
