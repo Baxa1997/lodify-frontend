@@ -1,15 +1,11 @@
 import React from "react";
-import { Box, Flex, Text, Radio, Checkbox, Switch } from "@chakra-ui/react";
+import {Box, Flex, Text, Radio, Checkbox, Switch} from "@chakra-ui/react";
 import HFSwitch from "@/components/HFSwitch";
 import HFRadio from "@/components/HFRadio";
 
-function FourthSection({ control }) {
+function FourthSection({control}) {
   return (
-    <Box
-      mt={"20px"}
-      border="1px solid #E9EAEB"
-      borderRadius="12px"
-      p="24px">
+    <Box mt={"20px"} border="1px solid #E9EAEB" borderRadius="12px" p="24px">
       <Flex gap={"24px"}>
         <Box
           pr="30px"
@@ -17,9 +13,7 @@ function FourthSection({ control }) {
           flexDirection="column"
           gap={"16px"}
           w="300px">
-          <Flex
-            id="tripRadio"
-            gap={"12px"}>
+          <Flex id="tripRadio" gap={"12px"}>
             <HFRadio
               array={true}
               control={control}
@@ -27,18 +21,12 @@ function FourthSection({ control }) {
               value="One Way"
               transformValue={(val) => [val]}
             />
-            <Text
-              fontSize={"16px"}
-              fontWeight={"500"}
-              color={"#414651"}>
+            <Text fontSize={"16px"} fontWeight={"500"} color={"#414651"}>
               One Way
             </Text>
           </Flex>
 
-          <Flex
-            mt="16px"
-            id="tripRadio"
-            gap={"12px"}>
+          <Flex mt="16px" id="tripRadio" gap={"12px"}>
             <HFRadio
               array={true}
               control={control}
@@ -46,10 +34,7 @@ function FourthSection({ control }) {
               value="Round Trip"
               transformValue={(val) => [val]}
             />
-            <Text
-              fontSize={"16px"}
-              fontWeight={"500"}
-              color={"#414651"}>
+            <Text fontSize={"16px"} fontWeight={"500"} color={"#414651"}>
               Round Trip
             </Text>
           </Flex>
@@ -61,9 +46,7 @@ function FourthSection({ control }) {
           borderRight="1px solid #E9EAEB"
           flexDirection="column"
           gap={"16px"}>
-          <Flex
-            id="tripRadio"
-            gap={"12px"}>
+          <Flex id="tripRadio" gap={"12px"}>
             <HFRadio
               array={true}
               control={control}
@@ -71,18 +54,12 @@ function FourthSection({ control }) {
               value="Solo"
               transformValue={(val) => [val]}
             />
-            <Text
-              fontSize={"16px"}
-              fontWeight={"500"}
-              color={"#414651"}>
+            <Text fontSize={"16px"} fontWeight={"500"} color={"#414651"}>
               Solo
             </Text>
           </Flex>
 
-          <Flex
-            mt="16px"
-            id="tripRadio"
-            gap={"12px"}>
+          <Flex mt="16px" id="tripRadio" gap={"12px"}>
             <HFRadio
               array={true}
               control={control}
@@ -90,31 +67,17 @@ function FourthSection({ control }) {
               value="Team"
               transformValue={(val) => [val]}
             />
-            <Text
-              fontSize={"16px"}
-              fontWeight={"500"}
-              color={"#414651"}>
+            <Text fontSize={"16px"} fontWeight={"500"} color={"#414651"}>
               Team
             </Text>
           </Flex>
         </Box>
 
-        <Box
-          w="344px"
-          flexDirection="column"
-          gap={"16px"}>
-          <Flex
-            id="tripRadio"
-            gap={"12px"}
-            alignItems="center">
-            <HFSwitch
-              control={control}
-              name="lot_back" />
-            <Text
-              fontSize={"16px"}
-              fontWeight={"500"}
-              color={"#414651"}>
-              Lost Black
+        <Box w="344px" flexDirection="column" gap={"16px"}>
+          <Flex id="tripRadio" gap={"12px"} alignItems="center">
+            <HFSwitch control={control} name="lot_back" />
+            <Text fontSize={"16px"} fontWeight={"500"} color={"#414651"}>
+              Lot Back
             </Text>
           </Flex>
         </Box>

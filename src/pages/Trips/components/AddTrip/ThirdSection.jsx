@@ -51,7 +51,7 @@ function ThirdSection({control}) {
               fontSize={"14px"}
               fontWeight={"500"}
               color={"#414651"}>
-              Reference # <span>*</span>
+              Reference #
             </Text>
             <HFTextField
               border={"1px solid #D5D7DA"}
@@ -83,7 +83,7 @@ function ThirdSection({control}) {
               fontSize={"14px"}
               fontWeight={"500"}
               color={"#414651"}>
-              Other # <span>*</span>
+              Other #
             </Text>
             <HFTextField
               border={"1px solid #D5D7DA"}
@@ -124,7 +124,6 @@ function ThirdSection({control}) {
               control={control}
               name="accessorials"
               label="Accessorials"
-              required={true}
             />
           </Box>
           <Box w={"100%"}>
@@ -176,7 +175,7 @@ function ThirdSection({control}) {
               fontSize={"14px"}
               fontWeight={"500"}
               color={"#414651"}>
-              BOL/POD <span>*</span>
+              BOL/POD
             </Text>
             <HFFilesField
               size="md"
@@ -192,7 +191,7 @@ function ThirdSection({control}) {
               fontSize={"14px"}
               fontWeight={"500"}
               color={"#414651"}>
-              Other Files <span>*</span>
+              Other Files
             </Text>
             <HFFilesField
               size="md"

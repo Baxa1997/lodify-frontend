@@ -1,7 +1,7 @@
-import React, { memo } from "react";
-import { Box } from "@chakra-ui/react";
+import React, {memo} from "react";
+import {Box} from "@chakra-ui/react";
 
-const CTableTd = ({ children, ...props }) => {
+const CTableTd = ({children, ...props}) => {
   return (
     <Box
       as="td"
@@ -10,7 +10,7 @@ const CTableTd = ({ children, ...props }) => {
       fontSize="14px"
       color="gray.700"
       borderBottom="1px solid"
-      borderColor="gray.200"
+      borderColor="#E9EAEB"
       minWidth="80px"
       width="auto"
       whiteSpace="nowrap"

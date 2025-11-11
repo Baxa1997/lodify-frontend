@@ -35,7 +35,7 @@ function PickupFieldsComponent({control, field, index}) {
         </Box>
         <Box w={isPickup || isPickupAndDelivery ? "100%" : "30%"}>
           <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
-            BOL # <span style={{color: "#414651"}}>*</span>
+            BOL #
           </Text>
           <HFTextField
             placeholder={"Enter Number"}
@@ -50,7 +50,7 @@ function PickupFieldsComponent({control, field, index}) {
             {" "}
             <Box w="100%">
               <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
-                Commodity <span style={{color: "#414651"}}>*</span>
+                Commodity
               </Text>
               <HFTextField
                 placeholder={"Enter Commodity Name"}
@@ -62,7 +62,7 @@ function PickupFieldsComponent({control, field, index}) {
             </Box>
             <Box w="100%">
               <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
-                Load Value <span style={{color: "#414651"}}>*</span>
+                Load Value
               </Text>
               <HFTextField
                 placeholder={"$ 0.00"}
@@ -142,7 +142,7 @@ function PickupFieldsComponent({control, field, index}) {
 
             <Box width="32%">
               <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
-                Address 2 <span style={{color: "#414651"}}>*</span>
+                Address 2
               </Text>
               <HFTextField
                 placeholder={"Enter Address 2"}
@@ -202,7 +202,7 @@ function PickupFieldsComponent({control, field, index}) {
           <Flex mt={"12px"} gap="16px">
             <Box width="33%">
               <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
-                Phone <span style={{color: "#414651"}}>*</span>
+                Phone
               </Text>
               <HFPhoneInput
                 placeholder={"Phone Number"}
@@ -373,7 +373,7 @@ function PickupFieldsComponent({control, field, index}) {
 
           <Box width="80%" mt="16px">
             <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
-              Weight <span style={{color: "#414651"}}>*</span>
+              Weight
             </Text>
             <HFTextField
               type="number"
@@ -387,7 +387,7 @@ function PickupFieldsComponent({control, field, index}) {
           </Box>
           <Box width="80%" mt="16px">
             <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
-              Quantity <span style={{color: "#414651"}}>*</span>
+              Quantity
             </Text>
             <HFTextField
               type="number"

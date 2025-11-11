@@ -15,6 +15,7 @@ import Carriers from "../pages/Carriers";
 import GoReadyTrucks from "../pages/GoReadyTrucks";
 import Collaborations from "../pages/Collaborations";
 import TenderInvitations from "../pages/TenderInvitations";
+import AcceptDecline from "../pages/AcceptDecline";
 
 const Login = lazy(() => import("../pages/Login/Login"));
 const RoleSelection = lazy(() =>
@@ -127,6 +128,7 @@ const Router = () => {
         <Route path="go-ready-trucks" element={<GoReadyTrucks />} />
         <Route path="collabrations" element={<Collaborations />} />
         <Route path="tender-invitations" element={<TenderInvitations />} />
+        <Route path="accept-decline" element={<AcceptDecline />} />
       </Route>
 
       <Route

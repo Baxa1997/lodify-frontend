@@ -67,11 +67,11 @@ function AddTrip({tripData = {}}) {
     staleTime: 0,
     select: (data) => data?.data?.response?.[0] || [],
   });
-  console.log("tripData", tripData);
+
   useEffect(() => {
     if (!addTrip) {
       const transformedData = transformTripData(tripData);
-      console.log("transformedData", transformedData);
+
       reset(transformedData);
     }
   }, [tripData, addTrip]);
