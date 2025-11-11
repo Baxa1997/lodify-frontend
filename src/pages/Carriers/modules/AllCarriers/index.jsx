@@ -23,6 +23,8 @@ import {useInfiniteQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
 import carrierService from "@services/carrierService";
 import {useSelector} from "react-redux";
+import useDebounce from "@hooks/useDebounce";
+import SearchInput from "@components/SearchInput";
 
 const tableElements = [
   {label: "Company Name", key: "500px"},
@@ -48,7 +50,7 @@ const AllCarriers = () => {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["ALL_CARRIERS", brokersId, envId],
+    queryKey: ["ALL_CARRIERS", brokersId, envId, searchQuery],
     queryFn: ({pageParam = 0}) =>
       tripsService.getList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
@@ -58,7 +60,8 @@ const AllCarriers = () => {
           broker_id: brokersId,
           own_carriers: false,
           limit: 20,
-          offset: pageParam,
+          offset: Boolean(searchQuery) ? 0 : pageParam,
+          search: searchQuery,
         },
         table: "carriers",
       }),
@@ -79,7 +82,6 @@ const AllCarriers = () => {
   const carriersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
 
-  // Filter carriers based on search query
   const filteredCarriers = useMemo(() => {
     if (!searchQuery.trim()) return carriersData;
 
@@ -169,43 +171,14 @@ const AllCarriers = () => {
     }
   }, []);
 
-  if (isLoading) {
-    return (
-      <Flex justify="center" align="center" h="calc(100vh - 100px)">
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="#fff"
-          color="#EF6820"
-          size="xl"
-        />
-      </Flex>
-    );
-  }
+  const debouncedSearch = useDebounce((value) => {
+    setSearchQuery(value);
+  }, 500);
 
-  return carriersData.length > 0 ? (
+  return (
     <Box>
       <Box mt="20px" mb="16px">
-        <InputGroup maxW="400px">
-          <InputLeftElement pointerEvents="none">
-            <SearchIcon color="#94A3B8" />
-          </InputLeftElement>
-          <Input
-            placeholder="Search by company, email, or phone..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            bg="white"
-            border="1px solid #E2E8F0"
-            borderRadius="8px"
-            _focus={{
-              borderColor: "#EF6820",
-              boxShadow: "0 0 0 1px #EF6820",
-            }}
-            _hover={{
-              borderColor: "#CBD5E0",
-            }}
-          />
-        </InputGroup>
+        <SearchInput bg="#fff" color="#000" onSearch={debouncedSearch} />
       </Box>
 
       <Box
@@ -217,112 +190,97 @@ const AllCarriers = () => {
         border="1px solid #E2E8F0"
         borderRadius="12px">
         <Table variant="simple" bg="white" borderRadius="12px">
-        <Thead
-          bg="#FFFFFF"
-          position="sticky"
-          top="-1px"
-          zIndex="10"
-          boxShadow="0 2px 4px rgba(0, 0, 0, 0.08)">
-          <Tr>
-            {tableElements.map((element) => (
-              <Th
-                key={element}
-                width={element?.key}
-                color="#1E293B"
-                fontSize="14px"
-                textTransform="capitalize"
-                fontWeight="600"
-                borderBottom="none"
-                py="16px">
-                {element?.label}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredCarriers.length > 0 ? (
-            filteredCarriers.map((carrier) => (
-              <Tr
-                key={carrier.guid}
-                _hover={{bg: "#F9FAFB"}}
-                borderBottom="1px solid #E5E7EB"
-                _last={{borderBottom: "none"}}>
-                <Td py="14px" borderBottom="none">
-                  <Text fontSize="14px" fontWeight="600" color="#181D27">
-                    {carrier.company_name || carrier.legal_name || "N/A"}
-                  </Text>
-                </Td>
-                <Td py="14px" borderBottom="none">
-                  <Text fontSize="14px" color="#535862">
-                    {carrier.email || "N/A"}
-                  </Text>
-                </Td>
-                <Td py="14px" borderBottom="none">
-                  <Text fontSize="14px" color="#535862">
-                    {carrier.phone || "N/A"}
-                  </Text>
-                </Td>
-                <Td py="14px" borderBottom="none">
-                  <HStack spacing={1}>
-                    <Text fontSize="14px" fontWeight="600" color="#181D27">
-                      {carrier.rating ?? "5.0"}
-                    </Text>
-                    <Icon as={StarIcon} w="14px" h="14px" color="gold" />
-                  </HStack>
-                </Td>
-                <Td textAlign="left" py="14px" borderBottom="none">
-                  <Button
-                    size="sm"
-                    color="#EF6820"
-                    variant="ghost"
-                    fontWeight="500"
-                    isDisabled={loadingCarrierId === carrier.guid}
-                    isLoading={loadingCarrierId === carrier.guid}
-                    loadingText="Adding..."
-                    _hover={{bg: "#FEF3EE"}}
-                    onClick={() => handleAddCarrier(carrier)}>
-                    Add
-                  </Button>
-                </Td>
-              </Tr>
-            ))
-          ) : (
+          <Thead
+            bg="#FFFFFF"
+            position="sticky"
+            top="-1px"
+            zIndex="10"
+            boxShadow="0 2px 4px rgba(0, 0, 0, 0.08)">
             <Tr>
-              <Td colSpan={5} textAlign="center" py="40px">
-                <Text fontSize="14px" color="#94A3B8">
-                  No carriers match your search
-                </Text>
-              </Td>
+              {tableElements.map((element) => (
+                <Th
+                  key={element}
+                  width={element?.key}
+                  color="#1E293B"
+                  fontSize="14px"
+                  textTransform="capitalize"
+                  fontWeight="600"
+                  borderBottom="none"
+                  py="16px">
+                  {element?.label}
+                </Th>
+              ))}
             </Tr>
-          )}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {filteredCarriers.length > 0 &&
+              filteredCarriers.map((carrier) => (
+                <Tr
+                  key={carrier.guid}
+                  _hover={{bg: "#F9FAFB"}}
+                  borderBottom="1px solid #E5E7EB"
+                  _last={{borderBottom: "none"}}>
+                  <Td py="14px" borderBottom="none">
+                    <Text fontSize="14px" fontWeight="600" color="#181D27">
+                      {carrier.company_name || carrier.legal_name || "N/A"}
+                    </Text>
+                  </Td>
+                  <Td py="14px" borderBottom="none">
+                    <Text fontSize="14px" color="#535862">
+                      {carrier.email || "N/A"}
+                    </Text>
+                  </Td>
+                  <Td py="14px" borderBottom="none">
+                    <Text fontSize="14px" color="#535862">
+                      {carrier.phone || "N/A"}
+                    </Text>
+                  </Td>
+                  <Td py="14px" borderBottom="none">
+                    <HStack spacing={1}>
+                      <Text fontSize="14px" fontWeight="600" color="#181D27">
+                        {carrier.rating ?? "5.0"}
+                      </Text>
+                      <Icon as={StarIcon} w="14px" h="14px" color="gold" />
+                    </HStack>
+                  </Td>
+                  <Td textAlign="left" py="14px" borderBottom="none">
+                    <Button
+                      size="sm"
+                      color="#EF6820"
+                      variant="ghost"
+                      fontWeight="500"
+                      isDisabled={loadingCarrierId === carrier.guid}
+                      isLoading={loadingCarrierId === carrier.guid}
+                      loadingText="Adding..."
+                      _hover={{bg: "#FEF3EE"}}
+                      onClick={() => handleAddCarrier(carrier)}>
+                      Add
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+          </Tbody>
+        </Table>
 
-      {isFetchingNextPage && (
-        <Flex justify="center" align="center" py="20px">
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="#fff"
-            color="#EF6820"
-            size="md"
-          />
-        </Flex>
-      )}
+        {isFetchingNextPage && (
+          <Flex justify="center" align="center" py="20px">
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="#fff"
+              color="#EF6820"
+              size="md"
+            />
+          </Flex>
+        )}
 
-      {!hasNextPage && carriersData.length > 0 && (
-        <Text textAlign="center" py="20px" color="#6B7280" fontSize="14px">
-          No more carriers to load
-        </Text>
-      )}
+        {!hasNextPage && carriersData.length > 0 && (
+          <Text textAlign="center" py="20px" color="#6B7280" fontSize="14px">
+            No more carriers to load
+          </Text>
+        )}
       </Box>
     </Box>
-  ) : (
-    <Flex justify="center" align="center" h="calc(100vh - 100px)">
-      <Text fontSize="16px" fontWeight="600" color="#EF6820">
-        No carriers found
-      </Text>
-    </Flex>
   );
 };
 

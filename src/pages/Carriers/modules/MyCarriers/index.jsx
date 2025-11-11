@@ -21,6 +21,8 @@ import {StarIcon, SearchIcon} from "@chakra-ui/icons";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
 import {useSelector} from "react-redux";
+import useDebounce from "@hooks/useDebounce";
+import SearchInput from "@components/SearchInput";
 
 const tableElements = [
   {label: "Company Name", key: "500px"},
@@ -44,7 +46,7 @@ const MyCarriers = () => {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["MY_CARRIERS", brokersId, envId],
+    queryKey: ["MY_CARRIERS", brokersId, envId, searchQuery],
     queryFn: ({pageParam = 0}) =>
       tripsService.getList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
@@ -54,28 +56,29 @@ const MyCarriers = () => {
           broker_id: brokersId,
           own_carriers: true,
           limit: 20,
-          offset: pageParam,
+          offset: Boolean(searchQuery) ? 0 : pageParam,
+          search: searchQuery,
         },
         table: "carriers",
       }),
     getNextPageParam: (lastPage, allPages) => {
-      const loadedItems = allPages.reduce(
-        (sum, page) => sum + (page?.data?.response?.length || 0),
-        0
-      );
-      const hasMore =
-        lastPage?.data?.response && lastPage.data.response.length === 20;
-      return hasMore ? loadedItems : undefined;
+      if (Boolean(searchQuery)) {
+        return allPages?.data?.response;
+      } else {
+        const loadedItems = allPages.reduce(
+          (sum, page) => sum + (page?.data?.response?.length || 0),
+          0
+        );
+        const hasMore =
+          lastPage?.data?.response && lastPage.data.response.length === 20;
+        return hasMore ? loadedItems : undefined;
+      }
     },
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-    staleTime: 0,
   });
 
   const carriersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
 
-  // Filter carriers based on search query
   const filteredCarriers = useMemo(() => {
     if (!searchQuery.trim()) return carriersData;
 
@@ -98,7 +101,6 @@ const MyCarriers = () => {
   }, [carriersData, searchQuery]);
 
   const handleViewCarrier = (carrier) => {
-    // Add your view logic here
     console.log("View carrier:", carrier);
   };
 
@@ -136,43 +138,14 @@ const MyCarriers = () => {
     }
   }, []);
 
-  if (isLoading) {
-    return (
-      <Flex justify="center" align="center" h="calc(100vh - 100px)">
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="#fff"
-          color="#EF6820"
-          size="xl"
-        />
-      </Flex>
-    );
-  }
+  const debouncedSearch = useDebounce((value) => {
+    setSearchQuery(value);
+  }, 500);
 
-  return carriersData.length > 0 ? (
+  return (
     <Box>
       <Box mt="20px" mb="16px">
-        <InputGroup maxW="400px">
-          <InputLeftElement pointerEvents="none">
-            <SearchIcon color="#94A3B8" />
-          </InputLeftElement>
-          <Input
-            placeholder="Search by company, email, or phone..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            bg="white"
-            border="1px solid #E2E8F0"
-            borderRadius="8px"
-            _focus={{
-              borderColor: "#EF6820",
-              boxShadow: "0 0 0 1px #EF6820",
-            }}
-            _hover={{
-              borderColor: "#CBD5E0",
-            }}
-          />
-        </InputGroup>
+        <SearchInput bg="#fff" color="#000" onSearch={debouncedSearch} />
       </Box>
 
       <Box
@@ -207,7 +180,7 @@ const MyCarriers = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {filteredCarriers.length > 0 ? (
+            {filteredCarriers.length > 0 &&
               filteredCarriers.map((carrier) => (
                 <Tr
                   key={carrier.guid}
@@ -249,16 +222,7 @@ const MyCarriers = () => {
                     </Button>
                   </Td>
                 </Tr>
-              ))
-            ) : (
-              <Tr>
-                <Td colSpan={5} textAlign="center" py="40px">
-                  <Text fontSize="14px" color="#94A3B8">
-                    No carriers match your search
-                  </Text>
-                </Td>
-              </Tr>
-            )}
+              ))}
           </Tbody>
         </Table>
 
@@ -281,12 +245,6 @@ const MyCarriers = () => {
         )}
       </Box>
     </Box>
-  ) : (
-    <Flex justify="center" align="center" h="calc(100vh - 100px)">
-      <Text fontSize="16px" fontWeight="600" color="#EF6820">
-        No carriers found
-      </Text>
-    </Flex>
   );
 };
 
