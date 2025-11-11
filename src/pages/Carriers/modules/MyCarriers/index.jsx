@@ -185,8 +185,7 @@ const MyCarriers = () => {
                 <Tr
                   key={carrier.guid}
                   _hover={{bg: "#F9FAFB"}}
-                  borderBottom="1px solid #E5E7EB"
-                  _last={{borderBottom: "none"}}>
+                  borderBottom="1px solid #E5E7EB">
                   <Td py="14px" borderBottom="none">
                     <Text fontSize="14px" fontWeight="600" color="#181D27">
                       {carrier.company_name || carrier.legal_name || "N/A"}
@@ -238,11 +237,11 @@ const MyCarriers = () => {
           </Flex>
         )}
 
-        {!hasNextPage && carriersData.length > 0 && (
+        {/* {!hasNextPage && carriersData.length > 0 && (
           <Text textAlign="center" py="20px" color="#6B7280" fontSize="14px">
             No more carriers to load
           </Text>
-        )}
+        )} */}
       </Box>
     </Box>
   );
