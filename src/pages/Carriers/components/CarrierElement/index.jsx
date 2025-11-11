@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Box,
   Text,
@@ -8,6 +8,8 @@ import {
   Button,
   Icon,
   Flex,
+  Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import {ExternalLinkIcon, StarIcon} from "@chakra-ui/icons";
 import {format} from "date-fns";
@@ -20,11 +22,15 @@ const CarrierElement = ({
   onView = () => {},
   refetch = () => {},
 }) => {
+  const toast = useToast();
+  const [loading, setLoading] = useState(null);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const {logo, legal_name, company_name, rating, connected_date, email} =
     carrier;
-
   const handleAddCarrier = (carrier) => {
+    setLoading({
+      id: carrier?.guid,
+    });
     const data = {
       joined_at: new Date().toISOString(),
       brokers_id: brokersId,
@@ -33,13 +39,24 @@ const CarrierElement = ({
     carrierService
       .addCarrier(data)
       .then(() => {
+        toast({
+          title: "Carrier Added Successfully!",
+          description: "The carrier has been added to the system",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
         refetch();
       })
       .catch((error) => {
         console.log("error", error);
+      })
+      .finally(() => {
+        setLoading(null);
       });
   };
-
+  console.log("loading", carrier);
   return (
     <Flex
       flexDirection="column"
@@ -64,7 +81,10 @@ const CarrierElement = ({
             alignItems="center"
             justifyContent="center"
             border="1px solid #E2E8F0">
-            <img src="/img/carrierLogo.svg" alt="" width />
+            {/* <img src="/img/carrierLogo.svg" alt="" width /> */}
+            <Text fontSize={"18px"} fontWeight={"700"} color="#181D27">
+              {email?.[0] || "C"}
+            </Text>
           </Box>
 
           <Flex h="52px" flexDirection="column" gap="0px">
@@ -126,6 +146,7 @@ const CarrierElement = ({
           p="0"
           h="auto"
           _hover={{bg: "transparent", textDecoration: "underline"}}
+          isDisabled={loading?.id === carrier?.guid}
           onClick={() => {
             if (allCarriers) {
               handleAddCarrier(carrier);
@@ -133,7 +154,15 @@ const CarrierElement = ({
               onView(carrier);
             }
           }}>
-          {allCarriers ? "Add" : "View"}
+          {allCarriers ? (
+            loading?.id === carrier?.guid ? (
+              <Spinner size="sm" color="#EF6820" />
+            ) : (
+              "Add"
+            )
+          ) : (
+            "View"
+          )}
         </Button>
       </Flex>
     </Flex>
