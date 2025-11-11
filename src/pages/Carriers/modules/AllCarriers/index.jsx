@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState, useMemo} from "react";
 import {
   Box,
   Flex,
@@ -14,8 +14,11 @@ import {
   HStack,
   Icon,
   useToast,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
-import {StarIcon} from "@chakra-ui/icons";
+import {StarIcon, SearchIcon} from "@chakra-ui/icons";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
 import carrierService from "@services/carrierService";
@@ -32,6 +35,7 @@ const tableElements = [
 const AllCarriers = () => {
   const containerRef = useRef();
   const toast = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
   const [loadingCarrierId, setLoadingCarrierId] = useState(null);
   const envId = useSelector((state) => state.auth.environmentId);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
@@ -74,6 +78,28 @@ const AllCarriers = () => {
 
   const carriersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
+
+  // Filter carriers based on search query
+  const filteredCarriers = useMemo(() => {
+    if (!searchQuery.trim()) return carriersData;
+
+    const query = searchQuery.toLowerCase();
+    return carriersData.filter((carrier) => {
+      const companyName = (
+        carrier.company_name ||
+        carrier.legal_name ||
+        ""
+      ).toLowerCase();
+      const email = (carrier.email || "").toLowerCase();
+      const phone = (carrier.phone || "").toLowerCase();
+
+      return (
+        companyName.includes(query) ||
+        email.includes(query) ||
+        phone.includes(query)
+      );
+    });
+  }, [carriersData, searchQuery]);
 
   const handleAddCarrier = (carrier) => {
     setLoadingCarrierId(carrier?.guid);
@@ -158,16 +184,39 @@ const AllCarriers = () => {
   }
 
   return carriersData.length > 0 ? (
-    <Box
-      id="carrier"
-      ref={containerRef}
-      h="calc(100vh - 155px)"
-      overflowY="auto"
-      style={{scrollbarWidth: "none"}}
-      mt="20px"
-      border="1px solid #E2E8F0"
-      borderRadius="12px">
-      <Table variant="simple" bg="white" borderRadius="12px">
+    <Box>
+      <Box mt="20px" mb="16px">
+        <InputGroup maxW="400px">
+          <InputLeftElement pointerEvents="none">
+            <SearchIcon color="#94A3B8" />
+          </InputLeftElement>
+          <Input
+            placeholder="Search by company, email, or phone..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            bg="white"
+            border="1px solid #E2E8F0"
+            borderRadius="8px"
+            _focus={{
+              borderColor: "#EF6820",
+              boxShadow: "0 0 0 1px #EF6820",
+            }}
+            _hover={{
+              borderColor: "#CBD5E0",
+            }}
+          />
+        </InputGroup>
+      </Box>
+
+      <Box
+        id="carrier"
+        ref={containerRef}
+        h="calc(100vh - 220px)"
+        overflowY="auto"
+        style={{scrollbarWidth: "none"}}
+        border="1px solid #E2E8F0"
+        borderRadius="12px">
+        <Table variant="simple" bg="white" borderRadius="12px">
         <Thead
           bg="#FFFFFF"
           position="sticky"
@@ -191,51 +240,61 @@ const AllCarriers = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {carriersData.map((carrier) => (
-            <Tr
-              key={carrier.guid}
-              _hover={{bg: "#F9FAFB"}}
-              borderBottom="1px solid #E5E7EB"
-              _last={{borderBottom: "none"}}>
-              <Td py="14px" borderBottom="none">
-                <Text fontSize="14px" fontWeight="600" color="#181D27">
-                  {carrier.company_name || carrier.legal_name || "N/A"}
-                </Text>
-              </Td>
-              <Td py="14px" borderBottom="none">
-                <Text fontSize="14px" color="#535862">
-                  {carrier.email || "N/A"}
-                </Text>
-              </Td>
-              <Td py="14px" borderBottom="none">
-                <Text fontSize="14px" color="#535862">
-                  {carrier.phone || "N/A"}
-                </Text>
-              </Td>
-              <Td py="14px" borderBottom="none">
-                <HStack spacing={1}>
+          {filteredCarriers.length > 0 ? (
+            filteredCarriers.map((carrier) => (
+              <Tr
+                key={carrier.guid}
+                _hover={{bg: "#F9FAFB"}}
+                borderBottom="1px solid #E5E7EB"
+                _last={{borderBottom: "none"}}>
+                <Td py="14px" borderBottom="none">
                   <Text fontSize="14px" fontWeight="600" color="#181D27">
-                    {carrier.rating ?? "5.0"}
+                    {carrier.company_name || carrier.legal_name || "N/A"}
                   </Text>
-                  <Icon as={StarIcon} w="14px" h="14px" color="gold" />
-                </HStack>
-              </Td>
-              <Td textAlign="left" py="14px" borderBottom="none">
-                <Button
-                  size="sm"
-                  color="#EF6820"
-                  variant="ghost"
-                  fontWeight="500"
-                  isDisabled={loadingCarrierId === carrier.guid}
-                  isLoading={loadingCarrierId === carrier.guid}
-                  loadingText="Adding..."
-                  _hover={{bg: "#FEF3EE"}}
-                  onClick={() => handleAddCarrier(carrier)}>
-                  Add
-                </Button>
+                </Td>
+                <Td py="14px" borderBottom="none">
+                  <Text fontSize="14px" color="#535862">
+                    {carrier.email || "N/A"}
+                  </Text>
+                </Td>
+                <Td py="14px" borderBottom="none">
+                  <Text fontSize="14px" color="#535862">
+                    {carrier.phone || "N/A"}
+                  </Text>
+                </Td>
+                <Td py="14px" borderBottom="none">
+                  <HStack spacing={1}>
+                    <Text fontSize="14px" fontWeight="600" color="#181D27">
+                      {carrier.rating ?? "5.0"}
+                    </Text>
+                    <Icon as={StarIcon} w="14px" h="14px" color="gold" />
+                  </HStack>
+                </Td>
+                <Td textAlign="left" py="14px" borderBottom="none">
+                  <Button
+                    size="sm"
+                    color="#EF6820"
+                    variant="ghost"
+                    fontWeight="500"
+                    isDisabled={loadingCarrierId === carrier.guid}
+                    isLoading={loadingCarrierId === carrier.guid}
+                    loadingText="Adding..."
+                    _hover={{bg: "#FEF3EE"}}
+                    onClick={() => handleAddCarrier(carrier)}>
+                    Add
+                  </Button>
+                </Td>
+              </Tr>
+            ))
+          ) : (
+            <Tr>
+              <Td colSpan={5} textAlign="center" py="40px">
+                <Text fontSize="14px" color="#94A3B8">
+                  No carriers match your search
+                </Text>
               </Td>
             </Tr>
-          ))}
+          )}
         </Tbody>
       </Table>
 
@@ -256,6 +315,7 @@ const AllCarriers = () => {
           No more carriers to load
         </Text>
       )}
+      </Box>
     </Box>
   ) : (
     <Flex justify="center" align="center" h="calc(100vh - 100px)">
