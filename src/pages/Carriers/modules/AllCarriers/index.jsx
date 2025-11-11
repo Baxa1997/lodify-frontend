@@ -21,6 +21,14 @@ import tripsService from "@services/tripsService";
 import carrierService from "@services/carrierService";
 import {useSelector} from "react-redux";
 
+const tableElements = [
+  {label: "Company Name", key: "500px"},
+  {label: "Email", key: "250px"},
+  {label: "Phone", key: "250px"},
+  {label: "Rating", key: "150px"},
+  {label: "Action", key: "150px"},
+];
+
 const AllCarriers = () => {
   const containerRef = useRef();
   const toast = useToast();
@@ -167,55 +175,19 @@ const AllCarriers = () => {
           zIndex="10"
           boxShadow="0 2px 4px rgba(0, 0, 0, 0.08)">
           <Tr>
-            <Th
-              width="400px"
-              color="#1E293B"
-              fontSize="14px"
-              textTransform="capitalize"
-              fontWeight="600"
-              borderBottom="none"
-              py="16px">
-              Company Name
-            </Th>
-            <Th
-              color="#1E293B"
-              fontSize="14px"
-              fontWeight="600"
-              borderBottom="none"
-              textTransform="capitalize"
-              py="16px">
-              Email
-            </Th>
-            <Th
-              width="250px"
-              color="#1E293B"
-              fontSize="14px"
-              fontWeight="600"
-              borderBottom="none"
-              textTransform="capitalize"
-              py="16px">
-              Phone
-            </Th>
-            <Th
-              color="#1E293B"
-              fontSize="14px"
-              fontWeight="600"
-              borderBottom="none"
-              textTransform="capitalize"
-              py="16px">
-              Rating
-            </Th>
-            <Th
-              width="200px"
-              color="#1E293B"
-              fontSize="14px"
-              fontWeight="600"
-              textAlign="right"
-              borderBottom="none"
-              textTransform="capitalize"
-              py="16px">
-              Action
-            </Th>
+            {tableElements.map((element) => (
+              <Th
+                key={element}
+                width={element?.key}
+                color="#1E293B"
+                fontSize="14px"
+                textTransform="capitalize"
+                fontWeight="600"
+                borderBottom="none"
+                py="16px">
+                {element?.label}
+              </Th>
+            ))}
           </Tr>
         </Thead>
         <Tbody>
@@ -248,7 +220,7 @@ const AllCarriers = () => {
                   <Icon as={StarIcon} w="14px" h="14px" color="gold" />
                 </HStack>
               </Td>
-              <Td textAlign="right" py="14px" borderBottom="none">
+              <Td textAlign="left" py="14px" borderBottom="none">
                 <Button
                   size="sm"
                   color="#EF6820"
