@@ -56,7 +56,7 @@ const CarrierElement = ({
         setLoading(null);
       });
   };
-  console.log("loading", carrier);
+
   return (
     <Flex
       flexDirection="column"

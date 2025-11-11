@@ -1,12 +1,30 @@
-import React, {useEffect, useRef} from "react";
-import CarrierElement from "../../components/CarrierElement";
-import {Box, Flex, Spinner, Text} from "@chakra-ui/react";
+import React, {useEffect, useRef, useState} from "react";
+import {
+  Box,
+  Flex,
+  Spinner,
+  Text,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Button,
+  HStack,
+  Icon,
+  useToast,
+} from "@chakra-ui/react";
+import {StarIcon} from "@chakra-ui/icons";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
+import carrierService from "@services/carrierService";
 import {useSelector} from "react-redux";
 
 const AllCarriers = () => {
   const containerRef = useRef();
+  const toast = useToast();
+  const [loadingCarrierId, setLoadingCarrierId] = useState(null);
   const envId = useSelector((state) => state.auth.environmentId);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
 
@@ -48,6 +66,42 @@ const AllCarriers = () => {
 
   const carriersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
+
+  const handleAddCarrier = (carrier) => {
+    setLoadingCarrierId(carrier?.guid);
+    const data = {
+      joined_at: new Date().toISOString(),
+      brokers_id: brokersId,
+      companies_id: carrier?.guid,
+    };
+    carrierService
+      .addCarrier(data)
+      .then(() => {
+        refetch();
+        toast({
+          title: "Carrier Added Successfully!",
+          description: "The carrier has been added to your list",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      })
+      .catch((error) => {
+        console.log("error", error);
+        toast({
+          title: "Failed to Add Carrier",
+          description: error?.response?.data?.message || "Please try again",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      })
+      .finally(() => {
+        setLoadingCarrierId(null);
+      });
+  };
 
   useEffect(() => {
     const handleScroll = (e) => {
@@ -102,17 +156,116 @@ const AllCarriers = () => {
       h="calc(100vh - 155px)"
       overflowY="auto"
       style={{scrollbarWidth: "none"}}
-      mt="20px">
-      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={"20px"}>
-        {carriersData.map((carrier) => (
-          <CarrierElement
-            allCarriers={true}
-            key={carrier.guid}
-            carrier={carrier}
-            refetch={refetch}
-          />
-        ))}
-      </Box>
+      mt="20px"
+      border="1px solid #E2E8F0"
+      borderRadius="12px">
+      <Table variant="simple" bg="white" borderRadius="12px">
+        <Thead
+          bg="#FFFFFF"
+          position="sticky"
+          top="-1px"
+          zIndex="10"
+          boxShadow="0 2px 4px rgba(0, 0, 0, 0.08)">
+          <Tr>
+            <Th
+              width="400px"
+              color="#1E293B"
+              fontSize="14px"
+              textTransform="capitalize"
+              fontWeight="600"
+              borderBottom="none"
+              py="16px">
+              Company Name
+            </Th>
+            <Th
+              color="#1E293B"
+              fontSize="14px"
+              fontWeight="600"
+              borderBottom="none"
+              textTransform="capitalize"
+              py="16px">
+              Email
+            </Th>
+            <Th
+              width="250px"
+              color="#1E293B"
+              fontSize="14px"
+              fontWeight="600"
+              borderBottom="none"
+              textTransform="capitalize"
+              py="16px">
+              Phone
+            </Th>
+            <Th
+              color="#1E293B"
+              fontSize="14px"
+              fontWeight="600"
+              borderBottom="none"
+              textTransform="capitalize"
+              py="16px">
+              Rating
+            </Th>
+            <Th
+              width="200px"
+              color="#1E293B"
+              fontSize="14px"
+              fontWeight="600"
+              textAlign="right"
+              borderBottom="none"
+              textTransform="capitalize"
+              py="16px">
+              Action
+            </Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {carriersData.map((carrier) => (
+            <Tr
+              key={carrier.guid}
+              _hover={{bg: "#F9FAFB"}}
+              borderBottom="1px solid #E5E7EB"
+              _last={{borderBottom: "none"}}>
+              <Td py="14px" borderBottom="none">
+                <Text fontSize="14px" fontWeight="600" color="#181D27">
+                  {carrier.company_name || carrier.legal_name || "N/A"}
+                </Text>
+              </Td>
+              <Td py="14px" borderBottom="none">
+                <Text fontSize="14px" color="#535862">
+                  {carrier.email || "N/A"}
+                </Text>
+              </Td>
+              <Td py="14px" borderBottom="none">
+                <Text fontSize="14px" color="#535862">
+                  {carrier.phone || "N/A"}
+                </Text>
+              </Td>
+              <Td py="14px" borderBottom="none">
+                <HStack spacing={1}>
+                  <Text fontSize="14px" fontWeight="600" color="#181D27">
+                    {carrier.rating ?? "5.0"}
+                  </Text>
+                  <Icon as={StarIcon} w="14px" h="14px" color="gold" />
+                </HStack>
+              </Td>
+              <Td textAlign="right" py="14px" borderBottom="none">
+                <Button
+                  size="sm"
+                  color="#EF6820"
+                  variant="ghost"
+                  fontWeight="500"
+                  isDisabled={loadingCarrierId === carrier.guid}
+                  isLoading={loadingCarrierId === carrier.guid}
+                  loadingText="Adding..."
+                  _hover={{bg: "#FEF3EE"}}
+                  onClick={() => handleAddCarrier(carrier)}>
+                  Add
+                </Button>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
 
       {isFetchingNextPage && (
         <Flex justify="center" align="center" py="20px">
