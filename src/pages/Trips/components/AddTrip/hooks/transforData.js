@@ -1,11 +1,24 @@
 export const transformTripData = (data) => {
   if (!data || Object.keys(data).length === 0) return {};
 
+  const normalizeFileField = (fieldValue) => {
+    if (!fieldValue) return [];
+    if (Array.isArray(fieldValue)) {
+      return fieldValue.filter(
+        (v) => v && typeof v === "string" && v.trim() !== ""
+      );
+    }
+    if (typeof fieldValue === "string" && fieldValue.trim() !== "") {
+      return [fieldValue];
+    }
+    return [];
+  };
+
   return {
     ...data,
-    rate_confirmation: data.rate_confirmation ? [data.rate_confirmation] : [],
-    bold_pod: data.bol_pod ? [data.bol_pod] : [],
-    other_files: data.other_files ? [data.other_files] : [],
+    rate_confirmation: normalizeFileField(data.rate_confirmation),
+    bold_pod: normalizeFileField(data.bold_pod || data.bol_pod),
+    other_files: normalizeFileField(data.other_files),
 
     shippers_id: data.shipper?.guid || data.shippers_id,
     companies_id_2: data.created_by?.guid || data.companies_id_2,
@@ -38,11 +51,25 @@ export const transformTripData = (data) => {
 export const transformFileData = (data) => {
   if (!data || Object.keys(data).length === 0) return {};
 
+  // Helper function to normalize file fields
+  const normalizeFileField = (fieldValue) => {
+    if (!fieldValue) return [];
+    if (Array.isArray(fieldValue)) {
+      return fieldValue.filter(
+        (v) => v && typeof v === "string" && v.trim() !== ""
+      );
+    }
+    if (typeof fieldValue === "string" && fieldValue.trim() !== "") {
+      return [fieldValue];
+    }
+    return [];
+  };
+
   return {
     ...data,
-    rate_confirmation: data.rate_confirmation ? [data.rate_confirmation] : [],
-    bold_pod: data.bol_pod ? [data.bol_pod] : [],
-    other_files: data.other_files ? [data.other_files] : [],
+    rate_confirmation: normalizeFileField(data.rate_confirmation),
+    bold_pod: normalizeFileField(data.bold_pod || data.bol_pod),
+    other_files: normalizeFileField(data.other_files),
 
     shippers_id: data.shipper?.guid || data.shippers_id,
     companies_id_2: data.created_by?.guid || data.companies_id_2,

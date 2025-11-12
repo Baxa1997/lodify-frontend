@@ -1,5 +1,6 @@
 import React from "react";
 import {Flex, Box, Text} from "@chakra-ui/react";
+import Insurance from "./modules/Insurance";
 
 const Compliance = () => {
   return (
@@ -33,6 +34,10 @@ const Compliance = () => {
           </Text>
         </Box>
       </Flex>
+
+      <Box>
+        <Insurance />
+      </Box>
     </>
   );
 };

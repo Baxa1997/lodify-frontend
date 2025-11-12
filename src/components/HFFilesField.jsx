@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useRef, useState, useMemo, useEffect} from "react";
 import {
   Box,
   FormControl,
@@ -20,7 +20,7 @@ import {
   VStack,
   Flex,
 } from "@chakra-ui/react";
-import {Controller} from "react-hook-form";
+import {Controller, useWatch} from "react-hook-form";
 import fileService from "@services/fileService";
 import {getShortFileName} from "@utils/getFileName";
 
@@ -37,7 +37,20 @@ function FileInput({
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const safeValue = Array.isArray(value) ? value : [];
+  const safeValue = useMemo(() => {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+      const filtered = value.filter(
+        (v) => v && typeof v === "string" && v.trim() !== ""
+      );
+      return filtered;
+    }
+
+    if (typeof value === "string" && value.trim() !== "") {
+      return [value];
+    }
+    return [];
+  }, [value]);
 
   const handleFileChange = (e) => {
     setLoading(true);
@@ -60,7 +73,8 @@ function FileInput({
   };
 
   const removeFile = (fileUrl) => {
-    onChange(safeValue.filter((f) => f !== fileUrl));
+    const updatedValue = safeValue.filter((f) => f !== fileUrl);
+    onChange(updatedValue);
   };
 
   return (
@@ -118,7 +132,9 @@ function FileInput({
                       maxW="210px"
                       onClick={() => setIsModalOpen(true)}>
                       <Text fontSize="13px" isTruncated maxW="150px">
-                        {getShortFileName(fileUrl, 7).shortName}
+                        {getShortFileName(fileUrl, 7).shortName ||
+                          fileUrl ||
+                          "Unknown file"}
                       </Text>
                       <IconButton
                         size="xs"
@@ -159,7 +175,9 @@ function FileInput({
                         maxW="200px"
                         onClick={() => setIsModalOpen(true)}>
                         <Text fontSize="13px" isTruncated maxW="150px">
-                          {getShortFileName(fileUrl, 7).shortName}
+                          {getShortFileName(fileUrl, 10).shortName ||
+                            fileUrl ||
+                            "Unknown file"}
                         </Text>
                         <IconButton
                           size="xs"
@@ -252,7 +270,9 @@ function FileInput({
                   borderRadius="md"
                   justify="space-between">
                   <Text fontSize="14px" w="300px">
-                    {getShortFileName(fileUrl, 30).shortName}
+                    {getShortFileName(fileUrl, 30).shortName ||
+                      fileUrl ||
+                      "Unknown file"}
                   </Text>
                   <IconButton
                     bg="none"
@@ -303,20 +323,42 @@ export default function HFFilesField({
         required: required ? "This is a required field" : false,
         ...rules,
       }}
-      render={({field: {onChange, value}, fieldState: {error}}) => (
-        <FormControl isInvalid={!!error}>
-          <FileInput
-            label={label}
-            name={name}
-            value={Array.isArray(value) ? value : []}
-            onChange={onChange}
-            required={required}
-            disabled={disabled}
-            setUploadLoading={setUploadLoading}
-          />
-          <FormErrorMessage>{error?.message}</FormErrorMessage>
-        </FormControl>
-      )}
+      render={({field: {onChange, value}, fieldState: {error}}) => {
+        const normalizedValue = useMemo(() => {
+          if (!value) return [];
+
+          if (Array.isArray(value)) {
+            const filtered = value.filter(
+              (v) => v && typeof v === "string" && v.trim() !== ""
+            );
+            return filtered;
+          }
+
+          if (typeof value === "string") {
+            const trimmed = value.trim();
+            if (trimmed !== "") {
+              return [trimmed];
+            }
+          }
+
+          return [];
+        }, [value]);
+
+        return (
+          <FormControl isInvalid={!!error}>
+            <FileInput
+              label={label}
+              name={name}
+              value={normalizedValue}
+              onChange={onChange}
+              required={required}
+              disabled={disabled}
+              setUploadLoading={setUploadLoading}
+            />
+            <FormErrorMessage>{error?.message}</FormErrorMessage>
+          </FormControl>
+        );
+      }}
     />
   );
 }
