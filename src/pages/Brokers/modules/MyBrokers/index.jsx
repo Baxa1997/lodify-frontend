@@ -36,7 +36,9 @@ const MyBrokers = () => {
   const containerRef = useRef();
   const [searchQuery, setSearchQuery] = useState("");
   const envId = useSelector((state) => state.auth.environmentId);
-  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const carriersId = useSelector(
+    (state) => state.auth?.user_data?.companies_id
+  );
 
   const {
     data,
@@ -46,15 +48,15 @@ const MyBrokers = () => {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["MY_BROKERS", brokersId, envId, searchQuery],
+    queryKey: ["MY_BROKERS", carriersId, envId, searchQuery],
     queryFn: ({pageParam = 0}) =>
       tripsService.getList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
         environment_id: envId,
         method: "list",
         object_data: {
-          broker_id: brokersId,
-          own_carriers: true,
+          carrier_id: carriersId,
+          own_brokers: true,
           limit: 20,
           offset: Boolean(searchQuery) ? 0 : pageParam,
           search: searchQuery,
@@ -74,6 +76,9 @@ const MyBrokers = () => {
         return hasMore ? loadedItems : undefined;
       }
     },
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
   const carriersData =

@@ -13,6 +13,7 @@ import {
   HStack,
   Icon,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 import {StarIcon} from "@chakra-ui/icons";
 import {useInfiniteQuery} from "@tanstack/react-query";
@@ -21,12 +22,14 @@ import {useSelector} from "react-redux";
 import useDebounce from "@hooks/useDebounce";
 import SearchInput from "@components/SearchInput";
 import brokerService from "@services/brokerService";
+import tripsService from "@services/tripsService";
 
 const tableElements = [
   {label: "Company Name", key: "500px"},
   {label: "Email", key: "250px"},
   {label: "Phone", key: "250px"},
   {label: "Rating", key: "150px"},
+  {label: "Action", key: "180px"},
 ];
 
 const AllBrokers = () => {
@@ -35,7 +38,9 @@ const AllBrokers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingCarrierId, setLoadingCarrierId] = useState(null);
   const envId = useSelector((state) => state.auth.environmentId);
-  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const carriersId = useSelector(
+    (state) => state.auth?.user_data?.companies_id
+  );
 
   const {
     data,
@@ -45,22 +50,33 @@ const AllBrokers = () => {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["ALL_BROKERS", brokersId, envId, searchQuery],
+    queryKey: ["ALL_BROKERS", carriersId, envId, searchQuery],
     queryFn: ({pageParam = 0}) =>
-      brokerService.getAllBrokers({
-        companies_id: brokersId,
-        limit: 20,
-        offset: Boolean(searchQuery) ? 0 : pageParam,
-        search: searchQuery,
+      tripsService.getList({
+        app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+        environment_id: envId,
+        method: "list",
+        object_data: {
+          carrier_id: carriersId,
+          own_brokers: false,
+          limit: 20,
+          offset: Boolean(searchQuery) ? 0 : pageParam,
+          search: searchQuery,
+        },
+        table: "brokers",
       }),
     getNextPageParam: (lastPage, allPages) => {
-      const loadedItems = allPages.reduce(
-        (sum, page) => sum + (page?.data?.response?.length || 0),
-        0
-      );
-      const hasMore =
-        lastPage?.data?.response && lastPage.data.response.length === 20;
-      return hasMore ? loadedItems : undefined;
+      if (Boolean(searchQuery)) {
+        return allPages?.data?.response;
+      } else {
+        const loadedItems = allPages.reduce(
+          (sum, page) => sum + (page?.data?.response?.length || 0),
+          0
+        );
+        const hasMore =
+          lastPage?.data?.response && lastPage.data.response.length === 20;
+        return hasMore ? loadedItems : undefined;
+      }
     },
     refetchOnMount: true,
     refetchOnWindowFocus: false,
@@ -95,8 +111,8 @@ const AllBrokers = () => {
     setLoadingCarrierId(carrier?.guid);
     const data = {
       joined_at: new Date().toISOString(),
-      brokers_id: brokersId,
-      companies_id: carrier?.guid,
+      brokers_id: carrier?.guid,
+      companies_id: carriersId,
     };
     carrierService
       .addCarrier(data)
@@ -233,7 +249,7 @@ const AllBrokers = () => {
                       <Icon as={StarIcon} w="14px" h="14px" color="gold" />
                     </HStack>
                   </Td>
-                  {/* <Td textAlign="left" py="14px" borderBottom="none">
+                  <Td textAlign="left" py="14px" borderBottom="none">
                     <Button
                       size="sm"
                       color="#EF6820"
@@ -246,7 +262,7 @@ const AllBrokers = () => {
                       onClick={() => handleAddCarrier(carrier)}>
                       Add
                     </Button>
-                  </Td> */}
+                  </Td>
                 </Tr>
               ))}
           </Tbody>

@@ -195,7 +195,6 @@ const Login = () => {
         }
       })
       .catch((err) => {
-        console.log("err", err);
         dispatch(showAlert(err?.data?.data));
         setIsLoading(false);
       });

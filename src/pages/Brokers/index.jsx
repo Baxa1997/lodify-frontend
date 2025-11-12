@@ -19,14 +19,14 @@ const Brokers = () => {
 
         <Tabs className={styles.tabsContainer}>
           <TabList>
-            {/* <Tab onClick={() => setTripType("tender")}>My Brokers</Tab> */}
+            <Tab onClick={() => setTripType("tender")}>My Brokers</Tab>
             <Tab onClick={() => setTripType("tender")}>All Brokers</Tab>
             <Tab onClick={() => setTripType("tender")}>Invitations</Tab>
           </TabList>
 
-          {/* <TabPanel>
+          <TabPanel>
             <MyBrokers />
-          </TabPanel> */}
+          </TabPanel>
           <TabPanel>
             <AllBrokers />
           </TabPanel>
