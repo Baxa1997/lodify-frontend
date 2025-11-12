@@ -279,7 +279,8 @@ function FileInput({
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        size="md">
+        size="md"
+        isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Uploaded Documents</ModalHeader>
