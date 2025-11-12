@@ -84,7 +84,7 @@ export const menuItems = [
     children: [
       {
         id: "compliance",
-        label: "Compliance",
+        label: "Compliance Dashboard",
         path: "compliance",
       },
     ],
