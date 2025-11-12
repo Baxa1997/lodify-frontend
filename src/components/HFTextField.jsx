@@ -6,6 +6,8 @@ import {
   InputLeftElement,
   InputRightAddon,
   InputRightElement,
+  FormControl,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { Controller } from "react-hook-form";
 
@@ -20,14 +22,16 @@ const HFTextField = ({
   rightAddon,
   leftElement,
   rightElement,
+  rules,
   ...props
 }) => {
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field }) => (
-        <Box width="100%">
+      rules={rules}
+      render={({ field, fieldState: { error } }) => (
+        <FormControl isInvalid={!!error} width="100%">
           {label && (
             <Box
               as="label"
@@ -60,6 +64,8 @@ const HFTextField = ({
               py={"8px"}
               borderRadius="8px"
               id={name}
+              isInvalid={!!error}
+              errorBorderColor="#e53e3e"
               _disabled={{
                 bg: "gray.bg.disabled",
                 color: "gray.color.disabled",
@@ -71,7 +77,12 @@ const HFTextField = ({
               <InputRightElement>{rightElement}</InputRightElement>
             )}
           </InputGroup>
-        </Box>
+          {error && (
+            <FormErrorMessage mt="4px" fontSize="12px" color="#e53e3e">
+              {error.message}
+            </FormErrorMessage>
+          )}
+        </FormControl>
       )}
     />
   );

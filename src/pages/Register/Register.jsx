@@ -87,12 +87,39 @@ const Register = () => {
     // );
   };
 
+  // Password validation function
+  const validatePassword = (password) => {
+    if (!password || password.trim() === "") {
+      return "Password is required";
+    }
+    if (password.length < 6) {
+      return "Password must be at least 6 characters";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number";
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return "Password must contain at least one symbol";
+    }
+    return true;
+  };
+
   const validateStep4 = (data) => {
     const hasPassword = data.password && data.password.trim() !== "";
     const hasConfirmPassword =
       data.confirmPassword && data.confirmPassword.trim() !== "";
     const passwordsMatch = data.password === data.confirmPassword;
-    return hasPassword && hasConfirmPassword && passwordsMatch;
+    const passwordValidation = validatePassword(data.password);
+    const isPasswordValid = passwordValidation === true;
+    return (
+      hasPassword && hasConfirmPassword && passwordsMatch && isPasswordValid
+    );
   };
 
   const getStepValidation = (step) => {
@@ -200,6 +227,33 @@ const Register = () => {
   };
 
   const onSubmit = async (data) => {
+    // Validate password before submitting
+    const passwordValidation = validatePassword(data.password);
+    if (passwordValidation !== true) {
+      toast({
+        title: "Password Validation Failed",
+        description: passwordValidation,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
+    // Validate password match
+    if (data.password !== data.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const apiData = {
