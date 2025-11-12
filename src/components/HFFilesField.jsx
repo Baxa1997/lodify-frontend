@@ -1,4 +1,4 @@
-import React, {useRef, useState, useMemo, useEffect} from "react";
+import React, {useRef, useState, useMemo} from "react";
 import {
   Box,
   FormControl,
@@ -8,7 +8,6 @@ import {
   IconButton,
   Input,
   Text,
-  Badge,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -20,9 +19,10 @@ import {
   VStack,
   Flex,
 } from "@chakra-ui/react";
-import {Controller, useWatch} from "react-hook-form";
+import {Controller} from "react-hook-form";
 import fileService from "@services/fileService";
 import {getShortFileName} from "@utils/getFileName";
+import FilesReader from "./FileViewer/FilesReader";
 
 function FileInput({
   label,
@@ -36,6 +36,8 @@ function FileInput({
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isFileReaderOpen, setIsFileReaderOpen] = useState(false);
 
   const safeValue = useMemo(() => {
     if (!value) return [];
@@ -75,6 +77,17 @@ function FileInput({
   const removeFile = (fileUrl) => {
     const updatedValue = safeValue.filter((f) => f !== fileUrl);
     onChange(updatedValue);
+  };
+
+  const handleFileClick = (fileUrl) => {
+    setSelectedFile(fileUrl);
+    setIsFileReaderOpen(true);
+  };
+
+  const handleOpenModal = () => {
+    if (safeValue && safeValue.length > 0) {
+      setIsModalOpen(true);
+    }
   };
 
   return (
@@ -130,7 +143,12 @@ function FileInput({
                       fontSize="13px"
                       color="gray.700"
                       maxW="210px"
-                      onClick={() => setIsModalOpen(true)}>
+                      cursor="pointer"
+                      _hover={{bg: "gray.50"}}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenModal();
+                      }}>
                       <Text fontSize="13px" isTruncated maxW="150px">
                         {getShortFileName(fileUrl, 7).shortName ||
                           fileUrl ||
@@ -173,7 +191,12 @@ function FileInput({
                         fontSize="13px"
                         color="gray.700"
                         maxW="200px"
-                        onClick={() => setIsModalOpen(true)}>
+                        cursor="pointer"
+                        _hover={{bg: "gray.50"}}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenModal();
+                        }}>
                         <Text fontSize="13px" isTruncated maxW="150px">
                           {getShortFileName(fileUrl, 10).shortName ||
                             fileUrl ||
@@ -213,7 +236,10 @@ function FileInput({
                       color="gray.700"
                       cursor="pointer"
                       _hover={{bg: "gray.50"}}
-                      onClick={() => setIsModalOpen(true)}>
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsModalOpen(true);
+                      }}>
                       +{safeValue?.length - 2}
                     </Box>
                   </>
@@ -256,43 +282,85 @@ function FileInput({
         size="md">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Uploaded Files</ModalHeader>
+          <ModalHeader>Uploaded Documents</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <VStack align="stretch" spacing={1}>
-              {safeValue?.map((fileUrl, idx) => (
-                <HStack
-                  key={idx}
-                  px="3"
-                  py="2"
-                  border="1px solid"
-                  borderColor="gray.200"
-                  borderRadius="md"
-                  justify="space-between">
-                  <Text fontSize="14px" w="300px">
-                    {getShortFileName(fileUrl, 30).shortName ||
-                      fileUrl ||
-                      "Unknown file"}
-                  </Text>
-                  <IconButton
-                    bg="none"
-                    _hover={{bg: "none"}}
-                    size="sm"
-                    colorScheme="red"
-                    aria-label="remove"
-                    icon={
-                      <img
-                        src="/img/cancelIcon.svg"
-                        width={"12px"}
-                        height={"12px"}
-                        alt="close"
-                      />
-                    }
-                    onClick={() => removeFile(fileUrl)}
-                  />
-                </HStack>
-              ))}
-            </VStack>
+            {safeValue && safeValue.length > 0 ? (
+              <VStack align="stretch" spacing={2}>
+                {safeValue?.map((fileUrl, idx) => (
+                  <HStack
+                    key={idx}
+                    px="3"
+                    py="3"
+                    border="1px solid"
+                    borderColor="gray.200"
+                    borderRadius="md"
+                    justify="space-between"
+                    cursor="pointer"
+                    _hover={{bg: "gray.50", borderColor: "gray.300"}}
+                    transition="all 0.2s"
+                    onClick={() => {
+                      handleFileClick(fileUrl);
+                    }}>
+                    <Flex align="center" gap="2" flex="1" minW="0">
+                      <Box
+                        w="32px"
+                        h="32px"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        bg="gray.100"
+                        borderRadius="md"
+                        flexShrink={0}>
+                        <img
+                          src="/img/filePhoto.svg"
+                          alt="file"
+                          width="20px"
+                          height="20px"
+                        />
+                      </Box>
+                      <Text
+                        fontSize="14px"
+                        fontWeight="500"
+                        flex="1"
+                        minW="0"
+                        isTruncated
+                        title={
+                          getShortFileName(fileUrl, 100).fullName || fileUrl
+                        }>
+                        {getShortFileName(fileUrl, 100).fullName ||
+                          getShortFileName(fileUrl, 30).shortName ||
+                          fileUrl ||
+                          "Unknown file"}
+                      </Text>
+                    </Flex>
+                    <IconButton
+                      bg="none"
+                      _hover={{bg: "red.50"}}
+                      size="sm"
+                      colorScheme="red"
+                      aria-label="remove"
+                      icon={
+                        <img
+                          src="/img/cancelIcon.svg"
+                          width={"12px"}
+                          height={"12px"}
+                          alt="close"
+                        />
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(fileUrl);
+                      }}
+                    />
+                  </HStack>
+                ))}
+              </VStack>
+            ) : (
+              <Text fontSize="14px" color="gray.500" textAlign="center" py="4">
+                No documents uploaded
+              </Text>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" onClick={() => setIsModalOpen(false)}>
@@ -301,6 +369,15 @@ function FileInput({
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <FilesReader
+        isOpen={isFileReaderOpen}
+        onClose={() => {
+          setIsFileReaderOpen(false);
+          setSelectedFile(null);
+        }}
+        file={selectedFile || ""}
+      />
     </FormControl>
   );
 }
