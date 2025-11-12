@@ -35,7 +35,7 @@ const Compliance = () => {
         </Box>
       </Flex>
 
-      <Box>
+      <Box pt="100px">
         <Insurance />
       </Box>
     </>
