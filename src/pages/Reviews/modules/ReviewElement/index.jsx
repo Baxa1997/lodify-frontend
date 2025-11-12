@@ -12,12 +12,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import {ExternalLinkIcon, StarIcon} from "@chakra-ui/icons";
-import {format} from "date-fns";
+import {format, isValid} from "date-fns";
 import carrierService from "@services/carrierService";
 import {useSelector} from "react-redux";
 
-const BrokerElement = ({
-  carrier,
+const ReviewElement = ({
+  review,
   allCarriers = false,
   onView = () => {},
   refetch = () => {},
@@ -25,16 +25,16 @@ const BrokerElement = ({
   const toast = useToast();
   const [loading, setLoading] = useState(null);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
-  const {logo, legal_name, company_name, rating, connected_date, email} =
-    carrier;
+  const {email, company_name, rating, connected_date, guid} = review;
+
   const handleAddCarrier = (carrier) => {
     setLoading({
-      id: carrier?.guid,
+      id: guid,
     });
     const data = {
       joined_at: new Date().toISOString(),
       brokers_id: brokersId,
-      companies_id: carrier?.guid,
+      companies_id: guid,
     };
     carrierService
       .addCarrier(data)
@@ -83,23 +83,11 @@ const BrokerElement = ({
             border="1px solid #E2E8F0">
             {/* <img src="/img/carrierLogo.svg" alt="" width /> */}
             <Text fontSize={"18px"} fontWeight={"700"} color="#181D27">
-              {email?.[0] || "C"}
+              {review?.email?.[0] || "C"}
             </Text>
           </Box>
 
           <Flex h="52px" flexDirection="column" gap="0px">
-            {!allCarriers && (
-              <Badge
-                bg="green.500"
-                color="white"
-                px="12px"
-                py="2px"
-                borderRadius="full"
-                fontSize="12px"
-                fontWeight="500">
-                {"Access Enabled"}
-              </Badge>
-            )}
             <HStack alignItems="center" mt="6px" spacing={"10px"}>
               <Text fontSize="16px" fontWeight="600" color="gray.700">
                 {rating ?? "5.0"}
@@ -125,7 +113,10 @@ const BrokerElement = ({
 
         {!allCarriers && (
           <Text fontSize="15px" fontWeight="400" color="#535862">
-            Connected {format(new Date(connected_date), "MM/dd/yyyy")}
+            Connected{" "}
+            {isValid(new Date(connected_date))
+              ? format(new Date(connected_date), "MM/dd/yyyy")
+              : "Unknown Date"}
           </Text>
         )}
 
@@ -146,16 +137,16 @@ const BrokerElement = ({
           p="0"
           h="auto"
           _hover={{bg: "transparent", textDecoration: "underline"}}
-          isDisabled={loading?.id === carrier?.guid}
+          isDisabled={loading?.id === review?.guid}
           onClick={() => {
             if (allCarriers) {
-              handleAddCarrier(carrier);
+              handleAddCarrier(review);
             } else {
-              onView(carrier);
+              onView(review);
             }
           }}>
           {allCarriers ? (
-            loading?.id === carrier?.guid ? (
+            loading?.id === review?.guid ? (
               <Spinner size="sm" color="#EF6820" />
             ) : (
               "Add"
@@ -169,4 +160,4 @@ const BrokerElement = ({
   );
 };
 
-export default BrokerElement;
+export default ReviewElement;

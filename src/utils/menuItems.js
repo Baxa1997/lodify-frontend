@@ -56,7 +56,7 @@ export const menuItems = [
     id: "reviews",
     label: "Reviews",
     icon: "/img/user.svg",
-    path: "/admin/reviews",
+    path: "reviews",
   },
   {
     id: "resources",
