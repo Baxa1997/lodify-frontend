@@ -227,7 +227,7 @@ const MultiSelect = ({
                     py="8px"
                     cursor={option.isDisabled ? "not-allowed" : "pointer"}
                     bg={
-                      value.includes(option.value) ? "blue.50" : "transparent"
+                      value?.includes(option.value) ? "blue.50" : "transparent"
                     }
                     color={option.isDisabled ? "gray.400" : color}
                     opacity={option.isDisabled ? 0.6 : 1}
@@ -236,8 +236,8 @@ const MultiSelect = ({
                     }}
                     transition="all 0.2s ease">
                     <HStack justify="space-between" align="center">
-                      <Text fontSize="16px">{option.label}</Text>
-                      {value.includes(option.value) && (
+                      <Text fontSize="16px">{option?.label}</Text>
+                      {value?.includes(option?.value) && (
                         <LuCheck
                           size={16}
                           color="var(--chakra-colors-blue-500)"
