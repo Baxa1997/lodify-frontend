@@ -61,20 +61,20 @@ const MultiSelect = ({
   };
 
   const handleSelect = (option) => {
-    if (option.isDisabled) return;
+    if (option?.isDisabled) return;
 
     let newValue;
-    if (value.includes(option.value)) {
-      newValue = value.filter((v) => v !== option.value);
+    if (value?.includes(option?.value)) {
+      newValue = value?.filter((v) => v !== option?.value ?? "");
     } else {
-      newValue = [...value, option.value];
+      newValue = [...(value ?? []), option?.value ?? "" ?? ""];
     }
 
-    onChange(newValue);
+    onChange(newValue ?? []);
   };
 
   const handleRemove = (val) => {
-    onChange(value.filter((v) => v !== val));
+    onChange(value?.filter((v) => v !== val ?? ""));
   };
 
   const getSizeStyles = () => {
