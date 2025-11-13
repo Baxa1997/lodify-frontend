@@ -15,6 +15,7 @@ import HFSelect from "@components/HFSelect";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
+import {addHours, parseISO} from "date-fns";
 
 const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
   const queryClient = useQueryClient();
@@ -23,11 +24,17 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
 
   const onSubmit = (data) => {
+    const now = new Date().toISOString();
+    const parsed = parseISO(now);
+    const plusTwoHours = addHours(parsed, 2);
+    const isoPlusTwo = plusTwoHours.toISOString();
+
     setLoading(true);
     const computedData = {
       data: {
         guid: selectedRow?.trip?.guid,
         companies_id_2: data?.companies_id,
+        timer_expiration: isoPlusTwo,
       },
     };
     tripsService
