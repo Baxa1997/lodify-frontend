@@ -41,6 +41,21 @@ function ActiveLoads() {
   const userId = useSelector((state) => state.auth.userId);
   const [loadingTripId, setLoadingTripId] = useState(null);
 
+  const clientType = useSelector((state) => state.auth.clientType);
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const companiesId = useSelector(
+    (state) => state.auth.user_data?.companies_id
+  );
+
+  // Debug: Log query conditions
+  console.log("ActiveLoads Query Conditions:", {
+    envId,
+    companiesId,
+    brokersId,
+    clientType: clientType?.id,
+    enabled: Boolean(envId && (companiesId || brokersId)),
+  });
+
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
       Preloaded: "orange",
@@ -67,21 +82,53 @@ function ActiveLoads() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["TRIPS_LIST", currentPage, pageSize, sortConfig, searchTerm],
+    queryKey: [
+      "TRIPS_LIST",
+      currentPage,
+      pageSize,
+      sortConfig,
+      searchTerm,
+      envId,
+      companiesId,
+      brokersId,
+      clientType?.id,
+    ],
     queryFn: () =>
-      tripsService.getList({
+      tripsService.getLoadsList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
         environment_id: envId,
         method: "list",
         object_data: {
-          limit: 10,
-          page: 0,
-          with_timer: true,
-          careers_id: userId,
+          limit: pageSize,
+          page: (currentPage - 1) * pageSize,
+          search: searchTerm || undefined,
+          carriers_id:
+            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+              ? undefined
+              : companiesId,
+          brokers_id:
+            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+              ? brokersId
+              : undefined,
+          timer_expired: false,
+          trip_type: "tender",
+          client_type:
+            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+              ? "broker"
+              : "carrier",
         },
         table: "trips",
       }),
-    select: (data) => data?.data?.response || [],
+    select: (data) => {
+      const response = data?.data?.response || [];
+      const result = Array.isArray(response) ? response : [];
+
+      return result;
+    },
+    enabled: Boolean(envId),
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
   const handleAcceptTrip = (trip) => {
@@ -161,10 +208,11 @@ function ActiveLoads() {
     setCurrentPage(1);
   };
 
-  const totalPages = tripsData?.total
-    ? Math.ceil(tripsData.total / pageSize)
-    : 0;
-  const trips = tripsData?.data || tripsData || [];
+  const trips = Array.isArray(tripsData) ? tripsData : [];
+  // If we get a full page of results, assume there might be more pages
+  // Otherwise, we've reached the end
+  const hasMore = trips.length === pageSize;
+  const totalPages = hasMore ? currentPage + 1 : currentPage;
 
   function formatToAmPm(timeString) {
     if (!timeString) return "";

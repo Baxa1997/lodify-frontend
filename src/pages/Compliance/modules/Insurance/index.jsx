@@ -7,7 +7,6 @@ import {useNavigate} from "react-router-dom";
 const Insurance = () => {
   const navigate = useNavigate();
 
-  // Mock data - replace with actual data from API
   const insurancePolicies = [
     {
       id: 1,
@@ -65,12 +64,10 @@ const Insurance = () => {
 
   const handleEdit = (policy) => {
     console.log("Edit insurance:", policy);
-    // Navigate to edit page or open edit modal
   };
 
   const handleViewCertificate = (policy) => {
     console.log("View certificate:", policy);
-    // Open certificate viewer or navigate to certificate page
   };
 
   const handleBack = () => {
@@ -79,12 +76,10 @@ const Insurance = () => {
 
   const handleNoEdit = () => {
     console.log("No, Edit clicked");
-    // Handle edit action
   };
 
   const handleYesContinue = () => {
     console.log("Yes, continue clicked");
-    // Handle continue action
   };
 
   return (

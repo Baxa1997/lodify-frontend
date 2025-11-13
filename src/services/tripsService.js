@@ -4,6 +4,9 @@ const tripsService = {
   getList: (data) => {
     return httpRequest.post("v2/invoke_function/lodify-trip-gateway", {data});
   },
+  getLoadsList: (data) => {
+    return httpRequest.post("v2/invoke_function/lodify-trip-gateway", {data});
+  },
   getPackageList: () => {
     return httpRequest.get("v2/items/lodify_fees");
   },

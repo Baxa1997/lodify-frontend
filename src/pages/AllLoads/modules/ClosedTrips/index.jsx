@@ -41,6 +41,12 @@ function ClosedTrips({selectedTabIndex}) {
   const [loadingTripId, setLoadingTripId] = useState(null);
   const queryClient = useQueryClient();
 
+  const clientType = useSelector((state) => state.auth.clientType);
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const companiesId = useSelector(
+    (state) => state.auth.user_data?.companies_id
+  );
+
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
       Preloaded: "orange",
@@ -68,29 +74,49 @@ function ClosedTrips({selectedTabIndex}) {
     refetch,
   } = useQuery({
     queryKey: [
-      "TRIPS_LIST_CLOSED",
-      selectedTabIndex,
+      "TRIPS_LIST",
       currentPage,
       pageSize,
       sortConfig,
       searchTerm,
+      envId,
+      companiesId,
+      brokersId,
+      clientType?.id,
     ],
     queryFn: () =>
-      tripsService.getList({
+      tripsService.getLoadsList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
         environment_id: envId,
         method: "list",
         object_data: {
-          limit: 10,
-          page: 0,
-          with_timer: true,
+          limit: pageSize,
+          page: (currentPage - 1) * pageSize,
+          search: searchTerm || undefined,
+          carriers_id:
+            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+              ? undefined
+              : companiesId,
+          brokers_id:
+            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+              ? brokersId
+              : undefined,
           timer_expired: true,
-          careers_id: userId,
+          trip_type: "tender",
+          client_type:
+            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+              ? "broker"
+              : "carrier",
         },
         table: "trips",
       }),
-    select: (data) => data?.data?.response || [],
-    enabled: true,
+    select: (data) => {
+      const response = data?.data?.response || [];
+      const result = Array.isArray(response) ? response : [];
+
+      return result;
+    },
+    enabled: Boolean(envId),
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
