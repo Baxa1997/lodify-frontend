@@ -242,19 +242,23 @@ function ClosedTrips({selectedTabIndex}) {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead zIndex={999999}>
             <Box as={"tr"}>
-              {tableElements.map((element) => (
-                <CTableTh
-                  zIndex={999999}
-                  maxW="334px"
-                  sortable={element.sortable}
-                  sortDirection={
-                    sortConfig.key === element.key ? sortConfig.direction : null
-                  }
-                  key={element.id}
-                  onSort={() => handleSort(element.key)}>
-                  {element.name}
-                </CTableTh>
-              ))}
+              {tableElements
+                ?.filter((element) => element.key !== "actions")
+                ?.map((element) => (
+                  <CTableTh
+                    zIndex={999999}
+                    maxW="334px"
+                    sortable={element.sortable}
+                    sortDirection={
+                      sortConfig.key === element.key
+                        ? sortConfig.direction
+                        : null
+                    }
+                    key={element.id}
+                    onSort={() => handleSort(element.key)}>
+                    {element.name}
+                  </CTableTh>
+                ))}
             </Box>
           </CTableHead>
 
@@ -769,7 +773,7 @@ function ClosedTrips({selectedTabIndex}) {
                         />
                       </CTableTd>
 
-                      <CTableTd>
+                      {/* <CTableTd>
                         <Flex alignItems="center" gap={"16px"}>
                           <Button
                             p="0"
@@ -811,7 +815,7 @@ function ClosedTrips({selectedTabIndex}) {
                             )}
                           </Button>
                         </Flex>
-                      </CTableTd>
+                      </CTableTd> */}
                     </CTableRow>
                   </React.Fragment>
                 );

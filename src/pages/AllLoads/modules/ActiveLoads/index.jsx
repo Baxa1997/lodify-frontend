@@ -209,8 +209,6 @@ function ActiveLoads() {
   };
 
   const trips = Array.isArray(tripsData) ? tripsData : [];
-  // If we get a full page of results, assume there might be more pages
-  // Otherwise, we've reached the end
   const hasMore = trips.length === pageSize;
   const totalPages = hasMore ? currentPage + 1 : currentPage;
 

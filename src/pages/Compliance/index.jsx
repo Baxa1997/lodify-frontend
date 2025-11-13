@@ -1,8 +1,20 @@
-import React from "react";
+import React, {useState} from "react";
 import {Flex, Box, Text} from "@chakra-ui/react";
 import Insurance from "./modules/Insurance";
+import RatingPage from "./modules/RatingPage";
+import BottomNavigation from "./components/BottomNavigation";
 
 const Compliance = () => {
+  const [ratingPage, setRatingPage] = useState(false);
+
+  const handleRatingPage = () => {
+    setRatingPage(true);
+  };
+
+  const handleBack = () => {
+    setRatingPage(false);
+  };
+
   return (
     <>
       <Flex
@@ -36,7 +48,17 @@ const Compliance = () => {
       </Flex>
 
       <Box pt="100px">
-        <Insurance />
+        {ratingPage ? (
+          <RatingPage handleBack={handleBack} />
+        ) : (
+          <Insurance onRatingPage={handleRatingPage} />
+        )}
+
+        <BottomNavigation
+          onBack={handleBack}
+          // onNoEdit={handleNoEdit}
+          onYesContinue={handleRatingPage}
+        />
       </Box>
     </>
   );

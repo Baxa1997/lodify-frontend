@@ -18,26 +18,26 @@ const InsuranceCard = ({
 }) => {
   const statusConfig = {
     active: {
-      bg: "#ECFDF3",
-      color: "#067647",
+      bg: "#17B26A",
+      color: "#fff",
       border: "#ABEFC6",
       label: "Active",
     },
     expiringSoon: {
-      bg: "#FFFAEB",
-      color: "#B54708",
+      bg: "#F79009",
+      color: "#fff",
       border: "#FEDF89",
       label: "Expiring Soon",
     },
     pendingCancellation: {
-      bg: "#FFFAEB",
-      color: "#B54708",
+      bg: "#F79009",
+      color: "#fff",
       border: "#FEDF89",
       label: "Pending Cancellation",
     },
     expired: {
-      bg: "#FEF3F2",
-      color: "#B42318",
+      bg: "#F04438",
+      color: "#fff",
       border: "#FECDCA",
       label: "Expired",
     },

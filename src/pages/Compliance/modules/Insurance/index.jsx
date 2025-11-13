@@ -1,12 +1,8 @@
 import React from "react";
 import {Box, Text, Grid} from "@chakra-ui/react";
 import InsuranceCard from "./components/InsuranceCard";
-import BottomNavigation from "./components/BottomNavigation";
-import {useNavigate} from "react-router-dom";
 
 const Insurance = () => {
-  const navigate = useNavigate();
-
   const insurancePolicies = [
     {
       id: 1,
@@ -70,24 +66,13 @@ const Insurance = () => {
     console.log("View certificate:", policy);
   };
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  const handleNoEdit = () => {
-    console.log("No, Edit clicked");
-  };
-
-  const handleYesContinue = () => {
-    console.log("Yes, continue clicked");
-  };
-
   return (
     <Box
       p="20px"
       pb="0"
       mb="80px"
       border="2px solid #D5D7DA"
+      outline="6px solid #f3f4f5"
       borderRadius="12px">
       <Box maxW="100%" mx="auto">
         <Text fontSize="24px" fontWeight="600" color="#181D27" mb="8px">
@@ -121,12 +106,6 @@ const Insurance = () => {
           ))}
         </Grid>
       </Box>
-
-      <BottomNavigation
-        onBack={handleBack}
-        onNoEdit={handleNoEdit}
-        onYesContinue={handleYesContinue}
-      />
     </Box>
   );
 };
