@@ -16,6 +16,12 @@ const SimpleTimer = ({
   const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
+    if (timeFromAPI?.includes("Z")) {
+      timeFromAPI = timeFromAPI.replace("Z", "");
+    } else {
+      timeFromAPI = timeFromAPI;
+    }
+
     const calculatedTime = calculateTimeDifference(timeFromAPI);
     setTimeLeft(calculatedTime);
     setIsRunning(calculatedTime > 0);

@@ -817,9 +817,7 @@ function ActiveTenders({tripType = ""}) {
                       </CTableTd>
 
                       <CTableTd px="0">
-                        <SimpleTimer
-                          timeFromAPI={trip?.timer_expiration || "  "}
-                        />
+                        <SimpleTimer timeFromAPI={trip?.timer_expiration} />
                       </CTableTd>
 
                       <CTableTd>

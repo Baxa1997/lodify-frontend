@@ -27,7 +27,7 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
     const computedData = {
       data: {
         guid: selectedRow?.trip?.guid,
-        companies_id: data?.companies_id,
+        companies_id_2: data?.companies_id,
       },
     };
     tripsService
