@@ -100,6 +100,8 @@ function ClosedTenders({tripType = ""}) {
               ? "broker"
               : "carrier",
           trip_type: tripType,
+          timer_expired: true,
+          trip_type: "tender",
         },
         table: "trips",
       }),
