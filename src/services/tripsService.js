@@ -20,6 +20,12 @@ const tripsService = {
       `v2/items/orders/${id}?data=${encodeURIComponent(dataParam)}`
     );
   },
+  getCarriersList: (data) => {
+    const dataParam = JSON.stringify(data);
+    return httpRequest.get(
+      `v2/items/broker_carriers?data=${encodeURIComponent(dataParam)}`
+    );
+  },
   createTrip: (data) =>
     httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
   updateTrip: (id, data) => httpRequest.put("v2/items/trips", data),

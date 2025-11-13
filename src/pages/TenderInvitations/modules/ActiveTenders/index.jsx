@@ -4,6 +4,10 @@ import {
   Button,
   Collapse,
   Flex,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   Spinner,
   Text,
   Tooltip,
@@ -28,6 +32,8 @@ import {format} from "date-fns";
 import SimpleTimer from "@components/SimpleTimer";
 import TenderInvitationsFiltersComponent from "../../components/TenderInvitationsFiltersComponent";
 import {tableElements} from "../../hooks";
+import AssignCarrier from "../../components/AssignCarrier";
+import {BsThreeDotsVertical} from "react-icons/bs";
 
 function ActiveTenders({tripType = ""}) {
   const queryClient = useQueryClient();
@@ -45,6 +51,9 @@ function ActiveTenders({tripType = ""}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
+    useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
@@ -87,6 +96,7 @@ function ActiveTenders({tripType = ""}) {
         object_data: {
           limit: 10,
           page: 0,
+          timer_expired: false,
           carriers_id:
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
               ? undefined
@@ -99,7 +109,7 @@ function ActiveTenders({tripType = ""}) {
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
               ? "broker"
               : "carrier",
-          trip_type: tripType,
+          trip_type: "tender",
         },
         table: "trips",
       }),
@@ -767,6 +777,45 @@ function ActiveTenders({tripType = ""}) {
                           </Badge>
                         </Tooltip>
                       </CTableTd>
+
+                      <CTableTd>
+                        {trip?.carrier?.legal_name ? (
+                          <Flex alignItems="center" gap={2}>
+                            <Flex alignItems="center" gap={2}>
+                              <Text color="#535862" fontWeight="400">
+                                {trip?.carrier?.legal_name}
+                              </Text>
+
+                              <ReAssignDriverButton
+                                carrierType="team"
+                                trip={trip}
+                                setSelectedRow={setSelectedRow}
+                                setIsAssignCarrierModalOpen={
+                                  setIsAssignCarrierModalOpen
+                                }
+                              />
+                            </Flex>
+                          </Flex>
+                        ) : (
+                          <Button
+                            bg="none"
+                            border="none"
+                            color="#EF6820"
+                            fontWeight="600"
+                            px="0"
+                            _hover={{bg: "none"}}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsAssignCarrierModalOpen(true);
+                              setSelectedRow({
+                                trip: trip,
+                              });
+                            }}>
+                            Assign
+                          </Button>
+                        )}
+                      </CTableTd>
+
                       <CTableTd px="0">
                         <SimpleTimer
                           timeFromAPI={trip?.timer_expiration || "  "}
@@ -849,6 +898,12 @@ function ActiveTenders({tripType = ""}) {
           </CTableBody>
         </CTable>
       </Box>
+
+      <AssignCarrier
+        selectedRow={selectedRow}
+        isOpen={isAssignCarrierModalOpen}
+        onClose={() => setIsAssignCarrierModalOpen(false)}
+      />
     </Box>
   );
 }
@@ -882,25 +937,43 @@ const TripStatus = ({
   );
 };
 
-const TripProgress = ({total_trips = 0, current_trips = 0}) => {
-  const colors = ["#FF5B04", "#00707A", "#003B63"];
+const ReAssignDriverButton = ({
+  carrierType = "solo",
+  trip,
+  setSelectedRow = () => {},
+  setIsAssignCarrierModalOpen = () => {},
+}) => {
   return (
-    <Flex alignItems="center" justifyContent="flex-start" gap="6px">
-      {Array.from({length: total_trips}).map((_, index) => {
-        const isFilled = index < current_trips;
-        const color = colors[index % colors.length];
-
-        return (
-          <Box
-            key={index}
-            w="13px"
-            h="13px"
-            borderRadius="50%"
-            bg={isFilled ? color : "#E0E0E0"}
-          />
-        );
-      })}
-    </Flex>
+    <>
+      <Menu>
+        <MenuButton
+          p="0"
+          maxWidth="22px"
+          width="22px"
+          minWidth="22px"
+          height="22px"
+          bg="none"
+          onClick={(e) => e.stopPropagation()}
+          as={Button}>
+          <BsThreeDotsVertical style={{width: "22px", height: "14px"}} />
+        </MenuButton>
+        <MenuList>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsAssignCarrierModalOpen(true);
+              setSelectedRow({
+                trip: trip,
+                carrierType: carrierType,
+              });
+            }}>
+            <Text color="#535862" fontWeight="600">
+              Re-Assign Carrier
+            </Text>
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    </>
   );
 };
 

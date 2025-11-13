@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from "react";
 import {Box, Text} from "@chakra-ui/react";
 
 const CountdownTimer = ({
-  initialTime = 0, // Time in seconds from API
+  initialTime = 0,
   onTimeUp = () => {},
   onTick = () => {},
   autoStart = true,
@@ -12,7 +12,6 @@ const CountdownTimer = ({
   const [isRunning, setIsRunning] = useState(autoStart);
   const intervalRef = useRef(null);
 
-  // Convert seconds to HH:mm:ss format
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -30,39 +29,33 @@ const CountdownTimer = ({
     return `${hours}:${minutes}:${secs}`;
   };
 
-  // Get background color based on time remaining
   const getBackgroundColor = (time) => {
-    if (time > 3600) return "white"; // More than 1 hour - white
-    if (time > 1800) return "#FEF3C7"; // 30-60 minutes - light yellow
-    if (time > 900) return "#FED7AA"; // 15-30 minutes - orange
-    return "#FECACA"; // Less than 15 minutes - light red
+    if (time > 3600) return "white";
+    if (time > 1800) return "#FEF3C7";
+    if (time > 900) return "#FED7AA";
+    return "#FECACA";
   };
 
-  // Get text color based on time remaining
   const getTextColor = (time) => {
-    if (time > 3600) return "black"; // More than 1 hour - black
-    if (time > 1800) return "black"; // 30-60 minutes - black
-    if (time > 900) return "#EA580C"; // 15-30 minutes - orange
-    return "#DC2626"; // Less than 15 minutes - red
+    if (time > 3600) return "black";
+    if (time > 1800) return "black";
+    if (time > 900) return "#EA580C";
+    return "#DC2626";
   };
 
-  // Start the timer
   const startTimer = () => {
     setIsRunning(true);
   };
 
-  // Stop the timer
   const stopTimer = () => {
     setIsRunning(false);
   };
 
-  // Reset the timer with new time
   const resetTimer = (newTime) => {
     setTimeLeft(newTime);
     setIsRunning(autoStart);
   };
 
-  // Update timer when initialTime prop changes
   useEffect(() => {
     if (initialTime !== timeLeft) {
       setTimeLeft(initialTime);
@@ -70,17 +63,14 @@ const CountdownTimer = ({
     }
   }, [initialTime, autoStart]);
 
-  // Timer countdown effect
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           const newTime = prevTime - 1;
 
-          // Call onTick callback
           onTick(newTime);
 
-          // If time is up, call onTimeUp callback
           if (newTime <= 0) {
             setIsRunning(false);
             onTimeUp();
@@ -96,7 +86,6 @@ const CountdownTimer = ({
       }
     }
 
-    // Cleanup interval on unmount
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

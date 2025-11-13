@@ -12,7 +12,7 @@ import CountdownTimer from "./CountdownTimer";
 import useCountdownTimer from "../hooks/useCountdownTimer";
 
 const TimerExample = () => {
-  const [apiTime, setApiTime] = useState(0); // Time from API in seconds
+  const [apiTime, setApiTime] = useState(0);
   const [selectedFormat, setSelectedFormat] = useState("HH:mm:ss");
   const [customTime, setCustomTime] = useState("");
 
@@ -25,23 +25,14 @@ const TimerExample = () => {
     updateTimeLeft,
   } = useCountdownTimer(apiTime, true);
 
-  // Simulate API call to get time
   const fetchTimeFromAPI = () => {
-    // Simulate different time values from API
-    const timeOptions = [
-      7200, // 2 hours
-      3600, // 1 hour
-      1800, // 30 minutes
-      900, // 15 minutes
-      300, // 5 minutes
-    ];
+    const timeOptions = [7200, 3600, 1800, 900, 300];
 
     const randomTime =
       timeOptions[Math.floor(Math.random() * timeOptions.length)];
     setApiTime(randomTime);
   };
 
-  // Convert time string (like "2:00:00") to seconds
   const parseTimeString = (timeString) => {
     const parts = timeString.split(":");
     if (parts.length === 3) {
@@ -53,7 +44,6 @@ const TimerExample = () => {
     return 0;
   };
 
-  // Handle custom time input
   const handleCustomTime = () => {
     const seconds = parseTimeString(customTime);
     if (seconds > 0) {
@@ -61,23 +51,17 @@ const TimerExample = () => {
     }
   };
 
-  // Timer callbacks
   const handleTimeUp = () => {
     console.log("Timer finished!");
-    // You can add notification or other actions here
   };
 
   const handleTick = (timeLeft) => {
-    // Called every second with remaining time
     console.log("Time left:", timeLeft);
   };
 
-  // Simulate periodic API updates
   useEffect(() => {
     const interval = setInterval(() => {
-      // Simulate API returning new time every 30 seconds
       if (Math.random() > 0.7) {
-        // 30% chance
         fetchTimeFromAPI();
       }
     }, 30000);
@@ -92,7 +76,6 @@ const TimerExample = () => {
           Countdown Timer Example
         </Text>
 
-        {/* Current Timer Display */}
         <Box textAlign="center">
           <Text mb={4} fontSize="lg" fontWeight="semibold">
             Current Timer:
@@ -106,7 +89,6 @@ const TimerExample = () => {
           />
         </Box>
 
-        {/* Timer Controls */}
         <HStack spacing={4} justify="center">
           <Button
             colorScheme="green"
@@ -122,7 +104,6 @@ const TimerExample = () => {
           </Button>
         </HStack>
 
-        {/* API Simulation */}
         <Box>
           <Text mb={2} fontSize="md" fontWeight="semibold">
             Simulate API Time Updates:
@@ -138,7 +119,6 @@ const TimerExample = () => {
           </HStack>
         </Box>
 
-        {/* Custom Time Input */}
         <Box>
           <Text mb={2} fontSize="md" fontWeight="semibold">
             Set Custom Time:
