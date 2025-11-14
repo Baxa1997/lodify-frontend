@@ -301,7 +301,11 @@ function ActiveTenders() {
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
                       style={{
-                        backgroundColor: tenderTime === 0 ? "#FECACA" : "white",
+                        backgroundColor:
+                          tenderTime === 0 &&
+                          Boolean(trip?.carrier_2?.legal_name)
+                            ? "#FECACA"
+                            : "white",
                         cursor: "pointer",
                       }}>
                       <CTableTd>
