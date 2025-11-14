@@ -53,7 +53,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
     <div className={styles.sidebarFooter}>
       {sidebarOpen ? (
         <>
-          <Button
+          {/* <Button
             variant="ghost"
             p={"8px 12px"}
             h={"40px"}
@@ -73,7 +73,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
             <Text fontSize={"16px"} fontWeight={"600"} color={"#CECFD2"}>
               Settings
             </Text>
-          </Button>
+          </Button> */}
           <Box ref={profileRef} position="relative" zIndex={99999}>
             <Menu
               isOpen={isProfileOpen}

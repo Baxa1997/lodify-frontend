@@ -1,13 +1,13 @@
 import React from "react";
-import { Controller } from "react-hook-form";
-import { Radio } from "@chakra-ui/react";
+import {Controller} from "react-hook-form";
+import {Radio} from "@chakra-ui/react";
 
-function HFRadio({ control, name, array = false, ...props }) {
+function HFRadio({control, name, array = false, ...props}) {
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({field}) => (
         <Radio
           {...field}
           {...props}

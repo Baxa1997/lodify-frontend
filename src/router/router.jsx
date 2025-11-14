@@ -120,7 +120,7 @@ const Router = () => {
         <Route path="drivers/:id" element={<SingleDriver />} />
         <Route path="assets" element={<AssetsPage />} />
         <Route path="assets/:id" element={<SingleAssets />} />
-        <Route path="settings" element={<Settings />} />
+        <Route path="integrations" element={<Settings />} />
         <Route path="trips" element={<Trips />} />
         <Route path="trips/:id" element={<UpcomingTabSinglePage />} />
         <Route path="all-loads" element={<AllLoads />} />
