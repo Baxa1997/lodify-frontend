@@ -27,7 +27,7 @@ import {sidebarActions} from "@store/sidebar";
 import {format} from "date-fns";
 import SimpleTimer from "@components/SimpleTimer";
 import TenderInvitationsFiltersComponent from "../../components/TenderInvitationsFiltersComponent";
-import {tableElements} from "../../hooks";
+import {closedTendersTableElements, tableElements} from "../../hooks";
 
 function ClosedTenders({tripType = ""}) {
   const queryClient = useQueryClient();
@@ -232,27 +232,19 @@ function ClosedTenders({tripType = ""}) {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead zIndex={9}>
             <Box as={"tr"}>
-              {tableElements
-                ?.filter((element) =>
-                  clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-                    ? element.key !== "actions"
-                    : true
-                )
-                .map((element) => (
-                  <CTableTh
-                    zIndex={8}
-                    maxW="334px"
-                    sortable={element.sortable}
-                    sortDirection={
-                      sortConfig.key === element.key
-                        ? sortConfig.direction
-                        : null
-                    }
-                    key={element.id}
-                    onSort={() => handleSort(element.key)}>
-                    {element.name}
-                  </CTableTh>
-                ))}
+              {closedTendersTableElements.map((element) => (
+                <CTableTh
+                  zIndex={8}
+                  maxW="334px"
+                  sortable={element.sortable}
+                  sortDirection={
+                    sortConfig.key === element.key ? sortConfig.direction : null
+                  }
+                  key={element.id}
+                  onSort={() => handleSort(element.key)}>
+                  {element.name}
+                </CTableTh>
+              ))}
             </Box>
           </CTableHead>
 
@@ -769,11 +761,12 @@ function ClosedTenders({tripType = ""}) {
                           </Badge>
                         </Tooltip>
                       </CTableTd>
-                      <CTableTd px="0">
+                      <CTableTd px="0">{trip?.carrier?.legal_name}</CTableTd>
+                      {/* <CTableTd px="0">
                         <SimpleTimer
                           timeFromAPI={trip?.timer_expiration || "  "}
                         />
-                      </CTableTd>
+                      </CTableTd> */}
 
                       <CTableTd>
                         <Button

@@ -48,6 +48,8 @@ function ActiveTenders({tripType = ""}) {
   const [loadingTripId, setLoadingTripId] = useState(null);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
@@ -779,21 +781,23 @@ function ActiveTenders({tripType = ""}) {
                       </CTableTd>
 
                       <CTableTd>
-                        {trip?.carrier?.legal_name ? (
+                        {trip?.carrier_2?.legal_name ? (
                           <Flex alignItems="center" gap={2}>
                             <Flex alignItems="center" gap={2}>
                               <Text color="#535862" fontWeight="400">
-                                {trip?.carrier?.legal_name}
+                                {trip?.carrier_2?.legal_name}
                               </Text>
 
-                              <ReAssignDriverButton
-                                carrierType="team"
-                                trip={trip}
-                                setSelectedRow={setSelectedRow}
-                                setIsAssignCarrierModalOpen={
-                                  setIsAssignCarrierModalOpen
-                                }
-                              />
+                              {isBroker && (
+                                <ReAssignDriverButton
+                                  carrierType="team"
+                                  trip={trip}
+                                  setSelectedRow={setSelectedRow}
+                                  setIsAssignCarrierModalOpen={
+                                    setIsAssignCarrierModalOpen
+                                  }
+                                />
+                              )}
                             </Flex>
                           </Flex>
                         ) : (
@@ -817,7 +821,18 @@ function ActiveTenders({tripType = ""}) {
                       </CTableTd>
 
                       <CTableTd px="0">
-                        <SimpleTimer timeFromAPI={trip?.timer_expiration} />
+                        {trip?.carrier_2?.legal_name ? (
+                          <SimpleTimer timeFromAPI={trip?.timer_expiration} />
+                        ) : (
+                          <>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="600"
+                              color="#535862">
+                              00:00:00
+                            </Text>
+                          </>
+                        )}
                       </CTableTd>
 
                       <CTableTd>
