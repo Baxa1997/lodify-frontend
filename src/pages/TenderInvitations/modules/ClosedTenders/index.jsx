@@ -762,11 +762,6 @@ function ClosedTenders({tripType = ""}) {
                         </Tooltip>
                       </CTableTd>
                       <CTableTd px="0">{trip?.carrier?.legal_name}</CTableTd>
-                      {/* <CTableTd px="0">
-                        <SimpleTimer
-                          timeFromAPI={trip?.timer_expiration || "  "}
-                        />
-                      </CTableTd> */}
 
                       <CTableTd>
                         <Button
@@ -789,53 +784,6 @@ function ClosedTenders({tripType = ""}) {
                           Send Message
                         </Button>
                       </CTableTd>
-
-                      {clientType?.id !==
-                        "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
-                        <CTableTd>
-                          <Flex alignItems="center" gap={"16px"}>
-                            <Button
-                              p="0"
-                              minW="60px"
-                              fontSize="14px"
-                              fontWeight="600"
-                              bg="none"
-                              border="none"
-                              _hover={{bg: "none"}}
-                              isDisabled={
-                                loadingTripId === `reject-${trip.guid}` ||
-                                loadingTripId === `accept-${trip.guid}`
-                              }
-                              onClick={() => handleRejectTrip(trip)}>
-                              {loadingTripId === `reject-${trip.guid}` ? (
-                                <Spinner size="sm" />
-                              ) : (
-                                "Reject"
-                              )}
-                            </Button>
-                            <Button
-                              p="0"
-                              minW="60px"
-                              fontSize="14px"
-                              fontWeight="600"
-                              bg="none"
-                              border="none"
-                              color="#FF5B04"
-                              _hover={{bg: "none"}}
-                              isDisabled={
-                                loadingTripId === `reject-${trip.guid}` ||
-                                loadingTripId === `accept-${trip.guid}`
-                              }
-                              onClick={() => handleAcceptTrip(trip)}>
-                              {loadingTripId === `accept-${trip.guid}` ? (
-                                <Spinner size="sm" color="#FF5B04" />
-                              ) : (
-                                "Accept"
-                              )}
-                            </Button>
-                          </Flex>
-                        </CTableTd>
-                      )}
                     </CTableRow>
                   </React.Fragment>
                 );

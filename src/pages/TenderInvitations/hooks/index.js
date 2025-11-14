@@ -132,9 +132,4 @@ export const closedTendersTableElements = [
     name: "Contact",
     sortable: false,
   },
-  {
-    key: "actions",
-    name: "Action",
-    sortable: false,
-  },
 ];

@@ -2,7 +2,6 @@ import {
   Badge,
   Box,
   Button,
-  Collapse,
   Flex,
   Menu,
   MenuButton,
@@ -35,7 +34,7 @@ import {tableElements} from "../../hooks";
 import AssignCarrier from "../../components/AssignCarrier";
 import {BsThreeDotsVertical} from "react-icons/bs";
 
-function ActiveTenders({tripType = ""}) {
+function ActiveTenders() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -43,6 +42,7 @@ function ActiveTenders({tripType = ""}) {
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
+  const [tenderTime, setTenderTime] = useState(0);
   const envId = useSelector((state) => state.auth.environmentId);
   const userId = useSelector((state) => state.auth.userId);
   const [loadingTripId, setLoadingTripId] = useState(null);
@@ -301,7 +301,7 @@ function ActiveTenders({tripType = ""}) {
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
                       style={{
-                        backgroundColor: "white",
+                        backgroundColor: tenderTime === 0 ? "#FECACA" : "white",
                         cursor: "pointer",
                       }}>
                       <CTableTd>
@@ -800,7 +800,7 @@ function ActiveTenders({tripType = ""}) {
                               )}
                             </Flex>
                           </Flex>
-                        ) : (
+                        ) : isBroker ? (
                           <Button
                             bg="none"
                             border="none"
@@ -817,12 +817,17 @@ function ActiveTenders({tripType = ""}) {
                             }}>
                             Assign
                           </Button>
+                        ) : (
+                          ""
                         )}
                       </CTableTd>
 
                       <CTableTd px="0">
                         {trip?.carrier_2?.legal_name ? (
-                          <SimpleTimer timeFromAPI={trip?.timer_expiration} />
+                          <SimpleTimer
+                            timeFromAPI={trip?.timer_expiration}
+                            setTenderTime={setTenderTime}
+                          />
                         ) : (
                           <>
                             <Text

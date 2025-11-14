@@ -11,6 +11,7 @@ const SimpleTimer = ({
   onTimeUp = () => {},
   className = "",
   style = {},
+  setTenderTime = () => {},
 }) => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
@@ -24,6 +25,7 @@ const SimpleTimer = ({
 
     const calculatedTime = calculateTimeDifference(timeFromAPI);
     setTimeLeft(calculatedTime);
+    setTenderTime(calculatedTime);
     setIsRunning(calculatedTime > 0);
   }, [timeFromAPI]);
 
@@ -43,6 +45,18 @@ const SimpleTimer = ({
 
           return newTime;
         });
+
+        setTenderTime((prevTime) => {
+          const newTime = prevTime - 1;
+
+          if (newTime <= 0) {
+            setIsRunning(false);
+            onTimeUp();
+            return 0;
+          }
+
+          return newTime;
+        });
       }, 1000);
     }
 
@@ -52,7 +66,7 @@ const SimpleTimer = ({
       }
     };
   }, [isRunning, timeLeft, onTimeUp]);
-
+  console.log("timeLefttimeLeft", timeLeft);
   return (
     <Box
       display="flex"
