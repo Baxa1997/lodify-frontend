@@ -2,13 +2,20 @@ import React from "react";
 import {Controller} from "react-hook-form";
 import {Radio} from "@chakra-ui/react";
 
-function HFRadio({control, name, array = false, ...props}) {
+function HFRadio({
+  control,
+  name,
+  array = false,
+  colorScheme = "orange",
+  ...props
+}) {
   return (
     <Controller
       control={control}
       name={name}
       render={({field}) => (
         <Radio
+          colorScheme={colorScheme}
           {...field}
           {...props}
           isChecked={
