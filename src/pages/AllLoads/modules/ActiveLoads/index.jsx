@@ -25,7 +25,7 @@ import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
 import AllLoadsFiltersComponent from "../../components/Filterscomponent";
-import {format} from "date-fns";
+import {format, isValid} from "date-fns";
 import SimpleTimer from "@components/SimpleTimer";
 import {tableElements} from "../../components/hooks";
 
@@ -536,13 +536,15 @@ function ActiveLoads() {
                                 cursor="pointer"
                                 _hover={{textDecoration: "underline"}}
                                 color="#181D27">
-                                {format(
-                                  trip?.origin?.[0]?.arrive_by,
-                                  "MM/dd/yyyy"
-                                ) ?? ""}
+                                {isValid(trip?.origin?.[0]?.arrive_by) &&
+                                  format(
+                                    trip?.origin?.[0]?.arrive_by,
+                                    "MM/dd/yyyy"
+                                  )}
                               </Text>
                               <Text fontSize={"14px"} fontWeight={400} h="20px">
-                                {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
+                                {isValid(trip?.origin?.[0]?.arrive_by) &&
+                                  formatToAmPm(trip?.origin?.[0]?.arrive_by)}
                               </Text>
                             </Box>
                             <TripDriverVerification trip={trip} />
@@ -584,10 +586,11 @@ function ActiveLoads() {
                               cursor="pointer"
                               _hover={{textDecoration: "underline"}}
                               color="#181D27">
-                              {format(
-                                trip?.last_stop?.[0]?.arrive_by,
-                                "MM/dd/yyyy"
-                              ) ?? ""}
+                              {isValid(trip?.last_stop?.[0]?.arrive_by) &&
+                                format(
+                                  trip?.last_stop?.[0]?.arrive_by,
+                                  "MM/dd/yyyy"
+                                )}
                             </Text>
                             <Text fontSize={"14px"} fontWeight={400} h="20px">
                               {formatToAmPm(trip?.last_stop?.[0]?.arrive_by)}
