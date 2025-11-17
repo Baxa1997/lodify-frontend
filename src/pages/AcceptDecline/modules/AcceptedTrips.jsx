@@ -2,7 +2,7 @@ import {
   Badge,
   Box,
   Button,
-  Collapse,
+  Center,
   Flex,
   Spinner,
   Text,
@@ -18,7 +18,7 @@ import {
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
 import React, {useState} from "react";
 import {useSelector, useDispatch} from "react-redux";
@@ -28,19 +28,19 @@ import {format} from "date-fns";
 import SimpleTimer from "@components/SimpleTimer";
 import {tableElements} from "../hooks";
 
-function AcceptDecilneTable({tripType = ""}) {
+function AcceptedTrips() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
-  const [searchTerm, setSearchTerm] = useState("");
+  const [tenderTime, setTenderTime] = useState(0);
   const envId = useSelector((state) => state.auth.environmentId);
-  const userId = useSelector((state) => state.auth.userId);
   const [loadingTripId, setLoadingTripId] = useState(null);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
@@ -68,16 +68,11 @@ function AcceptDecilneTable({tripType = ""}) {
   const {
     data: tripsData = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
-    queryKey: [
-      "TRIPS_LIST_TENDER",
-      currentPage,
-      pageSize,
-      sortConfig,
-      searchTerm,
-    ],
+    queryKey: ["TRIPS_LIST_TENDER_ACTIVE", currentPage, pageSize, sortConfig],
     queryFn: () =>
       tripsService.getList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
@@ -86,6 +81,7 @@ function AcceptDecilneTable({tripType = ""}) {
         object_data: {
           limit: 10,
           page: 0,
+          timer_expired: false,
           carriers_id:
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
               ? undefined
@@ -98,7 +94,7 @@ function AcceptDecilneTable({tripType = ""}) {
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
               ? "broker"
               : "carrier",
-          trip_type: tripType,
+          trip_type: "tender",
         },
         table: "trips",
       }),
@@ -120,7 +116,8 @@ function AcceptDecilneTable({tripType = ""}) {
     tripsService
       .acceptTrip(data)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         setLoadingTripId(null);
       })
       .catch((error) => {
@@ -144,7 +141,8 @@ function AcceptDecilneTable({tripType = ""}) {
     tripsService
       .rejectTrip(computedData)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         setLoadingTripId(null);
       })
       .catch((error) => {
@@ -181,11 +179,6 @@ function AcceptDecilneTable({tripType = ""}) {
     });
   };
 
-  const handleSearch = (searchValue) => {
-    setSearchTerm(searchValue);
-    setCurrentPage(1);
-  };
-
   const totalPages = tripsData?.total
     ? Math.ceil(tripsData.total / pageSize)
     : 0;
@@ -208,19 +201,10 @@ function AcceptDecilneTable({tripType = ""}) {
 
   return (
     <Box mt={"26px"}>
-      {/* <TenderInvitationsFiltersComponent
-        filterButton={true}
-        actionButton={true}
-        actionButtonText="Add Load"
-        onActionButtonClick={() => navigate("/admin/trips/add-trip")}
-        onSearch={handleSearch}
-        searchValue={searchTerm}
-      /> */}
-
-      <Box>
+      <Box mt={6}>
         <CTable
           width="100%"
-          height="calc(100vh - 170px)"
+          height="calc(100vh - 210px)"
           overflow="auto"
           currentPage={currentPage}
           totalPages={totalPages}
@@ -254,19 +238,33 @@ function AcceptDecilneTable({tripType = ""}) {
           </CTableHead>
 
           <CTableBody>
-            {isLoading ? (
+            {isLoading || isFetching ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={
+                    tableElements?.filter((element) =>
+                      clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+                        ? element.key !== "actions"
+                        : true
+                    ).length || tableElements.length
+                  }
                   textAlign="center"
                   py={8}>
-                  Loading trips...
+                  <Center minH="400px">
+                    <Spinner size="lg" color="#FF5B04" thickness="4px" />
+                  </Center>
                 </CTableTd>
               </CTableRow>
             ) : error ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={
+                    tableElements?.filter((element) =>
+                      clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+                        ? element.key !== "actions"
+                        : true
+                    ).length || tableElements.length
+                  }
                   textAlign="center"
                   py={8}
                   color="red.500">
@@ -276,7 +274,13 @@ function AcceptDecilneTable({tripType = ""}) {
             ) : trips.length === 0 ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={
+                    tableElements?.filter((element) =>
+                      clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+                        ? element.key !== "actions"
+                        : true
+                    ).length || tableElements.length
+                  }
                   textAlign="center"
                   py={8}>
                   No trips found
@@ -288,9 +292,15 @@ function AcceptDecilneTable({tripType = ""}) {
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
                       style={{
-                        backgroundColor: "white",
+                        backgroundColor:
+                          tenderTime === 0 &&
+                          Boolean(trip?.carrier_2?.legal_name)
+                            ? "#ffebeb"
+                            : tenderTime === 0 &&
+                              Boolean(!trip?.carrier_2?.legal_name)
+                            ? "rgb(241, 250, 255)"
+                            : "white",
                         cursor: "pointer",
-                        borderBottom: "1px solid #E9EAEB",
                       }}>
                       <CTableTd>
                         <Tooltip
@@ -767,10 +777,23 @@ function AcceptDecilneTable({tripType = ""}) {
                           </Badge>
                         </Tooltip>
                       </CTableTd>
+
                       <CTableTd px="0">
-                        <SimpleTimer
-                          timeFromAPI={trip?.timer_expiration || "  "}
-                        />
+                        {trip?.carrier_2?.legal_name ? (
+                          <SimpleTimer
+                            timeFromAPI={trip?.timer_expiration}
+                            setTenderTime={setTenderTime}
+                          />
+                        ) : (
+                          <>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="600"
+                              color="#535862">
+                              00:00:00
+                            </Text>
+                          </>
+                        )}
                       </CTableTd>
 
                       <CTableTd>
@@ -882,28 +905,6 @@ const TripStatus = ({
   );
 };
 
-const TripProgress = ({total_trips = 0, current_trips = 0}) => {
-  const colors = ["#FF5B04", "#00707A", "#003B63"];
-  return (
-    <Flex alignItems="center" justifyContent="flex-start" gap="6px">
-      {Array.from({length: total_trips}).map((_, index) => {
-        const isFilled = index < current_trips;
-        const color = colors[index % colors.length];
-
-        return (
-          <Box
-            key={index}
-            w="13px"
-            h="13px"
-            borderRadius="50%"
-            bg={isFilled ? color : "#E0E0E0"}
-          />
-        );
-      })}
-    </Flex>
-  );
-};
-
 const TripDriverVerification = ({trip = {}}) => {
   const stop = trip?.origin?.[0];
 
@@ -1008,4 +1009,4 @@ const TripDriverVerification = ({trip = {}}) => {
   );
 };
 
-export default AcceptDecilneTable;
+export default AcceptedTrips;

@@ -1,8 +1,9 @@
 import {Flex, Text} from "@chakra-ui/react";
-import {useSelector} from "react-redux";
 import HeadBreadCrumb from "../../components/HeadBreadCrumb";
-import {useState} from "react";
-import AcceptDecilneTable from "./components/AcceptDecilneTable";
+import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
+import styles from "../../styles/tabs.module.scss";
+import AcceptedTrips from "./modules/AcceptedTrips";
+import DeclinedTrips from "./modules/DeclinedTrips";
 
 const AcceptDecline = () => {
   return (
@@ -14,7 +15,20 @@ const AcceptDecline = () => {
           Accept / Decline
         </Text>
 
-        <AcceptDecilneTable />
+        <Tabs className={styles.tabsContainer}>
+          <TabList>
+            <Tab>Accepted</Tab>
+
+            <Tab>Declined</Tab>
+          </TabList>
+
+          <TabPanel>
+            <AcceptedTrips />
+          </TabPanel>
+          <TabPanel>
+            <DeclinedTrips />
+          </TabPanel>
+        </Tabs>
       </Flex>
     </>
   );
