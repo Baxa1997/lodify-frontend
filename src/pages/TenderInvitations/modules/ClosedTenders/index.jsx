@@ -2,6 +2,7 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   Collapse,
   Flex,
   Spinner,
@@ -69,11 +70,12 @@ function ClosedTenders({tripType = ""}) {
   const {
     data: tripsData = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
     queryKey: [
-      "TRIPS_LIST_TENDER",
+      "TRIPS_LIST_TENDER_CLOSED",
       currentPage,
       pageSize,
       sortConfig,
@@ -123,7 +125,8 @@ function ClosedTenders({tripType = ""}) {
     tripsService
       .acceptTrip(data)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         setLoadingTripId(null);
       })
       .catch((error) => {
@@ -147,7 +150,8 @@ function ClosedTenders({tripType = ""}) {
     tripsService
       .rejectTrip(computedData)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         setLoadingTripId(null);
       })
       .catch((error) => {
@@ -249,19 +253,21 @@ function ClosedTenders({tripType = ""}) {
           </CTableHead>
 
           <CTableBody>
-            {isLoading ? (
+            {isLoading || isFetching ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={closedTendersTableElements.length}
                   textAlign="center"
                   py={8}>
-                  Loading trips...
+                  <Center minH="400px">
+                    <Spinner size="lg" color="#FF5B04" thickness="4px" />
+                  </Center>
                 </CTableTd>
               </CTableRow>
             ) : error ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={closedTendersTableElements.length}
                   textAlign="center"
                   py={8}
                   color="red.500">
@@ -271,7 +277,7 @@ function ClosedTenders({tripType = ""}) {
             ) : trips.length === 0 ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={closedTendersTableElements.length}
                   textAlign="center"
                   py={8}>
                   No trips found

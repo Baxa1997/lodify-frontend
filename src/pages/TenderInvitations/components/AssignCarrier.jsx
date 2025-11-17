@@ -40,7 +40,8 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
     tripsService
       .assignDriver(computedData)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         onClose();
       })
       .finally(() => {
