@@ -12,7 +12,7 @@ import {
 import styles from "./style.module.scss";
 import PickupFieldsComponent from "./PickupFieldsComponent";
 
-function PickupFields({control, index, removePickup, field}) {
+function PickupFields({control, index, removePickup = () => {}, field}) {
   const normalizeFieldType = (type) => {
     return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";
   };
@@ -23,6 +23,7 @@ function PickupFields({control, index, removePickup, field}) {
   const isPickupAndDelivery =
     normalizeFieldType([field?.stop_type ?? field?.type?.[0]]) ===
     "pickup and delivery";
+
   return (
     <Accordion
       overflow="hidden"
@@ -69,7 +70,9 @@ function PickupFields({control, index, removePickup, field}) {
 
           <AccordionIcon style={{width: "30px", height: "30px"}} />
           <Button
-            onClick={removePickup}
+            onClick={() => {
+              removePickup(index);
+            }}
             bg="transparent"
             _hover={{bg: "transparent"}}>
             <img
