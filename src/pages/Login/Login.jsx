@@ -362,7 +362,7 @@ const Login = () => {
           setSelectedCollection(connection.options[0]?.value);
           setValue(`tables[${index}].table_slug`, connection?.table_slug);
         } else {
-          handleClickOpen();
+          // handleClickOpen();
         }
       });
     }
