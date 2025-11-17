@@ -74,6 +74,9 @@ const MyCarriers = () => {
         return hasMore ? loadedItems : undefined;
       }
     },
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
   const carriersData =
