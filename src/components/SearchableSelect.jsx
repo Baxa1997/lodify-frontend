@@ -3,7 +3,6 @@ import {Box, Text, VStack, HStack, Input} from "@chakra-ui/react";
 import {LuChevronDown, LuCheck} from "react-icons/lu";
 import {MdOutlineClear} from "react-icons/md";
 import {LuSearch} from "react-icons/lu";
-import useDebounce from "@hooks/useDebounce";
 
 const SearchableSelect = ({
   placeholder = "Select an option",
@@ -92,14 +91,15 @@ const SearchableSelect = ({
     setSearchText("");
   };
 
-  const handleSearchChange = useDebounce((val) => {
-    console.log("valval", val);
+  const handleSearchChange = (e) => {
+    const val = e?.target?.value ?? e ?? "";
     setSearchText(val);
-  }, 500);
+  };
 
-  const filteredOptions = options.filter((option) =>
-    option.label?.toLowerCase().includes(searchText?.toLowerCase())
-  );
+  const filteredOptions = options.filter((option) => {
+    const searchValue = typeof searchText === "string" ? searchText : "";
+    return option.label?.toLowerCase().includes(searchValue.toLowerCase());
+  });
 
   const getSizeStyles = () => {
     switch (size) {

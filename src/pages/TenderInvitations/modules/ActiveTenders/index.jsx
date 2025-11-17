@@ -327,7 +327,7 @@ function ActiveTenders() {
                         backgroundColor:
                           tenderTime === 0 &&
                           Boolean(!trip?.carrier_2?.legal_name)
-                            ? "rgb(227, 245, 255)"
+                            ? "rgb(241, 250, 255)"
                             : "white",
                         cursor: "pointer",
                       }}>

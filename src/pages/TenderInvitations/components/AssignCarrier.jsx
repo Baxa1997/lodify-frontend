@@ -11,20 +11,29 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import {useForm} from "react-hook-form";
-import HFSelect from "@components/HFSelect";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
 import {addHours, parseISO} from "date-fns";
 import HFSearchableSelect from "@components/HFSearchableSelect";
+import useDebounce from "@hooks/useDebounce";
 
 const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
   const queryClient = useQueryClient();
   const {control, handleSubmit} = useForm();
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const envId = useSelector((state) => state.auth.environmentId);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+
+  const debouncedSetSearch = useDebounce((value) => {
+    setDebouncedSearchText(value);
+  }, 300);
+
+  useEffect(() => {
+    debouncedSetSearch(searchText);
+  }, [searchText, debouncedSetSearch]);
 
   const onSubmit = (data) => {
     const now = new Date().toISOString();
@@ -53,7 +62,7 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
   };
 
   const {data: carriersData} = useQuery({
-    queryKey: ["CARRIERS_LIST", brokersId],
+    queryKey: ["CARRIERS_LIST", brokersId, debouncedSearchText],
     queryFn: () =>
       tripsService.getCarriersList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
@@ -64,6 +73,7 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
           own_carriers: true,
           offset: 0,
           limit: 10,
+          ...(debouncedSearchText && {search: debouncedSearchText}),
         },
         table: "carriers",
       }),
@@ -77,7 +87,6 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
-  console.log("carriersDatacarriersData", carriersData);
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
