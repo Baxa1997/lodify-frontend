@@ -2,8 +2,9 @@ import React, {useState} from "react";
 import {brokerMenuItems, menuItems} from "../utils/menuItems";
 import styles from "./AdminLayout.module.scss";
 import {useNavigate, useLocation} from "react-router-dom";
-import {Tooltip} from "@chakra-ui/react";
+import {Tooltip, Menu, MenuButton, MenuList} from "@chakra-ui/react";
 import SidebarFooter from "./SidebarFooter";
+import SidebarChildMenu from "./SidebarChildMenu";
 import {useSelector} from "react-redux";
 
 const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
@@ -34,6 +35,17 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
   const filteredMenuItems = (isBroker ? brokerMenuItems : menuItems).filter(
     (item) => item?.label.toLowerCase().includes(searchValue.toLowerCase())
   );
+
+  const handleMenuItemClick = (item) => {
+    if (item.children && item.children.length > 0) {
+      if (sidebarOpen) {
+        toggleExpanded(item.id);
+      }
+    } else {
+      navigate(item.path);
+    }
+  };
+
   return (
     <>
       <nav className={styles.sidebarNav}>
@@ -49,35 +61,65 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
             return (
               <li key={item.id} className={styles.navItem}>
                 {!sidebarOpen ? (
-                  <Tooltip placement="right" label={item?.label || ""} hasArrow>
-                    <button
-                      className={`${styles.navLink} ${
-                        isActive ? styles.active : ""
-                      }`}
-                      onClick={() => {
-                        if (hasChildren) {
-                          toggleExpanded(item.id);
-                        } else {
-                          navigate(item.path);
-                        }
-                      }}>
-                      <span className={styles.navIcon}>
-                        <img src={item.icon} alt="" />
-                      </span>
-                    </button>
-                  </Tooltip>
+                  hasChildren ? (
+                    <Menu placement="right-start">
+                      <Tooltip
+                        placement="right"
+                        label={item?.label || ""}
+                        hasArrow>
+                        <MenuButton
+                          as="button"
+                          className={`${styles.navLink} ${
+                            isActive ? styles.active : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}>
+                          <span
+                            className={styles.navIcon}
+                            style={{
+                              width: "20px",
+                              margin: "0 auto",
+                            }}>
+                            <img src={item.icon} alt="" />
+                          </span>
+                        </MenuButton>
+                      </Tooltip>
+                      <MenuList
+                        bg="linear-gradient(to bottom, #0b2432, #015261)"
+                        border="none"
+                        borderRadius="lg"
+                        boxShadow="0 4px 20px rgba(0, 0, 0, 0.3)"
+                        p={0}
+                        minW="250px">
+                        <SidebarChildMenu
+                          menuItem={item}
+                          onNavigate={(path) => navigate(path)}
+                        />
+                      </MenuList>
+                    </Menu>
+                  ) : (
+                    <Tooltip
+                      placement="right"
+                      label={item?.label || ""}
+                      hasArrow>
+                      <button
+                        className={`${styles.navLink} ${
+                          isActive ? styles.active : ""
+                        }`}
+                        onClick={() => handleMenuItemClick(item)}>
+                        <span className={styles.navIcon}>
+                          <img src={item.icon} alt="" />
+                        </span>
+                      </button>
+                    </Tooltip>
+                  )
                 ) : (
                   <button
                     className={`${styles.navLink} ${
                       isActive ? styles.active : ""
                     }`}
-                    onClick={() => {
-                      if (hasChildren) {
-                        toggleExpanded(item.id);
-                      } else {
-                        navigate(item.path);
-                      }
-                    }}>
+                    onClick={() => handleMenuItemClick(item)}>
                     <span className={styles.navIcon}>
                       <img src={item.icon} alt="" />
                     </span>
