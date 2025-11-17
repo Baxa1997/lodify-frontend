@@ -21,10 +21,7 @@ const tripsService = {
     );
   },
   getCarriersList: (data) => {
-    const dataParam = JSON.stringify(data);
-    return httpRequest.get(
-      `v2/items/broker_carriers?data=${encodeURIComponent(dataParam)}`
-    );
+    return httpRequest.post(`v2/invoke_function/lodify-trip-gateway`, {data});
   },
   createTrip: (data) =>
     httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),

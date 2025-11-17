@@ -16,11 +16,14 @@ import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
 import {addHours, parseISO} from "date-fns";
+import HFSearchableSelect from "@components/HFSearchableSelect";
 
 const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
   const queryClient = useQueryClient();
   const {control, handleSubmit} = useForm();
   const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const envId = useSelector((state) => state.auth.environmentId);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
 
   const onSubmit = (data) => {
@@ -51,18 +54,30 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
 
   const {data: carriersData} = useQuery({
     queryKey: ["CARRIERS_LIST", brokersId],
-    queryFn: () => tripsService.getCarriersList({brokers_id: brokersId}),
+    queryFn: () =>
+      tripsService.getCarriersList({
+        app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+        environment_id: envId,
+        method: "list",
+        object_data: {
+          broker_id: brokersId,
+          own_carriers: true,
+          offset: 0,
+          limit: 10,
+        },
+        table: "carriers",
+      }),
     select: (res) =>
       res.data?.response?.map((item) => ({
-        label: item.companies_id_data?.legal_name,
-        value: item.companies_id_data?.guid,
+        label: item?.legal_name,
+        value: item?.guid,
       })),
     enabled: !!brokersId,
     staleTime: 0,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
-
+  console.log("carriersDatacarriersData", carriersData);
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
@@ -73,10 +88,12 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
           <Text fontSize="16px" fontWeight="500" color="gray.700" mb={2}>
             Select Carrier
           </Text>
-          <HFSelect
+          <HFSearchableSelect
             control={control}
             name="companies_id"
             options={carriersData}
+            searchText={searchText}
+            setSearchText={setSearchText}
           />
 
           <Flex mt={4} justifyContent="flex-end" gap={2}>

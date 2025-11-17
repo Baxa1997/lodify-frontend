@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {Controller} from "react-hook-form";
-import Select from "./Select";
+import SearchableSelect from "./SearchableSelect";
 import {Flex} from "@chakra-ui/react";
 import tripsService from "../services/tripsService";
 import {useParams} from "react-router-dom";
 
-function HFSelect({
+function HFSearchableSelect({
   control,
   name,
   value = "guid",
@@ -15,6 +15,10 @@ function HFSelect({
   view_field = "name",
   disabled = false,
   props,
+  searchPlaceholder = "Search...",
+  searchText = "",
+  setSearchText = () => {},
+  ...selectProps
 }) {
   const {id} = useParams();
   const [Internaloptions, setInternalOptions] = useState([]);
@@ -42,13 +46,17 @@ function HFSelect({
         control={control}
         name={name}
         render={({field}) => (
-          <Select
+          <SearchableSelect
             {...field}
+            {...selectProps}
+            searchText={searchText}
+            setSearchText={setSearchText}
             options={table_slug ? Internaloptions : options}
             onChange={field.onChange}
             size={size}
             onClick={getOptions}
             isDisabled={disabled}
+            searchPlaceholder={searchPlaceholder}
           />
         )}
       />
@@ -56,4 +64,4 @@ function HFSelect({
   );
 }
 
-export default HFSelect;
+export default HFSearchableSelect;

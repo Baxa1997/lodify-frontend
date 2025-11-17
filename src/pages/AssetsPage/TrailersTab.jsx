@@ -70,10 +70,9 @@ const TrailersTab = () => {
   };
 
   const debouncedSearch = useDebounce((val) => {
-    // Ensure we only set string values and handle any potential circular references
     const searchValue = typeof val === "string" ? val : String(val || "");
     setSearchText(searchValue);
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   }, 500);
 
   const handleSort = (key) => {
