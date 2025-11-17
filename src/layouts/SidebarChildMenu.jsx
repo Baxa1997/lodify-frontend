@@ -16,7 +16,11 @@ const SidebarChildMenu = ({menuItem, onNavigate}) => {
 
   return (
     <>
-      <Box px={4} py={3} borderBottom="1px solid rgba(255, 255, 255, 0.1)">
+      <Box
+        zIndex={5}
+        px={4}
+        py={3}
+        borderBottom="1px solid rgba(255, 255, 255, 0.1)">
         <Text fontSize="16px" fontWeight="600" color="white">
           {menuItem.label}
         </Text>
@@ -45,7 +49,7 @@ const SidebarChildMenu = ({menuItem, onNavigate}) => {
                   ? "rgba(255, 255, 255, 0.15)"
                   : "rgba(255, 255, 255, 0.1)",
               }}>
-              <Text color="white" fontWeight="600" fontSize="16px">
+              <Text color="white" fontSize="14px">
                 {child.label}
               </Text>
             </MenuItem>

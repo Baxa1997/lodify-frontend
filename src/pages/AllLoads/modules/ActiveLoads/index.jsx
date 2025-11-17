@@ -47,15 +47,6 @@ function ActiveLoads() {
     (state) => state.auth.user_data?.companies_id
   );
 
-  // Debug: Log query conditions
-  console.log("ActiveLoads Query Conditions:", {
-    envId,
-    companiesId,
-    brokersId,
-    clientType: clientType?.id,
-    enabled: Boolean(envId && (companiesId || brokersId)),
-  });
-
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
       Preloaded: "orange",
@@ -248,11 +239,11 @@ function ActiveLoads() {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}>
-          <CTableHead zIndex={999999}>
+          <CTableHead zIndex={1}>
             <Box as={"tr"}>
               {tableElements.map((element) => (
                 <CTableTh
-                  zIndex={999999}
+                  zIndex={-1}
                   maxW="334px"
                   sortable={element.sortable}
                   sortDirection={

@@ -240,13 +240,13 @@ function ClosedTrips({selectedTabIndex}) {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}>
-          <CTableHead zIndex={999999}>
+          <CTableHead zIndex={1}>
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) => element.key !== "actions")
                 ?.map((element) => (
                   <CTableTh
-                    zIndex={999999}
+                    zIndex={-1}
                     maxW="334px"
                     sortable={element.sortable}
                     sortDirection={
