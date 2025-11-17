@@ -154,6 +154,7 @@ function ActiveTenders() {
         companies_id: companiesId,
         orders_id: trip?.guid,
         date_time: new Date().toISOString(),
+        brokers_id: trip?.brokers_id,
       },
     };
     tripsService
