@@ -79,7 +79,7 @@ function ActionsNeeded() {
         object_data: {
           search: searchTerm,
           limit: pageSize,
-          page: (currentPage - 1) * pageSize,
+          offset: (currentPage - 1) * pageSize,
           brokers_id:
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
               ? brokersId
@@ -95,7 +95,7 @@ function ActionsNeeded() {
         },
         table: "late_trips",
       }),
-    select: (data) => data?.data?.response || [],
+    select: (data) => data?.data || [],
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
@@ -131,10 +131,10 @@ function ActionsNeeded() {
     setCurrentPage(1);
   };
 
-  const totalPages = tripsData?.total
-    ? Math.ceil(tripsData.total / pageSize)
+  const totalPages = tripsData?.total_count
+    ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
-  const trips = tripsData || [];
+  const trips = tripsData?.response || [];
 
   return (
     <Box mt={"26px"}>

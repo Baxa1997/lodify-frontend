@@ -88,7 +88,7 @@ function TransitTab({tripType = ""}) {
         object_data: {
           search: searchTerm,
           limit: pageSize,
-          page: (currentPage - 1) * pageSize,
+          offset: (currentPage - 1) * pageSize,
           carriers_id:
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
               ? undefined
@@ -106,7 +106,7 @@ function TransitTab({tripType = ""}) {
         table: "trips",
         trip_type: tripType,
       }),
-    select: (data) => data?.data?.response || [],
+    select: (data) => data?.data || [],
     enabled: true,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
@@ -156,10 +156,10 @@ function TransitTab({tripType = ""}) {
     });
   };
 
-  const totalPages = tripsData?.total
-    ? Math.ceil(tripsData.total / pageSize)
+  const totalPages = tripsData?.total_count
+    ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
-  const trips = tripsData?.data || tripsData || [];
+  const trips = tripsData?.response || [];
 
   return (
     <Box mt={"26px"}>

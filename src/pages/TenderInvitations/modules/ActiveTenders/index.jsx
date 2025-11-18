@@ -97,8 +97,8 @@ function ActiveTenders() {
         environment_id: envId,
         method: "list",
         object_data: {
-          limit: 10,
-          page: 0,
+          limit: 2,
+          offset: (currentPage - 1) * pageSize,
           timer_expired: false,
           carriers_id:
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
@@ -116,13 +116,13 @@ function ActiveTenders() {
         },
         table: "trips",
       }),
-    select: (data) => data?.data?.response || [],
+    select: (data) => data?.data || [],
     enabled: true,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
-
+  console.log("tripsDatatripsData", tripsData);
   const handleAcceptTrip = (trip) => {
     setLoadingTripId(`accept-${trip.guid}`);
     const data = {
@@ -203,10 +203,10 @@ function ActiveTenders() {
     setCurrentPage(1);
   };
 
-  const totalPages = tripsData?.total
-    ? Math.ceil(tripsData.total / pageSize)
+  const totalPages = tripsData?.total_count
+    ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
-  const trips = tripsData?.data || tripsData || [];
+  const trips = tripsData?.response || [];
 
   function formatToAmPm(timeString) {
     if (!timeString) return "";

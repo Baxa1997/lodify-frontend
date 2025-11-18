@@ -89,7 +89,7 @@ function ClosedTenders({tripType = ""}) {
         method: "list",
         object_data: {
           limit: 10,
-          page: 0,
+          offset: (currentPage - 1) * pageSize,
           carriers_id:
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
               ? undefined
@@ -108,61 +108,12 @@ function ClosedTenders({tripType = ""}) {
         },
         table: "trips",
       }),
-    select: (data) => data?.data?.response || [],
+    select: (data) => data?.data || [],
     enabled: true,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
-
-  const handleAcceptTrip = (trip) => {
-    setLoadingTripId(`accept-${trip.guid}`);
-    const data = {
-      data: {
-        companies_id: companiesId,
-        guid: trip?.guid,
-      },
-    };
-    tripsService
-      .acceptTrip(data)
-      .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
-        setLoadingTripId(null);
-      })
-      .catch((error) => {
-        console.error("Error accepting trip:", error);
-        setLoadingTripId(null);
-      })
-      .finally(() => {
-        setLoadingTripId(null);
-      });
-  };
-
-  const handleRejectTrip = (trip) => {
-    setLoadingTripId(`reject-${trip.guid}`);
-    const computedData = {
-      data: {
-        companies_id: companiesId,
-        orders_id: trip?.guid,
-        date_time: new Date().toISOString(),
-      },
-    };
-    tripsService
-      .rejectTrip(computedData)
-      .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
-        setLoadingTripId(null);
-      })
-      .catch((error) => {
-        console.error("Error rejecting trip:", error);
-        setLoadingTripId(null);
-      })
-      .finally(() => {
-        setLoadingTripId(null);
-      });
-  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -194,10 +145,10 @@ function ClosedTenders({tripType = ""}) {
     setCurrentPage(1);
   };
 
-  const totalPages = tripsData?.total
-    ? Math.ceil(tripsData.total / pageSize)
+  const totalPages = tripsData?.total_count
+    ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
-  const trips = tripsData?.data || tripsData || [];
+  const trips = tripsData?.response || [];
 
   function formatToAmPm(timeString) {
     if (!timeString) return "";
