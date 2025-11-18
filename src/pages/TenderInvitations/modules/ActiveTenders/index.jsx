@@ -229,7 +229,7 @@ function ActiveTenders() {
     if (tenderTime === 0 && Boolean(trip?.carrier_2?.legal_name)) {
       return "#ffebeb";
     }
-    if (tenderTime === 0 && Boolean(!trip?.carrier_2?.legal_name)) {
+    if (Boolean(!trip?.carrier_2?.legal_name)) {
       return "rgb(241, 250, 255)";
     }
     return "white";
