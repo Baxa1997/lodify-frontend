@@ -22,11 +22,11 @@ export const menuItems = [
         label: "All Loads",
         path: "trips",
       },
-      {
-        id: "load_details",
-        label: "Load Details",
-        path: "all-loads",
-      },
+      // {
+      //   id: "load_details",
+      //   label: "Load Details",
+      //   path: "all-loads",
+      // },
       {
         id: "accept-decline",
         label: "Accept / Decline",
