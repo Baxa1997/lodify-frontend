@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Box, Flex, Text, Button, Link} from "@chakra-ui/react";
-import {differenceInMinutes, format} from "date-fns";
+import {format} from "date-fns";
 import {getShortFileName} from "./mockElements";
 import FileViewer from "../../../components/FileViewer";
 import {getHoursMinutesDifference} from "../../../utils/getHoursDifference";
@@ -94,10 +94,10 @@ function StopsRoute({stop, index, initialStops, displayIndex}) {
         <Box width={"100%"} pb="20px">
           <Box mb="12px">
             <Text h="20px" fontSize="14px" fontWeight="600" color="#414651">
-              {stop?.status?.[0]}
+              {stop?.status?.[0] ?? stop?.reason}
             </Text>
             <Text h="20px" fontSize="14px" fontWeight="400" color="#535862">
-              {stop?.note}
+              {stop?.note ?? stop?.description}
             </Text>
           </Box>
 
