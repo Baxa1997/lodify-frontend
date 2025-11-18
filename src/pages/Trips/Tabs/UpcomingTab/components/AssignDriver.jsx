@@ -54,7 +54,7 @@ const AssignDriver = ({isOpen, onClose, selectedRow = {}}) => {
             control={control}
             name="driver"
             options={[]}
-            view_field="first_name"
+            view_fields={["first_name", "last_name"]}
             table_slug="drivers"
           />
 

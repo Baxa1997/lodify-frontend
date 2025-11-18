@@ -12,7 +12,7 @@ function HFSelect({
   options = [],
   size,
   table_slug = "",
-  view_field = "name",
+  view_fields = ["name"],
   disabled = false,
   props,
 }) {
@@ -23,7 +23,7 @@ function HFSelect({
       const response = await tripsService.getSelectOptions(table_slug);
       return setInternalOptions(
         response.data?.response?.map((item) => ({
-          label: item[view_field],
+          label: view_fields?.map((field) => item[field]).join(" "),
           value: item?.[value] ?? item.guid,
         }))
       );

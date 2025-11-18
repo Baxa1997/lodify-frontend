@@ -22,7 +22,7 @@ function FirstSection({control}) {
           Customer <span>*</span>
         </Text>
         <HFSelect
-          view_field="name"
+          view_fields={["name"]}
           value="guid"
           table_slug="shippers"
           size="md"

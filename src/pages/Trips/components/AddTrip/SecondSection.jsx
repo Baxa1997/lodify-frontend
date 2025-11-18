@@ -1,11 +1,11 @@
 import React from "react";
-import { Flex } from "@chakra-ui/react";
-import { Box } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/react";
+import {Flex} from "@chakra-ui/react";
+import {Box} from "@chakra-ui/react";
+import {Text} from "@chakra-ui/react";
 import HFSelect from "../../../../components/HFSelect";
 import HFMultiSelect from "../../../../components/HFMultiSelect";
 
-function SecondSection({ control }) {
+function SecondSection({control}) {
   return (
     <Flex
       mt={"20px"}
@@ -14,9 +14,7 @@ function SecondSection({ control }) {
       p="24px"
       gap="24px"
       flexDirection="column">
-      <Flex
-        alignItems="center"
-        gap="24px">
+      <Flex alignItems="center" gap="24px">
         <Box w={"100%"}>
           <Text
             mb={"6px"}
@@ -26,7 +24,7 @@ function SecondSection({ control }) {
             Bill To (Booked From) <span>*</span>
           </Text>
           <HFSelect
-            view_field="legal_name"
+            view_fields={["legal_name"]}
             value="guid"
             table_slug="companies"
             size="md"
@@ -49,9 +47,9 @@ function SecondSection({ control }) {
             control={control}
             name="remit_payment_to"
             options={[
-              { label: "Company", value: "company" },
-              { label: "Driver", value: "driver" },
-              { label: "Customer", value: "customer" },
+              {label: "Company", value: "company"},
+              {label: "Driver", value: "driver"},
+              {label: "Customer", value: "customer"},
             ]}
           />
         </Box>
@@ -69,16 +67,14 @@ function SecondSection({ control }) {
             control={control}
             name="shipment_type"
             options={[
-              { label: "Company", value: "company" },
-              { label: "Driver", value: "driver" },
-              { label: "Customer", value: "customer" },
+              {label: "Company", value: "company"},
+              {label: "Driver", value: "driver"},
+              {label: "Customer", value: "customer"},
             ]}
           />
         </Box>
       </Flex>
-      <Flex
-        alignItems="center"
-        gap="24px">
+      <Flex alignItems="center" gap="24px">
         <Box w={"100%"}>
           <Text
             mb={"6px"}
@@ -91,7 +87,7 @@ function SecondSection({ control }) {
             size="md"
             width={"100%"}
             control={control}
-            view_field="full_name"
+            view_fields={["full_name"]}
             name="representative"
             table_slug="representative"
             options={[]}
@@ -110,7 +106,7 @@ function SecondSection({ control }) {
             width={"100%"}
             control={control}
             name="payable_method"
-            options={[{ label: "Card", value: "Card" }]}
+            options={[{label: "Card", value: "Card"}]}
           />
         </Box>
         <Box w={"100%"}>
@@ -122,7 +118,7 @@ function SecondSection({ control }) {
             Booked By <span>*</span>
           </Text>
           <HFSelect
-            view_field="full_name"
+            view_fields={["full_name"]}
             table_slug="users"
             size="md"
             width={"100%"}
