@@ -34,6 +34,7 @@ import TenderInvitationsFiltersComponent from "../../components/TenderInvitation
 import {tableElements} from "../../hooks";
 import AssignCarrier from "../../components/AssignCarrier";
 import {BsThreeDotsVertical} from "react-icons/bs";
+import {calculateTimeDifference} from "@utils/timeUtils";
 
 function ActiveTenders() {
   const queryClient = useQueryClient();
@@ -43,7 +44,6 @@ function ActiveTenders() {
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
-  const [tenderTime, setTenderTime] = useState(0);
   const envId = useSelector((state) => state.auth.environmentId);
   const [loadingTripId, setLoadingTripId] = useState(null);
   const clientType = useSelector((state) => state.auth.clientType);
@@ -223,6 +223,18 @@ function ActiveTenders() {
     return `${displayHour}:${formattedMinute} ${ampm}`;
   }
 
+  const getRowBgColor = (trip) => {
+    const tenderTime = calculateTimeDifference(trip?.timer_expiration);
+
+    if (tenderTime === 0 && Boolean(trip?.carrier_2?.legal_name)) {
+      return "#ffebeb";
+    }
+    if (tenderTime === 0 && Boolean(!trip?.carrier_2?.legal_name)) {
+      return "rgb(241, 250, 255)";
+    }
+    return "white";
+  };
+
   return (
     <Box mt={"26px"}>
       <TenderInvitationsFiltersComponent
@@ -325,14 +337,10 @@ function ActiveTenders() {
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
                       style={{
-                        backgroundColor:
-                          tenderTime === 0 &&
-                          Boolean(trip?.carrier_2?.legal_name)
-                            ? "#ffebeb"
-                            : tenderTime === 0 &&
-                              Boolean(!trip?.carrier_2?.legal_name)
-                            ? "rgb(241, 250, 255)"
-                            : "white",
+                        backgroundColor: getRowBgColor(
+                          trip,
+                          trip?.timer_expiration
+                        ),
                         cursor: "pointer",
                       }}>
                       <CTableTd>
@@ -855,10 +863,7 @@ function ActiveTenders() {
 
                       <CTableTd px="0">
                         {trip?.carrier_2?.legal_name ? (
-                          <SimpleTimer
-                            timeFromAPI={trip?.timer_expiration}
-                            setTenderTime={setTenderTime}
-                          />
+                          <SimpleTimer timeFromAPI={trip?.timer_expiration} />
                         ) : (
                           <>
                             <Text

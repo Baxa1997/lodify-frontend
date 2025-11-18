@@ -25,7 +25,6 @@ import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
 import {format} from "date-fns";
-import SimpleTimer from "@components/SimpleTimer";
 import {tableElements} from "../hooks";
 
 function DeclinedTrips() {
@@ -72,7 +71,7 @@ function DeclinedTrips() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["TRIPS_LIST_TENDER_ACTIVE", currentPage, pageSize, sortConfig],
+    queryKey: ["TRIPS_LIST_DECLINED", currentPage, pageSize, sortConfig],
     queryFn: () =>
       tripsService.getList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
@@ -81,22 +80,11 @@ function DeclinedTrips() {
         object_data: {
           limit: 10,
           page: 0,
-          timer_expired: false,
-          carriers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-              ? undefined
-              : companiesId,
-          brokers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-              ? brokersId
-              : undefined,
-          client_type:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-              ? "broker"
-              : "carrier",
-          trip_type: "tender",
+          carriers_id: companiesId,
+          client_type: "carrier",
+          is_rejected: true,
         },
-        table: "trips",
+        table: "accept_decline",
       }),
     select: (data) => data?.data?.response || [],
     enabled: true,
@@ -141,7 +129,7 @@ function DeclinedTrips() {
     tripsService
       .rejectTrip(computedData)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_DECLINED"]});
         queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         setLoadingTripId(null);
       })
@@ -778,24 +766,6 @@ function DeclinedTrips() {
                         </Tooltip>
                       </CTableTd>
 
-                      <CTableTd px="0">
-                        {trip?.carrier_2?.legal_name ? (
-                          <SimpleTimer
-                            timeFromAPI={trip?.timer_expiration}
-                            setTenderTime={setTenderTime}
-                          />
-                        ) : (
-                          <>
-                            <Text
-                              fontSize="14px"
-                              fontWeight="600"
-                              color="#535862">
-                              00:00:00
-                            </Text>
-                          </>
-                        )}
-                      </CTableTd>
-
                       <CTableTd>
                         <Button
                           onClick={(e) => {
@@ -817,53 +787,6 @@ function DeclinedTrips() {
                           Send Message
                         </Button>
                       </CTableTd>
-
-                      {clientType?.id !==
-                        "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
-                        <CTableTd>
-                          <Flex alignItems="center" gap={"16px"}>
-                            <Button
-                              p="0"
-                              minW="60px"
-                              fontSize="14px"
-                              fontWeight="600"
-                              bg="none"
-                              border="none"
-                              _hover={{bg: "none"}}
-                              isDisabled={
-                                loadingTripId === `reject-${trip.guid}` ||
-                                loadingTripId === `accept-${trip.guid}`
-                              }
-                              onClick={() => handleRejectTrip(trip)}>
-                              {loadingTripId === `reject-${trip.guid}` ? (
-                                <Spinner size="sm" />
-                              ) : (
-                                "Reject"
-                              )}
-                            </Button>
-                            <Button
-                              p="0"
-                              minW="60px"
-                              fontSize="14px"
-                              fontWeight="600"
-                              bg="none"
-                              border="none"
-                              color="#FF5B04"
-                              _hover={{bg: "none"}}
-                              isDisabled={
-                                loadingTripId === `reject-${trip.guid}` ||
-                                loadingTripId === `accept-${trip.guid}`
-                              }
-                              onClick={() => handleAcceptTrip(trip)}>
-                              {loadingTripId === `accept-${trip.guid}` ? (
-                                <Spinner size="sm" color="#FF5B04" />
-                              ) : (
-                                "Accept"
-                              )}
-                            </Button>
-                          </Flex>
-                        </CTableTd>
-                      )}
                     </CTableRow>
                   </React.Fragment>
                 );

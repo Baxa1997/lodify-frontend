@@ -17,13 +17,9 @@ const SimpleTimer = ({
   const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
-    if (timeFromAPI?.includes("Z")) {
-      timeFromAPI = timeFromAPI.replace("Z", "");
-    } else {
-      timeFromAPI = timeFromAPI;
-    }
-
+    // Keep the time string as-is (with or without Z) - calculateTimeDifference handles it correctly
     const calculatedTime = calculateTimeDifference(timeFromAPI);
+
     setTimeLeft(calculatedTime);
     setTenderTime(calculatedTime);
     setIsRunning(calculatedTime > 0);

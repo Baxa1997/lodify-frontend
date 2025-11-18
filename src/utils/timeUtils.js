@@ -6,10 +6,8 @@ export const calculateTimeDifference = (apiTime) => {
 
     if (typeof apiTime === "string" && apiTime.includes("T")) {
       targetTime = new Date(apiTime);
-      targetTime.setHours(targetTime.getHours() + 5);
     } else {
       targetTime = new Date(Date.now() + apiTime * 1000);
-      targetTime.setHours(targetTime.getHours() + 5);
     }
 
     const now = new Date();
