@@ -4,7 +4,6 @@ import {Box, Text, Button, Flex} from "@chakra-ui/react";
 import StopsRoute from "./StopsRoute";
 
 function StopsComponent({tripData = {}}) {
-  // Calculate custom indices based on "Started" status
   const stopsWithCustomIndex = useMemo(() => {
     if (!tripData?.trip_logs) return [];
 
@@ -12,14 +11,12 @@ function StopsComponent({tripData = {}}) {
     let subIndex = 0;
 
     return tripData.trip_logs.map((stop, index) => {
-      // Check if this stop has "Started" status
       if (stop?.status?.[0] === "Started") {
         groupNumber += 1;
         subIndex = 1;
       } else if (groupNumber > 0) {
         subIndex += 1;
       } else {
-        // If no "Started" found yet, use default numbering
         groupNumber = 1;
         subIndex = index + 1;
       }
