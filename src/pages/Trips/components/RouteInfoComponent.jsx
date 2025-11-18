@@ -162,7 +162,16 @@ function RouteInfoComponent({tripData = {}}) {
           {tripData?.documents?.map((document, index) => (
             <Box className={styles.documentItem} key={index}>
               <Box className={styles.documentIcon}>
-                <img src={document} alt="PDF" width="32px" height="40px" />
+                {document?.includes(".pdf") ? (
+                  <img
+                    src="/img/pdfTrip.svg"
+                    alt="PDF"
+                    width="32px"
+                    height="40px"
+                  />
+                ) : (
+                  <img src={document} alt="PDF" width="32px" height="40px" />
+                )}
               </Box>
               <Box className={styles.documentInfo}>
                 <Text className={styles.documentName}>
@@ -171,7 +180,10 @@ function RouteInfoComponent({tripData = {}}) {
               </Box>
               <button
                 className={styles.documentAction}
-                onClick={() => handleFilesReaderOpen(document)}>
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFilesReaderOpen(document);
+                }}>
                 View
               </button>
             </Box>
