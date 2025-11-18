@@ -46,6 +46,7 @@ function ClosedTenders({tripType = ""}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
@@ -236,19 +237,25 @@ function ClosedTenders({tripType = ""}) {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead zIndex={9}>
             <Box as={"tr"}>
-              {closedTendersTableElements.map((element) => (
-                <CTableTh
-                  zIndex={8}
-                  maxW="334px"
-                  sortable={element.sortable}
-                  sortDirection={
-                    sortConfig.key === element.key ? sortConfig.direction : null
-                  }
-                  key={element.id}
-                  onSort={() => handleSort(element.key)}>
-                  {element.name}
-                </CTableTh>
-              ))}
+              {closedTendersTableElements
+                ?.filter((element) =>
+                  isBroker ? element.key !== "invited_by" : true
+                )
+                .map((element) => (
+                  <CTableTh
+                    zIndex={8}
+                    maxW="334px"
+                    sortable={element.sortable}
+                    sortDirection={
+                      sortConfig.key === element.key
+                        ? sortConfig.direction
+                        : null
+                    }
+                    key={element.id}
+                    onSort={() => handleSort(element.key)}>
+                    {element.name}
+                  </CTableTh>
+                ))}
             </Box>
           </CTableHead>
 
@@ -633,6 +640,22 @@ function ClosedTenders({tripType = ""}) {
                           </Flex>
                         </Tooltip>
                       </CTableTd>
+
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <Flex gap="12px">
+                            <Text
+                              h="20px"
+                              fontSize="14px"
+                              fontWeight="500"
+                              color="#535862"
+                              cursor="pointer"
+                              _hover={{textDecoration: "underline"}}>
+                              {trip?.invited_by?.legal_name ?? ""}
+                            </Text>
+                          </Flex>
+                        </CTableTd>
+                      )}
 
                       <CTableTd>
                         <Tooltip

@@ -25,57 +25,63 @@ export const tableElements = [
   },
   {
     id: 5,
+    name: "Invited By",
+    key: "invited_by",
+    sortable: true,
+  },
+  {
+    id: 6,
     name: "Tracktor Unit # & ID",
     key: "tracktor_unit_id",
     sortable: true,
   },
   {
-    id: 6,
+    id: 7,
     name: "Trailer Unit # & ID",
     key: "trailer_unit_id",
     sortable: true,
   },
   {
-    id: 7,
+    id: 8,
     name: "Equipment",
     key: "equipment",
     sortable: true,
   },
   {
-    id: 8,
+    id: 9,
     name: "Load Type",
     key: "loadType",
     sortable: true,
   },
   {
-    id: 9,
+    id: 10,
     name: "Status",
     key: "status",
     sortable: false,
   },
   {
-    id: 10,
+    id: 11,
     name: "Driver",
     key: "actions",
     sortable: true,
   },
 
   {
-    id: 10,
+    id: 12,
     name: "Driver 2",
     key: "driver2",
     sortable: true,
   },
 
   {
-    id: 11,
+    id: 13,
     name: "Rate",
     key: "rate",
     sortable: true,
   },
 
   {
-    id: 12,
+    id: 14,
     name: "Actions",
     key: "actions",
     sortable: false,
@@ -125,25 +131,31 @@ export const tableActionsNeeded = [
   },
   {
     id: 4,
+    name: "Invited By",
+    key: "invited_by",
+    sortable: true,
+  },
+  {
+    id: 5,
     name: "Destination",
     key: "destination",
     sortable: true,
   },
   {
-    id: 5,
+    id: 6,
     name: "Timer",
     key: "timer",
     sortable: true,
   },
   {
-    id: 6,
+    id: 7,
     name: "Reason",
     key: "reason",
     sortable: true,
   },
 
   {
-    id: 7,
+    id: 8,
     name: "Actions",
     key: "actions",
     sortable: true,

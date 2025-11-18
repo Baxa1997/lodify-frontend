@@ -260,8 +260,8 @@ function ActiveTenders() {
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) =>
-                  clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-                    ? element.key !== "actions"
+                  isBroker
+                    ? element.key !== "actions" && element.key !== "invited_by"
                     : true
                 )
                 .map((element) => (
@@ -685,38 +685,21 @@ function ActiveTenders() {
                         </Tooltip>
                       </CTableTd>
 
-                      <CTableTd>
-                        <Tooltip
-                          hasArrow
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Text>{trip?.created_by?.user_first_name}</Text>
-                        </Tooltip>
-                      </CTableTd>
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <Flex gap="12px">
+                            <Text
+                              h="20px"
+                              fontSize="14px"
+                              fontWeight="500"
+                              color="#535862"
+                              cursor="pointer"
+                              _hover={{textDecoration: "underline"}}>
+                              {trip?.invited_by?.legal_name ?? ""}
+                            </Text>
+                          </Flex>
+                        </CTableTd>
+                      )}
 
                       <CTableTd>
                         <Tooltip

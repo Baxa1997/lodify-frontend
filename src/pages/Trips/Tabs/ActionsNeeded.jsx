@@ -159,19 +159,23 @@ function ActionsNeeded() {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead zIndex={1}>
             <Box as={"tr"}>
-              {tableActionsNeeded.map((element) => (
-                <CTableTh
-                  zIndex={-1}
-                  maxW="334px"
-                  sortable={element.sortable}
-                  sortDirection={
-                    sortConfig.key === element.key ? sortConfig.direction : null
-                  }
-                  key={element.id}
-                  onSort={() => handleSort(element.key)}>
-                  {element.name}
-                </CTableTh>
-              ))}
+              {tableActionsNeeded
+                ?.filter((element) => element.key !== "invited_by")
+                .map((element) => (
+                  <CTableTh
+                    zIndex={-1}
+                    maxW="334px"
+                    sortable={element.sortable}
+                    sortDirection={
+                      sortConfig.key === element.key
+                        ? sortConfig.direction
+                        : null
+                    }
+                    key={element.id}
+                    onSort={() => handleSort(element.key)}>
+                    {element.name}
+                  </CTableTh>
+                ))}
             </Box>
           </CTableHead>
 
@@ -347,6 +351,16 @@ function ActionsNeeded() {
                           </Box>
                         </Flex>
                       </CTableTd>
+                      {/* <CTableTd>
+                        <Box>
+                          <Flex
+                            gap="16px"
+                            alignItems="center"
+                            justifyContent="space-between">
+                            <Text>{trip?.invited_by?.legal_name ?? ""}</Text>
+                          </Flex>
+                        </Box>
+                      </CTableTd> */}
                       <CTableTd>
                         <Box>
                           <Flex

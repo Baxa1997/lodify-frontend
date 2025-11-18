@@ -15,8 +15,6 @@ import {useQuery} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
-import {format, isValid} from "date-fns";
-import {ChevronDownIcon, ChevronUpIcon} from "@chakra-ui/icons";
 import tripsService from "@services/tripsService";
 import tableElements from "../../components/mockElements";
 import {
@@ -45,6 +43,7 @@ function HistoryTab({tripType = ""}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
@@ -184,19 +183,25 @@ function HistoryTab({tripType = ""}) {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead zIndex={1}>
             <Box as={"tr"}>
-              {tableElements.map((element) => (
-                <CTableTh
-                  zIndex={-1}
-                  maxW="334px"
-                  sortable={element.sortable}
-                  sortDirection={
-                    sortConfig.key === element.key ? sortConfig.direction : null
-                  }
-                  key={element.id}
-                  onSort={() => handleSort(element.key)}>
-                  {element.name}
-                </CTableTh>
-              ))}
+              {tableElements
+                ?.filter((element) =>
+                  isBroker ? element.key !== "invited_by" : true
+                )
+                .map((element) => (
+                  <CTableTh
+                    zIndex={-1}
+                    maxW="334px"
+                    sortable={element.sortable}
+                    sortDirection={
+                      sortConfig.key === element.key
+                        ? sortConfig.direction
+                        : null
+                    }
+                    key={element.id}
+                    onSort={() => handleSort(element.key)}>
+                    {element.name}
+                  </CTableTh>
+                ))}
             </Box>
           </CTableHead>
 
@@ -445,6 +450,13 @@ function HistoryTab({tripType = ""}) {
                           </Flex>
                         </Box>
                       </CTableTd>
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <Flex alignItems="center">
+                            <Text>{trip?.invited_by?.legal_name ?? ""}</Text>
+                          </Flex>
+                        </CTableTd>
+                      )}
                       <CTableTd>
                         <Tooltip
                           label={

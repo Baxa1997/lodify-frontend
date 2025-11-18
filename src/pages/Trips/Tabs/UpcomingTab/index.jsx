@@ -52,6 +52,7 @@ function UpcomingTab({tripType = ""}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
@@ -192,19 +193,25 @@ function UpcomingTab({tripType = ""}) {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead zIndex={1}>
             <Box as={"tr"}>
-              {tableElements.map((element) => (
-                <CTableTh
-                  zIndex={-1}
-                  maxW="334px"
-                  sortable={element.sortable}
-                  sortDirection={
-                    sortConfig.key === element.key ? sortConfig.direction : null
-                  }
-                  key={element.id}
-                  onSort={() => handleSort(element.key)}>
-                  {element.name}
-                </CTableTh>
-              ))}
+              {tableElements
+                ?.filter((element) =>
+                  isBroker ? element.key !== "invited_by" : true
+                )
+                .map((element) => (
+                  <CTableTh
+                    zIndex={-1}
+                    maxW="334px"
+                    sortable={element.sortable}
+                    sortDirection={
+                      sortConfig.key === element.key
+                        ? sortConfig.direction
+                        : null
+                    }
+                    key={element.id}
+                    onSort={() => handleSort(element.key)}>
+                    {element.name}
+                  </CTableTh>
+                ))}
             </Box>
           </CTableHead>
 
@@ -453,42 +460,13 @@ function UpcomingTab({tripType = ""}) {
                           </Flex>
                         </Box>
                       </CTableTd>
-                      <CTableTd>
-                        <Tooltip
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Text
-                            cursor="pointer"
-                            _hover={{textDecoration: "underline"}}
-                            color="#181D27">
-                            {trip?.tractors?.plate_number ?? "---"}
-                          </Text>
-                        </Tooltip>
-                      </CTableTd>
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <Flex alignItems="center">
+                            <Text>{trip?.invited_by?.legal_name ?? ""}</Text>
+                          </Flex>
+                        </CTableTd>
+                      )}
                       <CTableTd>
                         <Tooltip
                           label={

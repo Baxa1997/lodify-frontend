@@ -25,7 +25,6 @@ import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
 import {format} from "date-fns";
-import SimpleTimer from "@components/SimpleTimer";
 import {tableElements} from "../hooks";
 
 function AcceptedTrips() {
@@ -39,7 +38,7 @@ function AcceptedTrips() {
   const envId = useSelector((state) => state.auth.environmentId);
   const [loadingTripId, setLoadingTripId] = useState(null);
   const clientType = useSelector((state) => state.auth.clientType);
-  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
@@ -204,9 +203,7 @@ function AcceptedTrips() {
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) =>
-                  clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-                    ? element.key !== "actions"
-                    : true
+                  isBroker ? element.key !== "actions" : true
                 )
                 .map((element) => (
                   <CTableTh
