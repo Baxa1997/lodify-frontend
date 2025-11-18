@@ -659,9 +659,14 @@ function HistoryTab({tripType = ""}) {
                       <CTableTd>
                         <Flex alignItems="center" gap={2}>
                           {trip?.drivers?.first_name ? (
-                            <Text color="#535862" fontWeight="400">
-                              {trip?.drivers?.first_name}
-                            </Text>
+                            <Flex flexDirection="column" gap={0}>
+                              <Text color="#535862" fontWeight="400">
+                                {trip?.drivers?.first_name}
+                              </Text>
+                              <Text color="#535862" fontWeight="400">
+                                {trip?.drivers?.last_name}
+                              </Text>
+                            </Flex>
                           ) : (
                             <Button
                               bg="none"
@@ -679,9 +684,12 @@ function HistoryTab({tripType = ""}) {
 
                       <CTableTd>
                         {trip?.driver_type?.[0] === "Team" ? (
-                          <Flex alignItems="center" gap={2}>
+                          <Flex flexDirection="column" gap={0}>
                             <Text color="#535862" fontWeight="400">
                               {trip?.drivers_2?.first_name}
+                            </Text>
+                            <Text color="#535862" fontWeight="400">
+                              {trip?.drivers_2?.last_name}
                             </Text>
                           </Flex>
                         ) : (
