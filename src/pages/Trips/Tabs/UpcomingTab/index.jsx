@@ -513,98 +513,41 @@ function UpcomingTab({tripType = ""}) {
                       </CTableTd>
 
                       <CTableTd>
-                        <Tooltip
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Box>
-                            <Text
-                              h="20px"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}
-                              color="#181D27">
-                              {trip?.trailers?.plate_number ?? "---"}
-                            </Text>
-                          </Box>
-                        </Tooltip>
+                        <Box>
+                          <Text
+                            h="20px"
+                            cursor="pointer"
+                            _hover={{textDecoration: "underline"}}
+                            color="#181D27">
+                            {trip?.trailers?.plate_number ?? "---"}
+                          </Text>
+                        </Box>
                       </CTableTd>
 
                       <CTableTd>
-                        <Tooltip
-                          hasArrow
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Flex gap="12px" justifyContent="space-between">
-                            <Text
-                              h="20px"
-                              fontSize="14px"
-                              fontWeight="500"
-                              color="#535862"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}>
-                              {trip?.origin?.[0]?.equipment_type ?? "ss"}
-                            </Text>
+                        <Flex gap="12px" justifyContent="space-between">
+                          <Text
+                            h="20px"
+                            fontSize="14px"
+                            fontWeight="500"
+                            color="#535862"
+                            cursor="pointer"
+                            _hover={{textDecoration: "underline"}}>
+                            {trip?.origin?.[0]?.equipment_type ?? "ss"}
+                          </Text>
 
-                            <Flex
-                              alignItems="center"
-                              justifyContent="center"
-                              border="1px solid #dcddde"
-                              w="24px"
-                              h="22px"
-                              borderRadius="50%"
-                              bg="#fff">
-                              {trip?.origin?.[0]
-                                ?.equipment_availability?.[0]?.[0] ?? ""}
-                            </Flex>
+                          <Flex
+                            alignItems="center"
+                            justifyContent="center"
+                            border="1px solid #dcddde"
+                            w="24px"
+                            h="22px"
+                            borderRadius="50%"
+                            bg="#fff">
+                            {trip?.origin?.[0]
+                              ?.equipment_availability?.[0]?.[0] ?? ""}
                           </Flex>
-                        </Tooltip>
+                        </Flex>
                       </CTableTd>
                       <CTableTd>
                         <Tooltip

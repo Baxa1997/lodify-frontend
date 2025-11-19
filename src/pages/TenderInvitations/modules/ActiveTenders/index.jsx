@@ -22,7 +22,7 @@ import {
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
 import React, {useState} from "react";
 import {useSelector, useDispatch} from "react-redux";
@@ -82,7 +82,6 @@ function ActiveTenders() {
     isLoading,
     isFetching,
     error,
-    refetch,
   } = useQuery({
     queryKey: [
       "TRIPS_LIST_TENDER_ACTIVE",
@@ -122,7 +121,7 @@ function ActiveTenders() {
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
-  console.log("tripsDatatripsData", tripsData);
+
   const handleAcceptTrip = (trip) => {
     setLoadingTripId(`accept-${trip.guid}`);
     const data = {
@@ -475,90 +474,36 @@ function ActiveTenders() {
                         </Flex>
                       </CTableTd>
                       <CTableTd>
-                        <Tooltip
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Box>
-                            <Text
-                              fontSize={"12px"}
-                              fontWeight={500}
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}
-                              color="#181D27">
-                              {trip?.last_stop?.[0]?.arrive_by &&
-                                format(
-                                  trip?.last_stop?.[0]?.arrive_by,
-                                  "MM/dd/yyyy"
-                                )}
-                            </Text>
-                            <Text fontSize={"14px"} fontWeight={400} h="20px">
-                              {formatToAmPm(trip?.last_stop?.[0]?.arrive_by)}
-                            </Text>
-                          </Box>
-                        </Tooltip>
+                        <Box>
+                          <Text
+                            fontSize={"12px"}
+                            fontWeight={500}
+                            cursor="pointer"
+                            _hover={{textDecoration: "underline"}}
+                            color="#181D27">
+                            {trip?.last_stop?.[0]?.arrive_by &&
+                              format(
+                                trip?.last_stop?.[0]?.arrive_by,
+                                "MM/dd/yyyy"
+                              )}
+                          </Text>
+                          <Text fontSize={"14px"} fontWeight={400} h="20px">
+                            {formatToAmPm(trip?.last_stop?.[0]?.arrive_by)}
+                          </Text>
+                        </Box>
                       </CTableTd>
                       <CTableTd>
-                        <Tooltip
-                          p="6px 10px"
-                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                          borderRadius="md"
-                          hasArrow
-                          label={
-                            <Box color="white" minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          openDelay={300}>
-                          <Flex gap="12px">
-                            <Text
-                              h="20px"
-                              fontSize="14px"
-                              fontWeight="500"
-                              color="#535862"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}>
-                              ${trip?.total_rates ?? "0"}
-                            </Text>
-                          </Flex>
-                        </Tooltip>
+                        <Flex gap="12px">
+                          <Text
+                            h="20px"
+                            fontSize="14px"
+                            fontWeight="500"
+                            color="#535862"
+                            cursor="pointer"
+                            _hover={{textDecoration: "underline"}}>
+                            ${trip?.total_rates ?? "0"}
+                          </Text>
+                        </Flex>
                       </CTableTd>
 
                       {Boolean(!isBroker) && (
@@ -607,103 +552,46 @@ function ActiveTenders() {
                       )}
 
                       <CTableTd>
-                        <Tooltip
-                          hasArrow
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          openDelay={300}>
-                          <Flex gap="12px" justifyContent="space-between">
-                            <Text
-                              h="20px"
-                              fontSize="14px"
-                              fontWeight="500"
-                              color="#535862"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}>
-                              {trip?.origin?.[0]?.equipment_type ?? ""}
-                            </Text>
+                        <Flex gap="12px" justifyContent="space-between">
+                          <Text
+                            h="20px"
+                            fontSize="14px"
+                            fontWeight="500"
+                            color="#535862"
+                            cursor="pointer"
+                            _hover={{textDecoration: "underline"}}>
+                            {trip?.origin?.[0]?.equipment_type ?? ""}
+                          </Text>
 
-                            <Flex
-                              alignItems="center"
-                              justifyContent="center"
-                              border="1px solid #dcddde"
-                              w="24px"
-                              h="22px"
-                              borderRadius="50%"
-                              bg="#fff">
-                              {trip?.origin?.[0]
-                                ?.equipment_availability?.[0]?.[0] ?? ""}
-                            </Flex>
+                          <Flex
+                            alignItems="center"
+                            justifyContent="center"
+                            border="1px solid #dcddde"
+                            w="24px"
+                            h="22px"
+                            borderRadius="50%"
+                            bg="#fff">
+                            {trip?.origin?.[0]
+                              ?.equipment_availability?.[0]?.[0] ?? ""}
                           </Flex>
-                        </Tooltip>
+                        </Flex>
                       </CTableTd>
 
                       <CTableTd>
-                        <Tooltip
-                          hasArrow
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Badge
-                            colorScheme={getLoadTypeColor(
-                              trip.origin?.[0]?.load_type?.[0] ?? ""
-                            )}
-                            variant="subtle"
-                            px={3}
-                            py={1}
-                            borderRadius="full"
-                            fontSize="12px"
-                            fontWeight="500"
-                            cursor="pointer"
-                            _hover={{opacity: 0.8}}>
-                            {trip.origin?.[0]?.load_type?.[0] ?? ""}
-                          </Badge>
-                        </Tooltip>
+                        <Badge
+                          colorScheme={getLoadTypeColor(
+                            trip.origin?.[0]?.load_type?.[0] ?? ""
+                          )}
+                          variant="subtle"
+                          px={3}
+                          py={1}
+                          borderRadius="full"
+                          fontSize="12px"
+                          fontWeight="500"
+                          cursor="pointer"
+                          _hover={{opacity: 0.8}}>
+                          {trip.origin?.[0]?.load_type?.[0] ?? ""}
+                        </Badge>
                       </CTableTd>
 
                       <CTableTd>
@@ -853,7 +741,6 @@ const TripStatus = ({
   status,
   onExpand = () => {},
   tripId = "",
-  rowClick = () => {},
 }) => {
   return (
     <Flex
