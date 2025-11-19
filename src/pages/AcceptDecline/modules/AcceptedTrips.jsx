@@ -36,6 +36,7 @@ function AcceptedTrips() {
   const [tenderTime, setTenderTime] = useState(0);
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const companiesId = useSelector(
@@ -52,22 +53,11 @@ function AcceptedTrips() {
     return loadTypeColors[loadType?.trim()] || "gray";
   };
 
-  const getCustomerInfo = (trip) => {
-    return {
-      companyName: trip.shipper?.name || "N/A",
-      customer:
-        trip.shipper?.contact_name || trip.shipper?.customer_name || "N/A",
-      trips: trip.shipper?.total_trips || 0,
-      rate: trip.shipper?.rating || 0,
-    };
-  };
-
   const {
     data: tripsData = [],
     isLoading,
     isFetching,
     error,
-    refetch,
   } = useQuery({
     queryKey: ["TRIPS_LIST_ACCEPTED", currentPage, pageSize, sortConfig],
     queryFn: () =>
@@ -79,7 +69,8 @@ function AcceptedTrips() {
           limit: 10,
           page: 0,
           carriers_id: companiesId,
-          client_type: "carrier",
+          client_type: isBroker ? "broker" : "carrier",
+          brokers_id: isBroker ? brokersId : undefined,
           is_rejected: false,
         },
         table: "accept_decline",
@@ -153,8 +144,8 @@ function AcceptedTrips() {
               {tableElements
                 ?.filter((element) =>
                   isBroker
-                    ? element.key !== "actions" && element.key !== "invited_by"
-                    : true
+                    ? element.key !== "invited_by"
+                    : element.key !== "carrier"
                 )
                 .map((element) => (
                   <CTableTh

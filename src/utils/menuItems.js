@@ -34,7 +34,7 @@ export const menuItems = [
       },
 
       {
-        id: "accept-decline",
+        id: "tender-invitations",
         label: "Tender Invitations",
         path: "tender-invitations",
       },
@@ -171,9 +171,14 @@ export const brokerMenuItems = [
       },
 
       {
-        id: "accept-decline",
+        id: "tender-invitations",
         label: "Tender Invitations",
         path: "tender-invitations",
+      },
+      {
+        id: "accept-decline",
+        label: "Accept / Decline",
+        path: "accept-decline",
       },
       // {
       //   id: "all-loads",

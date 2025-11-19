@@ -36,6 +36,7 @@ function DeclinedTrips() {
   const [tenderTime, setTenderTime] = useState(0);
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const companiesId = useSelector(
@@ -67,7 +68,6 @@ function DeclinedTrips() {
     isLoading,
     isFetching,
     error,
-    refetch,
   } = useQuery({
     queryKey: ["TRIPS_LIST_DECLINED", currentPage, pageSize, sortConfig],
     queryFn: () =>
@@ -79,7 +79,8 @@ function DeclinedTrips() {
           limit: 10,
           page: 0,
           carriers_id: companiesId,
-          client_type: "carrier",
+          client_type: isBroker ? "broker" : "carrier",
+          brokers_id: isBroker ? brokersId : undefined,
           is_rejected: true,
         },
         table: "accept_decline",
@@ -135,7 +136,7 @@ function DeclinedTrips() {
 
     return `${displayHour}:${formattedMinute} ${ampm}`;
   }
-
+  console.log("isBrokerisBroker", isBroker);
   return (
     <Box mt={"26px"}>
       <Box mt={6}>
@@ -153,8 +154,8 @@ function DeclinedTrips() {
               {tableElements
                 ?.filter((element) =>
                   isBroker
-                    ? element.key !== "actions" && element.key !== "invited_by"
-                    : true
+                    ? element.key !== "invited_by"
+                    : element.key !== "carrier"
                 )
                 .map((element) => (
                   <CTableTh
@@ -441,6 +442,22 @@ function DeclinedTrips() {
                           {trip.origin?.[0]?.load_type?.[0] ?? ""}
                         </Badge>
                       </CTableTd>
+
+                      {Boolean(isBroker) && (
+                        <CTableTd>
+                          <Flex gap="12px" justifyContent="space-between">
+                            <Text
+                              h="20px"
+                              fontSize="14px"
+                              fontWeight="500"
+                              color="#535862"
+                              cursor="pointer"
+                              _hover={{textDecoration: "underline"}}>
+                              {trip?.carriers?.[0]?.name ?? ""}
+                            </Text>
+                          </Flex>
+                        </CTableTd>
+                      )}
 
                       <CTableTd>
                         <Button

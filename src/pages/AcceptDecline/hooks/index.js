@@ -50,6 +50,11 @@ export const tableElements = [
     sortable: true,
   },
   {
+    key: "carrier",
+    name: "Carrier",
+    sortable: true,
+  },
+  {
     key: "actions",
     name: "Contact",
     sortable: false,
