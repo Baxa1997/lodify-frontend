@@ -344,14 +344,13 @@ function ActiveTenders() {
                       }}>
                       <CTableTd>
                         <Tooltip
+                          p={"6px 10px"}
+                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                          color="white"
+                          borderRadius="md"
                           hasArrow
                           label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
+                            <Box minW="180px">
                               <VStack spacing={1} align="start">
                                 <Text
                                   fontSize="14px"
@@ -369,7 +368,6 @@ function ActiveTenders() {
                             </Box>
                           }
                           placement="bottom-start"
-                          bg="transparent"
                           openDelay={300}>
                           <Text
                             cursor="pointer"
@@ -737,11 +735,7 @@ function ActiveTenders() {
   );
 }
 
-const TripStatus = ({
-  status,
-  onExpand = () => {},
-  tripId = "",
-}) => {
+const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
   return (
     <Flex
       onClick={(e) => {

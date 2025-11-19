@@ -261,14 +261,13 @@ function UpcomingTab({tripType = ""}) {
                       }>
                       <CTableTd>
                         <Tooltip
+                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                          color="white"
+                          borderRadius="md"
                           hasArrow
+                          p="6px 10px"
                           label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
+                            <Box minW="180px">
                               <VStack spacing={1} align="start">
                                 <Text
                                   fontSize="14px"
@@ -286,7 +285,6 @@ function UpcomingTab({tripType = ""}) {
                             </Box>
                           }
                           placement="bottom-start"
-                          bg="transparent"
                           openDelay={300}>
                           <Text
                             cursor="pointer"
@@ -369,13 +367,13 @@ function UpcomingTab({tripType = ""}) {
                       {Boolean(!isBroker) && (
                         <CTableTd>
                           <Tooltip
+                            bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                            color="white"
+                            borderRadius="md"
+                            p="6px 10px"
+                            hasArrow
                             label={
-                              <Box
-                                p={3}
-                                bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                color="white"
-                                borderRadius="md"
-                                minW="180px">
+                              <Box minW="180px">
                                 <VStack spacing={1} align="start">
                                   <Text
                                     fontSize="14px"
@@ -399,7 +397,6 @@ function UpcomingTab({tripType = ""}) {
                               </Box>
                             }
                             placement="bottom-start"
-                            bg="transparent"
                             openDelay={300}>
                             <Flex alignItems="center">
                               <Text>{trip?.invited_by?.legal_name ?? ""}</Text>
@@ -478,14 +475,14 @@ function UpcomingTab({tripType = ""}) {
                           {trip?.drivers?.first_name ? (
                             <Flex alignItems="center" gap={2}>
                               <Tooltip
+                                bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                                color="white"
+                                borderRadius="md"
+                                hasArrow
+                                p="6px 10px"
                                 placement="bottom-start"
                                 label={
-                                  <Box
-                                    p={3}
-                                    bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                    color="white"
-                                    borderRadius="md"
-                                    minW="180px">
+                                  <Box minW="180px">
                                     <VStack spacing={1} align="start">
                                       <Text
                                         fontSize="14px"
@@ -552,14 +549,13 @@ function UpcomingTab({tripType = ""}) {
                             {trip?.drivers_2?.first_name ? (
                               <Flex alignItems="center" gap={2}>
                                 <Tooltip
+                                  bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                                  color="white"
+                                  borderRadius="md"
+                                  p="6px 10px"
                                   placement="bottom-start"
                                   label={
-                                    <Box
-                                      p={3}
-                                      bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                      color="white"
-                                      borderRadius="md"
-                                      minW="180px">
+                                    <Box minW="180px">
                                       <VStack spacing={1} align="start">
                                         <Text
                                           fontSize="14px"

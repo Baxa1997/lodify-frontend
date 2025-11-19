@@ -26,21 +26,18 @@ import {
   getRowBackgroundColor,
 } from "@utils/timeUtils";
 import React, {useState} from "react";
-import {useSelector, useDispatch} from "react-redux";
+import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {sidebarActions} from "@store/sidebar";
 import {tableActionsNeeded} from "../components/mockElements";
 import TripsFiltersComponent from "../modules/TripsFiltersComponent";
 import TimeCounter from "@components/TimeCounter";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
-  const userId = useSelector((state) => state.auth.userId);
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
@@ -62,7 +59,6 @@ function ActionsNeeded() {
     data: tripsData = [],
     isLoading,
     error,
-    refetch,
   } = useQuery({
     queryKey: [
       "ACTIONS_NEEDED_TRIPS",
@@ -114,15 +110,6 @@ function ActionsNeeded() {
     setSortConfig({
       key,
       direction: sortConfig.direction === "asc" ? "desc" : "asc",
-    });
-  };
-
-  const handleRowClick = (id, trip) => {
-    dispatch(sidebarActions.setSidebar(false));
-    navigate(`/admin/trips/${id}`, {
-      state: {
-        label: `${trip?.drivers?.first_name}.${trip?.drivers?.last_name}`,
-      },
     });
   };
 
@@ -221,14 +208,13 @@ function ActionsNeeded() {
                       )}>
                       <CTableTd>
                         <Tooltip
+                          p={"6px 10px"}
+                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                          color="white"
+                          borderRadius="md"
                           hasArrow
                           label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
+                            <Box minW="180px">
                               <VStack spacing={1} align="start">
                                 <Text
                                   fontSize="14px"
@@ -246,7 +232,6 @@ function ActionsNeeded() {
                             </Box>
                           }
                           placement="bottom-start"
-                          bg="transparent"
                           openDelay={300}>
                           <Text
                             cursor="pointer"
@@ -256,111 +241,39 @@ function ActionsNeeded() {
                           </Text>
                         </Tooltip>
                       </CTableTd>
+
                       <CTableTd minWidth="180px">
                         <Flex
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
-                          <Tooltip
-                            hasArrow
-                            label={
-                              <Box
-                                p={3}
-                                bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                color="white"
-                                borderRadius="md"
-                                minW="180px">
-                                <VStack spacing={1} align="start">
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {getCustomerInfo(trip).companyName}
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {getCustomerInfo(trip).customer}
-                                  </Text>
-                                </VStack>
-                              </Box>
-                            }
-                            placement="bottom-start"
-                            bg="transparent"
-                            openDelay={300}>
-                            <Text
-                              color="#181D27"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}>
-                              {trip.id || ""}
-                            </Text>
-                          </Tooltip>
+                          <Text color="#181D27">{trip.id || ""}</Text>
                         </Flex>
                       </CTableTd>
+
                       <CTableTd>
                         <Flex
                           alignItems="center"
                           gap="16px"
                           justifyContent="space-between">
                           <Box>
-                            <Tooltip
-                              hasArrow
-                              label={
-                                <Box
-                                  p={3}
-                                  bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                  color="white"
-                                  borderRadius="md"
-                                  minW="180px">
-                                  <VStack spacing={1} align="start">
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {getCustomerInfo(trip).companyName}
-                                    </Text>
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {getCustomerInfo(trip).customer}
-                                    </Text>
-                                  </VStack>
-                                </Box>
-                              }
-                              placement="bottom-start"
-                              bg="transparent"
-                              openDelay={300}>
-                              <>
-                                {" "}
-                                <Text
-                                  h="20px"
-                                  fontSize="14px"
-                                  fontWeight="500"
-                                  color="#181D27"
-                                  cursor="pointer"
-                                  _hover={{textDecoration: "underline"}}>
-                                  {`${trip.origin?.address ?? ""}` || ""}
-                                </Text>
-                                <Text h="20px">
-                                  {formatDate(trip?.origin?.arrive_by ?? "")}
-                                </Text>
-                              </>
-                            </Tooltip>
+                            <>
+                              {" "}
+                              <Text
+                                h="20px"
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#181D27">
+                                {`${trip.origin?.address ?? ""}` || ""}
+                              </Text>
+                              <Text h="20px">
+                                {formatDate(trip?.origin?.arrive_by ?? "")}
+                              </Text>
+                            </>
                           </Box>
                         </Flex>
                       </CTableTd>
-                      {/* <CTableTd>
-                        <Box>
-                          <Flex
-                            gap="16px"
-                            alignItems="center"
-                            justifyContent="space-between">
-                            <Text>{trip?.invited_by?.legal_name ?? ""}</Text>
-                          </Flex>
-                        </Box>
-                      </CTableTd> */}
+
                       <CTableTd>
                         <Box>
                           <Flex
@@ -368,43 +281,13 @@ function ActionsNeeded() {
                             alignItems="center"
                             justifyContent="space-between">
                             <Box>
-                              <Tooltip
-                                label={
-                                  <Box
-                                    p={3}
-                                    bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                    color="white"
-                                    borderRadius="md"
-                                    minW="180px">
-                                    <VStack spacing={1} align="start">
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {getCustomerInfo(trip).companyName}
-                                      </Text>
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {getCustomerInfo(trip).customer}
-                                      </Text>
-                                    </VStack>
-                                  </Box>
-                                }
-                                placement="bottom-start"
-                                bg="transparent"
-                                openDelay={300}>
-                                <Text
-                                  h="20px"
-                                  fontSize="14px"
-                                  fontWeight="500"
-                                  color="#181D27"
-                                  cursor="pointer"
-                                  _hover={{textDecoration: "underline"}}>
-                                  {`${trip.stop?.address ?? ""}` || ""}
-                                </Text>
-                              </Tooltip>
+                              <Text
+                                h="20px"
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#181D27">
+                                {`${trip.stop?.address ?? ""}` || ""}
+                              </Text>
                               <Text h="20px">
                                 {formatDate(trip?.stop?.arrive_by ?? "")}
                               </Text>
@@ -422,52 +305,10 @@ function ActionsNeeded() {
                         />
                       </CTableTd>
 
-                      {/* <CTableTd>
-                        <ArrivalTimer
-                          arriveBy={trip?.stop?.arrive_by}
-                          onTimeUp={() => {
-                            console.log(
-                              `Arrival timer finished for trip ${trip.id}`
-                            );
-                          }}
-                        />
-                      </CTableTd> */}
-
                       <CTableTd>
-                        <Tooltip
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Text
-                            cursor="pointer"
-                            _hover={{textDecoration: "underline"}}
-                            color="#181D27">
-                            {trip?.pickup_reason ?? "---"}
-                          </Text>
-                        </Tooltip>
+                        <Text color="#181D27">
+                          {trip?.pickup_reason ?? "---"}
+                        </Text>
                       </CTableTd>
 
                       <CTableTd>
