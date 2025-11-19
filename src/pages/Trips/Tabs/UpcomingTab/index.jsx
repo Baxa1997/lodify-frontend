@@ -296,6 +296,7 @@ function UpcomingTab({tripType = ""}) {
                           </Text>
                         </Tooltip>
                       </CTableTd>
+
                       <CTableTd minWidth="180px">
                         <Flex
                           gap="24px"
@@ -348,6 +349,7 @@ function UpcomingTab({tripType = ""}) {
                           />
                         </Flex>
                       </CTableTd>
+
                       <CTableTd>
                         <Flex
                           alignItems="center"
@@ -406,6 +408,7 @@ function UpcomingTab({tripType = ""}) {
                           <TripStatus status={trip?.total_trips} />
                         </Flex>
                       </CTableTd>
+
                       <CTableTd>
                         <Box>
                           <Flex
@@ -460,6 +463,7 @@ function UpcomingTab({tripType = ""}) {
                           </Flex>
                         </Box>
                       </CTableTd>
+
                       {Boolean(!isBroker) && (
                         <CTableTd>
                           <Flex alignItems="center">
@@ -467,6 +471,47 @@ function UpcomingTab({tripType = ""}) {
                           </Flex>
                         </CTableTd>
                       )}
+
+                      <CTableTd>
+                        <Tooltip
+                          label={
+                            <Box
+                              p={3}
+                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                              color="white"
+                              borderRadius="md"
+                              minW="180px">
+                              <VStack spacing={1} align="start">
+                                <Text
+                                  fontSize="14px"
+                                  fontWeight="600"
+                                  color="white">
+                                  {getCustomerInfo(trip).companyName}
+                                </Text>
+                                <Text
+                                  fontSize="14px"
+                                  fontWeight="600"
+                                  color="white">
+                                  {getCustomerInfo(trip).customer}
+                                </Text>
+                              </VStack>
+                            </Box>
+                          }
+                          placement="bottom-start"
+                          bg="transparent"
+                          openDelay={300}>
+                          <Box>
+                            <Text
+                              h="20px"
+                              cursor="pointer"
+                              _hover={{textDecoration: "underline"}}
+                              color="#181D27">
+                              {trip?.tractors?.plate_number ?? "---"}
+                            </Text>
+                          </Box>
+                        </Tooltip>
+                      </CTableTd>
+
                       <CTableTd>
                         <Tooltip
                           label={
@@ -506,6 +551,7 @@ function UpcomingTab({tripType = ""}) {
                           </Box>
                         </Tooltip>
                       </CTableTd>
+
                       <CTableTd>
                         <Tooltip
                           hasArrow

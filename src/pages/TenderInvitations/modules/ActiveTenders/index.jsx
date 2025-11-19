@@ -385,41 +385,9 @@ function ActiveTenders() {
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
-                          <Tooltip
-                            hasArrow
-                            label={
-                              <Box
-                                p={3}
-                                bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                color="white"
-                                borderRadius="md"
-                                minW="180px">
-                                <VStack spacing={1} align="start">
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {getCustomerInfo(trip).companyName}
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {getCustomerInfo(trip).customer}
-                                  </Text>
-                                </VStack>
-                              </Box>
-                            }
-                            placement="bottom-start"
-                            bg="transparent"
-                            openDelay={300}>
-                            <Text
-                              color="#181D27"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}>
-                              {trip.id || ""}
-                            </Text>
-                          </Tooltip>
+                          <Text color="#181D27" cursor="pointer">
+                            {trip.id || ""}
+                          </Text>
                           <TripStatus
                             rowClick={handleRowClick}
                             status={
@@ -437,54 +405,21 @@ function ActiveTenders() {
                           gap="16px"
                           justifyContent="space-between">
                           <Box>
-                            <Tooltip
-                              hasArrow
-                              label={
-                                <Box
-                                  p={3}
-                                  bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                  color="white"
-                                  borderRadius="md"
-                                  minW="180px">
-                                  <VStack spacing={1} align="start">
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {getCustomerInfo(trip).companyName}
-                                    </Text>
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {getCustomerInfo(trip).customer}
-                                    </Text>
-                                  </VStack>
-                                </Box>
-                              }
-                              placement="bottom-start"
-                              bg="transparent"
-                              openDelay={300}>
-                              <>
-                                {" "}
-                                <Text
-                                  h="20px"
-                                  fontSize="14px"
-                                  fontWeight="500"
-                                  color="#181D27"
-                                  cursor="pointer"
-                                  _hover={{textDecoration: "underline"}}>
-                                  {`${trip.origin?.[0]?.address ?? ""} / ${
-                                    trip?.origin?.[0]?.address_2 ?? ""
-                                  }` || ""}
-                                </Text>
-                                <Text h="20px">
-                                  {formatDate(
-                                    trip?.origin?.[0]?.depart_at ?? ""
-                                  )}
-                                </Text>
-                              </>
-                            </Tooltip>
+                            <>
+                              <Text
+                                h="20px"
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#181D27"
+                                cursor="pointer">
+                                {`${trip.origin?.[0]?.address ?? ""} / ${
+                                  trip?.origin?.[0]?.address_2 ?? ""
+                                }` || ""}
+                              </Text>
+                              <Text h="20px">
+                                {formatDate(trip?.origin?.[0]?.depart_at ?? "")}
+                              </Text>
+                            </>
                           </Box>
                           <TripStatus status={trip?.total_trips} />
                         </Flex>
@@ -496,104 +431,48 @@ function ActiveTenders() {
                             alignItems="center"
                             justifyContent="space-between">
                             <Box>
-                              <Tooltip
-                                label={
-                                  <Box
-                                    p={3}
-                                    bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                    color="white"
-                                    borderRadius="md"
-                                    minW="180px">
-                                    <VStack spacing={1} align="start">
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {getCustomerInfo(trip).companyName}
-                                      </Text>
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {getCustomerInfo(trip).customer}
-                                      </Text>
-                                    </VStack>
-                                  </Box>
-                                }
-                                placement="bottom-start"
-                                bg="transparent"
-                                openDelay={300}>
+                              <>
                                 <Text
                                   h="20px"
                                   fontSize="14px"
                                   fontWeight="500"
                                   color="#181D27"
-                                  cursor="pointer"
-                                  _hover={{textDecoration: "underline"}}>
+                                  cursor="pointer">
                                   {`${trip.last_stop?.[0]?.address ?? ""} / ${
                                     trip?.last_stop?.[0]?.address_2 ?? ""
                                   }` || ""}
                                 </Text>
-                              </Tooltip>
-                              <Text h="20px">
-                                {formatDate(
-                                  trip?.last_stop?.[0]?.arrive_by ?? ""
-                                )}
-                              </Text>
+                                <Text h="20px">
+                                  {formatDate(
+                                    trip?.last_stop?.[0]?.arrive_by ?? ""
+                                  )}
+                                </Text>
+                              </>
                             </Box>
                           </Flex>
                         </Box>
                       </CTableTd>
                       <CTableTd>
-                        <Tooltip
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Flex gap="24px" alignItems="center">
-                            {" "}
-                            <Box>
-                              <Text
-                                fontSize={"12px"}
-                                fontWeight={500}
-                                cursor="pointer"
-                                _hover={{textDecoration: "underline"}}
-                                color="#181D27">
-                                {trip?.origin?.[0]?.arrive_by &&
-                                  format(
-                                    trip?.origin?.[0]?.arrive_by,
-                                    "MM/dd/yyyy"
-                                  )}
-                              </Text>
-                              <Text fontSize={"14px"} fontWeight={400} h="20px">
-                                {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
-                              </Text>
-                            </Box>
-                            <TripDriverVerification trip={trip} />
-                          </Flex>
-                        </Tooltip>
+                        <Flex gap="24px" alignItems="center">
+                          {" "}
+                          <Box>
+                            <Text
+                              fontSize={"12px"}
+                              fontWeight={500}
+                              cursor="pointer"
+                              color="#181D27">
+                              {trip?.origin?.[0]?.arrive_by &&
+                                format(
+                                  trip?.origin?.[0]?.arrive_by,
+                                  "MM/dd/yyyy"
+                                )}
+                            </Text>
+                            <Text fontSize={"14px"} fontWeight={400} h="20px">
+                              {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
+                            </Text>
+                          </Box>
+                          <TripDriverVerification trip={trip} />
+                        </Flex>
                       </CTableTd>
                       <CTableTd>
                         <Tooltip
@@ -644,14 +523,12 @@ function ActiveTenders() {
                       </CTableTd>
                       <CTableTd>
                         <Tooltip
+                          p="6px 10px"
+                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                          borderRadius="md"
                           hasArrow
                           label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
+                            <Box color="white" minW="180px">
                               <VStack spacing={1} align="start">
                                 <Text
                                   fontSize="14px"
@@ -669,7 +546,6 @@ function ActiveTenders() {
                             </Box>
                           }
                           placement="bottom-start"
-                          bg="transparent"
                           openDelay={300}>
                           <Flex gap="12px">
                             <Text
@@ -687,17 +563,46 @@ function ActiveTenders() {
 
                       {Boolean(!isBroker) && (
                         <CTableTd>
-                          <Flex gap="12px">
-                            <Text
-                              h="20px"
-                              fontSize="14px"
-                              fontWeight="500"
-                              color="#535862"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}>
-                              {trip?.invited_by?.legal_name ?? ""}
-                            </Text>
-                          </Flex>
+                          <Tooltip
+                            p="6px 10px"
+                            bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                            borderRadius="md"
+                            label={
+                              <Box color="white" minW="180px">
+                                <VStack spacing={1} align="start">
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {getCustomerInfo(trip).companyName}
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {getCustomerInfo(trip).customer}
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {getCustomerInfo(trip).customer}
+                                  </Text>
+                                </VStack>
+                              </Box>
+                            }>
+                            <Flex gap="12px">
+                              <Text
+                                h="20px"
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#535862"
+                                cursor="pointer"
+                                _hover={{textDecoration: "underline"}}>
+                                {trip?.invited_by?.legal_name ?? ""}
+                              </Text>
+                            </Flex>
+                          </Tooltip>
                         </CTableTd>
                       )}
 
@@ -728,7 +633,6 @@ function ActiveTenders() {
                             </Box>
                           }
                           placement="bottom-start"
-                          bg="transparent"
                           openDelay={300}>
                           <Flex gap="12px" justifyContent="space-between">
                             <Text
