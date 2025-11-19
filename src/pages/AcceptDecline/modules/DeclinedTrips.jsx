@@ -453,7 +453,7 @@ function DeclinedTrips() {
                               color="#535862"
                               cursor="pointer"
                               _hover={{textDecoration: "underline"}}>
-                              {trip?.carriers?.[0]?.name ?? ""}
+                              {trip?.company?.legal_name ?? ""}
                             </Text>
                           </Flex>
                         </CTableTd>
