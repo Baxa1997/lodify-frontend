@@ -488,13 +488,19 @@ function UpcomingTab({tripType = ""}) {
                                         fontSize="14px"
                                         fontWeight="600"
                                         color="white">
+                                        {trip?.drivers?.company_name}
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="600"
+                                        color="white">
                                         {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
                                       </Text>
                                       <Text
                                         fontSize="14px"
                                         fontWeight="600"
                                         color="white">
-                                        {trip?.drivers?.company_name}
+                                        {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
                                       </Text>
                                     </VStack>
                                   </Box>
@@ -561,13 +567,19 @@ function UpcomingTab({tripType = ""}) {
                                           fontSize="14px"
                                           fontWeight="600"
                                           color="white">
-                                          {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
+                                          {trip?.drivers?.company_name}
                                         </Text>
                                         <Text
                                           fontSize="14px"
                                           fontWeight="600"
                                           color="white">
-                                          {trip?.drivers_2?.company_name ?? ""}
+                                          {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
+                                        </Text>
+                                        <Text
+                                          fontSize="14px"
+                                          fontWeight="600"
+                                          color="white">
+                                          {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
                                         </Text>
                                       </VStack>
                                     </Box>
