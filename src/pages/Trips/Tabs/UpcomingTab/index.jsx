@@ -260,39 +260,7 @@ function UpcomingTab({tripType = ""}) {
                         toggleRowExpansion(trip.id || trip.guid, e)
                       }>
                       <CTableTd>
-                        <Tooltip
-                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                          color="white"
-                          borderRadius="md"
-                          hasArrow
-                          p="6px 10px"
-                          label={
-                            <Box minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {trip?.customer?.name}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          openDelay={300}>
-                          <Text
-                            cursor="pointer"
-                            _hover={{textDecoration: "underline"}}
-                            color="#181D27">
-                            {trip.customer?.name || ""}
-                          </Text>
-                        </Tooltip>
+                        <Text color="#181D27">{trip.customer?.name || ""}</Text>
                       </CTableTd>
 
                       <CTableTd minWidth="180px">
