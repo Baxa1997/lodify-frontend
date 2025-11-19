@@ -425,6 +425,21 @@ function AcceptedTrips() {
                         </Flex>
                       </CTableTd>
 
+                      <CTableTd>
+                        <Badge
+                          colorScheme={getLoadTypeColor(
+                            trip.origin?.[0]?.load_type?.[0] ?? ""
+                          )}
+                          variant="subtle"
+                          px={3}
+                          py={1}
+                          borderRadius="full"
+                          fontSize="12px"
+                          fontWeight="500">
+                          {trip.origin?.[0]?.load_type?.[0] ?? ""}
+                        </Badge>
+                      </CTableTd>
+
                       {Boolean(isBroker) && (
                         <CTableTd>
                           <Flex gap="12px" justifyContent="space-between">
