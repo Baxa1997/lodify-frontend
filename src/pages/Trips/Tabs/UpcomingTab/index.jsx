@@ -273,7 +273,7 @@ function UpcomingTab({tripType = ""}) {
                                   fontSize="14px"
                                   fontWeight="600"
                                   color="white">
-                                  {getCustomerInfo(trip).companyName}
+                                  {trip?.customer?.name}
                                 </Text>
                                 <Text
                                   fontSize="14px"
@@ -379,19 +379,19 @@ function UpcomingTab({tripType = ""}) {
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).companyName}
+                                    {`${trip?.broker_user?.first_name} ${trip?.broker_user?.last_name}`}
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).customer}
+                                    Broker
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).customer}
+                                    {trip?.invited_by?.legal_name}
                                   </Text>
                                 </VStack>
                               </Box>
@@ -488,13 +488,13 @@ function UpcomingTab({tripType = ""}) {
                                         fontSize="14px"
                                         fontWeight="600"
                                         color="white">
-                                        {getCustomerInfo(trip).companyName}
+                                        {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
                                       </Text>
                                       <Text
                                         fontSize="14px"
                                         fontWeight="600"
                                         color="white">
-                                        {getCustomerInfo(trip).customer}
+                                        {trip?.drivers?.company_name}
                                       </Text>
                                     </VStack>
                                   </Box>
@@ -561,13 +561,13 @@ function UpcomingTab({tripType = ""}) {
                                           fontSize="14px"
                                           fontWeight="600"
                                           color="white">
-                                          {getCustomerInfo(trip).companyName}
+                                          {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
                                         </Text>
                                         <Text
                                           fontSize="14px"
                                           fontWeight="600"
                                           color="white">
-                                          {getCustomerInfo(trip).customer}
+                                          {trip?.drivers_2?.company_name ?? ""}
                                         </Text>
                                       </VStack>
                                     </Box>

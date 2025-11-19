@@ -411,19 +411,19 @@ function ClosedTenders({tripType = ""}) {
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).companyName}
+                                    {`${trip?.broker_user?.first_name} ${trip?.broker_user?.last_name}`}
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).customer}
+                                    Broker
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).customer}
+                                    {trip?.invited_by?.legal_name}
                                   </Text>
                                 </VStack>
                               </Box>
@@ -447,9 +447,7 @@ function ClosedTenders({tripType = ""}) {
                             h="20px"
                             fontSize="14px"
                             fontWeight="500"
-                            color="#535862"
-                            cursor="pointer"
-                            _hover={{textDecoration: "underline"}}>
+                            color="#535862">
                             {trip?.origin?.[0]?.equipment_type ?? ""}
                           </Text>
 
@@ -478,7 +476,6 @@ function ClosedTenders({tripType = ""}) {
                           borderRadius="full"
                           fontSize="12px"
                           fontWeight="500"
-                          cursor="pointer"
                           _hover={{opacity: 0.8}}>
                           {trip.origin?.[0]?.load_type?.[0] ?? ""}
                         </Badge>

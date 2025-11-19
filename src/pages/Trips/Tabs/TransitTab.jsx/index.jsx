@@ -263,7 +263,7 @@ function TransitTab({tripType = ""}) {
                                   fontSize="14px"
                                   fontWeight="600"
                                   color="white">
-                                  {getCustomerInfo(trip).companyName}
+                                  {trip?.customer?.name}
                                 </Text>
                                 <Text
                                   fontSize="14px"
@@ -358,28 +358,29 @@ function TransitTab({tripType = ""}) {
                       {Boolean(!isBroker) && (
                         <CTableTd>
                           <Tooltip
+                            p="6px 10px"
                             borderRadius="md"
                             bg="linear-gradient(to bottom, #1a365d, #2d3748)"
                             label={
-                              <Box p={3} color="white" minW="180px">
+                              <Box color="white" minW="180px">
                                 <VStack spacing={1} align="start">
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).companyName}
+                                    {`${trip?.broker_user?.first_name} ${trip?.broker_user?.last_name}`}
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).customer}
+                                    Broker
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).customer}
+                                    {trip?.invited_by?.legal_name}
                                   </Text>
                                 </VStack>
                               </Box>
@@ -472,19 +473,13 @@ function TransitTab({tripType = ""}) {
                                       fontSize="14px"
                                       fontWeight="600"
                                       color="white">
-                                      {getCustomerInfo(trip).companyName}
+                                      {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
                                     </Text>
                                     <Text
                                       fontSize="14px"
                                       fontWeight="600"
                                       color="white">
-                                      {getCustomerInfo(trip).companyName}
-                                    </Text>
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {getCustomerInfo(trip).companyName}
+                                      {trip?.drivers?.company_name}
                                     </Text>
                                   </VStack>
                                 </Box>
@@ -527,19 +522,13 @@ function TransitTab({tripType = ""}) {
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).companyName}
+                                    {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="white">
-                                    {getCustomerInfo(trip).companyName}
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {getCustomerInfo(trip).companyName}
+                                    {trip?.drivers_2?.company_name ?? ""}
                                   </Text>
                                 </VStack>
                               </Box>
