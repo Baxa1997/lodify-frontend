@@ -1,0 +1,475 @@
+import React, {useState, useEffect, useRef, useCallback} from "react";
+import {Box, Flex, Text, Input, Button, InputGroup} from "@chakra-ui/react";
+import {useSelector} from "react-redux";
+import {useParams} from "react-router-dom";
+import {useSocket, useSocketConnection} from "@context/SocketProvider";
+import styles from "./ChatMessage.module.scss";
+import {IoIosMore} from "react-icons/io";
+
+function ChatMessage({tripId: propTripId, tripName: propTripName}) {
+  const {id} = useParams();
+  const tripId = propTripId || id;
+  const tripName = propTripName || `Trip ${tripId || ""}`;
+  const socket = useSocket();
+  const {isConnected} = useSocketConnection();
+  const userId = useSelector((state) => state.auth.userInfo?.id);
+  const projectId = useSelector((state) => state.auth.projectId);
+  const loginUser = useSelector((state) => state.auth.user_data?.login);
+  const loginName = useSelector((state) => state.auth.user_data?.login);
+
+  const [conversation, setConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [presence, setPresence] = useState({});
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const [hasProcessedTripId, setHasProcessedTripId] = useState(false);
+
+  const scrollToBottom = useCallback((behavior = "smooth") => {
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({behavior});
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!socket || !isConnected || !userId || !tripId) return;
+
+    socket.emit("rooms list", {row_id: userId, project_id: projectId});
+
+    const handleRoomsList = (data) => {
+      const roomsData = data || [];
+      const existingRoom = roomsData.find((room) => room.item_id === tripId);
+
+      if (existingRoom?.id) {
+        setConversation(existingRoom);
+        setHasProcessedTripId(true);
+      } else if (
+        tripId &&
+        tripName &&
+        !conversation?.id &&
+        !hasProcessedTripId
+      ) {
+        setIsInitializing(true);
+        setHasProcessedTripId(true);
+
+        socket.emit(
+          "create room",
+          {
+            name: "",
+            type: "group",
+            row_id: userId,
+            item_id: tripId,
+            from_name: loginName,
+            project_id: projectId,
+            to_name: tripName || `Trip ${tripId}`,
+          },
+          (response) => {
+            if (response && response.room) {
+              setConversation(response.room);
+              setIsInitializing(false);
+            } else if (response && response.error) {
+              console.error("Error creating room:", response.error);
+              setIsInitializing(false);
+            }
+          }
+        );
+      }
+    };
+
+    socket.on("rooms list", handleRoomsList);
+
+    return () => {
+      socket.off("rooms list", handleRoomsList);
+    };
+  }, [
+    socket,
+    isConnected,
+    userId,
+    tripId,
+    tripName,
+    conversation?.id,
+    hasProcessedTripId,
+    loginName,
+    projectId,
+  ]);
+
+  useEffect(() => {
+    if (!socket || !conversation?.id || !userId) return;
+
+    setMessages([]);
+
+    socket.emit("join room", {
+      room_id: conversation.id,
+      row_id: userId,
+      limit: 50,
+      offset: 0,
+    });
+
+    socket.emit("presence:get", {
+      row_id: conversation.to_row_id,
+      project_id: projectId,
+    });
+  }, [socket, conversation?.id, userId, projectId]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRoomHistory = (messagesData) => {
+      const messagesToSet = Array.isArray(messagesData)
+        ? messagesData
+        : messagesData?.data && Array.isArray(messagesData.data)
+        ? messagesData.data
+        : [];
+
+      if (messagesToSet.length > 0) {
+        setMessages(messagesToSet);
+        setTimeout(() => scrollToBottom("auto"), 100);
+      }
+    };
+
+    const handleReceiveMessage = (message) => {
+      if (message.room_id === conversation?.id) {
+        setMessages((prevMessages) => {
+          const existingMessage = prevMessages.find(
+            (msg) => (msg.id || msg._id) === (message.id || message._id)
+          );
+          if (existingMessage) {
+            return prevMessages;
+          }
+          return [...prevMessages, message];
+        });
+
+        if (
+          socket &&
+          socket.connected &&
+          userId &&
+          message.from !== loginUser
+        ) {
+          socket.emit("message:read", {
+            row_id: userId,
+            room_id: conversation.id,
+            project_id: projectId,
+          });
+        }
+      }
+    };
+
+    socket.on("room history", handleRoomHistory);
+    socket.on("chat message", handleReceiveMessage);
+
+    return () => {
+      socket.off("room history", handleRoomHistory);
+      socket.off("chat message", handleReceiveMessage);
+    };
+  }, [socket, conversation?.id, userId, loginUser, projectId, scrollToBottom]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom("smooth");
+    }
+  }, [messages.length, scrollToBottom]);
+
+  useEffect(() => {
+    if (!socket || !conversation?.id || !userId || !isConnected) return;
+
+    const sendMessageRead = () => {
+      if (socket && socket.connected && conversation?.id && userId) {
+        socket.emit("message:read", {
+          row_id: userId,
+          room_id: conversation.id,
+        });
+      }
+    };
+
+    sendMessageRead();
+    const messageReadInterval = setInterval(sendMessageRead, 30000);
+
+    return () => {
+      clearInterval(messageReadInterval);
+    };
+  }, [socket, conversation?.id, userId, isConnected]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("presence.updated", (response) => {
+      if (response && response.row_id) {
+        setPresence((prevPresence) => ({
+          ...prevPresence,
+          [response.row_id]: {
+            status: response.status,
+            last_seen_at: response.last_seen_at,
+            updated_at: response.updated_at || new Date().toISOString(),
+          },
+        }));
+      }
+    });
+
+    return () => {
+      socket.off("presence.updated");
+    };
+  }, [socket]);
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!conversation?.id || !loginUser || !message.trim() || !isConnected) {
+      return;
+    }
+
+    const messageData = {
+      room_id: conversation.id,
+      content: message.trim(),
+      from: loginUser,
+      type: "text",
+      author_row_id: userId,
+      project_id: projectId,
+      file: "",
+    };
+
+    socket.emit("chat message", messageData, (response) => {
+      if (response && response.error) {
+        console.error("❌ Server error response:", response.error);
+      } else {
+        setMessage("");
+      }
+    });
+  };
+
+  const groupMessagesByDate = (messagesList) => {
+    const groups = [];
+    let currentGroup = [];
+    let currentDate = null;
+
+    messagesList.forEach((msg) => {
+      const messageDate = new Date(
+        msg.created_at || msg.timestamp
+      ).toDateString();
+
+      if (currentDate !== messageDate) {
+        if (currentGroup.length > 0) {
+          groups.push({
+            date: currentDate,
+            messages: currentGroup,
+          });
+        }
+        currentGroup = [msg];
+        currentDate = messageDate;
+      } else {
+        currentGroup.push(msg);
+      }
+    });
+
+    if (currentGroup.length > 0) {
+      groups.push({
+        date: currentDate,
+        messages: currentGroup,
+      });
+    }
+
+    return groups;
+  };
+
+  const messageGroups = groupMessagesByDate(messages);
+
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+
+    if (seconds < 60) return "Just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return "Today";
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return "Yesterday";
+    } else {
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+  };
+
+  return (
+    <Box className={styles.chatContainer}>
+      <Flex
+        className={styles.chatHeader}
+        justifyContent="space-between"
+        alignItems="center"
+        p="16px">
+        <Text fontSize="18px" fontWeight="600" color="#181D27">
+          Collobration
+        </Text>
+        <Button bg="none" _hover={{bg: "none"}} p="0">
+          <img src="/img/fullScreenChat.svg" alt="Fullscreen" />
+        </Button>
+      </Flex>
+
+      <Box className={styles.messagesList} ref={messagesContainerRef}>
+        {!isConnected && (
+          <Box className={styles.emptyState}>
+            <Text>Connecting to chat server...</Text>
+          </Box>
+        )}
+
+        {isConnected && isInitializing && (
+          <Box className={styles.emptyState}>
+            <Text>Initializing chat...</Text>
+          </Box>
+        )}
+
+        {isConnected &&
+          !isInitializing &&
+          conversation?.id &&
+          messages.length === 0 && (
+            <Box className={styles.emptyState}>
+              <Text>No messages yet. Start the conversation!</Text>
+            </Box>
+          )}
+
+        {isConnected &&
+          !isInitializing &&
+          conversation?.id &&
+          messages.length > 0 && (
+            <Box className={styles.messagesContainer}>
+              {messageGroups.map((group, groupIndex) => (
+                <Box key={`${group.date}-${groupIndex}`}>
+                  <Box className={styles.dateSeparator}>
+                    <Text fontSize="12px" color="#6B7280" fontWeight="500">
+                      {formatDate(group.date)}
+                    </Text>
+                  </Box>
+
+                  {group.messages.map((msg, msgIndex) => {
+                    const isOwn = msg.from === loginUser;
+                    const showTime =
+                      msgIndex === group.messages.length - 1 ||
+                      group.messages[msgIndex + 1]?.from !== msg.from;
+
+                    return (
+                      <Flex
+                        key={msg.id || msg._id || msgIndex}
+                        className={
+                          isOwn ? styles.messageRowOwn : styles.messageRow
+                        }
+                        p="6px 0"
+                        gap="12px">
+                        {!isOwn && (
+                          <Box className={styles.avatar}>
+                            {msg.from?.[0]?.toUpperCase() || "U"}
+                          </Box>
+                        )}
+
+                        <Box className={styles.messageWrapper}>
+                          {!isOwn && (
+                            <Text
+                              fontSize="14px"
+                              fontWeight="600"
+                              color="#181D27"
+                              mb="4px">
+                              {msg.from || "Unknown"}
+                            </Text>
+                          )}
+
+                          <Box
+                            className={
+                              isOwn
+                                ? styles.messageBubbleOwn
+                                : styles.messageBubble
+                            }
+                            bg={isOwn ? "#F79009" : "#FFFFFF"}
+                            color={isOwn ? "#FFFFFF" : "#181D27"}
+                            borderRadius={
+                              isOwn ? "25px 25px 0 25px" : "25px 25px 25px 0"
+                            }
+                            border={!isOwn ? "1px solid #E9EAEB" : "none"}
+                            p="12px 16px"
+                            maxW="70%"
+                            ml={isOwn ? "auto" : "0"}>
+                            <Text
+                              fontSize="14px"
+                              lineHeight="1.4"
+                              whiteSpace="pre-wrap">
+                              {msg.message || msg.content || ""}
+                            </Text>
+                          </Box>
+
+                          {showTime && (
+                            <Text
+                              fontSize="12px"
+                              color="#6B7280"
+                              mt="4px"
+                              textAlign={isOwn ? "right" : "left"}>
+                              {formatTime(msg.created_at || msg.timestamp)}
+                            </Text>
+                          )}
+                        </Box>
+                      </Flex>
+                    );
+                  })}
+                </Box>
+              ))}
+              <div ref={messagesEndRef} />
+            </Box>
+          )}
+      </Box>
+
+      <Box className={styles.messageInput}>
+        <form onSubmit={handleSendMessage}>
+          <Flex p="16px" gap="6px" alignItems="center">
+            <InputGroup flex="1">
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Send a message"
+                border="1px solid #D1D5DB"
+                borderRadius="8px"
+                h="48px"
+                disabled={!isConnected || !conversation?.id}
+                _focus={{
+                  outline: "none",
+                  boxShadow: "none",
+                  borderColor: "#F79009",
+                }}
+              />
+            </InputGroup>
+
+            <Button bg="none" _hover={{bg: "none"}} p="0" type="button">
+              <IoIosMore style={{fontSize: "24px", color: "#181D27"}} />
+            </Button>
+
+            <Button
+              type="submit"
+              bg="#F79009"
+              color="#FFFFFF"
+              borderRadius="8px"
+              px="24px"
+              h="40px"
+              disabled={!isConnected || !conversation?.id || !message.trim()}
+              _hover={{bg: "#D97706"}}
+              _disabled={{bg: "#D1D5DB", cursor: "not-allowed"}}>
+              Send
+            </Button>
+          </Flex>
+        </form>
+      </Box>
+    </Box>
+  );
+}
+
+export default ChatMessage;

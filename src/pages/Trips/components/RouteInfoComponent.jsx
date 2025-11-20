@@ -189,21 +189,6 @@ function RouteInfoComponent({tripData = {}}) {
             </Box>
           ))}
         </Box>
-        {/* <Box padding="12px">
-          <HFFileUpload
-            name="file"
-            control={control}
-            disableRequest
-            onChange={handleUpload}
-            loading={loading}
-          />
-        </Box> */}
-        {/* <Button className={styles.actionBtn}>
-          <img
-            src="/img/navigation.svg"
-            alt="edit" />
-          <Text color="#175cd3">Upload file</Text>
-        </Button> */}
       </Box>
 
       <FilesReader
