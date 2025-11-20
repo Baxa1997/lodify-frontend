@@ -15,8 +15,10 @@ import {
 import {MdReply, MdMoreVert} from "react-icons/md";
 import {useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
+import {useQuery} from "@tanstack/react-query";
 import {useSocket, useSocketConnection} from "@context/SocketProvider";
 import TextMessage from "../../../Collaborations/components/MessageBubble/TextMessage";
+import chatService from "@services/chatService";
 import styles from "./ChatMessage.module.scss";
 import {IoIosMore} from "react-icons/io";
 
@@ -39,6 +41,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const [hasProcessedTripId, setHasProcessedTripId] = useState(false);
+  const [roomIdFromApi, setRoomIdFromApi] = useState(null);
 
   const scrollToBottom = useCallback((behavior = "smooth") => {
     requestAnimationFrame(() => {
@@ -47,55 +50,115 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   }, []);
 
   useEffect(() => {
-    if (!socket || !isConnected || !userId || !tripId) return;
+    setHasProcessedTripId(false);
+    setRoomIdFromApi(null);
+    setConversation(null);
+    setMessages([]);
+  }, [tripId]);
 
-    socket.emit("rooms list", {row_id: userId, project_id: projectId});
+  // Get roomId from API first
+  const {
+    data: roomData,
+    isLoading: isLoadingRoom,
+    isError: isRoomError,
+  } = useQuery({
+    queryKey: ["chatRoomId", tripId],
+    queryFn: () => chatService.getChatRoomId(tripId),
+    enabled: !!tripId && !!isConnected,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+    retry: false,
+  });
 
-    const handleRoomsList = (data) => {
-      const roomsData = data || [];
-      const existingRoom = roomsData.find((room) => room.item_id === tripId);
-
-      if (existingRoom?.id) {
-        setConversation(existingRoom);
-        setHasProcessedTripId(true);
-      } else if (
-        tripId &&
-        tripName &&
-        !conversation?.id &&
-        !hasProcessedTripId
-      ) {
-        setIsInitializing(true);
-        setHasProcessedTripId(true);
-
-        socket.emit(
-          "create room",
-          {
-            name: "",
-            type: "group",
-            row_id: userId,
-            item_id: tripId,
-            from_name: loginName,
-            project_id: projectId,
-            to_name: tripName || `Trip ${tripId}`,
-          },
-          (response) => {
-            if (response && response.room) {
-              setConversation(response.room);
-              setIsInitializing(false);
-            } else if (response && response.error) {
-              console.error("Error creating room:", response.error);
-              setIsInitializing(false);
-            }
-          }
-        );
+  // Extract roomId from API response
+  useEffect(() => {
+    if (roomData?.data) {
+      const roomId =
+        roomData.data?.id ||
+        roomData.data?.room_id ||
+        roomData.data?.response?.id;
+      if (roomId) {
+        setRoomIdFromApi(roomId);
+      } else {
+        setRoomIdFromApi(null);
       }
-    };
+    } else if (isRoomError || (!isLoadingRoom && !roomData)) {
+      setRoomIdFromApi(null);
+    }
+  }, [roomData, isRoomError, isLoadingRoom]);
 
-    socket.on("rooms list", handleRoomsList);
+  // Handle room creation or joining based on API response
+  useEffect(() => {
+    if (!socket || !isConnected || !userId || !tripId || isLoadingRoom) return;
+    if (hasProcessedTripId) return; // Already processed
 
-    return () => {
-      socket.off("rooms list", handleRoomsList);
-    };
+    // If we got roomId from API, use it
+    if (roomIdFromApi) {
+      setIsInitializing(true);
+      setHasProcessedTripId(true);
+
+      // Get room details from rooms list
+      socket.emit("rooms list", {row_id: userId, project_id: projectId});
+
+      const handleRoomsList = (data) => {
+        const roomsData = data || [];
+        const existingRoom = roomsData.find(
+          (room) => room.id === roomIdFromApi || room.item_id === tripId
+        );
+
+        if (existingRoom?.id) {
+          setConversation(existingRoom);
+          setIsInitializing(false);
+        } else {
+          // Room exists but not in our list, create conversation object
+          setConversation({
+            id: roomIdFromApi,
+            item_id: tripId,
+            to_name: tripName || `Trip ${tripId}`,
+          });
+          setIsInitializing(false);
+        }
+      };
+
+      socket.on("rooms list", handleRoomsList);
+
+      return () => {
+        socket.off("rooms list", handleRoomsList);
+      };
+    } else if (
+      roomIdFromApi === null &&
+      !isLoadingRoom &&
+      tripId &&
+      tripName &&
+      !conversation?.id
+    ) {
+      // No roomId from API, create a new room
+      setIsInitializing(true);
+      setHasProcessedTripId(true);
+
+      socket.emit(
+        "create room",
+        {
+          name: "",
+          type: "group",
+          row_id: userId,
+          item_id: tripId,
+          from_name: loginName,
+          project_id: projectId,
+          to_name: tripName || `Trip ${tripId}`,
+        },
+        (response) => {
+          if (response && response.room) {
+            setConversation(response.room);
+            setIsInitializing(false);
+          } else if (response && response.error) {
+            console.error("Error creating room:", response.error);
+            setIsInitializing(false);
+          }
+        }
+      );
+    }
   }, [
     socket,
     isConnected,
@@ -106,6 +169,9 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     hasProcessedTripId,
     loginName,
     projectId,
+    roomIdFromApi,
+    isLoadingRoom,
+    isRoomError,
   ]);
 
   useEffect(() => {
