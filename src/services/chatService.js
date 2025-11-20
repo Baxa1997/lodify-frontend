@@ -1,4 +1,5 @@
 import httpRequest from "../utils/httpRequest";
+import axios from "axios";
 
 const chatService = {
   getList: (data) => {
@@ -9,8 +10,10 @@ const chatService = {
       data,
     });
   },
-  getChatRoomId: (id) => {
-    return httpRequest.get(`v1/room/${id}`);
+  getChatRoomId: (id, projectId) => {
+    return axios.get(
+      `https://chat-service.u-code.io/v1/room/${id}?project_id=${projectId}`
+    );
   },
 };
 

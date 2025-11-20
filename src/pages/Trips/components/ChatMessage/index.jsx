@@ -49,21 +49,20 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     });
   }, []);
 
-  useEffect(() => {
-    setHasProcessedTripId(false);
-    setRoomIdFromApi(null);
-    setConversation(null);
-    setMessages([]);
-  }, [tripId]);
+  // useEffect(() => {
+  //   setHasProcessedTripId(false);
+  //   setRoomIdFromApi(null);
+  //   setConversation(null);
+  //   setMessages([]);
+  // }, [tripId]);
 
-  // Get roomId from API first
   const {
     data: roomData,
     isLoading: isLoadingRoom,
     isError: isRoomError,
   } = useQuery({
     queryKey: ["chatRoomId", tripId],
-    queryFn: () => chatService.getChatRoomId(tripId),
+    queryFn: () => chatService.getChatRoomId(tripId, projectId),
     enabled: !!tripId && !!isConnected,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
@@ -71,13 +70,9 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     retry: false,
   });
 
-  // Extract roomId from API response
   useEffect(() => {
     if (roomData?.data) {
-      const roomId =
-        roomData.data?.id ||
-        roomData.data?.room_id ||
-        roomData.data?.response?.id;
+      const roomId = roomData?.data?.body?.room_id;
       if (roomId) {
         setRoomIdFromApi(roomId);
       } else {
@@ -88,30 +83,32 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     }
   }, [roomData, isRoomError, isLoadingRoom]);
 
-  // Handle room creation or joining based on API response
   useEffect(() => {
     if (!socket || !isConnected || !userId || !tripId || isLoadingRoom) return;
-    if (hasProcessedTripId) return; // Already processed
+    if (hasProcessedTripId) return;
 
-    // If we got roomId from API, use it
     if (roomIdFromApi) {
       setIsInitializing(true);
       setHasProcessedTripId(true);
 
-      // Get room details from rooms list
       socket.emit("rooms list", {row_id: userId, project_id: projectId});
 
       const handleRoomsList = (data) => {
+        console.log("📋 Rooms list received:", data);
         const roomsData = data || [];
         const existingRoom = roomsData.find(
           (room) => room.id === roomIdFromApi || room.item_id === tripId
         );
 
         if (existingRoom?.id) {
+          console.log("✅ Found existing room:", existingRoom);
           setConversation(existingRoom);
           setIsInitializing(false);
         } else {
-          // Room exists but not in our list, create conversation object
+          console.log(
+            "⚠️ Room not in list, creating conversation object with roomId:",
+            roomIdFromApi
+          );
           setConversation({
             id: roomIdFromApi,
             item_id: tripId,
@@ -131,9 +128,8 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       !isLoadingRoom &&
       tripId &&
       tripName &&
-      !conversation?.id
+      !roomData?.data?.body?.room_id
     ) {
-      // No roomId from API, create a new room
       setIsInitializing(true);
       setHasProcessedTripId(true);
 
@@ -153,7 +149,10 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
             setConversation(response.room);
             setIsInitializing(false);
           } else if (response && response.error) {
-            console.error("Error creating room:", response.error);
+            console.error("❌ Error creating room:", response.error);
+            setIsInitializing(false);
+          } else {
+            console.warn("⚠️ Unexpected create room response:", response);
             setIsInitializing(false);
           }
         }
@@ -165,7 +164,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     userId,
     tripId,
     tripName,
-    conversation?.id,
+    roomData?.data?.body?.room_id,
     hasProcessedTripId,
     loginName,
     projectId,
@@ -175,41 +174,53 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   ]);
 
   useEffect(() => {
-    if (!socket || !conversation?.id || !userId) return;
-
     setMessages([]);
 
-    socket.emit("join room", {
-      room_id: conversation.id,
-      row_id: userId,
-      limit: 50,
-      offset: 0,
-    });
-
-    socket.emit("presence:get", {
-      row_id: conversation.to_row_id,
-      project_id: projectId,
-    });
-  }, [socket, conversation?.id, userId, projectId]);
+    socket.emit(
+      "join room",
+      {
+        room_id: roomData?.data?.body?.room_id,
+        row_id: userId,
+        limit: 50,
+        offset: 0,
+      },
+      (response) => {
+        setTimeout(() => {
+          if (socket && socket.connected) {
+            console.log("📥 Requesting room history explicitly");
+            socket.emit("room history", {
+              room_id: roomData?.data?.body?.room_id,
+              row_id: userId,
+              limit: 50,
+              offset: 0,
+            });
+          }
+        }, 500);
+      }
+    );
+  }, [socket, roomData?.data?.body?.room_id, userId, projectId, isConnected]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !roomData?.data?.body?.room_id) return;
 
     const handleRoomHistory = (messagesData) => {
       const messagesToSet = Array.isArray(messagesData)
         ? messagesData
         : messagesData?.data && Array.isArray(messagesData.data)
         ? messagesData.data
+        : messagesData?.messages && Array.isArray(messagesData.messages)
+        ? messagesData.messages
         : [];
 
+      setMessages(messagesToSet);
+
       if (messagesToSet.length > 0) {
-        setMessages(messagesToSet);
         setTimeout(() => scrollToBottom("auto"), 100);
       }
     };
 
     const handleReceiveMessage = (message) => {
-      if (message.room_id === conversation?.id) {
+      if (message.room_id === roomData?.data?.body?.room_id) {
         setMessages((prevMessages) => {
           const existingMessage = prevMessages.find(
             (msg) => (msg.id || msg._id) === (message.id || message._id)
@@ -228,7 +239,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
         ) {
           socket.emit("message:read", {
             row_id: userId,
-            room_id: conversation.id,
+            room_id: roomData?.data?.body?.room_id,
             project_id: projectId,
           });
         }
@@ -242,7 +253,14 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       socket.off("room history", handleRoomHistory);
       socket.off("chat message", handleReceiveMessage);
     };
-  }, [socket, conversation?.id, userId, loginUser, projectId, scrollToBottom]);
+  }, [
+    socket,
+    roomData?.data?.body?.room_id,
+    userId,
+    loginUser,
+    projectId,
+    scrollToBottom,
+  ]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -251,13 +269,19 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   }, [messages.length, scrollToBottom]);
 
   useEffect(() => {
-    if (!socket || !conversation?.id || !userId || !isConnected) return;
+    if (!socket || !roomData?.data?.body?.room_id || !userId || !isConnected)
+      return;
 
     const sendMessageRead = () => {
-      if (socket && socket.connected && conversation?.id && userId) {
+      if (
+        socket &&
+        socket.connected &&
+        roomData?.data?.body?.room_id &&
+        userId
+      ) {
         socket.emit("message:read", {
           row_id: userId,
-          room_id: conversation.id,
+          room_id: roomData?.data?.body?.room_id,
         });
       }
     };
@@ -268,37 +292,22 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     return () => {
       clearInterval(messageReadInterval);
     };
-  }, [socket, conversation?.id, userId, isConnected]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("presence.updated", (response) => {
-      if (response && response.row_id) {
-        setPresence((prevPresence) => ({
-          ...prevPresence,
-          [response.row_id]: {
-            status: response.status,
-            last_seen_at: response.last_seen_at,
-            updated_at: response.updated_at || new Date().toISOString(),
-          },
-        }));
-      }
-    });
-
-    return () => {
-      socket.off("presence.updated");
-    };
-  }, [socket]);
+  }, [socket, roomData?.data?.body?.room_id, userId, isConnected]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!conversation?.id || !loginUser || !message.trim() || !isConnected) {
+
+    if (
+      !roomData?.data?.body?.room_id ||
+      !loginUser ||
+      !message.trim() ||
+      !isConnected
+    ) {
       return;
     }
 
     const messageData = {
-      room_id: conversation.id,
+      room_id: roomData?.data?.body?.room_id,
       content: message.trim(),
       from: loginUser,
       type: "text",
@@ -308,6 +317,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     };
 
     socket.emit("chat message", messageData, (response) => {
+      console.log("📬 Send message response:", response);
       if (response && response.error) {
         console.error("❌ Server error response:", response.error);
       } else {
@@ -394,7 +404,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       </Flex>
 
       <Box className={styles.messagesList} ref={messagesContainerRef}>
-        {!isConnected && (
+        {/* {!isConnected && (
           <Box className={styles.emptyState}>
             <Text>Connecting to chat server...</Text>
           </Box>
@@ -408,16 +418,16 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
 
         {isConnected &&
           !isInitializing &&
-          conversation?.id &&
+          roomData?.data?.body?.room_id &&
           messages.length === 0 && (
             <Box className={styles.emptyState}>
               <Text>No messages yet. Start the conversation!</Text>
             </Box>
-          )}
+          )} */}
 
         {isConnected &&
           !isInitializing &&
-          conversation?.id &&
+          roomData?.data?.body?.room_id &&
           messages.length > 0 && (
             <Box className={styles.messagesContainer}>
               {messageGroups.map((group, groupIndex) => (
@@ -628,7 +638,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                 border="1px solid #D1D5DB"
                 borderRadius="8px"
                 h="50px"
-                disabled={!isConnected || !conversation?.id}
+                disabled={!isConnected || !roomData?.data?.body?.room_id}
                 _focus={{
                   outline: "none",
                   boxShadow: "none",
@@ -647,7 +657,11 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
               borderRadius="8px"
               px="24px"
               h="40px"
-              disabled={!isConnected || !conversation?.id || !message.trim()}
+              disabled={
+                !isConnected ||
+                !roomData?.data?.body?.room_id ||
+                !message.trim()
+              }
               _hover={{bg: "#D97706"}}
               _disabled={{bg: "#D1D5DB", cursor: "not-allowed"}}>
               Send
