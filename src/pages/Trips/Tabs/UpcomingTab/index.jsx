@@ -34,6 +34,7 @@ import {formatDate} from "@utils/dateFormats";
 import TripRowDetails from "./TripRowDetails";
 import AssignDriver from "./components/AssignDriver";
 import {BsThreeDotsVertical} from "react-icons/bs";
+import AssignCarrier from "./components/AssignCarrier";
 
 function UpcomingTab({tripType = ""}) {
   const navigate = useNavigate();
@@ -43,16 +44,18 @@ function UpcomingTab({tripType = ""}) {
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
   const [isAssignDriverModalOpen, setIsAssignDriverModalOpen] = useState(false);
+  const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
+    useState(false);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
-  const userId = useSelector((state) => state.auth.userId);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
@@ -195,7 +198,11 @@ function UpcomingTab({tripType = ""}) {
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) =>
-                  isBroker ? element.key !== "invited_by" : true
+                  isBroker
+                    ? element.key !== "invited_by" &&
+                      element?.key !== "driver" &&
+                      element?.key !== "driver2"
+                    : element?.key !== "carrier"
                 )
                 .map((element) => (
                   <CTableTh
@@ -438,94 +445,16 @@ function UpcomingTab({tripType = ""}) {
                         </Box>
                       </CTableTd>
 
-                      <CTableTd>
-                        <Flex alignItems="center" gap={2}>
-                          {trip?.drivers?.first_name ? (
-                            <Flex alignItems="center" gap={2}>
-                              <Tooltip
-                                bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                color="white"
-                                borderRadius="md"
-                                hasArrow
-                                p="6px 10px"
-                                placement="bottom-start"
-                                label={
-                                  <Box minW="180px">
-                                    <VStack spacing={1} align="start">
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {trip?.drivers?.company_name}
-                                      </Text>
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
-                                      </Text>
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
-                                      </Text>
-                                    </VStack>
-                                  </Box>
-                                }>
-                                <Flex flexDirection="column" gap={0}>
-                                  <Text color="#535862" fontWeight="400">
-                                    {trip?.drivers?.first_name}
-                                  </Text>
-                                  <Text color="#535862" fontWeight="400">
-                                    {trip?.drivers?.last_name}
-                                  </Text>
-                                </Flex>
-                              </Tooltip>
-
-                              <ReAssignDriverButton
-                                driverType="solo"
-                                trip={trip}
-                                setSelectedRow={setSelectedRow}
-                                setIsAssignDriverModalOpen={
-                                  setIsAssignDriverModalOpen
-                                }
-                              />
-                            </Flex>
-                          ) : (
-                            clientType?.id !==
-                              "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
-                              <Button
-                                bg="none"
-                                border="none"
-                                color="#EF6820"
-                                fontWeight="600"
-                                px="0"
-                                _hover={{bg: "none"}}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setIsAssignDriverModalOpen(true);
-                                  setSelectedRow({
-                                    trip: trip,
-                                    driverType: "solo",
-                                  });
-                                }}>
-                                Assign
-                              </Button>
-                            )
-                          )}
-                        </Flex>
-                      </CTableTd>
-
-                      <CTableTd>
-                        {trip?.driver_type?.[0] === "Team" ? (
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
                           <Flex alignItems="center" gap={2}>
-                            {trip?.drivers_2?.first_name ? (
+                            {trip?.drivers?.first_name ? (
                               <Flex alignItems="center" gap={2}>
                                 <Tooltip
                                   bg="linear-gradient(to bottom, #1a365d, #2d3748)"
                                   color="white"
                                   borderRadius="md"
+                                  hasArrow
                                   p="6px 10px"
                                   placement="bottom-start"
                                   label={
@@ -554,16 +483,16 @@ function UpcomingTab({tripType = ""}) {
                                   }>
                                   <Flex flexDirection="column" gap={0}>
                                     <Text color="#535862" fontWeight="400">
-                                      {trip?.drivers_2?.first_name}
+                                      {trip?.drivers?.first_name}
                                     </Text>
                                     <Text color="#535862" fontWeight="400">
-                                      {trip?.drivers_2?.last_name}
+                                      {trip?.drivers?.last_name}
                                     </Text>
                                   </Flex>
                                 </Tooltip>
 
                                 <ReAssignDriverButton
-                                  driverType="team"
+                                  driverType="solo"
                                   trip={trip}
                                   setSelectedRow={setSelectedRow}
                                   setIsAssignDriverModalOpen={
@@ -586,7 +515,7 @@ function UpcomingTab({tripType = ""}) {
                                     setIsAssignDriverModalOpen(true);
                                     setSelectedRow({
                                       trip: trip,
-                                      driverType: "team",
+                                      driverType: "solo",
                                     });
                                   }}>
                                   Assign
@@ -594,10 +523,136 @@ function UpcomingTab({tripType = ""}) {
                               )
                             )}
                           </Flex>
-                        ) : (
-                          <Text color="#535862" fontWeight="400"></Text>
-                        )}
-                      </CTableTd>
+                        </CTableTd>
+                      )}
+
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          {trip?.driver_type?.[0] === "Team" ? (
+                            <Flex alignItems="center" gap={2}>
+                              {trip?.drivers_2?.first_name ? (
+                                <Flex alignItems="center" gap={2}>
+                                  <Tooltip
+                                    bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                                    color="white"
+                                    borderRadius="md"
+                                    p="6px 10px"
+                                    placement="bottom-start"
+                                    label={
+                                      <Box minW="180px">
+                                        <VStack spacing={1} align="start">
+                                          <Text
+                                            fontSize="14px"
+                                            fontWeight="600"
+                                            color="white">
+                                            {trip?.drivers?.company_name}
+                                          </Text>
+                                          <Text
+                                            fontSize="14px"
+                                            fontWeight="600"
+                                            color="white">
+                                            {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
+                                          </Text>
+                                          <Text
+                                            fontSize="14px"
+                                            fontWeight="600"
+                                            color="white">
+                                            {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
+                                          </Text>
+                                        </VStack>
+                                      </Box>
+                                    }>
+                                    <Flex flexDirection="column" gap={0}>
+                                      <Text color="#535862" fontWeight="400">
+                                        {trip?.drivers_2?.first_name}
+                                      </Text>
+                                      <Text color="#535862" fontWeight="400">
+                                        {trip?.drivers_2?.last_name}
+                                      </Text>
+                                    </Flex>
+                                  </Tooltip>
+
+                                  <ReAssignDriverButton
+                                    driverType="team"
+                                    trip={trip}
+                                    setSelectedRow={setSelectedRow}
+                                    setIsAssignDriverModalOpen={
+                                      setIsAssignDriverModalOpen
+                                    }
+                                  />
+                                </Flex>
+                              ) : (
+                                clientType?.id !==
+                                  "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
+                                  <Button
+                                    bg="none"
+                                    border="none"
+                                    color="#EF6820"
+                                    fontWeight="600"
+                                    px="0"
+                                    _hover={{bg: "none"}}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setIsAssignDriverModalOpen(true);
+                                      setSelectedRow({
+                                        trip: trip,
+                                        driverType: "team",
+                                      });
+                                    }}>
+                                    Assign
+                                  </Button>
+                                )
+                              )}
+                            </Flex>
+                          ) : (
+                            <Text color="#535862" fontWeight="400"></Text>
+                          )}
+                        </CTableTd>
+                      )}
+
+                      {Boolean(isBroker) && (
+                        <CTableTd>
+                          {trip?.carrier_2?.legal_name ? (
+                            <Flex alignItems="center" gap={2}>
+                              <Flex alignItems="center" gap={2}>
+                                <Text color="#535862" fontWeight="400">
+                                  {trip?.carrier_2?.legal_name}
+                                </Text>
+
+                                {isBroker && (
+                                  <ReAssignCarrierButton
+                                    carrierType="team"
+                                    trip={trip}
+                                    setSelectedRow={setSelectedRow}
+                                    setIsAssignCarrierModalOpen={
+                                      setIsAssignCarrierModalOpen
+                                    }
+                                  />
+                                )}
+                              </Flex>
+                            </Flex>
+                          ) : isBroker ? (
+                            <Button
+                              bg="none"
+                              border="none"
+                              color="#EF6820"
+                              fontWeight="600"
+                              px="0"
+                              _hover={{bg: "none"}}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsAssignCarrierModalOpen(true);
+                                setSelectedRow({
+                                  trip: trip,
+                                });
+                              }}>
+                              Assign
+                            </Button>
+                          ) : (
+                            ""
+                          )}
+                        </CTableTd>
+                      )}
 
                       <CTableTd>
                         <Box>
@@ -657,6 +712,12 @@ function UpcomingTab({tripType = ""}) {
         isOpen={isAssignDriverModalOpen}
         onClose={() => setIsAssignDriverModalOpen(false)}
         selectedRow={selectedRow}
+      />
+
+      <AssignCarrier
+        selectedRow={selectedRow}
+        isOpen={isAssignCarrierModalOpen}
+        onClose={() => setIsAssignCarrierModalOpen(false)}
       />
     </Box>
   );
@@ -850,6 +911,46 @@ const ReAssignDriverButton = ({
             }}>
             <Text color="#535862" fontWeight="600">
               Re-Assign Driver
+            </Text>
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    </>
+  );
+};
+
+const ReAssignCarrierButton = ({
+  carrierType = "solo",
+  trip,
+  setSelectedRow = () => {},
+  setIsAssignCarrierModalOpen = () => {},
+}) => {
+  return (
+    <>
+      <Menu>
+        <MenuButton
+          p="0"
+          maxWidth="22px"
+          width="22px"
+          minWidth="22px"
+          height="22px"
+          bg="none"
+          onClick={(e) => e.stopPropagation()}
+          as={Button}>
+          <BsThreeDotsVertical style={{width: "22px", height: "14px"}} />
+        </MenuButton>
+        <MenuList>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsAssignCarrierModalOpen(true);
+              setSelectedRow({
+                trip: trip,
+                carrierType: carrierType,
+              });
+            }}>
+            <Text color="#535862" fontWeight="600">
+              Re-Assign Carrier
             </Text>
           </MenuItem>
         </MenuList>
