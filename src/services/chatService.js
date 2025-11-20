@@ -9,6 +9,9 @@ const chatService = {
       data,
     });
   },
+  getChatRoomId: (id) => {
+    return httpRequest.get(`v1/room/${id}`);
+  },
 };
 
 export default chatService;

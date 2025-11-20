@@ -1,8 +1,22 @@
-import React, {useState, useEffect, useRef, useCallback} from "react";
-import {Box, Flex, Text, Input, Button, InputGroup} from "@chakra-ui/react";
+import React, {useState, useEffect, useRef, useCallback, useMemo} from "react";
+import {
+  Box,
+  Flex,
+  Text,
+  Input,
+  Button,
+  InputGroup,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
+} from "@chakra-ui/react";
+import {MdReply, MdMoreVert} from "react-icons/md";
 import {useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
 import {useSocket, useSocketConnection} from "@context/SocketProvider";
+import TextMessage from "../../../Collaborations/components/MessageBubble/TextMessage";
 import styles from "./ChatMessage.module.scss";
 import {IoIosMore} from "react-icons/io";
 
@@ -273,17 +287,10 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   const messageGroups = groupMessagesByDate(messages);
 
   const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-
-    if (seconds < 60) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const formatDate = (dateString) => {
@@ -361,63 +368,174 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                       msgIndex === group.messages.length - 1 ||
                       group.messages[msgIndex + 1]?.from !== msg.from;
 
-                    return (
+                    const messageTime = formatTime(
+                      msg.created_at || msg.timestamp
+                    );
+                    const isRead = isOwn && !!msg.read_at;
+
+                    const normalizedType = msg.type
+                      ? String(msg.type).toLowerCase().trim()
+                      : "text";
+                    const messageWidth =
+                      normalizedType === "text" ? "fit-content" : "500px";
+
+                    return isOwn ? (
                       <Flex
                         key={msg.id || msg._id || msgIndex}
-                        className={
-                          isOwn ? styles.messageRowOwn : styles.messageRow
-                        }
+                        ml="auto"
+                        justifyContent="flex-end"
                         p="6px 0"
                         gap="12px">
-                        {!isOwn && (
-                          <Box className={styles.avatar}>
-                            {msg.from?.[0]?.toUpperCase() || "U"}
-                          </Box>
-                        )}
-
-                        <Box className={styles.messageWrapper}>
-                          {!isOwn && (
-                            <Text
+                        <Menu>
+                          <MenuButton
+                            as={IconButton}
+                            icon={<MdMoreVert />}
+                            variant="ghost"
+                            size="sm"
+                            aria-label="Message options"
+                            opacity={0}
+                            _hover={{opacity: 1, bg: "gray.100"}}
+                            alignSelf="center"
+                            sx={{
+                              ".message-wrapper-own:hover &": {
+                                opacity: 1,
+                              },
+                            }}
+                          />
+                          <MenuList
+                            minW="150px"
+                            boxShadow="lg"
+                            borderRadius="12px"
+                            p="4px">
+                            <MenuItem
+                              icon={<MdReply size={18} />}
+                              borderRadius="8px"
                               fontSize="14px"
-                              fontWeight="600"
-                              color="#181D27"
-                              mb="4px">
-                              {msg.from || "Unknown"}
-                            </Text>
-                          )}
+                              _hover={{bg: "gray.100"}}>
+                              Reply
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
 
+                        <Box
+                          maxW="500px"
+                          w={messageWidth}
+                          className="message-wrapper-own">
                           <Box
-                            className={
-                              isOwn
-                                ? styles.messageBubbleOwn
-                                : styles.messageBubble
-                            }
-                            bg={isOwn ? "#F79009" : "#FFFFFF"}
-                            color={isOwn ? "#FFFFFF" : "#181D27"}
-                            borderRadius={
-                              isOwn ? "25px 25px 0 25px" : "25px 25px 25px 0"
-                            }
-                            border={!isOwn ? "1px solid #E9EAEB" : "none"}
-                            p="12px 16px"
-                            maxW="70%"
-                            ml={isOwn ? "auto" : "0"}>
-                            <Text
-                              fontSize="14px"
-                              lineHeight="1.4"
-                              whiteSpace="pre-wrap">
-                              {msg.message || msg.content || ""}
-                            </Text>
+                            bg="#E0F0FF"
+                            color="#080707"
+                            borderRadius="25px"
+                            borderBottomRightRadius="0"
+                            w="100%"
+                            py="6px">
+                            <Box flex="1">
+                              <TextMessage
+                                isOwn={isOwn}
+                                content={msg.message || msg.content || ""}
+                              />
+                            </Box>
                           </Box>
-
                           {showTime && (
-                            <Text
-                              fontSize="12px"
-                              color="#6B7280"
-                              mt="4px"
-                              textAlign={isOwn ? "right" : "left"}>
-                              {formatTime(msg.created_at || msg.timestamp)}
-                            </Text>
+                            <Flex
+                              width="100%"
+                              justifyContent="flex-end"
+                              alignItems="center"
+                              gap="4px">
+                              {isRead && (
+                                <img src="/img/doublecheck.svg" alt="read" />
+                              )}
+                              <Text
+                                fontWeight="400"
+                                color="#535862"
+                                fontSize="12px">
+                                {messageTime}
+                              </Text>
+                            </Flex>
                           )}
+                        </Box>
+                      </Flex>
+                    ) : (
+                      <Flex
+                        key={msg.id || msg._id || msgIndex}
+                        p="6px 0"
+                        gap="12px">
+                        <Box
+                          w="40px"
+                          h="40px"
+                          borderRadius="50%"
+                          border="1px solid #E9EAEB"
+                          color="#fff"
+                          bg="#F79009"
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          fontWeight="600"
+                          fontSize="16px"
+                          flexShrink={0}>
+                          {msg.from?.[0]?.toUpperCase() || "U"}
+                        </Box>
+
+                        <Box
+                          alignItems="center"
+                          gap="6px"
+                          maxW="500px"
+                          w={messageWidth}
+                          className="message-wrapper">
+                          <Flex alignItems="center" gap="6px">
+                            <Box
+                              bg="#E9EAED"
+                              color="#181D27"
+                              borderRadius="20px"
+                              borderBottomLeftRadius="4px"
+                              border="1px solid #E9EAEB"
+                              w="100%">
+                              <TextMessage
+                                isOwn={isOwn}
+                                content={msg.message || msg.content || ""}
+                              />
+                            </Box>
+
+                            <Menu>
+                              <MenuButton
+                                as={IconButton}
+                                icon={<MdMoreVert />}
+                                variant="ghost"
+                                size="sm"
+                                aria-label="Message options"
+                                opacity={0}
+                                _hover={{opacity: 1, bg: "gray.100"}}
+                                sx={{
+                                  ".message-wrapper:hover &": {
+                                    opacity: 1,
+                                  },
+                                }}
+                              />
+                              <MenuList
+                                minW="150px"
+                                boxShadow="lg"
+                                borderRadius="12px"
+                                p="4px">
+                                <MenuItem
+                                  icon={<MdReply size={18} />}
+                                  borderRadius="8px"
+                                  fontSize="14px"
+                                  _hover={{bg: "gray.100"}}>
+                                  Reply
+                                </MenuItem>
+                              </MenuList>
+                            </Menu>
+                          </Flex>
+                          <Box>
+                            {showTime && (
+                              <Text
+                                mt="2px"
+                                fontWeight="400"
+                                color="#535862"
+                                fontSize="12px">
+                                {messageTime}
+                              </Text>
+                            )}
+                          </Box>
                         </Box>
                       </Flex>
                     );
@@ -431,7 +549,11 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
 
       <Box className={styles.messageInput}>
         <form onSubmit={handleSendMessage}>
-          <Flex p="16px" gap="6px" alignItems="center">
+          <Flex
+            p="16px 10px"
+            gap="12px"
+            alignItems="center"
+            borderTop="1px solid #E9EAEB">
             <InputGroup flex="1">
               <Input
                 value={message}
@@ -439,12 +561,11 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                 placeholder="Send a message"
                 border="1px solid #D1D5DB"
                 borderRadius="8px"
-                h="48px"
+                h="50px"
                 disabled={!isConnected || !conversation?.id}
                 _focus={{
                   outline: "none",
                   boxShadow: "none",
-                  borderColor: "#F79009",
                 }}
               />
             </InputGroup>
