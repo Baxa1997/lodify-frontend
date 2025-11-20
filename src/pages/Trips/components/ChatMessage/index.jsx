@@ -49,12 +49,12 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     });
   }, []);
 
-  // useEffect(() => {
-  //   setHasProcessedTripId(false);
-  //   setRoomIdFromApi(null);
-  //   setConversation(null);
-  //   setMessages([]);
-  // }, [tripId]);
+  useEffect(() => {
+    setHasProcessedTripId(false);
+    setRoomIdFromApi(null);
+    setConversation(null);
+    setMessages([]);
+  }, [tripId]);
 
   const {
     data: roomData,
@@ -176,28 +176,30 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   useEffect(() => {
     setMessages([]);
 
-    socket.emit(
-      "join room",
-      {
-        room_id: roomData?.data?.body?.room_id,
-        row_id: userId,
-        limit: 50,
-        offset: 0,
-      },
-      (response) => {
-        setTimeout(() => {
-          if (socket && socket.connected) {
-            console.log("📥 Requesting room history explicitly");
-            socket.emit("room history", {
-              room_id: roomData?.data?.body?.room_id,
-              row_id: userId,
-              limit: 50,
-              offset: 0,
-            });
-          }
-        }, 500);
-      }
-    );
+    if (roomData?.data?.body?.room_id) {
+      socket.emit(
+        "join room",
+        {
+          room_id: roomData?.data?.body?.room_id,
+          row_id: userId,
+          limit: 50,
+          offset: 0,
+        },
+        (response) => {
+          setTimeout(() => {
+            if (socket && socket.connected) {
+              console.log("📥 Requesting room history explicitly");
+              socket.emit("room history", {
+                room_id: roomData?.data?.body?.room_id,
+                row_id: userId,
+                limit: 50,
+                offset: 0,
+              });
+            }
+          }, 500);
+        }
+      );
+    }
   }, [socket, roomData?.data?.body?.room_id, userId, projectId, isConnected]);
 
   useEffect(() => {
@@ -315,7 +317,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       project_id: projectId,
       file: "",
     };
-
+    setMessage("");
     socket.emit("chat message", messageData, (response) => {
       console.log("📬 Send message response:", response);
       if (response && response.error) {
@@ -387,7 +389,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       });
     }
   };
-
+  console.log("messagesmessages", messages);
   return (
     <Box className={styles.chatContainer}>
       <Flex
@@ -425,202 +427,199 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
             </Box>
           )} */}
 
-        {isConnected &&
-          !isInitializing &&
-          roomData?.data?.body?.room_id &&
-          messages.length > 0 && (
-            <Box className={styles.messagesContainer}>
-              {messageGroups.map((group, groupIndex) => (
-                <Box key={`${group.date}-${groupIndex}`}>
-                  <Box className={styles.dateSeparator}>
-                    <Text fontSize="12px" color="#6B7280" fontWeight="500">
-                      {formatDate(group.date)}
-                    </Text>
-                  </Box>
+        {roomData?.data?.body?.room_id && messages.length > 0 && (
+          <Box className={styles.messagesContainer}>
+            {messageGroups.map((group, groupIndex) => (
+              <Box key={`${group.date}-${groupIndex}`}>
+                <Box className={styles.dateSeparator}>
+                  <Text fontSize="12px" color="#6B7280" fontWeight="500">
+                    {formatDate(group.date)}
+                  </Text>
+                </Box>
 
-                  {group.messages.map((msg, msgIndex) => {
-                    const isOwn = msg.from === loginUser;
-                    const showTime =
-                      msgIndex === group.messages.length - 1 ||
-                      group.messages[msgIndex + 1]?.from !== msg.from;
+                {group.messages.map((msg, msgIndex) => {
+                  const isOwn = msg.from === loginUser;
+                  const showTime =
+                    msgIndex === group.messages.length - 1 ||
+                    group.messages[msgIndex + 1]?.from !== msg.from;
 
-                    const messageTime = formatTime(
-                      msg.created_at || msg.timestamp
-                    );
-                    const isRead = isOwn && !!msg.read_at;
+                  const messageTime = formatTime(
+                    msg.created_at || msg.timestamp
+                  );
+                  const isRead = isOwn && !!msg.read_at;
 
-                    const normalizedType = msg.type
-                      ? String(msg.type).toLowerCase().trim()
-                      : "text";
-                    const messageWidth =
-                      normalizedType === "text" ? "fit-content" : "500px";
+                  const normalizedType = msg.type
+                    ? String(msg.type).toLowerCase().trim()
+                    : "text";
+                  const messageWidth =
+                    normalizedType === "text" ? "fit-content" : "500px";
 
-                    return isOwn ? (
-                      <Flex
-                        key={msg.id || msg._id || msgIndex}
-                        ml="auto"
-                        justifyContent="flex-end"
-                        p="6px 0"
-                        gap="12px">
-                        <Menu>
-                          <MenuButton
-                            as={IconButton}
-                            icon={<MdMoreVert />}
-                            variant="ghost"
-                            size="sm"
-                            aria-label="Message options"
-                            opacity={0}
-                            _hover={{opacity: 1, bg: "gray.100"}}
-                            alignSelf="center"
-                            sx={{
-                              ".message-wrapper-own:hover &": {
-                                opacity: 1,
-                              },
-                            }}
-                          />
-                          <MenuList
-                            minW="150px"
-                            boxShadow="lg"
-                            borderRadius="12px"
-                            p="4px">
-                            <MenuItem
-                              icon={<MdReply size={18} />}
-                              borderRadius="8px"
-                              fontSize="14px"
-                              _hover={{bg: "gray.100"}}>
-                              Reply
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
+                  return isOwn ? (
+                    <Flex
+                      key={msg.id || msg._id || msgIndex}
+                      ml="auto"
+                      justifyContent="flex-end"
+                      p="6px 0"
+                      gap="12px">
+                      <Menu>
+                        <MenuButton
+                          as={IconButton}
+                          icon={<MdMoreVert />}
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Message options"
+                          opacity={0}
+                          _hover={{opacity: 1, bg: "gray.100"}}
+                          alignSelf="center"
+                          sx={{
+                            ".message-wrapper-own:hover &": {
+                              opacity: 1,
+                            },
+                          }}
+                        />
+                        <MenuList
+                          minW="150px"
+                          boxShadow="lg"
+                          borderRadius="12px"
+                          p="4px">
+                          <MenuItem
+                            icon={<MdReply size={18} />}
+                            borderRadius="8px"
+                            fontSize="14px"
+                            _hover={{bg: "gray.100"}}>
+                            Reply
+                          </MenuItem>
+                        </MenuList>
+                      </Menu>
 
+                      <Box
+                        maxW="500px"
+                        w={messageWidth}
+                        className="message-wrapper-own">
                         <Box
-                          maxW="500px"
-                          w={messageWidth}
-                          className="message-wrapper-own">
-                          <Box
-                            bg="#E0F0FF"
-                            color="#080707"
-                            borderRadius="25px"
-                            borderBottomRightRadius="0"
-                            w="100%"
-                            py="6px">
-                            <Box flex="1">
-                              <TextMessage
-                                isOwn={isOwn}
-                                content={msg.message || msg.content || ""}
-                              />
-                            </Box>
+                          bg="#E0F0FF"
+                          color="#080707"
+                          borderRadius="25px"
+                          borderBottomRightRadius="0"
+                          w="100%"
+                          py="6px">
+                          <Box flex="1">
+                            <TextMessage
+                              isOwn={isOwn}
+                              content={msg.message || msg.content || ""}
+                            />
                           </Box>
+                        </Box>
+                        {showTime && (
+                          <Flex
+                            width="100%"
+                            justifyContent="flex-end"
+                            alignItems="center"
+                            gap="4px">
+                            {isRead && (
+                              <img src="/img/doublecheck.svg" alt="read" />
+                            )}
+                            <Text
+                              fontWeight="400"
+                              color="#535862"
+                              fontSize="12px">
+                              {messageTime}
+                            </Text>
+                          </Flex>
+                        )}
+                      </Box>
+                    </Flex>
+                  ) : (
+                    <Flex
+                      key={msg.id || msg._id || msgIndex}
+                      p="6px 0"
+                      gap="12px">
+                      <Box
+                        w="40px"
+                        h="40px"
+                        borderRadius="50%"
+                        border="1px solid #E9EAEB"
+                        color="#fff"
+                        bg="#F79009"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontWeight="600"
+                        fontSize="16px"
+                        flexShrink={0}>
+                        {msg.from?.[0]?.toUpperCase() || "U"}
+                      </Box>
+
+                      <Box
+                        alignItems="center"
+                        gap="6px"
+                        maxW="500px"
+                        w={messageWidth}
+                        className="message-wrapper">
+                        <Flex alignItems="center" gap="6px">
+                          <Box
+                            bg="#E9EAED"
+                            color="#181D27"
+                            borderRadius="20px"
+                            borderBottomLeftRadius="4px"
+                            border="1px solid #E9EAEB"
+                            w="100%">
+                            <TextMessage
+                              isOwn={isOwn}
+                              content={msg.message || msg.content || ""}
+                            />
+                          </Box>
+
+                          <Menu>
+                            <MenuButton
+                              as={IconButton}
+                              icon={<MdMoreVert />}
+                              variant="ghost"
+                              size="sm"
+                              aria-label="Message options"
+                              opacity={0}
+                              _hover={{opacity: 1, bg: "gray.100"}}
+                              sx={{
+                                ".message-wrapper:hover &": {
+                                  opacity: 1,
+                                },
+                              }}
+                            />
+                            <MenuList
+                              minW="150px"
+                              boxShadow="lg"
+                              borderRadius="12px"
+                              p="4px">
+                              <MenuItem
+                                icon={<MdReply size={18} />}
+                                borderRadius="8px"
+                                fontSize="14px"
+                                _hover={{bg: "gray.100"}}>
+                                Reply
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Flex>
+                        <Box>
                           {showTime && (
-                            <Flex
-                              width="100%"
-                              justifyContent="flex-end"
-                              alignItems="center"
-                              gap="4px">
-                              {isRead && (
-                                <img src="/img/doublecheck.svg" alt="read" />
-                              )}
-                              <Text
-                                fontWeight="400"
-                                color="#535862"
-                                fontSize="12px">
-                                {messageTime}
-                              </Text>
-                            </Flex>
+                            <Text
+                              mt="2px"
+                              fontWeight="400"
+                              color="#535862"
+                              fontSize="12px">
+                              {messageTime}
+                            </Text>
                           )}
                         </Box>
-                      </Flex>
-                    ) : (
-                      <Flex
-                        key={msg.id || msg._id || msgIndex}
-                        p="6px 0"
-                        gap="12px">
-                        <Box
-                          w="40px"
-                          h="40px"
-                          borderRadius="50%"
-                          border="1px solid #E9EAEB"
-                          color="#fff"
-                          bg="#F79009"
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          fontWeight="600"
-                          fontSize="16px"
-                          flexShrink={0}>
-                          {msg.from?.[0]?.toUpperCase() || "U"}
-                        </Box>
-
-                        <Box
-                          alignItems="center"
-                          gap="6px"
-                          maxW="500px"
-                          w={messageWidth}
-                          className="message-wrapper">
-                          <Flex alignItems="center" gap="6px">
-                            <Box
-                              bg="#E9EAED"
-                              color="#181D27"
-                              borderRadius="20px"
-                              borderBottomLeftRadius="4px"
-                              border="1px solid #E9EAEB"
-                              w="100%">
-                              <TextMessage
-                                isOwn={isOwn}
-                                content={msg.message || msg.content || ""}
-                              />
-                            </Box>
-
-                            <Menu>
-                              <MenuButton
-                                as={IconButton}
-                                icon={<MdMoreVert />}
-                                variant="ghost"
-                                size="sm"
-                                aria-label="Message options"
-                                opacity={0}
-                                _hover={{opacity: 1, bg: "gray.100"}}
-                                sx={{
-                                  ".message-wrapper:hover &": {
-                                    opacity: 1,
-                                  },
-                                }}
-                              />
-                              <MenuList
-                                minW="150px"
-                                boxShadow="lg"
-                                borderRadius="12px"
-                                p="4px">
-                                <MenuItem
-                                  icon={<MdReply size={18} />}
-                                  borderRadius="8px"
-                                  fontSize="14px"
-                                  _hover={{bg: "gray.100"}}>
-                                  Reply
-                                </MenuItem>
-                              </MenuList>
-                            </Menu>
-                          </Flex>
-                          <Box>
-                            {showTime && (
-                              <Text
-                                mt="2px"
-                                fontWeight="400"
-                                color="#535862"
-                                fontSize="12px">
-                                {messageTime}
-                              </Text>
-                            )}
-                          </Box>
-                        </Box>
-                      </Flex>
-                    );
-                  })}
-                </Box>
-              ))}
-              <div ref={messagesEndRef} />
-            </Box>
-          )}
+                      </Box>
+                    </Flex>
+                  );
+                })}
+              </Box>
+            ))}
+            <div ref={messagesEndRef} />
+          </Box>
+        )}
       </Box>
 
       <Box className={styles.messageInput}>
