@@ -30,6 +30,8 @@ const tripsService = {
   acceptTrip: (data) => httpRequest.put("v2/items/orders", data),
   rejectTrip: (data) => httpRequest.post("v2/items/rejected_trips", data),
   assignDriver: (data) => httpRequest.put("v2/items/orders", data),
+  assignCarrier: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-gateway/trips/reassign", data),
 };
 
 export default tripsService;

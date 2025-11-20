@@ -612,11 +612,11 @@ function UpcomingTab({tripType = ""}) {
 
                       {Boolean(isBroker) && (
                         <CTableTd>
-                          {trip?.carrier_2?.legal_name ? (
+                          {trip?.carrier?.legal_name ? (
                             <Flex alignItems="center" gap={2}>
                               <Flex alignItems="center" gap={2}>
                                 <Text color="#535862" fontWeight="400">
-                                  {trip?.carrier_2?.legal_name}
+                                  {trip?.carrier?.legal_name}
                                 </Text>
 
                                 {isBroker && (
@@ -715,6 +715,7 @@ function UpcomingTab({tripType = ""}) {
       />
 
       <AssignCarrier
+        refetchKey="UPCOMING_TRIPS"
         selectedRow={selectedRow}
         isOpen={isAssignCarrierModalOpen}
         onClose={() => setIsAssignCarrierModalOpen(false)}

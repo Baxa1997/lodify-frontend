@@ -261,7 +261,7 @@ function ActiveTenders() {
                 ?.filter((element) =>
                   isBroker
                     ? element.key !== "actions" && element.key !== "invited_by"
-                    : true
+                    : element.key !== "carrier"
                 )
                 .map((element) => (
                   <CTableTh
