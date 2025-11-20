@@ -35,7 +35,7 @@ import TripRowDetails from "./TripRowDetails";
 import AssignCarrier from "./components/AssignCarrier";
 import {BsThreeDotsVertical} from "react-icons/bs";
 
-function TransitTab({tripType = ""}) {
+function TransitTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,7 +115,7 @@ function TransitTab({tripType = ""}) {
         trip_type: tripType,
       }),
     select: (data) => data?.data || [],
-    enabled: true,
+    enabled: isActive && !!envId,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,

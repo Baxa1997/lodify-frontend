@@ -41,25 +41,32 @@ const AssignCarrier = ({
   }, [searchText, debouncedSetSearch]);
 
   const onSubmit = (data) => {
-    const now = new Date().toISOString();
-    const parsed = parseISO(now);
-    const plusTwoHours = addHours(parsed, 2);
-    const isoPlusTwo = plusTwoHours.toISOString();
+    if (!data?.companies_id) {
+      return;
+    }
 
     setLoading(true);
+    const isReassign = !!selectedRow?.trip?.carrier?.legal_name;
+
     const computedData = {
       data: {
         orders_id: selectedRow?.trip?.guid,
         companies_id: data?.companies_id,
-        // timer_expiration: isoPlusTwo,
       },
     };
+
     tripsService
       .assignCarrier(computedData)
       .then((res) => {
-        console.log("resres", res);
+        console.log(
+          isReassign ? "Carrier reassigned" : "Carrier assigned",
+          res
+        );
         queryClient.invalidateQueries({queryKey: [refetchKey]});
         onClose();
+      })
+      .catch((error) => {
+        console.error("Error assigning carrier:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -87,22 +94,31 @@ const AssignCarrier = ({
         label: item?.legal_name,
         value: item?.guid,
       })),
-    enabled: !!brokersId,
+    enabled: Boolean(isOpen) && !!brokersId,
     staleTime: 0,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 
+  const isReassign = !!selectedRow?.trip?.carrier?.legal_name;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Assign Carrier</ModalHeader>
+        <ModalHeader>
+          {isReassign ? "Re-Assign Carrier" : "Assign Carrier"}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Text fontSize="16px" fontWeight="500" color="gray.700" mb={2}>
             Select Carrier
           </Text>
+          {isReassign && (
+            <Text fontSize="14px" color="gray.600" mb={3}>
+              Current carrier: {selectedRow?.trip?.carrier?.legal_name}
+            </Text>
+          )}
           <HFSearchableSelect
             control={control}
             name="companies_id"
@@ -132,7 +148,7 @@ const AssignCarrier = ({
               _hover={{bg: "#EF6820"}}
               onClick={handleSubmit(onSubmit)}
               isLoading={loading}>
-              Assign
+              {isReassign ? "Re-Assign" : "Assign"}
             </Button>
           </Flex>
         </ModalBody>

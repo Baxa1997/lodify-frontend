@@ -16,6 +16,7 @@ const Trips = () => {
   const [isAutomatedAddTrip, setIsAutomatedAddTrip] = useState(false);
   const clientType = useSelector((state) => state.auth.clientType);
   const [tripType, setTripType] = useState("tender");
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
 
   return (
     <>
@@ -24,14 +25,25 @@ const Trips = () => {
 
         <AddTripMenu setIsAutomatedAddTrip={setIsAutomatedAddTrip} />
 
-        <Tabs className={styles.tabsContainer}>
+        <Tabs
+          className={styles.tabsContainer}
+          onSelect={(index) => {
+            setSelectedTabIndex(index);
+            if (index === 1) {
+              setTripType("upcoming");
+            } else if (index === 2) {
+              setTripType("in_transit");
+            } else if (index === 3) {
+              setTripType("completed");
+            }
+          }}>
           <TabList>
             {/* <Tab onClick={() => setTripType("tender")}>Tender Invitations</Tab> */}
 
             <Tab>Actions Needed</Tab>
-            <Tab onClick={() => setTripType("upcoming")}>Upcoming</Tab>
-            <Tab onClick={() => setTripType("in_transit")}>In Transit</Tab>
-            <Tab onClick={() => setTripType("completed")}>
+            <Tab>Upcoming</Tab>
+            <Tab>In Transit</Tab>
+            <Tab>
               {clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
                 ? "History"
                 : "Completed"}
@@ -46,10 +58,10 @@ const Trips = () => {
             <ActionsNeeded />
           </TabPanel>
           <TabPanel>
-            <UpcomingTab tripType={tripType} />
+            <UpcomingTab tripType={tripType} isActive={selectedTabIndex === 1} />
           </TabPanel>
           <TabPanel>
-            <TransitTab tripType={tripType} />
+            <TransitTab tripType={tripType} isActive={selectedTabIndex === 2} />
           </TabPanel>
           <TabPanel>
             <HistoryTab tripType={tripType} />

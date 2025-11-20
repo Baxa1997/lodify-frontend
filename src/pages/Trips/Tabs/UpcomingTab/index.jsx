@@ -36,7 +36,7 @@ import AssignDriver from "./components/AssignDriver";
 import {BsThreeDotsVertical} from "react-icons/bs";
 import AssignCarrier from "./components/AssignCarrier";
 
-function UpcomingTab({tripType = ""}) {
+function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,7 +119,7 @@ function UpcomingTab({tripType = ""}) {
       }),
     select: (data) => data?.data || [],
 
-    enabled: true,
+    enabled: isActive && !!envId,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
