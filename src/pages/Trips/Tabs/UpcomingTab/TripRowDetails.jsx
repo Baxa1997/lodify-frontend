@@ -12,8 +12,10 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
 import {parseISO, format} from "date-fns";
+import {useNavigate} from "react-router-dom";
 
 const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
+  const navigate = useNavigate();
   const envId = useSelector((state) => state.auth.environmentId);
 
   const {
@@ -357,6 +359,15 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
 
           <Flex gap="8px">
             <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/admin/collabrations`, {
+                  state: {
+                    tripId: trip?.guid,
+                    tripName: trip?.id,
+                  },
+                });
+              }}
               h="40px"
               variant="outline"
               leftIcon={
