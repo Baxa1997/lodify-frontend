@@ -18,6 +18,7 @@ function HFSearchableSelect({
   searchPlaceholder = "Search...",
   searchText = "",
   setSearchText = () => {},
+  handleOptions = () => {},
   ...selectProps
 }) {
   const {id} = useParams();
@@ -51,6 +52,7 @@ function HFSearchableSelect({
             {...selectProps}
             searchText={searchText}
             setSearchText={setSearchText}
+            handleOptions={handleOptions}
             options={table_slug ? Internaloptions : options}
             onChange={field.onChange}
             size={size}

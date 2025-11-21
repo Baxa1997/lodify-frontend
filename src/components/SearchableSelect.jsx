@@ -34,6 +34,7 @@ const SearchableSelect = ({
   searchPlaceholder = "Search...",
   searchText = "",
   setSearchText = () => {},
+  handleOptions = () => {},
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,6 +84,7 @@ const SearchableSelect = ({
   };
 
   const handleSelect = (option) => {
+    handleOptions(option);
     if (onChange) {
       onChange(option ? option.value : option);
     }

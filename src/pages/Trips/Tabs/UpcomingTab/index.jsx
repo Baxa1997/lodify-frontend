@@ -46,6 +46,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const [isAssignDriverModalOpen, setIsAssignDriverModalOpen] = useState(false);
   const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
     useState(false);
+
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
   const envId = useSelector((state) => state.auth.environmentId);
