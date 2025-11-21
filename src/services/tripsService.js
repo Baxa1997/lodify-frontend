@@ -32,6 +32,7 @@ const tripsService = {
   assignDriver: (data) => httpRequest.put("v2/items/orders", data),
   assignCarrier: (data) =>
     httpRequest.post("v2/invoke_function/lodify-gateway/trips/reassign", data),
+  reportDelay: (data) => httpRequest.post("v2/items/trip_logs", data),
 };
 
 export default tripsService;

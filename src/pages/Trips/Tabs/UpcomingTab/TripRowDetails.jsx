@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Box, Text, Flex, Badge, Button} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
@@ -13,10 +13,16 @@ import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
 import {parseISO, format} from "date-fns";
 import {useNavigate} from "react-router-dom";
+import {calculateTimeDifference} from "@utils/timeUtils";
+import ReportDelay from "../../components/ReportDelay/ReportDelay";
 
 const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
   const navigate = useNavigate();
   const envId = useSelector((state) => state.auth.environmentId);
+  const clientType = useSelector((state) => state.auth.clientType);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const [isReportDelayOpen, setIsReportDelayOpen] = useState(false);
+  const [selectedPickup, setSelectedPickup] = useState(null);
 
   const {
     data: detailedTripData = {},
@@ -311,9 +317,38 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                   </CTableTd>
 
                   <CTableTd py="12px" px="20px">
-                    <Text fontSize="14px" color="#181d27">
+                    {/* <Text fontSize="14px" color="#181d27">
                       {formatScheduleDate(item?.arrive_by)}
-                    </Text>
+                    </Text> */}
+                    <Box>
+                      <Flex alignItems="center" gap="6px">
+                        <Text fontSize="14px" color="#181d27">
+                          {formatScheduleDate(item?.arrive_by)}
+                        </Text>
+                        {calculateTimeDifference(item?.arrive_by) <= 0 && (
+                          <img src="/img/delayIcon.svg" alt="" />
+                        )}
+                      </Flex>
+                      {Boolean(!isBroker) && (
+                        <Button
+                          mt="8px"
+                          h="20px"
+                          p="0"
+                          bg="none"
+                          color="#EF6820"
+                          borderRadius="8px"
+                          fontSize="14px"
+                          fontWeight="600"
+                          _hover={{bg: "none"}}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPickup(item);
+                            setIsReportDelayOpen(true);
+                          }}>
+                          Report delay
+                        </Button>
+                      )}
+                    </Box>
                   </CTableTd>
                 </CTableRow>
               </CTableBody>
@@ -396,6 +431,16 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
           </Flex>
         </Flex>
       </Box>
+
+      <ReportDelay
+        isOpen={isReportDelayOpen}
+        onClose={() => {
+          setIsReportDelayOpen(false);
+          setSelectedPickup(null);
+        }}
+        trip={trip}
+        pickup={selectedPickup}
+      />
     </Box>
   );
 };
