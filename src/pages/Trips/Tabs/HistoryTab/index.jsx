@@ -45,15 +45,24 @@ function HistoryTab({tripType = ""}) {
   );
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
-  const getLoadTypeColor = (loadType) => {
-    const loadTypeColors = {
-      Preloaded: "orange",
-      Live: "green",
-      Drop: "blue",
-    };
-
-    return loadTypeColors[loadType?.trim()] || "gray";
-  };
+  function getLoadTypeColor(loadType) {
+    switch (loadType) {
+      case "Dry":
+        return "#FF5B04";
+      case "Refrigerated":
+        return "#003B63";
+      case "Temperature Controlled":
+        return "#00707A";
+      case "Other":
+        return "#6B7280";
+      case "Preloaded":
+        return "#00707A";
+      case "Drop":
+        return "#6B7280";
+      default:
+        return "#6B7280";
+    }
+  }
 
   const {
     data: tripsData = [],
@@ -397,7 +406,8 @@ function HistoryTab({tripType = ""}) {
 
                       <CTableTd>
                         <Badge
-                          colorScheme={getLoadTypeColor(
+                          color={"#fff"}
+                          bg={getLoadTypeColor(
                             trip.origin?.[0]?.load_type?.[0] ?? ""
                           )}
                           variant="subtle"
@@ -405,8 +415,7 @@ function HistoryTab({tripType = ""}) {
                           py={1}
                           borderRadius="full"
                           fontSize="12px"
-                          fontWeight="500"
-                          _hover={{opacity: 0.8}}>
+                          fontWeight="500">
                           {trip.origin?.[0]?.load_type?.[0] ?? ""}
                         </Badge>
                       </CTableTd>

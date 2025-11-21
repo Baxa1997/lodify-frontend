@@ -312,7 +312,9 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
 
                       <Flex alignItems="center" gap="8px">
                         <Text fontSize="12px" color="#181D27">
-                          {formatScheduleDate(item?.check_out)}
+                          {Boolean(item?.check_out)
+                            ? formatScheduleDate(item?.check_out)
+                            : "---"}
                         </Text>
                         {Boolean(item?.check_out) && (
                           <Text

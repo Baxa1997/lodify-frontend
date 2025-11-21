@@ -103,7 +103,7 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
           Report delay
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody p={4}>
+        <ModalBody p={6}>
           <Box mb={6}>
             <Text fontSize="24px" fontWeight="700" color="#181D27" mb={2}>
               Running late?
