@@ -18,6 +18,8 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 import {useForm, Controller} from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import tripsService from "@services/tripsService";
 
 const delayReasons = [
@@ -41,7 +43,7 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
   });
   const [loading, setLoading] = useState(false);
   const [selectedReason, setSelectedReason] = useState("");
-  const [selectedDateTime, setSelectedDateTime] = useState("");
+  const [selectedDateTime, setSelectedDateTime] = useState(null);
 
   const currentLocation = pickup?.address
     ? `${pickup?.address}, ${pickup?.state || ""}, ${pickup?.zip_code || ""}`
@@ -55,21 +57,24 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
     setLoading(true);
 
     try {
+      // Format date to ISO string for API
+      const formattedDateTime = selectedDateTime.toISOString();
+
       const requestData = {
         data: {
           pickup_id: pickup?.guid,
           orders_id: trip?.guid,
           reason: selectedReason,
           description: data.description || "",
-          resume_at: selectedDateTime,
-          date_time: selectedDateTime,
+          resume_at: formattedDateTime,
+          date_time: formattedDateTime,
         },
       };
 
       await tripsService.reportDelay(requestData);
       reset();
       setSelectedReason("");
-      setSelectedDateTime("");
+      setSelectedDateTime(null);
       onClose();
     } catch (error) {
       console.error("Error reporting delay:", error);
@@ -81,7 +86,7 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
   const handleClose = () => {
     reset();
     setSelectedReason("");
-    setSelectedDateTime("");
+    setSelectedDateTime(null);
     onClose();
   };
 
@@ -206,16 +211,41 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
               <Text fontSize="14px" fontWeight="500" color="#181D27" mb={2}>
                 When will you be moving again?
               </Text>
-              <Input
-                type="datetime-local"
-                value={selectedDateTime}
-                onChange={(e) => setSelectedDateTime(e.target.value)}
-                border="1px solid #E9EAEB"
-                borderRadius="8px"
-                fontSize="14px"
-                color={selectedDateTime ? "#181D27" : "#9CA3AF"}
-                min={new Date().toISOString().slice(0, 16)}
-              />
+              <Box
+                sx={{
+                  ".react-datepicker-wrapper": {
+                    width: "100%",
+                  },
+                  ".react-datepicker__input-container": {
+                    width: "100%",
+                  },
+                  ".react-datepicker__input-container input": {
+                    width: "100%",
+                    padding: "8px 12px",
+                    border: "1px solid #E9EAEB",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    color: selectedDateTime ? "#181D27" : "#9CA3AF",
+                    height: "40px",
+                    outline: "none",
+                    "&::placeholder": {
+                      color: "#9CA3AF",
+                    },
+                  },
+                }}>
+                <DatePicker
+                  selected={selectedDateTime}
+                  onChange={(date) => setSelectedDateTime(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="MMM dd, yyyy hh:mm aa"
+                  placeholderText="Select date & time"
+                  minDate={new Date()}
+                  isClearable
+                  className="custom-datepicker-input"
+                />
+              </Box>
             </Box>
 
             <Box mb={6}>
