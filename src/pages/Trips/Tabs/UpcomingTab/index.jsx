@@ -901,7 +901,7 @@ const ReAssignDriverButton = ({
           as={Button}>
           <BsThreeDotsVertical style={{width: "22px", height: "14px"}} />
         </MenuButton>
-        <MenuList>
+        <MenuList zIndex={8}>
           <MenuItem
             onClick={(e) => {
               e.stopPropagation();

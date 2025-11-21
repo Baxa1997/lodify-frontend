@@ -55,21 +55,10 @@ function HistoryTab({tripType = ""}) {
     return loadTypeColors[loadType?.trim()] || "gray";
   };
 
-  const getCustomerInfo = (trip) => {
-    return {
-      companyName: trip.shipper?.name || "N/A",
-      customer:
-        trip.shipper?.contact_name || trip.shipper?.customer_name || "N/A",
-      trips: trip.shipper?.total_trips || 0,
-      rate: trip.shipper?.rating || 0,
-    };
-  };
-
   const {
     data: tripsData = [],
     isLoading,
     error,
-    refetch,
   } = useQuery({
     queryKey: [
       "HISTORY_TRIPS",
@@ -185,7 +174,11 @@ function HistoryTab({tripType = ""}) {
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) =>
-                  isBroker ? element.key !== "invited_by" : true
+                  isBroker
+                    ? element.key !== "invited_by" &&
+                      element?.key !== "driver" &&
+                      element?.key !== "driver2"
+                    : element?.key !== "carrier"
                 )
                 .map((element) => (
                   <CTableTh
@@ -427,9 +420,68 @@ function HistoryTab({tripType = ""}) {
                         </Box>
                       </CTableTd>
 
-                      <CTableTd>
-                        <Flex alignItems="center" gap={2}>
-                          {trip?.drivers?.first_name ? (
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <Flex alignItems="center" gap={2}>
+                            {trip?.drivers?.first_name ? (
+                              <Tooltip
+                                bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                                color="white"
+                                borderRadius="md"
+                                hasArrow
+                                p="6px 10px"
+                                label={
+                                  <Box minW="180px">
+                                    <VStack spacing={1} align="start">
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="600"
+                                        color="white">
+                                        {trip?.drivers?.company_name}
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="600"
+                                        color="white">
+                                        {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="600"
+                                        color="white">
+                                        {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
+                                      </Text>
+                                    </VStack>
+                                  </Box>
+                                }>
+                                <Flex flexDirection="column" gap={0}>
+                                  <Text color="#535862" fontWeight="400">
+                                    {trip?.drivers?.first_name}
+                                  </Text>
+                                  <Text color="#535862" fontWeight="400">
+                                    {trip?.drivers?.last_name}
+                                  </Text>
+                                </Flex>
+                              </Tooltip>
+                            ) : (
+                              <Button
+                                bg="none"
+                                border="none"
+                                color="#EF6820"
+                                fontWeight="600"
+                                px="0"
+                                _hover={{bg: "none"}}
+                                onClick={(e) => e.stopPropagation()}>
+                                Assign
+                              </Button>
+                            )}
+                          </Flex>
+                        </CTableTd>
+                      )}
+
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          {trip?.driver_type?.[0] === "Team" ? (
                             <Tooltip
                               bg="linear-gradient(to bottom, #1a365d, #2d3748)"
                               color="white"
@@ -462,73 +514,32 @@ function HistoryTab({tripType = ""}) {
                               }>
                               <Flex flexDirection="column" gap={0}>
                                 <Text color="#535862" fontWeight="400">
-                                  {trip?.drivers?.first_name}
+                                  {trip?.drivers_2?.first_name}
                                 </Text>
                                 <Text color="#535862" fontWeight="400">
-                                  {trip?.drivers?.last_name}
+                                  {trip?.drivers_2?.last_name}
                                 </Text>
                               </Flex>
                             </Tooltip>
                           ) : (
-                            <Button
-                              bg="none"
-                              border="none"
-                              color="#EF6820"
-                              fontWeight="600"
-                              px="0"
-                              _hover={{bg: "none"}}
-                              onClick={(e) => e.stopPropagation()}>
-                              Assign
-                            </Button>
+                            <Text color="#535862" fontWeight="400"></Text>
                           )}
-                        </Flex>
-                      </CTableTd>
+                        </CTableTd>
+                      )}
 
-                      <CTableTd>
-                        {trip?.driver_type?.[0] === "Team" ? (
-                          <Tooltip
-                            bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                            color="white"
-                            borderRadius="md"
-                            hasArrow
-                            p="6px 10px"
-                            label={
-                              <Box minW="180px">
-                                <VStack spacing={1} align="start">
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {trip?.drivers?.company_name}
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
-                                  </Text>
-                                </VStack>
-                              </Box>
-                            }>
-                            <Flex flexDirection="column" gap={0}>
-                              <Text color="#535862" fontWeight="400">
-                                {trip?.drivers_2?.first_name}
-                              </Text>
-                              <Text color="#535862" fontWeight="400">
-                                {trip?.drivers_2?.last_name}
-                              </Text>
+                      {Boolean(isBroker) && (
+                        <CTableTd>
+                          {trip?.carrier?.legal_name && (
+                            <Flex alignItems="center" gap={2}>
+                              <Flex alignItems="center" gap={2}>
+                                <Text color="#535862" fontWeight="400">
+                                  {trip?.carrier?.legal_name}
+                                </Text>
+                              </Flex>
                             </Flex>
-                          </Tooltip>
-                        ) : (
-                          <Text color="#535862" fontWeight="400"></Text>
-                        )}
-                      </CTableTd>
+                          )}
+                        </CTableTd>
+                      )}
 
                       <CTableTd>
                         <Text>${trip?.total_rates}</Text>

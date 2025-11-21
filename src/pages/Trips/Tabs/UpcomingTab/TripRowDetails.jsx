@@ -146,7 +146,7 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
   };
 
   return (
-    <Box bg="#fff" minHeight="200px" position="relative">
+    <Box zIndex={5} bg="#fff" minHeight="200px" position="relative">
       <Box
         p="8px 20px"
         pb="0px"
