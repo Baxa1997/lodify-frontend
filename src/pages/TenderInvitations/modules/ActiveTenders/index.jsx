@@ -559,47 +559,49 @@ function ActiveTenders() {
                         </Badge>
                       </CTableTd>
 
-                      <CTableTd>
-                        {trip?.carrier_2?.legal_name ? (
-                          <Flex alignItems="center" gap={2}>
+                      {Boolean(isBroker) && (
+                        <CTableTd>
+                          {trip?.carrier_2?.legal_name ? (
                             <Flex alignItems="center" gap={2}>
-                              <Text color="#535862" fontWeight="400">
-                                {trip?.carrier_2?.legal_name}
-                              </Text>
+                              <Flex alignItems="center" gap={2}>
+                                <Text color="#535862" fontWeight="400">
+                                  {trip?.carrier_2?.legal_name}
+                                </Text>
 
-                              {isBroker && (
-                                <ReAssignDriverButton
-                                  carrierType="team"
-                                  trip={trip}
-                                  setSelectedRow={setSelectedRow}
-                                  setIsAssignCarrierModalOpen={
-                                    setIsAssignCarrierModalOpen
-                                  }
-                                />
-                              )}
+                                {isBroker && (
+                                  <ReAssignDriverButton
+                                    carrierType="team"
+                                    trip={trip}
+                                    setSelectedRow={setSelectedRow}
+                                    setIsAssignCarrierModalOpen={
+                                      setIsAssignCarrierModalOpen
+                                    }
+                                  />
+                                )}
+                              </Flex>
                             </Flex>
-                          </Flex>
-                        ) : isBroker ? (
-                          <Button
-                            bg="none"
-                            border="none"
-                            color="#EF6820"
-                            fontWeight="600"
-                            px="0"
-                            _hover={{bg: "none"}}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setIsAssignCarrierModalOpen(true);
-                              setSelectedRow({
-                                trip: trip,
-                              });
-                            }}>
-                            Assign
-                          </Button>
-                        ) : (
-                          ""
-                        )}
-                      </CTableTd>
+                          ) : isBroker ? (
+                            <Button
+                              bg="none"
+                              border="none"
+                              color="#EF6820"
+                              fontWeight="600"
+                              px="0"
+                              _hover={{bg: "none"}}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsAssignCarrierModalOpen(true);
+                                setSelectedRow({
+                                  trip: trip,
+                                });
+                              }}>
+                              Assign
+                            </Button>
+                          ) : (
+                            ""
+                          )}
+                        </CTableTd>
+                      )}
 
                       <CTableTd px="0">
                         {trip?.carrier_2?.legal_name ? (

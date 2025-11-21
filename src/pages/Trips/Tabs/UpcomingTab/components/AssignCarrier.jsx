@@ -9,12 +9,17 @@ import {
   Text,
   Button,
   Flex,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import {useForm} from "react-hook-form";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
-import {addHours, parseISO} from "date-fns";
 import HFSearchableSelect from "@components/HFSearchableSelect";
 import useDebounce from "@hooks/useDebounce";
 
@@ -29,6 +34,9 @@ const AssignCarrier = ({
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingFormData, setPendingFormData] = useState(null);
+  const cancelRef = React.useRef();
   const envId = useSelector((state) => state.auth.environmentId);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
 
@@ -40,14 +48,14 @@ const AssignCarrier = ({
     debouncedSetSearch(searchText);
   }, [searchText, debouncedSetSearch]);
 
-  const onSubmit = (data) => {
+  const isReassign = !!selectedRow?.trip?.carrier?.legal_name;
+
+  const performAssignment = (data) => {
     if (!data?.companies_id) {
       return;
     }
 
     setLoading(true);
-    const isReassign = !!selectedRow?.trip?.carrier?.legal_name;
-
     const computedData = {
       data: {
         orders_id: selectedRow?.trip?.guid,
@@ -63,6 +71,8 @@ const AssignCarrier = ({
           res
         );
         queryClient.invalidateQueries({queryKey: [refetchKey]});
+        setShowConfirmDialog(false);
+        setPendingFormData(null);
         onClose();
       })
       .catch((error) => {
@@ -71,6 +81,27 @@ const AssignCarrier = ({
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const onSubmit = (data) => {
+    if (!data?.companies_id) {
+      return;
+    }
+
+    // If reassigning, show confirmation dialog first
+    if (isReassign) {
+      setPendingFormData(data);
+      setShowConfirmDialog(true);
+    } else {
+      // Direct assignment for new carrier
+      performAssignment(data);
+    }
+  };
+
+  const handleConfirmReassign = () => {
+    if (pendingFormData) {
+      performAssignment(pendingFormData);
+    }
   };
 
   const {data: carriersData} = useQuery({
@@ -100,60 +131,121 @@ const AssignCarrier = ({
     refetchOnWindowFocus: false,
   });
 
-  const isReassign = !!selectedRow?.trip?.carrier?.legal_name;
-
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          {isReassign ? "Re-Assign Carrier" : "Assign Carrier"}
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Text fontSize="16px" fontWeight="500" color="gray.700" mb={2}>
-            Select Carrier
-          </Text>
-          {isReassign && (
-            <Text fontSize="14px" color="gray.600" mb={3}>
-              Current carrier: {selectedRow?.trip?.carrier?.legal_name}
+    <>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            {isReassign ? "Re-Assign Carrier" : "Assign Carrier"}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text fontSize="16px" fontWeight="500" color="gray.700" mb={2}>
+              Select Carrier
             </Text>
-          )}
-          <HFSearchableSelect
-            control={control}
-            name="companies_id"
-            options={carriersData}
-            searchText={searchText}
-            setSearchText={setSearchText}
-          />
+            {isReassign && (
+              <Text fontSize="14px" color="gray.600" mb={3}>
+                Current carrier: {selectedRow?.trip?.carrier?.legal_name}
+              </Text>
+            )}
+            <HFSearchableSelect
+              control={control}
+              name="companies_id"
+              options={carriersData}
+              searchText={searchText}
+              setSearchText={setSearchText}
+            />
 
-          <Flex mt={4} justifyContent="flex-end" gap={2}>
-            <Button
-              onClick={onClose}
-              variant="outline"
-              borderColor="#EF6820"
-              color="#EF6820"
-              fontSize="14px"
-              fontWeight="500"
-              px={4}
-              py={2}
-              borderRadius="8px"
-              _hover={{bg: "gray.50", borderColor: "#EF6820"}}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              bg="#EF6820"
-              color="white"
-              _hover={{bg: "#EF6820"}}
-              onClick={handleSubmit(onSubmit)}
-              isLoading={loading}>
-              {isReassign ? "Re-Assign" : "Assign"}
-            </Button>
-          </Flex>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+            <Flex mt={4} justifyContent="flex-end" gap={2}>
+              <Button
+                onClick={onClose}
+                variant="outline"
+                borderColor="#EF6820"
+                color="#EF6820"
+                fontSize="14px"
+                fontWeight="500"
+                px={4}
+                py={2}
+                borderRadius="8px"
+                _hover={{bg: "gray.50", borderColor: "#EF6820"}}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                bg="#EF6820"
+                color="white"
+                _hover={{bg: "#EF6820"}}
+                onClick={handleSubmit(onSubmit)}
+                isLoading={loading}>
+                {isReassign ? "Re-Assign" : "Assign"}
+              </Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <AlertDialog
+        isOpen={showConfirmDialog}
+        leastDestructiveRef={cancelRef}
+        onClose={() => {
+          setShowConfirmDialog(false);
+          setPendingFormData(null);
+        }}
+        isCentered>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="18px" fontWeight="600">
+              Confirm Re-Assignment
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              <Text fontSize="16px" mb={2}>
+                Are you sure you want to reassign the carrier?
+              </Text>
+              <Text fontSize="14px" color="gray.600">
+                Current carrier:{" "}
+                <strong>{selectedRow?.trip?.carrier?.legal_name}</strong>
+              </Text>
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  setPendingFormData(null);
+                }}
+                variant="outline"
+                borderColor="#EF6820"
+                color="#EF6820"
+                fontSize="14px"
+                fontWeight="500"
+                px={4}
+                py={2}
+                borderRadius="8px"
+                _hover={{bg: "gray.50", borderColor: "#EF6820"}}>
+                Cancel
+              </Button>
+              <Button
+                bg="#EF6820"
+                color="white"
+                onClick={handleConfirmReassign}
+                isLoading={loading}
+                ml={3}
+                fontSize="14px"
+                fontWeight="500"
+                px={4}
+                py={2}
+                borderRadius="8px"
+                _hover={{bg: "#D97706"}}>
+                Yes, Re-Assign
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
   );
 };
 
