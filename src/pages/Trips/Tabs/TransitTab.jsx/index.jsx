@@ -180,7 +180,7 @@ function TransitTab({tripType = "", isActive = true}) {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}>
-          <CTableHead zIndex={1}>
+          <CTableHead zIndex={6}>
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) =>
@@ -634,12 +634,7 @@ function TransitTab({tripType = "", isActive = true}) {
   );
 }
 
-const TripStatus = ({
-  status,
-  onExpand = () => {},
-  tripId = "",
-  rowClick = () => {},
-}) => {
+const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
   return (
     <Flex
       onClick={(e) => {

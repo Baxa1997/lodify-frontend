@@ -58,19 +58,19 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
   }
 
   function getLoadTypeColor(loadType) {
-    switch (loadType?.toLowerCase()) {
+    switch (loadType) {
       case "Dry":
-        return "#14B8A6";
+        return "#FF5B04";
       case "Refrigerated":
-        return "#F59E0B";
+        return "#003B63";
       case "Temperature Controlled":
-        return "#1E40AF";
+        return "#00707A";
       case "Other":
         return "#6B7280";
       case "Preloaded":
-        return "#F59E0B";
+        return "#00707A";
       case "Drop":
-        return "#1E40AF";
+        return "#6B7280";
       default:
         return "#6B7280";
     }
@@ -170,6 +170,7 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
         {(tripData?.pickups || []).map((item, index) => (
           <Box key={item?.guid || index} mb={6}>
             <CTable
+              zIndex={2}
               minHeight={getMinHeight()}
               isPagination={false}
               width="100%"
@@ -177,7 +178,7 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
               borderColor="#fff"
               borderRadius="8px"
               bg="white">
-              <CTableHead borderRadius="8px 8px 0 0" bg="#fff">
+              <CTableHead zIndex={2} borderRadius="8px 8px 0 0" bg="#fff">
                 <CTableRow>
                   {getTableHeads(item?.type?.[0])?.map((head) => (
                     <CTableTh
@@ -211,9 +212,19 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                         color="#181d27">
                         {`${item?.address}, ${item?.state}, ${item?.zip_code}`}
                       </Text>
-                      <Text fontSize="12px" color="#6b7280">
+                      <Text mb="6px" fontSize="12px" color="#6b7280">
                         {formatScheduleDate(item?.arrive_by)}
                       </Text>
+                      {item?.type?.[0] === "Pickup" && (
+                        <>
+                          <Text color="#000" fontWeight="500">
+                            PO #{tripData?.reference_po ?? "---"}
+                          </Text>
+                          <Text color="#000" fontWeight="500">
+                            BOL #{item?.bol ?? "---"}
+                          </Text>
+                        </>
+                      )}
                     </Box>
                   </CTableTd>
 
@@ -222,36 +233,33 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                       <Text color={"#414651"} fontWeight={"500"}>
                         Tractor Unit #
                       </Text>
-                      <Text>{trip?.tractors?.plate_number}</Text>
+                      <Text>{trip?.tractors?.plate_number ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
                         Tractor ID
                       </Text>
-                      <Text>{trip?.tractors?.external_id}</Text>
+                      <Text>{trip?.tractors?.external_id ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
-                        Trailer Unit
+                        Trailer Unit #
                       </Text>
-                      <Text>{trip?.trailers?.plate_number}</Text>
+                      <Text>{trip?.trailers?.plate_number ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
                         Trailer ID
                       </Text>
-                      <Text>{trip?.trailers?.external_id}</Text>
+                      <Text>{trip?.trailers?.external_id ?? "---"}</Text>
                     </Flex>
 
-                    <Flex
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
-                      gap={"8px"}>
+                    <Flex alignItems={"center"} gap={"16px"}>
                       <Text color={"#414651"} fontWeight={"500"}>
-                        {trip?.trailers?.trailer_type?.[0]}
+                        {item?.equipment_type}
                       </Text>
                       <TripDriverVerification
                         tripData={tripData}
@@ -283,7 +291,9 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                       </Text>
                       <Flex alignItems="center" gap="8px">
                         <Text fontSize="12px" color="#181D27">
-                          {formatScheduleDate(item?.check_in)}
+                          {Boolean(item?.check_in)
+                            ? formatScheduleDate(item?.check_in)
+                            : "---"}
                         </Text>
                         {Boolean(item?.check_in) && (
                           <Text
@@ -516,7 +526,7 @@ const TripDriverVerification = ({
   const isDriverVerified = getDriverVerifiedStatus();
 
   return (
-    <Flex gap="24px" alignItems="center">
+    <Flex gap="14px" alignItems="center">
       <Box w="22px" h="22px">
         <img
           src={getTruckImage()}

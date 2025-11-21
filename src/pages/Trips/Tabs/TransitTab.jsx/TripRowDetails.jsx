@@ -12,10 +12,12 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
 import {parseISO, format} from "date-fns";
+import {useNavigate} from "react-router-dom";
 import {calculateTimeDifference} from "@utils/timeUtils";
 import ReportDelay from "../../components/ReportDelay/ReportDelay";
 
 const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
+  const navigate = useNavigate();
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
@@ -48,32 +50,27 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
 
   function formatScheduleDate(isoString) {
     try {
-      if (!isoString) return "";
-
       const date = parseISO(isoString);
-      date.setHours(date.getHours() + 5);
-
       return `${format(date, "dd MMM, HH:mm")}`;
     } catch (error) {
-      console.error("Error formatting schedule date:", error);
       return "";
     }
   }
 
   function getLoadTypeColor(loadType) {
-    switch (loadType?.toLowerCase()) {
+    switch (loadType) {
       case "Dry":
-        return "#14B8A6";
+        return "#FF5B04";
       case "Refrigerated":
-        return "#F59E0B";
+        return "#003B63";
       case "Temperature Controlled":
-        return "#1E40AF";
+        return "#00707A";
       case "Other":
         return "#6B7280";
       case "Preloaded":
-        return "#F59E0B";
+        return "#00707A";
       case "Drop":
-        return "#1E40AF";
+        return "#6B7280";
       default:
         return "#6B7280";
     }
@@ -148,24 +145,10 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
     return `${baseHeight + minRows * rowHeight + padding}px`;
   };
 
-  const getRowStatusColor = (arriveBy, index, currentIndex) => {
-    if (index <= currentIndex) {
-      return "#fff";
-    } else {
-      if (Boolean(arriveBy)) {
-        const timeDifference = calculateTimeDifference(arriveBy);
-        if (timeDifference > 0) {
-          return "#fff";
-        } else {
-          return "#FEF3F2";
-        }
-      }
-    }
-  };
-
   return (
-    <Box bg="#fff" minHeight="200px" position="relative">
+    <Box zIndex={5} bg="#fff" minHeight="200px" position="relative">
       <Box
+        p="8px 20px"
         pb="0px"
         overflowX="auto"
         sx={{
@@ -185,27 +168,17 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
           },
         }}>
         {(tripData?.pickups || []).map((item, index) => (
-          <Box
-            bg={getRowStatusColor(
-              item?.arrive_by,
-              index + 1,
-              tripData?.current_index
-            )}
-            p="8px 20px"
-            key={item?.guid || index}>
+          <Box key={item?.guid || index} mb={6}>
             <CTable
+              zIndex={2}
               minHeight={getMinHeight()}
               isPagination={false}
               width="100%"
               overflow="visible"
-              borderColor={getRowStatusColor(
-                item?.arrive_by,
-                index + 1,
-                tripData?.current_index
-              )}
+              borderColor="#fff"
               borderRadius="8px"
               bg="white">
-              <CTableHead borderRadius="8px 8px 0 0">
+              <CTableHead zIndex={2} borderRadius="8px 8px 0 0" bg="#fff">
                 <CTableRow>
                   {getTableHeads(item?.type?.[0])?.map((head) => (
                     <CTableTh
@@ -213,35 +186,21 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                       maxW="334px"
                       width="334px"
                       key={head.index}
-                      bg={getRowStatusColor(
-                        item?.arrive_by,
-                        index + 1,
-                        tripData?.current_index
-                      )}
+                      bg="#fff"
                       py="6px"
                       px="20px"
                       fontSize="16px"
                       fontWeight="600"
                       color="#181d27"
-                      borderColor={
-                        calculateTimeDifference(item?.arrive_by) <= 0
-                          ? "#FEF3F2"
-                          : "#F04438"
-                      }>
+                      borderBottom="1px solid #e5e7eb">
                       {head.label}
                     </CTableTh>
                   ))}
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                <CTableRow
-                  bg={getRowStatusColor(
-                    item?.arrive_by,
-                    index + 1,
-                    tripData?.current_index
-                  )}
-                  hover={false}>
-                  <CTableTd py="12px" px="20px" verticalAlign="top">
+                <CTableRow hover={false}>
+                  <CTableTd py="12px" px="20px">
                     <Box>
                       <TripStatus status={item?.index} />
                       <Text
@@ -253,47 +212,54 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                         color="#181d27">
                         {`${item?.address}, ${item?.state}, ${item?.zip_code}`}
                       </Text>
-                      <Text fontSize="12px" color="#6b7280">
+                      <Text mb="6px" fontSize="12px" color="#6b7280">
                         {formatScheduleDate(item?.arrive_by)}
                       </Text>
+                      {item?.type?.[0] === "Pickup" && (
+                        <>
+                          <Text color="#000" fontWeight="500">
+                            PO #{tripData?.reference_po ?? "---"}
+                          </Text>
+                          <Text color="#000" fontWeight="500">
+                            BOL #{item?.bol ?? "---"}
+                          </Text>
+                        </>
+                      )}
                     </Box>
                   </CTableTd>
 
-                  <CTableTd py="12px" px="20px" verticalAlign="top">
+                  <CTableTd py="12px" px="20px">
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
                         Tractor Unit #
                       </Text>
-                      <Text>{trip?.tractors?.plate_number}</Text>
+                      <Text>{trip?.tractors?.plate_number ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
                         Tractor ID
                       </Text>
-                      <Text>{trip?.tractors?.external_id}</Text>
+                      <Text>{trip?.tractors?.external_id ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
-                        Trailer Unit
+                        Trailer Unit #
                       </Text>
-                      <Text>{trip?.trailers?.plate_number}</Text>
+                      <Text>{trip?.trailers?.plate_number ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
                         Trailer ID
                       </Text>
-                      <Text>{trip?.trailers?.external_id}</Text>
+                      <Text>{trip?.trailers?.external_id ?? "---"}</Text>
                     </Flex>
 
-                    <Flex
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
-                      gap={"8px"}>
+                    <Flex alignItems={"center"} gap={"16px"}>
                       <Text color={"#414651"} fontWeight={"500"}>
-                        {trip?.trailers?.trailer_type?.[0]}
+                        {item?.equipment_type}
                       </Text>
                       <TripDriverVerification
                         tripData={tripData}
@@ -303,7 +269,7 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                     </Flex>
                   </CTableTd>
 
-                  <CTableTd py="12px" px="20px" verticalAlign="top">
+                  <CTableTd py="12px" px="20px">
                     <Box>
                       <Badge
                         bg={getLoadTypeColor(item?.load_type?.[0])}
@@ -318,14 +284,16 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                     </Box>
                   </CTableTd>
 
-                  <CTableTd py="12px" px="20px" verticalAlign="top">
+                  <CTableTd py="12px" px="20px">
                     <Box mb="24px">
                       <Text fontSize="12px" color="#181D27">
                         Check in:
                       </Text>
                       <Flex alignItems="center" gap="8px">
                         <Text fontSize="12px" color="#181D27">
-                          {formatScheduleDate(item?.check_in)}
+                          {Boolean(item?.check_in)
+                            ? formatScheduleDate(item?.check_in)
+                            : "---"}
                         </Text>
                         {Boolean(item?.check_in) && (
                           <Text
@@ -344,7 +312,9 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
 
                       <Flex alignItems="center" gap="8px">
                         <Text fontSize="12px" color="#181D27">
-                          {formatScheduleDate(item?.check_out)}
+                          {Boolean(item?.check_out)
+                            ? formatScheduleDate(item?.check_out)
+                            : "---"}
                         </Text>
                         {Boolean(item?.check_out) && (
                           <Text
@@ -358,11 +328,13 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                     </Box>
                   </CTableTd>
 
-                  <CTableTd py="12px" px="20px" verticalAlign="top">
+                  <CTableTd py="12px" px="20px">
                     <Box>
                       <Flex alignItems="center" gap="6px">
                         <Text fontSize="14px" color="#181d27">
-                          {formatScheduleDate(item?.arrive_by)}
+                          {Boolean(item?.arrive_by)
+                            ? formatScheduleDate(item?.arrive_by)
+                            : "---"}
                         </Text>
                         {calculateTimeDifference(item?.arrive_by) <= 0 && (
                           <img src="/img/delayIcon.svg" alt="" />
@@ -433,6 +405,15 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
 
           <Flex gap="8px">
             <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/admin/collabrations`, {
+                  state: {
+                    tripId: trip?.guid,
+                    tripName: trip?.id,
+                  },
+                });
+              }}
               h="40px"
               variant="outline"
               leftIcon={
@@ -512,8 +493,8 @@ const TripDriverVerification = ({
   const getTruckImage = () => {
     let isVerified = false;
 
-    if (tripData?.current_index > pickUpindex) {
-      isVerified = true;
+    if (tripData?.current_index === pickUpindex) {
+      isVerified = trip?.is_truck_verified;
     } else if (tripData?.current_index > pickUpindex) {
       isVerified = true;
     } else {
@@ -546,7 +527,7 @@ const TripDriverVerification = ({
   const isDriverVerified = getDriverVerifiedStatus();
 
   return (
-    <Flex gap="24px" alignItems="center">
+    <Flex gap="14px" alignItems="center">
       <Box w="22px" h="22px">
         <img
           src={getTruckImage()}
