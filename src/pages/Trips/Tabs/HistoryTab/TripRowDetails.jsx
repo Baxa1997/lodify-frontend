@@ -215,16 +215,13 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                       <Text mb="6px" fontSize="12px" color="#6b7280">
                         {formatScheduleDate(item?.arrive_by)}
                       </Text>
-                      {item?.type?.[0] === "Pickup" && (
-                        <>
-                          <Text color="#000" fontWeight="500">
-                            PO #{tripData?.reference_po ?? "---"}
-                          </Text>
-                          <Text color="#000" fontWeight="500">
-                            BOL #{item?.bol ?? "---"}
-                          </Text>
-                        </>
-                      )}
+
+                      <Text color="#000" fontWeight="500">
+                        PO #{tripData?.reference_po ?? "---"}
+                      </Text>
+                      <Text color="#000" fontWeight="500">
+                        BOL #{item?.bol ?? "---"}
+                      </Text>
                     </Box>
                   </CTableTd>
 
