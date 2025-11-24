@@ -11,11 +11,12 @@ const CTable = ({
   onPageSizeChange,
   height,
   minHeight,
+  overflow = "auto",
   w = "100%",
   isPagination = true,
+  scrollRef = null,
   ...props
 }) => {
-  // Determine which height property to use
   const heightProps = {};
   if (height) {
     heightProps.height = height;
@@ -37,9 +38,10 @@ const CTable = ({
       {...heightProps}
       {...props}>
       <Box
+        ref={scrollRef}
         flex="1"
-        overflowX="auto"
-        overflowY="auto"
+        overflowX={overflow}
+        overflowY={overflow}
         position="relative"
         sx={{
           "&::-webkit-scrollbar": {

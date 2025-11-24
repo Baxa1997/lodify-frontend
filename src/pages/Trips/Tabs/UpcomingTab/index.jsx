@@ -14,7 +14,7 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import React, {useState} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -49,6 +49,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
+  const tableScrollRef = useRef(null);
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
@@ -186,9 +187,10 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
       <Box mt={6}>
         <CTable
+          scrollRef={tableScrollRef}
           width="100%"
           height="calc(100vh - 330px)"
-          overflow="auto"
+          overflow="scroll"
           currentPage={currentPage}
           totalPages={totalPages}
           pageSize={pageSize}
@@ -696,11 +698,16 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
                     <CTableRow>
                       <CTableTd colSpan={tableElements.length} p={0}>
-                        <Collapse in={isExpanded} animateOpacity>
+                        <Collapse
+                          position="relative"
+                          in={isExpanded}
+                          animateOpacity>
                           <TripRowDetails
                             handleRowClick={handleRowClick}
                             trip={trip}
                             isExpanded={isExpanded}
+                            tableScrollRef={tableScrollRef}
+                            navigate={navigate}
                           />
                         </Collapse>
                       </CTableTd>
