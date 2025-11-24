@@ -1,13 +1,4 @@
-import {
-  Box,
-  Flex,
-  Text,
-  Tooltip,
-  VStack,
-  Spinner,
-  Center,
-} from "@chakra-ui/react";
-
+import {Box, Flex, Text, Spinner, Center} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
