@@ -32,9 +32,9 @@ function ClosedTenders({tripType = ""}) {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "accepted":
+      case "Accepted":
         return "#17B26A";
-      case "rejected":
+      case "Declined":
         return "#F04438";
       default:
         return "gray";
