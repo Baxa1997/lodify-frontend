@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -30,7 +30,7 @@ const AssignCarrier = ({
   refetchKey = "UPCOMING_TRIPS",
 }) => {
   const queryClient = useQueryClient();
-  const {control, handleSubmit} = useForm();
+  const {control, handleSubmit, watch} = useForm();
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [selectedCarrier, setSelectedCarrier] = useState(null);
@@ -129,7 +129,18 @@ const AssignCarrier = ({
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
-  console.log("selectedCarrierselectedCarrier", selectedCarrier);
+
+  const options = useMemo(() => {
+    if (selectedRow?.trip?.carrier?.guid) {
+      return carriersData?.filter(
+        (item) => item?.value !== selectedRow?.trip?.carrier?.guid
+      );
+    }
+    return carriersData;
+  }, [carriersData, selectedRow]);
+
+  console.log("watch", watch("companies_id"), selectedRow);
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -143,15 +154,10 @@ const AssignCarrier = ({
             <Text fontSize="16px" fontWeight="500" color="gray.700" mb={2}>
               Select Carrier
             </Text>
-            {/* {isReassign && (
-              <Text fontSize="14px" color="gray.600" mb={3}>
-                Current carrier: {selectedRow?.trip?.carrier?.legal_name}
-              </Text>
-            )} */}
             <HFSearchableSelect
               control={control}
               name="companies_id"
-              options={carriersData}
+              options={options}
               searchText={searchText}
               setSearchText={setSearchText}
               handleOptions={setSelectedCarrier}

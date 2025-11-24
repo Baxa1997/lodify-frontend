@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {Box, Text, Flex, Badge, Button} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
@@ -16,8 +16,143 @@ import {useNavigate} from "react-router-dom";
 import {calculateTimeDifference} from "@utils/timeUtils";
 import ReportDelay from "../../components/ReportDelay/ReportDelay";
 
-const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
-  const navigate = useNavigate();
+const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
+  const buttonsRef = useRef(null);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      !buttonsRef.current ||
+      !tableScrollRef?.current ||
+      !containerRef.current
+    )
+      return;
+
+    const buttonsEl = buttonsRef.current;
+    const scrollEl = tableScrollRef.current;
+    const containerEl = containerRef.current;
+
+    let initialScrollLeft = scrollEl.scrollLeft || 0;
+    let isInitialized = false;
+
+    const updateButtonsPosition = () => {
+      if (!buttonsEl || !scrollEl || !containerEl) return;
+
+      const currentScrollLeft = scrollEl.scrollLeft || 0;
+
+      if (!isInitialized) {
+        initialScrollLeft = currentScrollLeft;
+        isInitialized = true;
+      }
+
+      const scrollDelta = currentScrollLeft - initialScrollLeft;
+
+      const basePadding = 20;
+      const paddingLeft = basePadding + scrollDelta;
+
+      buttonsEl.style.paddingLeft = `${paddingLeft}px`;
+      buttonsEl.style.paddingRight = `${basePadding}px`;
+      buttonsEl.style.transform = "none";
+    };
+
+    updateButtonsPosition();
+    const handleScroll = () => {
+      requestAnimationFrame(updateButtonsPosition);
+    };
+
+    const handleResize = () => {
+      isInitialized = false;
+      requestAnimationFrame(updateButtonsPosition);
+    };
+
+    scrollEl.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      scrollEl.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [tableScrollRef]);
+
+  return (
+    <Box ref={containerRef} position="relative" width="100%">
+      <Box
+        ref={buttonsRef}
+        bg="#fff"
+        py="10px"
+        zIndex={5}
+        borderTop="1px solid #e5e7eb"
+        position="relative"
+        width="100%">
+        <Flex
+          maxWidth="1275px"
+          gap="12px"
+          justifyContent="space-between"
+          alignItems="center">
+          <Button
+            bg="#fff"
+            color="#EF6820"
+            border="1px solid #f7b27a"
+            borderRadius="8px"
+            fontSize="14px"
+            fontWeight="600"
+            px="16px"
+            py="8px">
+            View Shipment Details
+          </Button>
+
+          <Flex gap="8px">
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/admin/collabrations`, {
+                  state: {
+                    tripId: trip?.guid,
+                    tripName: trip?.id,
+                  },
+                });
+              }}
+              h="40px"
+              variant="outline"
+              leftIcon={
+                <img src="/img/collab.svg" alt="" width="16" height="16" />
+              }
+              fontSize="14px"
+              border="1px solid #f2b27a"
+              color="#EF6820"
+              fontWeight="600">
+              Collaboration
+            </Button>
+            <Button
+              _hover={{bg: "#EF6820"}}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRowClick(trip.guid, trip);
+              }}
+              variant="outline"
+              h="40px"
+              fontSize="14px"
+              fontWeight="600"
+              bg="#EF6820"
+              color="white">
+              More details
+            </Button>
+          </Flex>
+        </Flex>
+      </Box>
+    </Box>
+  );
+};
+
+const TripRowDetails = ({
+  trip = {},
+  handleRowClick,
+  isExpanded = true,
+  tableScrollRef,
+  navigate: navigateProp,
+}) => {
+  const navigateHook = useNavigate();
+  const navigate = navigateProp || navigateHook;
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
@@ -329,12 +464,13 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                   </CTableTd>
 
                   <CTableTd py="12px" px="20px">
+                    {/* <Text fontSize="14px" color="#181d27">
+                      {formatScheduleDate(item?.arrive_by)}
+                    </Text> */}
                     <Box>
                       <Flex alignItems="center" gap="6px">
                         <Text fontSize="14px" color="#181d27">
-                          {Boolean(item?.arrive_by)
-                            ? formatScheduleDate(item?.arrive_by)
-                            : "---"}
+                          {formatScheduleDate(item?.arrive_by)}
                         </Text>
                         {calculateTimeDifference(item?.arrive_by) <= 0 && (
                           <img src="/img/delayIcon.svg" alt="" />
@@ -376,73 +512,6 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
         )}
       </Box>
 
-      <Box
-        position="sticky"
-        bottom={0}
-        left={0}
-        right={0}
-        width="100%"
-        bg="#fff"
-        px="20px"
-        py="10px"
-        zIndex={10}>
-        <Flex
-          maxWidth="1275px"
-          gap="12px"
-          justifyContent="space-between"
-          alignItems="center">
-          <Button
-            bg="#fff"
-            color="#EF6820"
-            border="1px solid #f7b27a"
-            borderRadius="8px"
-            fontSize="14px"
-            fontWeight="600"
-            px="16px"
-            py="8px">
-            View Shipment Details
-          </Button>
-
-          <Flex gap="8px">
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/admin/collabrations`, {
-                  state: {
-                    tripId: trip?.guid,
-                    tripName: trip?.id,
-                  },
-                });
-              }}
-              h="40px"
-              variant="outline"
-              leftIcon={
-                <img src="/img/collab.svg" alt="" width="16" height="16" />
-              }
-              fontSize="14px"
-              border="1px solid #f2b27a"
-              color="#EF6820"
-              fontWeight="600">
-              Collaboration
-            </Button>
-            <Button
-              _hover={{bg: "#EF6820"}}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRowClick(trip.guid, trip);
-              }}
-              variant="outline"
-              h="40px"
-              fontSize="14px"
-              fontWeight="600"
-              bg="#EF6820"
-              color="white">
-              More details
-            </Button>
-          </Flex>
-        </Flex>
-      </Box>
-
       <ReportDelay
         isOpen={isReportDelayOpen}
         onClose={() => {
@@ -451,6 +520,13 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
         }}
         trip={trip}
         pickup={selectedPickup}
+      />
+
+      <StickyButtons
+        trip={trip}
+        handleRowClick={handleRowClick}
+        navigate={navigate}
+        tableScrollRef={tableScrollRef}
       />
     </Box>
   );
