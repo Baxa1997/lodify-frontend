@@ -1,14 +1,4 @@
-import {
-  Badge,
-  Box,
-  Button,
-  Center,
-  Flex,
-  Spinner,
-  Text,
-  Tooltip,
-  VStack,
-} from "@chakra-ui/react";
+import {Box, Center, Flex, Spinner, Text} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -19,18 +9,15 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
 import {useQuery} from "@tanstack/react-query";
-import {formatDate} from "@utils/dateFormats";
 import React, {useState} from "react";
-import {useSelector, useDispatch} from "react-redux";
+import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {sidebarActions} from "@store/sidebar";
 import {format} from "date-fns";
 import TenderInvitationsFiltersComponent from "../../components/TenderInvitationsFiltersComponent";
 import {closedTendersTableElements} from "../../hooks";
 
 function ClosedTenders({tripType = ""}) {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
@@ -42,16 +29,6 @@ function ClosedTenders({tripType = ""}) {
     (state) => state.auth.user_data?.companies_id
   );
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
-
-  const getLoadTypeColor = (loadType) => {
-    const loadTypeColors = {
-      Preloaded: "orange",
-      Live: "green",
-      Drop: "blue",
-    };
-
-    return loadTypeColors[loadType?.trim()] || "gray";
-  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -123,15 +100,6 @@ function ClosedTenders({tripType = ""}) {
     setSortConfig({
       key,
       direction: sortConfig.direction === "asc" ? "desc" : "asc",
-    });
-  };
-
-  const handleRowClick = (id, trip) => {
-    dispatch(sidebarActions.setSidebar(false));
-    navigate(`/admin/trips/${id}`, {
-      state: {
-        label: `${trip?.drivers?.first_name}.${trip?.drivers?.last_name}`,
-      },
     });
   };
 
@@ -308,164 +276,6 @@ function ClosedTenders({tripType = ""}) {
                           </Text>
                         </Flex>
                       </CTableTd>
-                      {/*                       
-                      
-                     
-                      <CTableTd>
-                        <Flex gap="24px" alignItems="center">
-                          <Box>
-                            <Text
-                              fontSize={"12px"}
-                              fontWeight={500}
-                              color="#181D27">
-                              {trip?.origin?.[0]?.arrive_by &&
-                                format(
-                                  trip?.origin?.[0]?.arrive_by,
-                                  "MM/dd/yyyy"
-                                )}
-                            </Text>
-                            <Text fontSize={"14px"} fontWeight={400} h="20px">
-                              {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
-                            </Text>
-                          </Box>
-                          <TripDriverVerification trip={trip} />
-                        </Flex>
-                      </CTableTd>
-                      <CTableTd>
-                        <Box>
-                          <Text
-                            fontSize={"12px"}
-                            fontWeight={500}
-                            color="#181D27">
-                            {trip?.last_stop?.[0]?.arrive_by &&
-                              format(
-                                trip?.last_stop?.[0]?.arrive_by,
-                                "MM/dd/yyyy"
-                              )}
-                          </Text>
-                          <Text fontSize={"14px"} fontWeight={400} h="20px">
-                            {formatToAmPm(trip?.last_stop?.[0]?.arrive_by)}
-                          </Text>
-                        </Box>
-                      </CTableTd>
-                      <CTableTd>
-                        <Flex gap="12px">
-                          <Text
-                            h="20px"
-                            fontSize="14px"
-                            fontWeight="500"
-                            color="#535862">
-                            ${trip?.total_rates ?? "0"}
-                          </Text>
-                        </Flex>
-                      </CTableTd>
-
-                      {Boolean(!isBroker) && (
-                        <CTableTd>
-                          <Tooltip
-                            p="6px 10px"
-                            bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                            borderRadius="md"
-                            label={
-                              <Box color="white" minW="180px">
-                                <VStack spacing={1} align="start">
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {`${trip?.broker_user?.first_name} ${trip?.broker_user?.last_name}`}
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    Broker
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {trip?.invited_by?.legal_name}
-                                  </Text>
-                                </VStack>
-                              </Box>
-                            }>
-                            <Flex gap="12px">
-                              <Text
-                                h="20px"
-                                fontSize="14px"
-                                fontWeight="500"
-                                color="#535862">
-                                {trip?.invited_by?.legal_name ?? ""}
-                              </Text>
-                            </Flex>
-                          </Tooltip>
-                        </CTableTd>
-                      )}
-
-                      <CTableTd>
-                        <Flex gap="12px" justifyContent="space-between">
-                          <Text
-                            h="20px"
-                            fontSize="14px"
-                            fontWeight="500"
-                            color="#535862">
-                            {trip?.origin?.[0]?.equipment_type ?? ""}
-                          </Text>
-
-                          <Flex
-                            alignItems="center"
-                            justifyContent="center"
-                            border="1px solid #dcddde"
-                            w="24px"
-                            h="22px"
-                            borderRadius="50%"
-                            bg="#fff">
-                            {trip?.origin?.[0]
-                              ?.equipment_availability?.[0]?.[0] ?? ""}
-                          </Flex>
-                        </Flex>
-                      </CTableTd>
-
-                      <CTableTd>
-                        <Badge
-                          colorScheme={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.[0] ?? ""
-                          )}
-                          variant="subtle"
-                          px={3}
-                          py={1}
-                          borderRadius="full"
-                          fontSize="12px"
-                          fontWeight="500"
-                          _hover={{opacity: 0.8}}>
-                          {trip.origin?.[0]?.load_type?.[0] ?? ""}
-                        </Badge>
-                      </CTableTd>
-
-                      <CTableTd px="0">{trip?.carrier?.legal_name}</CTableTd>
-
-                      <CTableTd>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/admin/collabrations`, {
-                              state: {
-                                tripId: trip.guid,
-                                tripName: trip.id,
-                              },
-                            });
-                          }}
-                          fontSize="14px"
-                          bg="none"
-                          border="none"
-                          color="#EF6820"
-                          fontWeight="600"
-                          px="0"
-                          _hover={{bg: "none"}}>
-                          Send Message
-                        </Button>
-                      </CTableTd> */}
                     </CTableRow>
                   </React.Fragment>
                 );
@@ -477,133 +287,5 @@ function ClosedTenders({tripType = ""}) {
     </Box>
   );
 }
-
-const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
-  return (
-    <Flex
-      onClick={(e) => {
-        e.stopPropagation();
-        onExpand(tripId, e);
-      }}
-      alignItems="center"
-      justifyContent="center"
-      flexDirection="row-reverse"
-      w="36px"
-      gap="4px"
-      p="2px 8px"
-      borderRadius="100px"
-      border="1px solid #B2DDFF"
-      cursor="pointer">
-      <Text fontSize="12px" fontWeight="500" color="#175CD3">
-        {status || 1}
-      </Text>
-      {status !== 0 && <img src="/img/statusArrow.svg" alt="" />}
-    </Flex>
-  );
-};
-
-const TripDriverVerification = ({trip = {}}) => {
-  const stop = trip?.origin?.[0];
-
-  return (
-    <Flex gap="24px" alignItems="center">
-      <Box w="22px" h="22px">
-        {stop?.equipment_availability?.[0] === "Required" ? (
-          trip?.is_truck_verified ? (
-            <img
-              src="/img/verifiedFullTruck.svg"
-              alt="powerOnly"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          ) : (
-            <img
-              src="/img/unverifiedFullTruck.svg"
-              alt="powerOnly"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          )
-        ) : trip?.is_truck_verified ? (
-          <img
-            src="/img/verifiedEmptyTruck.svg"
-            alt="truck"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        ) : (
-          <img
-            src="/img/unverifiedEmptyTruck.svg"
-            alt="truck"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        )}
-      </Box>
-
-      <Flex
-        alignItems="center"
-        justifyContent="center"
-        w="44px"
-        h="27px"
-        p="5px"
-        gap="4px"
-        bg={trip?.is_driver_verified ? "#DEFFEE" : "#EDEDED"}
-        borderRadius="16px">
-        <Box w="17px" h="17px">
-          {trip?.driver_type?.[0] === "Team" &&
-            (trip?.is_driver_verified ? (
-              <img
-                src="/img/unverifiedSecondDriver.svg"
-                alt="driver"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-              />
-            ) : (
-              <img
-                src="/img/unvSecondDriver.svg"
-                alt="driver"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-              />
-            ))}
-        </Box>
-        <Box w="17px" h="17px">
-          {trip?.is_driver_verified ? (
-            <img
-              src="/img/driverVerified.svg"
-              alt="driver"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          ) : (
-            <img
-              src="/img/unverifiedDriver.svg"
-              alt="driver"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          )}
-        </Box>
-      </Flex>
-    </Flex>
-  );
-};
 
 export default ClosedTenders;
