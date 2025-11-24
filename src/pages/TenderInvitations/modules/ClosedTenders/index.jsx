@@ -53,14 +53,15 @@ function ClosedTenders({tripType = ""}) {
     return loadTypeColors[loadType?.trim()] || "gray";
   };
 
-  const getCustomerInfo = (trip) => {
-    return {
-      companyName: trip.shipper?.name || "N/A",
-      customer:
-        trip.shipper?.contact_name || trip.shipper?.customer_name || "N/A",
-      trips: trip.shipper?.total_trips || 0,
-      rate: trip.shipper?.rating || 0,
-    };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Accepted":
+        return "#17B26A";
+      case "Declined":
+        return "#F04438";
+      default:
+        return "#17B26A";
+    }
   };
 
   const {
@@ -245,80 +246,71 @@ function ClosedTenders({tripType = ""}) {
                         cursor: "pointer",
                       }}>
                       <CTableTd>
+                        <Flex
+                          w="80px"
+                          alignItems="center"
+                          justifyContent="center"
+                          bg={getStatusColor(trip.status)}
+                          color="white"
+                          px="10px"
+                          py="4px"
+                          borderRadius="100px">
+                          {trip.statuses ?? "Accepted"}
+                        </Flex>
+                      </CTableTd>
+
+                      <CTableTd>
                         <Text color="#181D27">
                           {trip.customer?.name || trip?.shipper?.name || ""}
                         </Text>
                       </CTableTd>
+
                       <CTableTd minWidth="180px">
                         <Flex
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
                           <Text color="#181D27" cursor="pointer">
-                            {trip.id || ""}
+                            {trip.load_id || ""}
                           </Text>
-
-                          <TripStatus
-                            rowClick={handleRowClick}
-                            status={
-                              trip?.current_trip === trip?.total_trips
-                                ? trip?.current_trip
-                                : trip?.current_trip + 1
-                            }
-                            tripId={trip.id || trip.guid}
-                          />
                         </Flex>
                       </CTableTd>
-                      <CTableTd>
+
+                      <CTableTd minWidth="180px">
                         <Flex
+                          gap="24px"
                           alignItems="center"
-                          gap="16px"
                           justifyContent="space-between">
-                          <Box>
-                            <>
-                              <Text
-                                h="20px"
-                                fontSize="14px"
-                                fontWeight="500"
-                                color="#181D27">
-                                {`${trip.origin?.[0]?.address ?? ""} / ${
-                                  trip?.origin?.[0]?.address_2 ?? ""
-                                }` || ""}
-                              </Text>
-                              <Text h="20px">
-                                {formatDate(trip?.origin?.[0]?.depart_at ?? "")}
-                              </Text>
-                            </>
-                          </Box>
-                          <TripStatus status={trip?.total_trips} />
+                          <Text color="#181D27" cursor="pointer">
+                            {trip.reason || ""}
+                          </Text>
                         </Flex>
                       </CTableTd>
-                      <CTableTd>
-                        <Box>
-                          <Flex
-                            gap="16px"
-                            alignItems="center"
-                            justifyContent="space-between">
-                            <Box>
-                              <Text
-                                h="20px"
-                                fontSize="14px"
-                                fontWeight="500"
-                                color="#181D27">
-                                {`${trip.last_stop?.[0]?.address ?? ""} / ${
-                                  trip?.last_stop?.[0]?.address_2 ?? ""
-                                }` || ""}
-                              </Text>
 
-                              <Text h="20px">
-                                {formatDate(
-                                  trip?.last_stop?.[0]?.arrive_by ?? ""
-                                )}
-                              </Text>
-                            </Box>
-                          </Flex>
-                        </Box>
+                      <CTableTd minWidth="180px">
+                        <Flex gap="12px" alignItems="center">
+                          <Text
+                            fontSize={"12px"}
+                            fontWeight={500}
+                            color="#181D27">
+                            {trip?.origin?.[0]?.arrive_by &&
+                              format(
+                                trip?.origin?.[0]?.arrive_by,
+                                "MM/dd/yyyy"
+                              )}
+                          </Text>
+                          <Text
+                            fontSize={"14px"}
+                            color="#181D27"
+                            fontWeight={400}
+                            h="20px">
+                            {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
+                          </Text>
+                        </Flex>
                       </CTableTd>
+                      {/*                       
+                      
+                     
                       <CTableTd>
                         <Flex gap="24px" alignItems="center">
                           <Box>
@@ -473,7 +465,7 @@ function ClosedTenders({tripType = ""}) {
                           _hover={{bg: "none"}}>
                           Send Message
                         </Button>
-                      </CTableTd>
+                      </CTableTd> */}
                     </CTableRow>
                   </React.Fragment>
                 );
