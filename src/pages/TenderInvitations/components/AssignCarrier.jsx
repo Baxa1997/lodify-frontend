@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -87,6 +87,18 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
+
+  const options = useMemo(() => {
+    if (selectedRow?.trip?.carrier_2?.guid) {
+      return carriersData?.filter(
+        (item) => item?.value !== selectedRow?.trip?.carrier_2?.guid
+      );
+    }
+    return carriersData;
+  }, [carriersData, selectedRow]);
+
+  console.log("selectedRowselectedRow", selectedRow);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
@@ -100,7 +112,7 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
           <HFSearchableSelect
             control={control}
             name="companies_id"
-            options={carriersData}
+            options={options}
             searchText={searchText}
             setSearchText={setSearchText}
           />
