@@ -11,14 +11,28 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  useToast,
+  HStack,
 } from "@chakra-ui/react";
 import {MdReply, MdMoreVert} from "react-icons/md";
+import {FaMicrophone, FaStop, FaTrash, FaCheck} from "react-icons/fa";
 import {useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import {useSocket, useSocketConnection} from "@context/SocketProvider";
 import TextMessage from "../../../Collaborations/components/MessageBubble/TextMessage";
+import ImageMessage from "../../../Collaborations/components/MessageBubble/ImageMessage";
+import VideoMessage from "../../../Collaborations/components/MessageBubble/VideoMessage";
+import AudioMessage from "../../../Collaborations/components/MessageBubble/AudioMessage";
+import FileMessage from "../../../Collaborations/components/MessageBubble/FileMessage";
 import chatService from "@services/chatService";
+import fileService from "@services/fileService";
 import styles from "./ChatMessage.module.scss";
 import {IoIosMore} from "react-icons/io";
 
@@ -37,17 +51,326 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [isInitializing, setIsInitializing] = useState(false);
-  const [presence, setPresence] = useState({});
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const [hasProcessedTripId, setHasProcessedTripId] = useState(false);
   const [roomIdFromApi, setRoomIdFromApi] = useState(null);
+
+  // File upload state
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [filePreviewUrl, setFilePreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Audio recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const timerRef = useRef(null);
+
+  const toast = useToast();
 
   const scrollToBottom = useCallback((behavior = "smooth") => {
     requestAnimationFrame(() => {
       messagesEndRef.current?.scrollIntoView({behavior});
     });
   }, []);
+
+  // File handling functions
+  const getFileType = (file) => {
+    const mimeType = file.type;
+    if (mimeType.startsWith("image/")) return "image";
+    if (mimeType.startsWith("video/")) return "video";
+    if (mimeType.startsWith("audio/")) return "voice";
+    return "file";
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setFilePreviewUrl(previewUrl);
+      const fileType = getFileType(file);
+      if (fileType === "image" || fileType === "video" || fileType === "file") {
+        setIsPreviewOpen(true);
+      }
+    }
+  };
+
+  const handleFileSend = async () => {
+    if (
+      !selectedFile ||
+      !roomData?.data?.body?.room_id ||
+      !loginUser ||
+      !isConnected
+    ) {
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const response = await fileService.folderUpload(formData, {
+        folder_name: "chat",
+      });
+
+      if (!response?.link) {
+        throw new Error("Invalid response from upload service");
+      }
+
+      const fileUrl = `https://cdn.u-code.io/${response.link}`;
+      const fileType = getFileType(selectedFile);
+
+      const messageData = {
+        room_id: roomData?.data?.body?.room_id,
+        content: fileUrl,
+        from: loginUser,
+        type: fileType,
+        author_row_id: userId,
+        project_id: projectId,
+        file: fileUrl,
+      };
+
+      socket.emit("chat message", messageData, (response) => {
+        console.log("📬 Send file message response:", response);
+        if (response && response.error) {
+          console.error("❌ Server error response:", response.error);
+          toast({
+            title: "Upload failed",
+            description: response.error,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          setSelectedFile(null);
+          setMessage("");
+          setIsPreviewOpen(false);
+          if (filePreviewUrl) {
+            URL.revokeObjectURL(filePreviewUrl);
+            setFilePreviewUrl(null);
+          }
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        }
+      });
+    } catch (error) {
+      console.error("File upload error:", error);
+      toast({
+        title: "Upload failed",
+        description: error?.message || "Could not upload file",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleClearFile = () => {
+    setSelectedFile(null);
+    setMessage("");
+    setIsPreviewOpen(false);
+    if (filePreviewUrl) {
+      URL.revokeObjectURL(filePreviewUrl);
+      setFilePreviewUrl(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // Audio recording functions
+  const formatRecordingTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm")
+          ? "audio/webm"
+          : "audio/ogg",
+      });
+
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: mediaRecorderRef.current.mimeType,
+        });
+        setAudioBlob(audioBlob);
+        setAudioUrl(URL.createObjectURL(audioBlob));
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+
+      timerRef.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error("Error starting recording:", error);
+      toast({
+        title: "Recording failed",
+        description: "Could not access microphone",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+  };
+
+  const cancelRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    }
+    setAudioBlob(null);
+    setAudioUrl(null);
+    setRecordingTime(0);
+    audioChunksRef.current = [];
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const sendAudioRecording = async () => {
+    if (
+      !audioBlob ||
+      !roomData?.data?.body?.room_id ||
+      !loginUser ||
+      !isConnected
+    ) {
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const audioFile = new File(
+        [audioBlob],
+        `voice-message-${Date.now()}.webm`,
+        {type: audioBlob.type}
+      );
+
+      const formData = new FormData();
+      formData.append("file", audioFile);
+      const response = await fileService.folderUpload(formData, {
+        folder_name: "chat",
+      });
+
+      if (!response?.link) {
+        throw new Error("Invalid response from upload service");
+      }
+
+      const uploadedAudioUrl = `https://cdn.u-code.io/${response.link}`;
+
+      const messageData = {
+        room_id: roomData?.data?.body?.room_id,
+        content: uploadedAudioUrl,
+        from: loginUser,
+        type: "voice",
+        author_row_id: userId,
+        project_id: projectId,
+        file: uploadedAudioUrl,
+      };
+
+      // Clear audio state immediately after upload succeeds
+      const currentAudioBlob = audioBlob;
+      const currentAudioUrl = audioUrl;
+      const currentRecordingTime = recordingTime;
+
+      setAudioBlob(null);
+      setAudioUrl(null);
+      setRecordingTime(0);
+      audioChunksRef.current = [];
+      setIsRecording(false);
+
+      socket.emit("chat message", messageData, (response) => {
+        console.log("📬 Send audio message response:", response);
+        if (response && response.error) {
+          console.error("❌ Server error response:", response.error);
+          // Restore state if send failed
+          setAudioBlob(currentAudioBlob);
+          setAudioUrl(currentAudioUrl);
+          setRecordingTime(currentRecordingTime);
+          toast({
+            title: "Upload failed",
+            description: response.error,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Voice message sent",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
+        }
+        setIsUploading(false);
+      });
+    } catch (error) {
+      console.error("=== AUDIO UPLOAD ERROR ===", error);
+      toast({
+        title: "Upload failed",
+        description: `Could not send voice message: ${
+          error?.message || "Unknown error"
+        }`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      setIsUploading(false);
+    }
+  };
+
+  const currentFileType = useMemo(() => {
+    return selectedFile ? getFileType(selectedFile) : null;
+  }, [selectedFile]);
 
   useEffect(() => {
     setHasProcessedTripId(false);
@@ -299,33 +622,35 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   const handleSendMessage = (e) => {
     e.preventDefault();
 
-    if (
-      !roomData?.data?.body?.room_id ||
-      !loginUser ||
-      !message.trim() ||
-      !isConnected
+    if (audioUrl) {
+      sendAudioRecording();
+    } else if (selectedFile) {
+      handleFileSend();
+    } else if (
+      roomData?.data?.body?.room_id &&
+      loginUser &&
+      message.trim() &&
+      isConnected
     ) {
-      return;
+      const messageData = {
+        room_id: roomData?.data?.body?.room_id,
+        content: message.trim(),
+        from: loginUser,
+        type: "text",
+        author_row_id: userId,
+        project_id: projectId,
+        file: "",
+      };
+      setMessage("");
+      socket.emit("chat message", messageData, (response) => {
+        console.log("📬 Send message response:", response);
+        if (response && response.error) {
+          console.error("❌ Server error response:", response.error);
+        } else {
+          setMessage("");
+        }
+      });
     }
-
-    const messageData = {
-      room_id: roomData?.data?.body?.room_id,
-      content: message.trim(),
-      from: loginUser,
-      type: "text",
-      author_row_id: userId,
-      project_id: projectId,
-      file: "",
-    };
-    setMessage("");
-    socket.emit("chat message", messageData, (response) => {
-      console.log("📬 Send message response:", response);
-      if (response && response.error) {
-        console.error("❌ Server error response:", response.error);
-      } else {
-        setMessage("");
-      }
-    });
   };
 
   const groupMessagesByDate = (messagesList) => {
@@ -389,9 +714,30 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       });
     }
   };
+
+  const getMessageComponent = (type) => {
+    const normalizedType = type ? String(type).toLowerCase().trim() : "text";
+    const messageComponents = {
+      text: TextMessage,
+      file: FileMessage,
+      image: ImageMessage,
+      voice: AudioMessage,
+      video: VideoMessage,
+    };
+    return messageComponents[normalizedType] || TextMessage;
+  };
+
+  const waveformStyle = `
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+  `;
+
   console.log("messagesmessages", messages);
   return (
     <Box className={styles.chatContainer}>
+      <style>{waveformStyle}</style>
       <Flex
         className={styles.chatHeader}
         justifyContent="space-between"
@@ -453,6 +799,14 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                     : "text";
                   const messageWidth =
                     normalizedType === "text" ? "fit-content" : "500px";
+                  const MessageComponent = getMessageComponent(msg.type);
+                  const fileInfo = msg.fileInfo || {
+                    url: msg.file || msg.content,
+                    name: msg.file_name || "File",
+                    size: msg.file_size,
+                    type: msg.file_type,
+                    duration: msg.duration,
+                  };
 
                   return isOwn ? (
                     <Flex
@@ -497,16 +851,25 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                         w={messageWidth}
                         className="message-wrapper-own">
                         <Box
-                          bg="#E0F0FF"
+                          bg={
+                            normalizedType === "text"
+                              ? "#E0F0FF"
+                              : "transparent"
+                          }
                           color="#080707"
-                          borderRadius="25px"
-                          borderBottomRightRadius="0"
+                          borderRadius={
+                            normalizedType === "text" ? "25px" : "8px"
+                          }
+                          borderBottomRightRadius={
+                            normalizedType === "text" ? "0" : "8px"
+                          }
                           w="100%"
-                          py="6px">
+                          py={normalizedType === "text" ? "6px" : "0"}>
                           <Box flex="1">
-                            <TextMessage
+                            <MessageComponent
                               isOwn={isOwn}
                               content={msg.message || msg.content || ""}
+                              fileInfo={fileInfo}
                             />
                           </Box>
                         </Box>
@@ -558,15 +921,28 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                         className="message-wrapper">
                         <Flex alignItems="center" gap="6px">
                           <Box
-                            bg="#E9EAED"
+                            bg={
+                              normalizedType === "text"
+                                ? "#E9EAED"
+                                : "transparent"
+                            }
                             color="#181D27"
-                            borderRadius="20px"
-                            borderBottomLeftRadius="4px"
-                            border="1px solid #E9EAEB"
+                            borderRadius={
+                              normalizedType === "text" ? "20px" : "8px"
+                            }
+                            borderBottomLeftRadius={
+                              normalizedType === "text" ? "4px" : "8px"
+                            }
+                            border={
+                              normalizedType === "text"
+                                ? "1px solid #E9EAEB"
+                                : "none"
+                            }
                             w="100%">
-                            <TextMessage
+                            <MessageComponent
                               isOwn={isOwn}
                               content={msg.message || msg.content || ""}
+                              fileInfo={fileInfo}
                             />
                           </Box>
 
@@ -622,6 +998,121 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
         )}
       </Box>
 
+      {(isRecording || audioUrl) && (
+        <Box
+          mx="20px"
+          mb="10px"
+          mt="10px"
+          p="12px"
+          bg="white"
+          borderRadius="12px"
+          border="1px solid #E2E8F0"
+          boxShadow="0 2px 8px rgba(0, 0, 0, 0.1)"
+          position="relative"
+          zIndex={10}>
+          <Flex alignItems="center" gap="16px">
+            <IconButton
+              size="sm"
+              icon={<FaTrash />}
+              onClick={cancelRecording}
+              variant="ghost"
+              colorScheme="gray"
+              aria-label="Delete recording"
+              color="#6B7280"
+              _hover={{bg: "#F3F4F6"}}
+            />
+
+            <Text fontWeight="600" fontSize="16px" color="#181D27" minW="50px">
+              {formatRecordingTime(recordingTime)}
+            </Text>
+
+            <Box flex="1" position="relative">
+              {isRecording ? (
+                <Box
+                  h="24px"
+                  display="flex"
+                  alignItems="center"
+                  gap="2px"
+                  justifyContent="center">
+                  {Array.from({length: 20}, (_, i) => {
+                    const height = Math.sin(i * 0.5) * 8 + 12;
+                    return (
+                      <Box
+                        key={i}
+                        w="3px"
+                        h={`${height}px`}
+                        bg="#9CA3AF"
+                        borderRadius="1.5px"
+                        animation="pulse 1s ease-in-out infinite"
+                        style={{
+                          animationDelay: `${i * 0.1}s`,
+                        }}
+                      />
+                    );
+                  })}
+                </Box>
+              ) : (
+                <audio
+                  controls
+                  src={audioUrl}
+                  style={{
+                    width: "100%",
+                    height: "32px",
+                  }}
+                />
+              )}
+            </Box>
+
+            <HStack spacing="8px">
+              {isRecording ? (
+                <IconButton
+                  size="md"
+                  icon={<FaStop />}
+                  onClick={stopRecording}
+                  bg="#EF4444"
+                  color="white"
+                  borderRadius="50%"
+                  w="40px"
+                  h="40px"
+                  _hover={{bg: "#DC2626"}}
+                  aria-label="Stop recording"
+                />
+              ) : (
+                <IconButton
+                  size="md"
+                  icon={<FaMicrophone />}
+                  onClick={startRecording}
+                  bg="#3B82F6"
+                  color="white"
+                  borderRadius="50%"
+                  w="40px"
+                  h="40px"
+                  _hover={{bg: "#2563EB"}}
+                  aria-label="Start recording"
+                />
+              )}
+
+              {audioUrl && !isRecording && (
+                <IconButton
+                  size="md"
+                  icon={<FaCheck />}
+                  onClick={sendAudioRecording}
+                  bg="#10B981"
+                  color="white"
+                  borderRadius="50%"
+                  w="40px"
+                  h="40px"
+                  _hover={{bg: "#059669"}}
+                  isLoading={isUploading}
+                  disabled={isUploading}
+                  aria-label="Send recording"
+                />
+              )}
+            </HStack>
+          </Flex>
+        </Box>
+      )}
+
       <Box className={styles.messageInput}>
         <form onSubmit={handleSendMessage}>
           <Flex
@@ -629,15 +1120,36 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
             gap="12px"
             alignItems="center"
             borderTop="1px solid #E9EAEB">
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              bg="none"
+              _hover={{bg: "none"}}
+              p="0"
+              type="button">
+              <img src="/img/attach.svg" alt="Attach file" />
+            </Button>
+
             <InputGroup flex="1">
               <Input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Send a message"
+                placeholder={
+                  selectedFile
+                    ? "File selected - click Send"
+                    : isConnected
+                    ? "Send a message"
+                    : "Connecting..."
+                }
                 border="1px solid #D1D5DB"
                 borderRadius="8px"
                 h="50px"
-                disabled={!isConnected || !roomData?.data?.body?.room_id}
+                disabled={
+                  !isConnected ||
+                  !roomData?.data?.body?.room_id ||
+                  selectedFile !== null ||
+                  isRecording ||
+                  audioUrl !== null
+                }
                 _focus={{
                   outline: "none",
                   boxShadow: "none",
@@ -645,9 +1157,26 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
               />
             </InputGroup>
 
-            <Button bg="none" _hover={{bg: "none"}} p="0" type="button">
-              <IoIosMore style={{fontSize: "24px", color: "#181D27"}} />
+            <Button
+              onClick={isRecording ? stopRecording : startRecording}
+              bg="none"
+              _hover={{bg: "none"}}
+              p="0"
+              type="button">
+              <img src="/img/microphone.svg" alt="Record audio" />
             </Button>
+
+            <Input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              display="none"
+              accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar"
+            />
+
+            {/* <Button bg="none" _hover={{bg: "none"}} p="0" type="button">
+              <IoIosMore style={{fontSize: "24px", color: "#181D27"}} />
+            </Button> */}
 
             <Button
               type="submit"
@@ -659,8 +1188,10 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
               disabled={
                 !isConnected ||
                 !roomData?.data?.body?.room_id ||
-                !message.trim()
+                (!message.trim() && !selectedFile && !audioUrl) ||
+                isUploading
               }
+              isLoading={isUploading}
               _hover={{bg: "#D97706"}}
               _disabled={{bg: "#D1D5DB", cursor: "not-allowed"}}>
               Send
@@ -668,6 +1199,121 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
           </Flex>
         </form>
       </Box>
+
+      <Modal
+        isOpen={isPreviewOpen}
+        onClose={handleClearFile}
+        size="xl"
+        isCentered>
+        <ModalOverlay bg="rgba(0, 0, 0, 0.8)" />
+        <ModalContent borderRadius="16px" overflow="hidden" maxW="520px">
+          <ModalHeader
+            borderBottom="1px solid #E9EAEB"
+            pb="0px"
+            fontSize="18px"
+            fontWeight="600">
+            {currentFileType === "image"
+              ? "Preview Image"
+              : currentFileType === "video"
+              ? "Preview Video"
+              : "File Preview"}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody p="6px">
+            {selectedFile && (
+              <Box>
+                {currentFileType === "image" && filePreviewUrl && (
+                  <Box mb="20px" display="flex" justifyContent="center">
+                    <img
+                      src={filePreviewUrl}
+                      alt={selectedFile.name}
+                      style={{
+                        width: "500px",
+                        height: "250px",
+                        objectFit: "contain",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  </Box>
+                )}
+
+                {currentFileType === "video" && filePreviewUrl && (
+                  <Box mb="20px" display="flex" justifyContent="center">
+                    <video
+                      src={filePreviewUrl}
+                      controls
+                      style={{
+                        width: "500px",
+                        height: "250px",
+                        borderRadius: "12px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </Box>
+                )}
+
+                {currentFileType === "file" && (
+                  <Flex
+                    alignItems="center"
+                    gap="16px"
+                    p="20px"
+                    bg="#F9FAFB"
+                    borderRadius="12px"
+                    mb="20px">
+                    <Box
+                      w="60px"
+                      h="60px"
+                      bg="#E9EAED"
+                      borderRadius="12px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center">
+                      <img
+                        src="/img/attach.svg"
+                        alt="file"
+                        style={{width: "30px", height: "30px"}}
+                      />
+                    </Box>
+                    <Box flex="1">
+                      <Text
+                        fontSize="16px"
+                        fontWeight="600"
+                        color="#181D27"
+                        mb="4px"
+                        wordBreak="break-word">
+                        {selectedFile.name}
+                      </Text>
+                      <Text fontSize="14px" color="#535862">
+                        {formatFileSize(selectedFile.size)}
+                      </Text>
+                    </Box>
+                  </Flex>
+                )}
+
+                <Flex gap="12px" justifyContent="flex-end" mx="20px">
+                  <Button
+                    onClick={handleClearFile}
+                    variant="ghost"
+                    colorScheme="gray"
+                    size="md">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleFileSend}
+                    bg="#EF6820"
+                    color="white"
+                    size="md"
+                    isLoading={isUploading}
+                    disabled={isUploading}
+                    _hover={{bg: "#DC5E1C"}}>
+                    Send
+                  </Button>
+                </Flex>
+              </Box>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }

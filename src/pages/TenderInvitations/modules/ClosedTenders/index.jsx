@@ -32,12 +32,12 @@ function ClosedTenders({tripType = ""}) {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Accepted":
+      case "accepted":
         return "#17B26A";
-      case "Declined":
+      case "rejected":
         return "#F04438";
       default:
-        return "#17B26A";
+        return "gray";
     }
   };
 
@@ -218,12 +218,12 @@ function ClosedTenders({tripType = ""}) {
                           w="80px"
                           alignItems="center"
                           justifyContent="center"
-                          bg={getStatusColor(trip.status)}
+                          bg={getStatusColor(trip.tender_status)}
                           color="white"
                           px="10px"
                           py="4px"
                           borderRadius="100px">
-                          {trip.statuses ?? "Accepted"}
+                          {trip.tender_status ?? "Accepted"}
                         </Flex>
                       </CTableTd>
 
@@ -239,7 +239,7 @@ function ClosedTenders({tripType = ""}) {
                           alignItems="center"
                           justifyContent="space-between">
                           <Text color="#181D27" cursor="pointer">
-                            {trip.load_id || ""}
+                            {trip.id || ""}
                           </Text>
                         </Flex>
                       </CTableTd>
