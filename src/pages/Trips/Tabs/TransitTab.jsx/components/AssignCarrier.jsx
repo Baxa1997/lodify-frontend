@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -27,12 +27,13 @@ const AssignCarrier = ({
   isOpen,
   onClose,
   selectedRow = {},
-  refetchKey = "UPCOMING_TRIPS",
+  refetchKey = "TRANSIT_TRIPS",
 }) => {
   const queryClient = useQueryClient();
-  const {control, handleSubmit} = useForm();
+  const {control, handleSubmit, watch} = useForm();
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [selectedCarrier, setSelectedCarrier] = useState(null);
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingFormData, setPendingFormData] = useState(null);
@@ -88,12 +89,10 @@ const AssignCarrier = ({
       return;
     }
 
-    // If reassigning, show confirmation dialog first
     if (isReassign) {
       setPendingFormData(data);
       setShowConfirmDialog(true);
     } else {
-      // Direct assignment for new carrier
       performAssignment(data);
     }
   };
@@ -131,6 +130,15 @@ const AssignCarrier = ({
     refetchOnWindowFocus: false,
   });
 
+  const options = useMemo(() => {
+    if (selectedRow?.trip?.carrier?.guid) {
+      return carriersData?.filter(
+        (item) => item?.value !== selectedRow?.trip?.carrier?.guid
+      );
+    }
+    return carriersData;
+  }, [carriersData, selectedRow]);
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -144,17 +152,13 @@ const AssignCarrier = ({
             <Text fontSize="16px" fontWeight="500" color="gray.700" mb={2}>
               Select Carrier
             </Text>
-            {isReassign && (
-              <Text fontSize="14px" color="gray.600" mb={3}>
-                Current carrier: {selectedRow?.trip?.carrier?.legal_name}
-              </Text>
-            )}
             <HFSearchableSelect
               control={control}
               name="companies_id"
-              options={carriersData}
+              options={options}
               searchText={searchText}
               setSearchText={setSearchText}
+              handleOptions={setSelectedCarrier}
             />
 
             <Flex mt={4} justifyContent="flex-end" gap={2}>
@@ -201,11 +205,8 @@ const AssignCarrier = ({
 
             <AlertDialogBody>
               <Text fontSize="16px" mb={2}>
-                Are you sure you want to reassign the carrier?
-              </Text>
-              <Text fontSize="14px" color="gray.600">
-                Current carrier:{" "}
-                <strong>{selectedRow?.trip?.carrier?.legal_name}</strong>
+                Are you sure you want to reassign the carrier to{" "}
+                <strong>{selectedCarrier?.label}</strong>?
               </Text>
             </AlertDialogBody>
 

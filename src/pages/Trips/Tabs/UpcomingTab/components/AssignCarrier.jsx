@@ -139,8 +139,6 @@ const AssignCarrier = ({
     return carriersData;
   }, [carriersData, selectedRow]);
 
-  console.log("watch", watch("companies_id"), selectedRow);
-
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
