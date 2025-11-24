@@ -1,5 +1,13 @@
 import React, {useState, useEffect, useRef} from "react";
-import {Box, Text, Flex, Badge, Button} from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Flex,
+  Badge,
+  Button,
+  Tooltip,
+  VStack,
+} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
 import {
@@ -15,6 +23,47 @@ import {parseISO, format} from "date-fns";
 import {useNavigate} from "react-router-dom";
 import {calculateTimeDifference} from "@utils/timeUtils";
 import ReportDelay from "../../components/ReportDelay/ReportDelay";
+
+const calculateExpiredTime = (apiTime) => {
+  try {
+    if (!apiTime) return 0;
+
+    let targetTime;
+
+    if (typeof apiTime === "string" && apiTime.includes("T")) {
+      targetTime = new Date(apiTime);
+    } else {
+      targetTime = new Date(Date.now() + apiTime * 1000);
+    }
+
+    const now = new Date();
+    const differenceMs = now.getTime() - targetTime.getTime();
+    const differenceSeconds = Math.floor(differenceMs / 1000);
+
+    return Math.max(0, differenceSeconds);
+  } catch (error) {
+    console.error("Error calculating expired time:", error);
+    return 0;
+  }
+};
+
+const formatExpiredTime = (seconds) => {
+  if (seconds === 0) return "0:00 minutes";
+
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  } else {
+    return `${minutes.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")} minutes`;
+  }
+};
 
 const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
   const buttonsRef = useRef(null);
@@ -187,6 +236,16 @@ const TripRowDetails = ({
     try {
       const date = parseISO(isoString);
       return `${format(date, "dd MMM, HH:mm")}`;
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function formatDateWithTimezone(isoString) {
+    try {
+      if (!isoString) return "";
+      const date = parseISO(isoString);
+      return `${format(date, "dd MMM, HH:mm zzz")}`;
     } catch (error) {
       return "";
     }
@@ -424,42 +483,115 @@ const TripRowDetails = ({
                       <Text fontSize="12px" color="#181D27">
                         Check in:
                       </Text>
-                      <Flex alignItems="center" gap="8px">
-                        <Text fontSize="12px" color="#181D27">
-                          {Boolean(item?.check_in)
-                            ? formatScheduleDate(item?.check_in)
-                            : "---"}
-                        </Text>
-                        {Boolean(item?.check_in) && (
-                          <Text
-                            fontSize="14px"
-                            fontWeight="700"
-                            color="#175CD3">
-                            M
+                      <Tooltip
+                        bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                        color="white"
+                        borderRadius="md"
+                        p="6px 10px"
+                        hasArrow
+                        label={
+                          <Box minW="180px">
+                            <VStack spacing={2} align="start">
+                              <Text
+                                fontSize="14px"
+                                fontWeight="600"
+                                color="white">
+                                {Boolean(item?.check_in) && ""}
+                                {item?.address || "Location"}
+                              </Text>
+                              <Text
+                                fontSize="12px"
+                                fontWeight="500"
+                                color="white"
+                                width="100%">
+                                Actuals
+                              </Text>
+                              <Text
+                                fontSize="14px"
+                                fontWeight="400"
+                                color="white">
+                                Facility check-in/out -{" "}
+                                {formatDateWithTimezone(item?.check_in) ||
+                                  "---"}
+                              </Text>
+                            </VStack>
+                          </Box>
+                        }
+                        placement="bottom-start"
+                        openDelay={300}>
+                        <Flex alignItems="center" gap="8px">
+                          <Text fontSize="12px" color="#181D27">
+                            {Boolean(item?.check_in)
+                              ? formatScheduleDate(item?.check_in)
+                              : "---"}
                           </Text>
-                        )}
-                      </Flex>
+                          {Boolean(item?.check_in) && (
+                            <Text
+                              fontSize="14px"
+                              fontWeight="700"
+                              color="#175CD3">
+                              M
+                            </Text>
+                          )}
+                        </Flex>
+                      </Tooltip>
                     </Box>
                     <Box>
                       <Text fontSize="12px" color="#181D27">
                         Check out:
                       </Text>
-
-                      <Flex alignItems="center" gap="8px">
-                        <Text fontSize="12px" color="#181D27">
-                          {Boolean(item?.check_out)
-                            ? formatScheduleDate(item?.check_out)
-                            : "---"}
-                        </Text>
-                        {Boolean(item?.check_out) && (
-                          <Text
-                            fontSize="14px"
-                            fontWeight="700"
-                            color="#175CD3">
-                            M
+                      <Tooltip
+                        bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                        color="white"
+                        borderRadius="md"
+                        p="6px 10px"
+                        hasArrow
+                        label={
+                          <Box minW="180px">
+                            <VStack spacing={2} align="start">
+                              <Text
+                                fontSize="14px"
+                                fontWeight="600"
+                                color="white">
+                                {Boolean(item?.check_out) && ""}
+                                {item?.address || "Location"}
+                              </Text>
+                              <Text
+                                fontSize="12px"
+                                fontWeight="500"
+                                color="white"
+                                width="100%">
+                                Actuals
+                              </Text>
+                              <Text
+                                fontSize="14px"
+                                fontWeight="400"
+                                color="white">
+                                Facility check-in/out -{" "}
+                                {formatDateWithTimezone(item?.check_out) ||
+                                  "---"}
+                              </Text>
+                            </VStack>
+                          </Box>
+                        }
+                        placement="bottom-start"
+                        openDelay={300}>
+                        <Flex alignItems="center" gap="8px">
+                          <Text fontSize="12px" color="#181D27">
+                            {Boolean(item?.check_out)
+                              ? formatScheduleDate(item?.check_out)
+                              : "---"}
                           </Text>
-                        )}
-                      </Flex>
+                          {Boolean(item?.check_out) && (
+                            <Text
+                              fontSize="14px"
+                              fontWeight="700"
+                              color="#175CD3">
+                              M
+                            </Text>
+                          )}
+                        </Flex>
+                      </Tooltip>
                     </Box>
                   </CTableTd>
 
@@ -467,35 +599,72 @@ const TripRowDetails = ({
                     {/* <Text fontSize="14px" color="#181d27">
                       {formatScheduleDate(item?.arrive_by)}
                     </Text> */}
-                    <Box>
-                      <Flex alignItems="center" gap="6px">
-                        <Text fontSize="14px" color="#181d27">
-                          {formatScheduleDate(item?.arrive_by)}
-                        </Text>
-                        {calculateTimeDifference(item?.arrive_by) <= 0 && (
-                          <img src="/img/delayIcon.svg" alt="" />
-                        )}
-                      </Flex>
-                      {Boolean(!isBroker) && (
-                        <Button
-                          mt="8px"
-                          h="20px"
-                          p="0"
-                          bg="none"
-                          color="#EF6820"
-                          borderRadius="8px"
-                          fontSize="14px"
-                          fontWeight="600"
-                          _hover={{bg: "none"}}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPickup(item);
-                            setIsReportDelayOpen(true);
-                          }}>
-                          Report delay
-                        </Button>
-                      )}
-                    </Box>
+                    {(() => {
+                      const expiredTime = calculateExpiredTime(item?.arrive_by);
+                      const isExpired = expiredTime > 0;
+
+                      return (
+                        <Tooltip
+                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                          color="white"
+                          borderRadius="md"
+                          p="6px 10px"
+                          hasArrow
+                          label={
+                            isExpired ? (
+                              <Box minW="180px">
+                                <VStack spacing={1} align="start">
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    This task has been expired for
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="#FF4444">
+                                    {formatExpiredTime(expiredTime)}
+                                  </Text>
+                                </VStack>
+                              </Box>
+                            ) : null
+                          }
+                          placement="bottom-start"
+                          openDelay={300}
+                          isDisabled={!isExpired}>
+                          <Box>
+                            <Flex gap="6px">
+                              <Text fontSize="14px" color={"#181d27"}>
+                                {formatScheduleDate(item?.arrive_by)}
+                              </Text>
+                              {isExpired && (
+                                <img src="/img/delayIcon.svg" alt="" />
+                              )}
+                            </Flex>
+                            {Boolean(!isBroker) && (
+                              <Button
+                                mt="8px"
+                                h="20px"
+                                p="0"
+                                bg="none"
+                                color="#EF6820"
+                                borderRadius="8px"
+                                fontSize="14px"
+                                fontWeight="600"
+                                _hover={{bg: "none"}}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedPickup(item);
+                                  setIsReportDelayOpen(true);
+                                }}>
+                                Report delay
+                              </Button>
+                            )}
+                          </Box>
+                        </Tooltip>
+                      );
+                    })()}
                   </CTableTd>
                 </CTableRow>
               </CTableBody>
