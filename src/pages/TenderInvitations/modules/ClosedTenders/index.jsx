@@ -37,7 +37,7 @@ function ClosedTenders({tripType = ""}) {
       case "Declined":
         return "#F04438";
       default:
-        return "gray";
+        return "#17B26A";
     }
   };
 
@@ -218,7 +218,7 @@ function ClosedTenders({tripType = ""}) {
                           w="80px"
                           alignItems="center"
                           justifyContent="center"
-                          bg={getStatusColor(trip.tender_status)}
+                          bg={getStatusColor(trip.tender_status ?? "Accepted")}
                           color="white"
                           px="10px"
                           py="4px"
