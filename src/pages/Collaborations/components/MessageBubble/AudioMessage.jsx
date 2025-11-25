@@ -113,7 +113,7 @@ function AudioMessage({isOwn, content, fileInfo}) {
             w="36px"
             h="36px"
             _hover={{
-              bg: isOwn ? "rgba(255, 255, 255, 0.3)" : "#0056CC",
+              bg: isOwn ? "#fff" : "#0056CC",
             }}
             _active={{
               transform: "scale(0.95)",

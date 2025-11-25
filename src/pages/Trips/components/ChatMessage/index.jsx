@@ -34,7 +34,6 @@ import FileMessage from "../../../Collaborations/components/MessageBubble/FileMe
 import chatService from "@services/chatService";
 import fileService from "@services/fileService";
 import styles from "./ChatMessage.module.scss";
-import {IoIosMore} from "react-icons/io";
 
 function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   const {id} = useParams();
@@ -45,7 +44,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
   const userId = useSelector((state) => state.auth.userInfo?.id);
   const projectId = useSelector((state) => state.auth.projectId);
   const loginUser = useSelector((state) => state.auth.user_data?.login);
-  const loginName = useSelector((state) => state.auth.user_data?.login);
 
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -80,7 +78,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     });
   }, []);
 
-  // File handling functions
   const getFileType = (file) => {
     const mimeType = file.type;
     if (mimeType.startsWith("image/")) return "image";
@@ -148,7 +145,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       };
 
       socket.emit("chat message", messageData, (response) => {
-        console.log("📬 Send file message response:", response);
         if (response && response.error) {
           console.error("❌ Server error response:", response.error);
           toast({
@@ -198,7 +194,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     }
   };
 
-  // Audio recording functions
   const formatRecordingTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -317,7 +312,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
         file: uploadedAudioUrl,
       };
 
-      // Clear audio state immediately after upload succeeds
       const currentAudioBlob = audioBlob;
       const currentAudioUrl = audioUrl;
       const currentRecordingTime = recordingTime;
@@ -329,10 +323,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       setIsRecording(false);
 
       socket.emit("chat message", messageData, (response) => {
-        console.log("📬 Send audio message response:", response);
         if (response && response.error) {
-          console.error("❌ Server error response:", response.error);
-          // Restore state if send failed
           setAudioBlob(currentAudioBlob);
           setAudioUrl(currentAudioUrl);
           setRecordingTime(currentRecordingTime);
@@ -417,7 +408,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       socket.emit("rooms list", {row_id: userId, project_id: projectId});
 
       const handleRoomsList = (data) => {
-        console.log("📋 Rooms list received:", data);
         const roomsData = data || [];
         const existingRoom = roomsData.find(
           (room) => room.id === roomIdFromApi || room.item_id === tripId
@@ -428,10 +418,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
           setConversation(existingRoom);
           setIsInitializing(false);
         } else {
-          console.log(
-            "⚠️ Room not in list, creating conversation object with roomId:",
-            roomIdFromApi
-          );
           setConversation({
             id: roomIdFromApi,
             item_id: tripId,
@@ -463,7 +449,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
           type: "group",
           row_id: userId,
           item_id: tripId,
-          from_name: loginName,
+          from_name: loginUser,
           project_id: projectId,
           to_name: tripName || `Trip ${tripId}`,
         },
@@ -489,7 +475,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
     tripName,
     roomData?.data?.body?.room_id,
     hasProcessedTripId,
-    loginName,
+    loginUser,
     projectId,
     roomIdFromApi,
     isLoadingRoom,
@@ -643,7 +629,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       };
       setMessage("");
       socket.emit("chat message", messageData, (response) => {
-        console.log("📬 Send message response:", response);
         if (response && response.error) {
           console.error("❌ Server error response:", response.error);
         } else {
@@ -733,8 +718,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
       50% { opacity: 1; }
     }
   `;
-
-  console.log("messagesmessages", messages);
+  console.log("messageGroupsmessageGroups", messageGroups);
   return (
     <Box className={styles.chatContainer}>
       <style>{waveformStyle}</style>
@@ -851,11 +835,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                         w={messageWidth}
                         className="message-wrapper-own">
                         <Box
-                          bg={
-                            normalizedType === "text"
-                              ? "#E0F0FF"
-                              : "transparent"
-                          }
+                          bg="#E0F0FF"
                           color="#080707"
                           borderRadius={
                             normalizedType === "text" ? "25px" : "8px"
@@ -864,7 +844,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                             normalizedType === "text" ? "0" : "8px"
                           }
                           w="100%"
-                          py={normalizedType === "text" ? "6px" : "0"}>
+                          py="6px">
                           <Box flex="1">
                             <MessageComponent
                               isOwn={isOwn}
@@ -921,11 +901,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                         className="message-wrapper">
                         <Flex alignItems="center" gap="6px">
                           <Box
-                            bg={
-                              normalizedType === "text"
-                                ? "#E9EAED"
-                                : "transparent"
-                            }
+                            bg="#E9EAED"
                             color="#181D27"
                             borderRadius={
                               normalizedType === "text" ? "20px" : "8px"
@@ -933,11 +909,7 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                             borderBottomLeftRadius={
                               normalizedType === "text" ? "4px" : "8px"
                             }
-                            border={
-                              normalizedType === "text"
-                                ? "1px solid #E9EAEB"
-                                : "none"
-                            }
+                            border="1px solid #E9EAEB"
                             w="100%">
                             <MessageComponent
                               isOwn={isOwn}
@@ -1143,13 +1115,6 @@ function ChatMessage({tripId: propTripId, tripName: propTripName}) {
                 border="1px solid #D1D5DB"
                 borderRadius="8px"
                 h="50px"
-                disabled={
-                  !isConnected ||
-                  !roomData?.data?.body?.room_id ||
-                  selectedFile !== null ||
-                  isRecording ||
-                  audioUrl !== null
-                }
                 _focus={{
                   outline: "none",
                   boxShadow: "none",

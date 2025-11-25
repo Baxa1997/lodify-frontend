@@ -49,7 +49,7 @@ function FileMessage({isOwn, content, fileInfo}) {
         p={isOwn ? "6px 0px 6px 14px" : "6px 14px 6px 14px"}
         borderRadius="8px"
         bg={isOwn ? "transparent" : "#fff"}
-        color={isOwn ? "#fff" : "#181D27"}
+        color={isOwn ? "#080707" : "#181D27"}
         maxW="80%"
         cursor="pointer"
         onClick={handleFileClick}>
@@ -67,13 +67,13 @@ function FileMessage({isOwn, content, fileInfo}) {
           </Box>
           <Box flex="1" minW="0">
             <Text
-              color={isOwn ? "#fff" : "#181D27"}
+              color={isOwn ? "#080707" : "#181D27"}
               fontWeight="500"
               fontSize="14px"
               noOfLines={1}>
               {fileName}
             </Text>
-            <Text color={isOwn ? "#fff" : "#535862"} fontSize="12px">
+            <Text color={isOwn ? "#535862" : "#535862"} fontSize="12px">
               {formatFileSize(fileInfo?.size)}
             </Text>
           </Box>
