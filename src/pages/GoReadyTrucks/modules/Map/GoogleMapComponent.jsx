@@ -2,10 +2,10 @@ import React, {useCallback, useRef, useState, useMemo} from "react";
 import GoogleMapReact from "google-map-react";
 import styles from "../../style.module.scss";
 import {Box, Text, Flex, Button} from "@chakra-ui/react";
-import {FaTruck, FaMapMarkerAlt} from "react-icons/fa";
 import {useQuery} from "@tanstack/react-query";
 import goReadyTrucksService from "@services/goReadyTrucksService";
 import {useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
 
 const DriverMarker = ({onClick, driver}) => (
   <div className={styles.marker} onClick={onClick}>
@@ -46,6 +46,23 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
     return `${diffSecs} sec ago`;
   };
 
+  const {data: locationData} = useQuery({
+    queryKey: ["LOCATION_DATA", driver],
+    queryFn: () =>
+      goReadyTrucksService.getLocation({
+        method: "get",
+        object_data: {
+          lon: driver.long,
+          lat: driver.lat,
+        },
+        table: "address",
+      }),
+    select: (data) => data?.data?.address || {},
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+  });
+
   return (
     <Box className={styles.infoPopup}>
       <Box className={styles.popupHeader}>
@@ -78,7 +95,7 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
             className={styles.locationText}
             fontWeight="600"
             color="#414651">
-            {driver.location || driver.address || "Location not available"}
+            {locationData}
           </Text>
         </Flex>
 
@@ -94,7 +111,9 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
           borderRadius="12px"
           border="2px solid #cc6c38"
           _hover={{bg: "#d45a1a"}}
-          onClick={onSendMessage}
+          onClick={() => {
+            onSendMessage(driver);
+          }}
           fontSize="14px"
           fontWeight="600">
           Send Message
@@ -104,7 +123,8 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
   );
 };
 
-const GoogleMapComponent = ({drivers = []}) => {
+const GoogleMapComponent = () => {
+  const navigate = useNavigate();
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const mapRef = useRef(null);
@@ -170,7 +190,13 @@ const GoogleMapComponent = ({drivers = []}) => {
     setSelectedDriver(null);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = (driver) => {
+    navigate(`/admin/collabrations`, {
+      state: {
+        tripId: driver?.driver?.guid,
+        tripName: driver?.driver?.first_name,
+      },
+    });
     console.log("Send message to:", selectedDriver);
   };
 
