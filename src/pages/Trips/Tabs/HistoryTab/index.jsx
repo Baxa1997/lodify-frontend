@@ -33,7 +33,7 @@ import {
   TripProgress,
   TripDriverVerification,
   getLoadTypeColor,
-} from "./components/functionalComponents";
+} from "./components/FunctionalComponents";
 
 function HistoryTab({tripType = ""}) {
   const navigate = useNavigate();
