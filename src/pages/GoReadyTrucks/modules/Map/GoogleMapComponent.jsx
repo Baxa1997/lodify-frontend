@@ -1,9 +1,7 @@
-import React, {useCallback, useRef, useState, useMemo} from "react";
+import React, {useCallback, useRef, useState, useMemo, useEffect} from "react";
 import GoogleMapReact from "google-map-react";
 import styles from "../../style.module.scss";
 import {Box, Text, Flex, Button} from "@chakra-ui/react";
-import {useQuery} from "@tanstack/react-query";
-import goReadyTrucksService from "@services/goReadyTrucksService";
 import {useNavigate} from "react-router-dom";
 
 const DriverMarker = ({onClick, driver}) => (
@@ -31,19 +29,19 @@ const DriverMarker = ({onClick, driver}) => (
 const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
   if (!isOpen || !driver) return null;
 
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return "N/A";
-    const now = new Date();
-    const time = new Date(timestamp);
-    const diffMs = now - time;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffSecs = Math.floor((diffMs % 60000) / 1000);
+  // const formatTimeAgo = (timestamp) => {
+  //   if (!timestamp) return "N/A";
+  //   const now = new Date();
+  //   const time = new Date(timestamp);
+  //   const diffMs = now - time;
+  //   const diffMins = Math.floor(diffMs / 60000);
+  //   const diffSecs = Math.floor((diffMs % 60000) / 1000);
 
-    if (diffMins > 0) {
-      return `${diffMins} min ${diffSecs} sec ago`;
-    }
-    return `${diffSecs} sec ago`;
-  };
+  //   if (diffMins > 0) {
+  //     return `${diffMins} min ${diffSecs} sec ago`;
+  //   }
+  //   return `${diffSecs} sec ago`;
+  // };
 
   return (
     <Box className={styles.infoPopup}>
@@ -81,11 +79,6 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
           </Text>
         </Flex>
 
-        {/* <Text className={styles.lastUpdatedText} mb="12px">
-          Last Verification{" "}
-          {formatTimeAgo(driver.lastVerification || driver.timestamp)}
-        </Text> */}
-
         <Button
           width="130px"
           bg="#EF6820"
@@ -111,9 +104,9 @@ const GoogleMapComponent = ({trucksData = []}) => {
   const [showPopup, setShowPopup] = useState(false);
   const mapRef = useRef(null);
 
-  const center = useMemo(() => {
+  const {center, zoom} = useMemo(() => {
     if (!trucksData || trucksData.length === 0) {
-      return {lat: 36.7783, lng: -119.4179};
+      return {center: {lat: 36.7783, lng: -119.4179}, zoom: 6};
     }
 
     const validTrucks = trucksData.filter(
@@ -122,25 +115,88 @@ const GoogleMapComponent = ({trucksData = []}) => {
     );
 
     if (validTrucks.length === 0) {
-      return {lat: 36.7783, lng: -119.4179};
+      return {center: {lat: 36.7783, lng: -119.4179}, zoom: 6};
     }
 
-    const avgLat =
-      validTrucks.reduce((sum, truck) => sum + parseFloat(truck.lat), 0) /
-      validTrucks.length;
-    const avgLng =
-      validTrucks.reduce((sum, truck) => sum + parseFloat(truck.long), 0) /
-      validTrucks.length;
+    const lats = validTrucks.map((truck) => parseFloat(truck.lat));
+    const lngs = validTrucks.map((truck) => parseFloat(truck.long));
 
-    return {lat: avgLat || 36.7783, lng: avgLng || -119.4179};
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+    const minLng = Math.min(...lngs);
+    const maxLng = Math.max(...lngs);
+
+    const avgLat = (minLat + maxLat) / 2;
+    const avgLng = (minLng + maxLng) / 2;
+
+    const latDiff = maxLat - minLat;
+    const lngDiff = maxLng - minLng;
+    const maxDiff = Math.max(latDiff, lngDiff);
+
+    let calculatedZoom = 11;
+    if (maxDiff > 0) {
+      if (maxDiff > 50) {
+        calculatedZoom = 4;
+      } else if (maxDiff > 20) {
+        calculatedZoom = 5;
+      } else if (maxDiff > 10) {
+        calculatedZoom = 6;
+      } else if (maxDiff > 5) {
+        calculatedZoom = 7;
+      } else if (maxDiff > 2) {
+        calculatedZoom = 8;
+      } else if (maxDiff > 1) {
+        calculatedZoom = 9;
+      } else if (maxDiff > 0.5) {
+        calculatedZoom = 10;
+      } else if (maxDiff > 0.2) {
+        calculatedZoom = 11;
+      } else if (maxDiff > 0.1) {
+        calculatedZoom = 12;
+      } else {
+        calculatedZoom = 13;
+      }
+    }
+
+    const finalZoom = Math.max(calculatedZoom - 1, 6);
+
+    return {
+      center: {lat: avgLat || 36.7783, lng: avgLng || -119.4179},
+      zoom: finalZoom,
+    };
   }, [trucksData]);
 
-  const onMapLoad = useCallback((map) => {
+  const onMapLoad = useCallback((map, maps) => {
     if (mapRef.current) {
       return;
     }
-    mapRef.current = map;
+    mapRef.current = {map, maps};
   }, []);
+
+  useEffect(() => {
+    if (mapRef.current?.map && mapRef.current?.maps && trucksData?.length > 0) {
+      const validTrucks = trucksData.filter(
+        (truck) =>
+          truck.lat && truck.long && !isNaN(truck.lat) && !isNaN(truck.long)
+      );
+
+      if (validTrucks.length > 0) {
+        const bounds = new mapRef.current.maps.LatLngBounds();
+        validTrucks.forEach((truck) => {
+          bounds.extend(
+            new mapRef.current.maps.LatLng(
+              parseFloat(truck.lat),
+              parseFloat(truck.long)
+            )
+          );
+        });
+
+        mapRef.current.map.fitBounds(bounds, {
+          padding: {top: 50, right: 50, bottom: 50, left: 50},
+        });
+      }
+    }
+  }, [trucksData]);
 
   const handleMarkerClick = (driver) => {
     setSelectedDriver(driver);
@@ -159,7 +215,6 @@ const GoogleMapComponent = ({trucksData = []}) => {
         tripName: driver?.driver?.first_name + " " + driver?.driver?.last_name,
       },
     });
-    console.log("Send message to:", selectedDriver);
   };
 
   const hasTrucks = trucksData && trucksData.length > 0;
@@ -179,8 +234,9 @@ const GoogleMapComponent = ({trucksData = []}) => {
         }}
         defaultCenter={center}
         center={center}
-        defaultZoom={hasTrucks ? 11 : 6}
-        onGoogleApiLoaded={({map}) => onMapLoad(map)}
+        defaultZoom={zoom}
+        zoom={zoom}
+        onGoogleApiLoaded={({map, maps}) => onMapLoad(map, maps)}
         options={{
           mapTypeControl: true,
           streetViewControl: true,
