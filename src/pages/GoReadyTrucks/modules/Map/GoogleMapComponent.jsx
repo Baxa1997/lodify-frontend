@@ -81,10 +81,10 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
           </Text>
         </Flex>
 
-        <Text className={styles.lastUpdatedText} mb="12px">
+        {/* <Text className={styles.lastUpdatedText} mb="12px">
           Last Verification{" "}
           {formatTimeAgo(driver.lastVerification || driver.timestamp)}
-        </Text>
+        </Text> */}
 
         <Button
           width="130px"
