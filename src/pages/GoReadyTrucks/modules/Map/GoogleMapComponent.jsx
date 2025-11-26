@@ -1,26 +1,161 @@
 import React, {useCallback, useRef, useState} from "react";
 import GoogleMapReact from "google-map-react";
 import styles from "../../style.module.scss";
-import {Box} from "@chakra-ui/react";
+import {Box, Text, Flex, Button} from "@chakra-ui/react";
+import {FaTruck, FaMapMarkerAlt} from "react-icons/fa";
+import {useQuery} from "@tanstack/react-query";
+import goReadyTrucksService from "@services/goReadyTrucksService";
+import {useSelector} from "react-redux";
 
-const LocationMarker = ({lat, lng, onClick}) => (
+const DriverMarker = ({lat, lng, onClick, driver}) => (
   <div className={styles.marker} onClick={onClick}>
-    <div className={styles.markerInner}>
-      <div className={styles.markerDot}></div>
-    </div>
+    <Flex
+      bg="#fff"
+      minW="70px"
+      h="30px"
+      alignItems="center"
+      justifyContent="center"
+      borderRadius="6px"
+      border="1px solid #E2E8F0"
+      fontSize="12px"
+      fontWeight="600">
+      {driver?.id ?? "T-4829"}
+    </Flex>
+    <img src="/img/TruckMarker.svg" alt="marker" />
+    {driver?.tripId && (
+      <div className={styles.markerLabel}>{driver.tripId}</div>
+    )}
   </div>
 );
 
-const GoogleMapComponent = () => {
-  const [latitude, setLatitude] = useState(36.7783);
-  const [longitude, setLongitude] = useState(119.4179);
+const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
+  if (!isOpen || !driver) return null;
+
+  const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return "N/A";
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffMs = now - time;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffSecs = Math.floor((diffMs % 60000) / 1000);
+
+    if (diffMins > 0) {
+      return `${diffMins} min ${diffSecs} sec ago`;
+    }
+    return `${diffSecs} sec ago`;
+  };
+
+  return (
+    <Box className={styles.infoPopup}>
+      <Box className={styles.popupHeader}>
+        <Text className={styles.driverId}>{driver.tripId || "N/A"}</Text>
+        <Box className={styles.closeButton} onClick={onClose}>
+          ×
+        </Box>
+      </Box>
+
+      <Box className={styles.popupContent}>
+        <Text className={styles.driverName}>
+          {driver.driverName || driver.name || "Driver"}
+        </Text>
+
+        <Flex align="center" gap="8px" mb="12px">
+          <FaTruck color="#6B7280" size={16} />
+          <Text className={styles.vehicleText}>
+            Model year: {driver.modelYear || "N/A"}
+          </Text>
+        </Flex>
+
+        <Flex align="center" gap="8px" mb="12px">
+          <FaMapMarkerAlt color="#6B7280" size={16} />
+          <Text className={styles.locationText}>
+            {driver.location || driver.address || "Location not available"}
+          </Text>
+        </Flex>
+
+        <Text className={styles.lastUpdatedText} mb="16px">
+          Last Verification{" "}
+          {formatTimeAgo(driver.lastVerification || driver.timestamp)}
+        </Text>
+
+        <Button
+          width="100%"
+          bg="#EF6820"
+          color="white"
+          _hover={{bg: "#d45a1a"}}
+          onClick={onSendMessage}
+          fontSize="14px"
+          fontWeight="600">
+          Send Message
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+
+const GoogleMapComponent = ({drivers = []}) => {
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
   const mapRef = useRef(null);
+  const companiesId = useSelector(
+    (state) => state.auth.user_data?.companies_id
+  );
+  const envId = useSelector((state) => state.auth.environmentId);
+
+  const {data: trucksData} = useQuery({
+    queryKey: ["TRUCKS_DATA"],
+    queryFn: () => {
+      return goReadyTrucksService.getTrucks({
+        method: "get",
+        object_data: {
+          companies_id: companiesId,
+        },
+        table: "trucks_with_drivers",
+      });
+    },
+    select: (data) => data?.data?.response || [],
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+  });
+
+  console.log("trucksDatatrucksData", trucksData);
+
+  const getMapCenter = () => {
+    if (drivers.length === 0) {
+      return {lat: 36.7783, lng: -119.4179};
+    }
+
+    const avgLat =
+      drivers.reduce((sum, d) => sum + (d.lat || 0), 0) / drivers.length;
+    const avgLng =
+      drivers.reduce((sum, d) => sum + (d.lng || 0), 0) / drivers.length;
+
+    return {lat: avgLat || 36.7783, lng: avgLng || -119.4179};
+  };
 
   const onMapLoad = useCallback((map) => {
     if (mapRef.current) {
       return;
     }
+    mapRef.current = map;
   }, []);
+
+  const handleMarkerClick = (driver) => {
+    setSelectedDriver(driver);
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSelectedDriver(null);
+  };
+
+  const handleSendMessage = () => {
+    console.log("Send message to:", selectedDriver);
+  };
+
+  const center = getMapCenter();
 
   return (
     <Box
@@ -29,16 +164,15 @@ const GoogleMapComponent = () => {
       height="calc(100vh - 320px)"
       borderRadius="12px"
       border="1px solid #E2E8F0"
-      overflow="hidden">
+      overflow="hidden"
+      position="relative">
       <GoogleMapReact
         bootstrapURLKeys={{
           key: "AIzaSyAdBRYyeH13KXV-VtXpQuG36A7vbBjibMU",
         }}
-        defaultCenter={{
-          lat: latitude,
-          lng: longitude,
-        }}
-        defaultZoom={11}
+        defaultCenter={center}
+        center={center}
+        defaultZoom={drivers.length > 0 ? 11 : 6}
         onGoogleApiLoaded={({map}) => onMapLoad(map)}
         options={{
           mapTypeControl: true,
@@ -47,14 +181,23 @@ const GoogleMapComponent = () => {
           zoomControl: true,
           mapTypeId: "roadmap",
         }}>
-        <LocationMarker
-          lat={latitude}
-          lng={longitude}
-          onClick={() => {
-            setShowInfoPopup(true);
-          }}
-        />
+        {trucksData?.map((driver, index) => (
+          <DriverMarker
+            key={driver.id || driver.tripId || index}
+            lat={driver.lat}
+            lng={driver.long}
+            driver={driver}
+            onClick={() => handleMarkerClick(driver)}
+          />
+        ))}
       </GoogleMapReact>
+
+      <DriverInfoPopup
+        isOpen={showPopup}
+        onClose={handleClosePopup}
+        driver={selectedDriver}
+        onSendMessage={handleSendMessage}
+      />
     </Box>
   );
 };

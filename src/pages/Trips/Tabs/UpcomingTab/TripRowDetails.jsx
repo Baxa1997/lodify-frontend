@@ -728,12 +728,7 @@ const TripRowDetails = ({
   );
 };
 
-const TripStatus = ({
-  status,
-  onExpand = () => {},
-  tripId = "",
-  rowClick = () => {},
-}) => {
+const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
   return (
     <Flex
       onClick={(e) => {

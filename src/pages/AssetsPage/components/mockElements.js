@@ -46,12 +46,40 @@ export const tableElements = [
     label: "Verification status",
     sortable: true,
   },
+
+  {
+    key: "driver",
+    label: "Driver",
+    sortable: true,
+  },
 ];
 
 export const getVerificationStatusColor = (status) => {
   if (Array.isArray(status)) {
     const statusValue = status[0]?.toLowerCase();
     switch (statusValue) {
+      case "verified":
+        return "green";
+      case "needs attention":
+      case "pending":
+      case "unverified":
+        return "red";
+      case "in review":
+      case "processing":
+        return "orange";
+      case "expired":
+        return "red";
+      case "approved":
+        return "green";
+      case "rejected":
+      case "denied":
+        return "red";
+      default:
+        return "gray";
+    }
+  }
+
+  switch (status?.toLowerCase()) {
     case "verified":
       return "green";
     case "needs attention":
@@ -70,28 +98,6 @@ export const getVerificationStatusColor = (status) => {
       return "red";
     default:
       return "gray";
-    }
-  }
-
-  switch (status?.toLowerCase()) {
-  case "verified":
-    return "green";
-  case "needs attention":
-  case "pending":
-  case "unverified":
-    return "red";
-  case "in review":
-  case "processing":
-    return "orange";
-  case "expired":
-    return "red";
-  case "approved":
-    return "green";
-  case "rejected":
-  case "denied":
-    return "red";
-  default:
-    return "gray";
   }
 };
 

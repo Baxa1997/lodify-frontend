@@ -21,6 +21,7 @@ import {
   tableElements,
 } from "./components/mockElements";
 import useDebounce from "../../hooks/useDebounce";
+import DriverAssign from "./components/DriverAssign";
 
 const TractorsTab = () => {
   const navigate = useNavigate();
@@ -185,6 +186,9 @@ const TractorsTab = () => {
                       ? (asset.status || asset.status)[0] || "N/A"
                       : asset.status || asset.status || "N/A"}
                   </Badge>
+                </CTableTd>
+                <CTableTd>
+                  <DriverAssign asset={asset} />
                 </CTableTd>
               </CTableRow>
             ))}

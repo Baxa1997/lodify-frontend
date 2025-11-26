@@ -29,10 +29,6 @@ function GoReadyTrucks() {
           <TabPanel>
             <ActiveComponent />
           </TabPanel>
-          {/* 
-          <TabPanel>
-            <ActionsNeeded />
-          </TabPanel> */}
         </Tabs>
       </Flex>
     </>

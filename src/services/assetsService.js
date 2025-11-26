@@ -4,7 +4,7 @@ const assetsService = {
   getList: (params = {}) => {
     const dataParam = JSON.stringify(params);
     return httpRequest.get(
-      `v2/items/assets?data=${encodeURIComponent(dataParam)}`,
+      `v2/items/assets?data=${encodeURIComponent(dataParam)}`
     );
   },
   getAssetById: (id) =>
@@ -14,9 +14,11 @@ const assetsService = {
   mapInovke: (data) =>
     httpRequest.post(
       "v2/invoke_function/lodify-gateway/assets/latest_status",
-      data,
+      data
     ),
   getFuelTypes: () => httpRequest.get("v1/fuel-types"),
+  getDriversByCompany: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-drivers-gateway", {data}),
 };
 
 export default assetsService;

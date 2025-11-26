@@ -36,16 +36,6 @@ function ActionsNeeded() {
     (state) => state.auth.user_data?.companies_id
   );
 
-  const getCustomerInfo = (trip) => {
-    return {
-      companyName: trip.shipper?.name || "N/A",
-      customer:
-        trip.shipper?.contact_name || trip.shipper?.customer_name || "N/A",
-      trips: trip.shipper?.total_trips || 0,
-      rate: trip.shipper?.rating || 0,
-    };
-  };
-
   const {
     data: tripsData = [],
     isLoading,

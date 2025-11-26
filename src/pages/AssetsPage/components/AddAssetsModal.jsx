@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, {useCallback, useState} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -15,15 +15,15 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
-import { useForm, Controller } from "react-hook-form";
+import {useForm, Controller} from "react-hook-form";
 import "react-international-phone/style.css";
 import styles from "../style.module.scss";
-import { useQueryClient } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import {useQueryClient} from "@tanstack/react-query";
+import {useSelector} from "react-redux";
 import assetsService from "../../../services/assetsService";
-import { fieldTypesOptions, validateForm } from "./mockElements";
+import {fieldTypesOptions, validateForm} from "./mockElements";
 
-const AddAssetsModal = ({ isOpen, onClose }) => {
+const AddAssetsModal = ({isOpen, onClose}) => {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
   const userInfo = useSelector((state) => state.auth);
@@ -53,7 +53,7 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
 
         await assetsService.createAsset(apiData);
 
-        queryClient.invalidateQueries({ queryKey: ["GET_ASSETS_LIST"] });
+        queryClient.invalidateQueries({queryKey: ["GET_ASSETS_LIST"]});
         handleClose();
         setLoading(false);
 
@@ -81,14 +81,14 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
         });
       }
     },
-    [queryClient, userInfo],
+    [queryClient, userInfo]
   );
 
   const {
     control,
     handleSubmit: handleFormSubmit,
     reset,
-    formState: { errors, isValid },
+    formState: {errors, isValid},
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -117,30 +117,19 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      size="lg"
-      isCentered>
+    <Modal isOpen={isOpen} onClose={handleClose} size="lg" isCentered>
       <ModalOverlay bg="rgba(0, 0, 0, 0.5)" />
       <ModalContent className={styles.modalContent}>
         <ModalHeader className={styles.modalHeader}>
           <Text className={styles.modalTitle}>Add Assets</Text>
-          <Button
-            onClick={handleClose}
-            className={styles.headCloseButton}>
-            <img
-              src="/img/cancelIcon.svg"
-              alt="close" />
+          <Button onClick={handleClose} className={styles.headCloseButton}>
+            <img src="/img/cancelIcon.svg" alt="close" />
           </Button>
         </ModalHeader>
 
         <ModalBody className={styles.modalBody}>
           <form onSubmit={handleFormSubmit(onSubmit)}>
-            <VStack
-              spacing={4}
-              align="stretch"
-              flex="1">
+            <VStack spacing={4} align="stretch" flex="1">
               <FormControl isInvalid={!!errors.licence_plate}>
                 <FormLabel className={styles.fieldLabel}>
                   License Plate <span className={styles.required}>*</span>
@@ -148,8 +137,8 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                 <Controller
                   name="licence_plate"
                   control={control}
-                  rules={{ required: "License plate is required" }}
-                  render={({ field }) => (
+                  rules={{required: "License plate is required"}}
+                  render={({field}) => (
                     <Input
                       {...field}
                       type="text"
@@ -181,7 +170,7 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                       return true;
                     },
                   }}
-                  render={({ field }) => (
+                  render={({field}) => (
                     <Input
                       {...field}
                       type="number"
@@ -199,16 +188,14 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                 <Controller
                   name="fuel_types"
                   control={control}
-                  rules={{ required: "Fuel type is required" }}
-                  render={({ field }) => (
+                  rules={{required: "Fuel type is required"}}
+                  render={({field}) => (
                     <Select
                       {...field}
                       placeholder="Select fuel type"
                       className={styles.inputField}>
                       {fieldTypesOptions.map((option) => (
-                        <option
-                          key={option.value}
-                          value={option.value}>
+                        <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
                       ))}
@@ -224,8 +211,8 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                 <Controller
                   name="verification_status"
                   control={control}
-                  rules={{ required: "Verification status is required" }}
-                  render={({ field }) => (
+                  rules={{required: "Verification status is required"}}
+                  render={({field}) => (
                     <Select
                       {...field}
                       placeholder="Select verification status"
@@ -237,12 +224,8 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                 />
               </FormControl>
 
-              <HStack
-                spacing={4}
-                align="stretch">
-                <FormControl
-                  isInvalid={!!errors.gross_weight}
-                  flex={1}>
+              <HStack spacing={4} align="stretch">
+                <FormControl isInvalid={!!errors.gross_weight} flex={1}>
                   <FormLabel className={styles.fieldLabel}>
                     Gross Weight <span className={styles.required}>*</span>
                   </FormLabel>
@@ -259,7 +242,7 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                         return true;
                       },
                     }}
-                    render={({ field }) => (
+                    render={({field}) => (
                       <Input
                         {...field}
                         type="number"
@@ -270,17 +253,15 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                   />
                 </FormControl>
 
-                <FormControl
-                  isInvalid={!!errors.vin_number}
-                  flex={1}>
+                <FormControl isInvalid={!!errors.vin_number} flex={1}>
                   <FormLabel className={styles.fieldLabel}>
                     VIN Number <span className={styles.required}>*</span>
                   </FormLabel>
                   <Controller
                     name="vin_number"
                     control={control}
-                    rules={{ required: "VIN number is required" }}
-                    render={({ field }) => (
+                    rules={{required: "VIN number is required"}}
+                    render={({field}) => (
                       <Input
                         {...field}
                         type="text"
@@ -292,20 +273,16 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                 </FormControl>
               </HStack>
 
-              <HStack
-                spacing={4}
-                align="stretch">
-                <FormControl
-                  isInvalid={!!errors.vehicle_number}
-                  flex={1}>
+              <HStack spacing={4} align="stretch">
+                <FormControl isInvalid={!!errors.vehicle_number} flex={1}>
                   <FormLabel className={styles.fieldLabel}>
                     Vehicle Number <span className={styles.required}>*</span>
                   </FormLabel>
                   <Controller
                     name="vehicle_number"
                     control={control}
-                    rules={{ required: "Vehicle number is required" }}
-                    render={({ field }) => (
+                    rules={{required: "Vehicle number is required"}}
+                    render={({field}) => (
                       <Input
                         {...field}
                         type="text"
@@ -316,17 +293,15 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                   />
                 </FormControl>
 
-                <FormControl
-                  isInvalid={!!errors.units}
-                  flex={1}>
+                <FormControl isInvalid={!!errors.units} flex={1}>
                   <FormLabel className={styles.fieldLabel}>
                     Units <span className={styles.required}>*</span>
                   </FormLabel>
                   <Controller
                     name="units"
                     control={control}
-                    rules={{ required: "Units is required" }}
-                    render={({ field }) => (
+                    rules={{required: "Units is required"}}
+                    render={({field}) => (
                       <Input
                         {...field}
                         type="text"
@@ -338,20 +313,16 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                 </FormControl>
               </HStack>
 
-              <HStack
-                spacing={4}
-                align="stretch">
-                <FormControl
-                  isInvalid={!!errors.in_service_date}
-                  flex={1}>
+              <HStack spacing={4} align="stretch">
+                <FormControl isInvalid={!!errors.in_service_date} flex={1}>
                   <FormLabel className={styles.fieldLabel}>
                     In Service Date <span className={styles.required}>*</span>
                   </FormLabel>
                   <Controller
                     name="in_service_date"
                     control={control}
-                    rules={{ required: "In service date is required" }}
-                    render={({ field }) => (
+                    rules={{required: "In service date is required"}}
+                    render={({field}) => (
                       <Input
                         {...field}
                         type="date"
@@ -361,17 +332,15 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
                   />
                 </FormControl>
 
-                <FormControl
-                  isInvalid={!!errors.inactivated_at}
-                  flex={1}>
+                <FormControl isInvalid={!!errors.inactivated_at} flex={1}>
                   <FormLabel className={styles.fieldLabel}>
                     Inactivated Date <span className={styles.required}>*</span>
                   </FormLabel>
                   <Controller
                     name="inactivated_at"
                     control={control}
-                    rules={{ required: "Inactivated date is required" }}
-                    render={({ field }) => (
+                    rules={{required: "Inactivated date is required"}}
+                    render={({field}) => (
                       <Input
                         {...field}
                         type="date"
@@ -383,14 +352,8 @@ const AddAssetsModal = ({ isOpen, onClose }) => {
               </HStack>
             </VStack>
 
-            <HStack
-              spacing={3}
-              justify="flex-end"
-              mt={1}>
-              <Button
-                onClick={handleClose}
-                type="button"
-                variant="outline">
+            <HStack spacing={3} justify="flex-end" mt={1}>
+              <Button onClick={handleClose} type="button" variant="outline">
                 Close
               </Button>
               <Button

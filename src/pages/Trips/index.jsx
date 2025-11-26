@@ -1,4 +1,4 @@
-import {Flex, Text} from "@chakra-ui/react";
+import {Flex} from "@chakra-ui/react";
 import {useSelector} from "react-redux";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import HeadBreadCrumb from "../../components/HeadBreadCrumb";
@@ -8,7 +8,6 @@ import ActionsNeeded from "./Tabs/ActionsNeeded";
 import HistoryTab from "./Tabs/HistoryTab";
 import TransitTab from "./Tabs/TransitTab.jsx";
 import UpcomingTab from "./Tabs/UpcomingTab";
-import TenderInvitations from "./Tabs/TenderInvitations";
 import {useState} from "react";
 import AutomatedAddTrip from "./modules/AutomatedAddTrip";
 
@@ -38,8 +37,6 @@ const Trips = () => {
             }
           }}>
           <TabList>
-            {/* <Tab onClick={() => setTripType("tender")}>Tender Invitations</Tab> */}
-
             <Tab>Actions Needed</Tab>
             <Tab>Upcoming</Tab>
             <Tab>In Transit</Tab>
@@ -49,16 +46,15 @@ const Trips = () => {
                 : "Completed"}
             </Tab>
           </TabList>
-          {/* 
-          <TabPanel>
-            <TenderInvitations tripType={tripType} />
-          </TabPanel> */}
 
           <TabPanel>
             <ActionsNeeded />
           </TabPanel>
           <TabPanel>
-            <UpcomingTab tripType={tripType} isActive={selectedTabIndex === 1} />
+            <UpcomingTab
+              tripType={tripType}
+              isActive={selectedTabIndex === 1}
+            />
           </TabPanel>
           <TabPanel>
             <TransitTab tripType={tripType} isActive={selectedTabIndex === 2} />

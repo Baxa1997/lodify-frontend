@@ -100,7 +100,7 @@ const FiltersComponent = ({
             h={"40px"}
             gap={"8px"}
             _hover={{
-              background: "#1570ef",
+              background: "#ff5b04",
             }}
             onClick={onActionButtonClick}>
             <Text fontSize={"14px"} fontWeight={"600"} color={"#fff"}>
@@ -111,9 +111,6 @@ const FiltersComponent = ({
 
         {lastAddButton && (
           <Button
-            _hover={{
-              background: "#1570EF",
-            }}
             borderRadius={"8px"}
             bg={"#1570EF"}
             w={"90px"}
