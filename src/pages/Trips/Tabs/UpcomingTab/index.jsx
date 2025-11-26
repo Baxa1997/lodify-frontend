@@ -31,11 +31,11 @@ import TripRowDetails from "./TripRowDetails";
 import AssignDriver from "./components/AssignDriver";
 import AssignCarrier from "./components/AssignCarrier";
 import {getLoadTypeColor} from "./hooks";
-import {TripStatus} from "./components/FunctionalComponents";
-import {TripProgress} from "./components/FunctionalComponents";
+import {TripProgress} from "../../components/TabsElements";
 import {TripDriverVerification} from "./components/FunctionalComponents";
 import {ReAssignDriverButton} from "./components/FunctionalComponents";
 import {ReAssignCarrierButton} from "./components/FunctionalComponents";
+import {TripStatus} from "../../components/TabsElements";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();

@@ -16,20 +16,19 @@ import {
   CTableTh,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
-import tripsService from "@services/tripsService";
-import {useQuery} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
 import {
   calculateTimeDifference,
   getActionButtonColor,
   getActionButtonText,
-  getRowBackgroundColor,
 } from "@utils/timeUtils";
 import React, {useState} from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
 import {tableActionsNeeded} from "../../hooks";
+import {useQuery} from "@tanstack/react-query";
+import goReadyTrucksService from "@services/goReadyTrucksService";
 
 function ActiveComponent() {
   const navigate = useNavigate();
@@ -38,10 +37,26 @@ function ActiveComponent() {
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
-  const userId = useSelector((state) => state.auth.userId);
-  const envId = useSelector((state) => state.auth.environmentId);
-  const clientType = useSelector((state) => state.auth.clientType);
-  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+
+  const companiesId = useSelector(
+    (state) => state.auth.user_data?.companies_id
+  );
+  const {data: trucksData, isLoading} = useQuery({
+    queryKey: ["ACTIVE_TRUCKS_DATA"],
+    queryFn: () => {
+      return goReadyTrucksService.getTrucks({
+        method: "get",
+        object_data: {
+          companies_id: companiesId,
+        },
+        table: "trucks_with_drivers",
+      });
+    },
+    select: (data) => data?.data?.response || [],
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+  });
 
   const getCustomerInfo = (trip) => {
     return {
@@ -52,49 +67,6 @@ function ActiveComponent() {
       rate: trip.shipper?.rating || 0,
     };
   };
-
-  const {
-    data: tripsData = [],
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: [
-      "ACTIONS_NEEDED_TRIPS",
-      currentPage,
-      pageSize,
-      sortConfig,
-      searchTerm,
-    ],
-    queryFn: () =>
-      tripsService.getList({
-        app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
-        environment_id: envId,
-        method: "list",
-        object_data: {
-          search: searchTerm,
-          limit: pageSize,
-          page: (currentPage - 1) * pageSize,
-          brokers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-              ? brokersId
-              : undefined,
-          carriers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-              ? brokersId
-              : userId,
-          client_type:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
-              ? "broker"
-              : "carrier",
-        },
-        table: "late_trips",
-      }),
-    select: (data) => data?.data?.response || [],
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-    staleTime: 0,
-  });
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -126,10 +98,10 @@ function ActiveComponent() {
     setCurrentPage(1);
   };
 
-  const totalPages = tripsData?.total
-    ? Math.ceil(tripsData.total / pageSize)
+  const totalPages = trucksData?.length
+    ? Math.ceil(trucksData.length / pageSize)
     : 0;
-  const trips = tripsData || [];
+  const trips = trucksData || [];
 
   return (
     <Box mt={"26px"}>
@@ -173,16 +145,6 @@ function ActiveComponent() {
                   </Center>
                 </CTableTd>
               </CTableRow>
-            ) : error ? (
-              <CTableRow>
-                <CTableTd
-                  colSpan={tableActionsNeeded.length}
-                  textAlign="center"
-                  py={8}
-                  color="red.500">
-                  Error loading trips: {error?.message || "Unknown error"}
-                </CTableTd>
-              </CTableRow>
             ) : trips.length === 0 ? (
               <CTableRow>
                 <CTableTd
@@ -193,14 +155,15 @@ function ActiveComponent() {
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              trucksData?.map((trip, index) => {
                 return (
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
                       hover={false}
-                      bg={getRowBackgroundColor(
-                        calculateTimeDifference(trip?.origin?.[0]?.arrive_by)
-                      )}>
+                      // bg={getRowBackgroundColor(
+                      //   calculateTimeDifference(trip?.origin?.[0]?.arrive_by)
+                      // )}
+                    >
                       <CTableTd>
                         <Tooltip
                           hasArrow
@@ -234,7 +197,7 @@ function ActiveComponent() {
                             cursor="pointer"
                             _hover={{textDecoration: "underline"}}
                             color="#181D27">
-                            {trip.customer?.name || trip?.shipper?.name || ""}
+                            {trip.company?.legal_name || ""}
                           </Text>
                         </Tooltip>
                       </CTableTd>
@@ -243,100 +206,37 @@ function ActiveComponent() {
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
-                          <Tooltip
-                            hasArrow
-                            label={
-                              <Box
-                                p={3}
-                                bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                color="white"
-                                borderRadius="md"
-                                minW="180px">
-                                <VStack spacing={1} align="start">
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {getCustomerInfo(trip).companyName}
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    {getCustomerInfo(trip).customer}
-                                  </Text>
-                                </VStack>
-                              </Box>
-                            }
-                            placement="bottom-start"
-                            bg="transparent"
-                            openDelay={300}>
-                            <Text
-                              color="#181D27"
-                              cursor="pointer"
-                              _hover={{textDecoration: "underline"}}>
-                              {trip.id || ""}
-                            </Text>
-                          </Tooltip>
+                          <Text
+                            color="#181D27"
+                            cursor="pointer"
+                            _hover={{textDecoration: "underline"}}>
+                            {trip.vehicle_number || ""}
+                          </Text>
                         </Flex>
                       </CTableTd>
+
                       <CTableTd>
                         <Flex
                           alignItems="center"
                           gap="16px"
                           justifyContent="space-between">
                           <Box>
-                            <Tooltip
-                              hasArrow
-                              label={
-                                <Box
-                                  p={3}
-                                  bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                  color="white"
-                                  borderRadius="md"
-                                  minW="180px">
-                                  <VStack spacing={1} align="start">
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {getCustomerInfo(trip).companyName}
-                                    </Text>
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {getCustomerInfo(trip).customer}
-                                    </Text>
-                                  </VStack>
-                                </Box>
-                              }
-                              placement="bottom-start"
-                              bg="transparent"
-                              openDelay={300}>
-                              <>
-                                {" "}
-                                <Text
-                                  h="20px"
-                                  fontSize="14px"
-                                  fontWeight="500"
-                                  color="#181D27"
-                                  cursor="pointer"
-                                  _hover={{textDecoration: "underline"}}>
-                                  {`${trip.origin?.address ?? ""} / ${
-                                    trip?.origin?.address_2 ?? ""
-                                  }` || ""}
-                                </Text>
-                                <Text h="20px">
-                                  {formatDate(
-                                    trip?.origin?.[0]?.depart_at ?? ""
-                                  )}
-                                </Text>
-                              </>
-                            </Tooltip>
+                            <>
+                              {" "}
+                              <Text
+                                h="20px"
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#181D27"
+                                cursor="pointer"
+                                _hover={{textDecoration: "underline"}}>
+                                {trip?.current_location ?? ""}
+                              </Text>
+                            </>
                           </Box>
                         </Flex>
                       </CTableTd>
+
                       <CTableTd>
                         <Box>
                           <Flex
@@ -344,51 +244,33 @@ function ActiveComponent() {
                             alignItems="center"
                             justifyContent="space-between">
                             <Box>
-                              <Tooltip
-                                label={
-                                  <Box
-                                    p={3}
-                                    bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                                    color="white"
-                                    borderRadius="md"
-                                    minW="180px">
-                                    <VStack spacing={1} align="start">
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {getCustomerInfo(trip).companyName}
-                                      </Text>
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {getCustomerInfo(trip).customer}
-                                      </Text>
-                                    </VStack>
-                                  </Box>
-                                }
-                                placement="bottom-start"
-                                bg="transparent"
-                                openDelay={300}>
-                                <Text
-                                  h="20px"
-                                  fontSize="14px"
-                                  fontWeight="500"
-                                  color="#181D27"
-                                  cursor="pointer"
-                                  _hover={{textDecoration: "underline"}}>
-                                  {`${trip.stop?.address ?? ""} / ${
-                                    trip?.stop?.address_2 ?? ""
-                                  }` || ""}
-                                </Text>
-                              </Tooltip>
-                              <Text h="20px">
-                                {formatDate(trip?.stop?.[0]?.arrive_by ?? "")}
+                              <Text
+                                h="20px"
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#181D27"
+                                cursor="pointer"
+                                _hover={{textDecoration: "underline"}}>
+                                {trip?.type?.[0] ?? "Team"}
                               </Text>
                             </Box>
                           </Flex>
                         </Box>
+                      </CTableTd>
+
+                      <CTableTd minWidth="180px">
+                        <Flex
+                          gap="24px"
+                          alignItems="center"
+                          justifyContent="space-between">
+                          <Text
+                            color="#181D27"
+                            cursor="pointer"
+                            _hover={{textDecoration: "underline"}}>
+                            {`${trip?.driver?.first_name}  ${trip?.driver?.last_name}` ||
+                              ""}
+                          </Text>
+                        </Flex>
                       </CTableTd>
 
                       <CTableTd>
@@ -403,43 +285,6 @@ function ActiveComponent() {
                             console.log(`Timer finished for trip ${trip.id}`);
                           }}
                         />
-                      </CTableTd>
-
-                      <CTableTd>
-                        <Tooltip
-                          label={
-                            <Box
-                              p={3}
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              minW="180px">
-                              <VStack spacing={1} align="start">
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).companyName}
-                                </Text>
-                                <Text
-                                  fontSize="14px"
-                                  fontWeight="600"
-                                  color="white">
-                                  {getCustomerInfo(trip).customer}
-                                </Text>
-                              </VStack>
-                            </Box>
-                          }
-                          placement="bottom-start"
-                          bg="transparent"
-                          openDelay={300}>
-                          <Text
-                            cursor="pointer"
-                            _hover={{textDecoration: "underline"}}
-                            color="#181D27">
-                            {trip?.pickup_reason ?? "---"}
-                          </Text>
-                        </Tooltip>
                       </CTableTd>
 
                       <CTableTd>

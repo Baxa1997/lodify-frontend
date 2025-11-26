@@ -4,7 +4,6 @@ import styles from "../../style.module.scss";
 import {Box, Text, Flex, Button} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import goReadyTrucksService from "@services/goReadyTrucksService";
-import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 
 const DriverMarker = ({onClick, driver}) => (
@@ -46,23 +45,6 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
     return `${diffSecs} sec ago`;
   };
 
-  const {data: locationData} = useQuery({
-    queryKey: ["LOCATION_DATA", driver],
-    queryFn: () =>
-      goReadyTrucksService.getLocation({
-        method: "get",
-        object_data: {
-          lon: driver.long,
-          lat: driver.lat,
-        },
-        table: "address",
-      }),
-    select: (data) => data?.data?.address || {},
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-    staleTime: 0,
-  });
-
   return (
     <Box className={styles.infoPopup}>
       <Box className={styles.popupHeader}>
@@ -95,7 +77,7 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
             className={styles.locationText}
             fontWeight="600"
             color="#414651">
-            {locationData}
+            {driver?.current_location}
           </Text>
         </Flex>
 
@@ -123,31 +105,11 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
   );
 };
 
-const GoogleMapComponent = () => {
+const GoogleMapComponent = ({trucksData = []}) => {
   const navigate = useNavigate();
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const mapRef = useRef(null);
-  const companiesId = useSelector(
-    (state) => state.auth.user_data?.companies_id
-  );
-
-  const {data: trucksData} = useQuery({
-    queryKey: ["TRUCKS_DATA"],
-    queryFn: () => {
-      return goReadyTrucksService.getTrucks({
-        method: "get",
-        object_data: {
-          companies_id: companiesId,
-        },
-        table: "trucks_with_drivers",
-      });
-    },
-    select: (data) => data?.data?.response || [],
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-    staleTime: 0,
-  });
 
   const center = useMemo(() => {
     if (!trucksData || trucksData.length === 0) {
