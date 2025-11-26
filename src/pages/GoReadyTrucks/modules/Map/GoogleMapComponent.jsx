@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from "react";
+import React, {useCallback, useRef, useState, useMemo} from "react";
 import GoogleMapReact from "google-map-react";
 import styles from "../../style.module.scss";
 import {Box, Text, Flex, Button} from "@chakra-ui/react";
@@ -7,7 +7,7 @@ import {useQuery} from "@tanstack/react-query";
 import goReadyTrucksService from "@services/goReadyTrucksService";
 import {useSelector} from "react-redux";
 
-const DriverMarker = ({lat, lng, onClick, driver}) => (
+const DriverMarker = ({onClick, driver}) => (
   <div className={styles.marker} onClick={onClick}>
     <Flex
       bg="#fff"
@@ -17,9 +17,10 @@ const DriverMarker = ({lat, lng, onClick, driver}) => (
       justifyContent="center"
       borderRadius="6px"
       border="1px solid #E2E8F0"
+      px="6px"
       fontSize="12px"
       fontWeight="600">
-      {driver?.id ?? "T-4829"}
+      {driver?.licence_plate ?? ""}
     </Flex>
     <img src="/img/TruckMarker.svg" alt="marker" />
     {driver?.tripId && (
@@ -48,40 +49,50 @@ const DriverInfoPopup = ({isOpen, onClose, driver, onSendMessage}) => {
   return (
     <Box className={styles.infoPopup}>
       <Box className={styles.popupHeader}>
-        <Text className={styles.driverId}>{driver.tripId || "N/A"}</Text>
+        <Flex flexDirection="column">
+          <Text fontWeight="600" color="#181D27">
+            {driver.licence_plate || ""}
+          </Text>
+          <Text fontSize="12px" color="#414651">
+            {`${driver.driver?.first_name || ""} ${
+              driver.driver?.last_name || ""
+            }`}
+          </Text>
+        </Flex>
         <Box className={styles.closeButton} onClick={onClose}>
           ×
         </Box>
       </Box>
 
       <Box className={styles.popupContent}>
-        <Text className={styles.driverName}>
-          {driver.driverName || driver.name || "Driver"}
-        </Text>
-
         <Flex align="center" gap="8px" mb="12px">
-          <FaTruck color="#6B7280" size={16} />
-          <Text className={styles.vehicleText}>
-            Model year: {driver.modelYear || "N/A"}
+          <img src="/img/modelYear.svg" alt="" />
+          <Text className={styles.vehicleText} fontWeight="600" color="#414651">
+            Model year: {driver.year || "N/A"}
           </Text>
         </Flex>
 
         <Flex align="center" gap="8px" mb="12px">
-          <FaMapMarkerAlt color="#6B7280" size={16} />
-          <Text className={styles.locationText}>
+          <img src="/img/mapTruck.svg" alt="" />
+          <Text
+            className={styles.locationText}
+            fontWeight="600"
+            color="#414651">
             {driver.location || driver.address || "Location not available"}
           </Text>
         </Flex>
 
-        <Text className={styles.lastUpdatedText} mb="16px">
+        <Text className={styles.lastUpdatedText} mb="12px">
           Last Verification{" "}
           {formatTimeAgo(driver.lastVerification || driver.timestamp)}
         </Text>
 
         <Button
-          width="100%"
+          width="130px"
           bg="#EF6820"
           color="white"
+          borderRadius="12px"
+          border="2px solid #cc6c38"
           _hover={{bg: "#d45a1a"}}
           onClick={onSendMessage}
           fontSize="14px"
@@ -100,7 +111,6 @@ const GoogleMapComponent = ({drivers = []}) => {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  const envId = useSelector((state) => state.auth.environmentId);
 
   const {data: trucksData} = useQuery({
     queryKey: ["TRUCKS_DATA"],
@@ -119,20 +129,29 @@ const GoogleMapComponent = ({drivers = []}) => {
     staleTime: 0,
   });
 
-  console.log("trucksDatatrucksData", trucksData);
+  const center = useMemo(() => {
+    if (!trucksData || trucksData.length === 0) {
+      return {lat: 36.7783, lng: -119.4179};
+    }
 
-  const getMapCenter = () => {
-    if (drivers.length === 0) {
+    const validTrucks = trucksData.filter(
+      (truck) =>
+        truck.lat && truck.long && !isNaN(truck.lat) && !isNaN(truck.long)
+    );
+
+    if (validTrucks.length === 0) {
       return {lat: 36.7783, lng: -119.4179};
     }
 
     const avgLat =
-      drivers.reduce((sum, d) => sum + (d.lat || 0), 0) / drivers.length;
+      validTrucks.reduce((sum, truck) => sum + parseFloat(truck.lat), 0) /
+      validTrucks.length;
     const avgLng =
-      drivers.reduce((sum, d) => sum + (d.lng || 0), 0) / drivers.length;
+      validTrucks.reduce((sum, truck) => sum + parseFloat(truck.long), 0) /
+      validTrucks.length;
 
     return {lat: avgLat || 36.7783, lng: avgLng || -119.4179};
-  };
+  }, [trucksData]);
 
   const onMapLoad = useCallback((map) => {
     if (mapRef.current) {
@@ -155,7 +174,7 @@ const GoogleMapComponent = ({drivers = []}) => {
     console.log("Send message to:", selectedDriver);
   };
 
-  const center = getMapCenter();
+  const hasTrucks = trucksData && trucksData.length > 0;
 
   return (
     <Box
@@ -172,7 +191,7 @@ const GoogleMapComponent = ({drivers = []}) => {
         }}
         defaultCenter={center}
         center={center}
-        defaultZoom={drivers.length > 0 ? 11 : 6}
+        defaultZoom={hasTrucks ? 11 : 6}
         onGoogleApiLoaded={({map}) => onMapLoad(map)}
         options={{
           mapTypeControl: true,
