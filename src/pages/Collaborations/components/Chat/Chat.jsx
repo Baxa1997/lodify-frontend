@@ -26,7 +26,7 @@ const Chat = () => {
   const loginUser = useSelector((state) => state.auth.user_data?.login);
   const tripId = locationState?.tripId;
   const tripName = locationState?.tripName;
-  console.log("tripIdtripId", tripId);
+
   useEffect(() => {
     setHasProcessedTripId(false);
   }, [tripId]);
@@ -119,7 +119,7 @@ const Chat = () => {
 
   useEffect(() => {
     const existingRoom = rooms.find((room) => room.item_id === tripId);
-    console.log("existingRoom", existingRoom, socket, tripName);
+
     if (Boolean(existingRoom?.id)) {
       setConversation(existingRoom);
       setHasProcessedTripId(true);
@@ -130,7 +130,7 @@ const Chat = () => {
     ) {
       setIsInitializing(true);
       setHasProcessedTripId(true);
-      console.log("DRIVER CREATE ENTERED");
+
       socket.emit(
         "create room",
         {

@@ -194,7 +194,7 @@ const GoogleMapComponent = () => {
     navigate(`/admin/collabrations`, {
       state: {
         tripId: driver?.driver?.guid,
-        tripName: driver?.driver?.first_name,
+        tripName: driver?.driver?.first_name + " " + driver?.driver?.last_name,
       },
     });
     console.log("Send message to:", selectedDriver);
