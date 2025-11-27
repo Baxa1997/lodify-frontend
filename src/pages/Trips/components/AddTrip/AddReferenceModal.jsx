@@ -75,10 +75,10 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
 
     if (isValid) {
       onAddReference({
-        index: parseInt(formData.stop) || formData.stop, // Store index + 1 as number
-        reference_type: formData.reference_type,
-        reference_number: formData.reference_number,
-        reference_description: formData.reference_description || "",
+        index: parseInt(formData.stop) || formData.stop,
+        type: formData.reference_type,
+        number: formData.reference_number,
+        other_description: formData.reference_description || "",
       });
       setFormData({
         stop: "",

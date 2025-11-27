@@ -68,7 +68,6 @@ function ThirdSection({control}) {
     setIsModalOpen(false);
   };
 
-  // Watch all references to get current values
   const watchedReferences = useWatch({
     control,
     name: "references",
@@ -259,9 +258,7 @@ function ThirdSection({control}) {
           <Flex flexDirection="column" gap="6px">
             {fields?.map((field, index) => {
               const currentReferenceType =
-                watchedReferences?.[index]?.reference_type ||
-                field.reference_type ||
-                "PU #";
+                watchedReferences?.[index]?.type || field.type || "PU #";
               const showDescription = currentReferenceType === "Other #";
 
               return (

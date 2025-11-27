@@ -166,6 +166,7 @@ function AddTrip({tripData = {}}) {
           },
           trip_pickups: data.trip_pickups,
           accessorials: data.accessorials,
+          new_references: data.references || [],
         },
         table: "trips",
       },
