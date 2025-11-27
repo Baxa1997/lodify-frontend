@@ -46,18 +46,7 @@ export const menuItems = [
     icon: "/img/menuTruck.svg",
     path: "go-ready-trucks",
   },
-  {
-    id: "brokers",
-    label: "Brokers",
-    icon: "/img/user.svg",
-    path: "brokers",
-  },
-  {
-    id: "reviews",
-    label: "Reviews",
-    icon: "/img/user.svg",
-    path: "reviews",
-  },
+
   {
     id: "resources",
     label: "Managing Recourses",
@@ -76,70 +65,58 @@ export const menuItems = [
       },
     ],
   },
+
+  {
+    id: "brokers",
+    label: "Brokers",
+    icon: "/img/user.svg",
+    path: "brokers",
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    icon: "/img/user.svg",
+    path: "reviews",
+  },
+
   {
     id: "compliance",
     label: "Compliance",
     icon: "/img/menuCompliance.svg",
-    path: "#",
-    children: [
-      {
-        id: "compliance",
-        label: "Compliance Dashboard",
-        path: "compliance",
-      },
-    ],
+    path: "compliance",
   },
   {
     id: "detention",
     label: "Detention",
     icon: "/img/menuClock.svg",
     path: "#",
-    children: [
-      {
-        id: "detention",
-        label: "Detention",
-        path: "shipper",
-      },
-    ],
   },
   {
     id: "integrations",
     label: "Integrations",
     icon: "/img/menuIntegrations.svg",
-    path: "#",
-    children: [
-      {
-        id: "integrations",
-        label: "Integrations",
-        path: "integrations",
-      },
-    ],
+    path: "integrations",
   },
 
   {
     id: "scorecards",
-    label: "CoreCards",
+    label: "Score Cards",
     icon: "/img/menuScore.svg",
-    path: "scorecards",
+    path: "#",
   },
 
   {
     id: "discussion",
     label: "Discussion",
     icon: "/img/menuDiscussion.svg",
-    path: "#",
-    children: [
-      {
-        id: "collabrations",
-        label: "Collabrations",
-        path: "collabrations",
-      },
-      {
-        id: "discussion",
-        label: "Discussion",
-        path: "discussion",
-      },
-    ],
+    path: "collabrations",
+  },
+
+  {
+    id: "users",
+    label: "Users",
+    icon: "/img/user.svg",
+    path: "/admin/users",
   },
 ];
 
@@ -206,82 +183,6 @@ export const brokerMenuItems = [
     icon: "/img/user.svg",
     path: "shipper",
   },
-
-  {
-    id: "compliance",
-    label: "Compliance",
-    icon: "/img/menuCompliance.svg",
-    path: "#",
-    children: [
-      {
-        id: "compliance",
-        label: "Compliance",
-        path: "compliance",
-      },
-    ],
-  },
-
-  {
-    id: "detention",
-    label: "Detention",
-    icon: "/img/menuClock.svg",
-    path: "#",
-    children: [
-      {
-        id: "detention",
-        label: "Detention",
-        path: "detention",
-      },
-    ],
-  },
-
-  {
-    id: "integrations",
-    label: "Integrations",
-    icon: "/img/menuIntegrations.svg",
-    path: "#",
-    children: [
-      {
-        id: "integrations",
-        label: "Integrations",
-        path: "integrations",
-      },
-    ],
-  },
-
-  {
-    id: "scorecards",
-    label: "CoreCards",
-    icon: "/img/menuScore.svg",
-    path: "scorecards",
-  },
-
-  {
-    id: "discussion",
-    label: "Discussion",
-    icon: "/img/menuDiscussion.svg",
-    path: "#",
-    children: [
-      {
-        id: "collabrations",
-        label: "Collabrations",
-        path: "collabrations",
-      },
-      {
-        id: "discussion",
-        label: "Discussion",
-        path: "discussion",
-      },
-    ],
-  },
-
-  {
-    id: "users",
-    label: "Users",
-    icon: "/img/user.svg",
-    path: "/admin/users",
-  },
-
   {
     id: "reviews",
     label: "Reviews",
@@ -290,9 +191,44 @@ export const brokerMenuItems = [
   },
 
   {
-    id: "risk_assessments",
-    label: "Risk Assessments",
+    id: "compliance",
+    label: "Compliance",
+    icon: "/img/menuCompliance.svg",
+    path: "compliance",
+  },
+
+  {
+    id: "detention",
+    label: "Detention",
+    icon: "/img/menuClock.svg",
+    path: "#",
+  },
+
+  // {
+  //   id: "integrations",
+  //   label: "Integrations",
+  //   icon: "/img/menuIntegrations.svg",
+  //   path: "integrations",
+  // },
+
+  {
+    id: "scorecards",
+    label: "Score Cards",
+    icon: "/img/menuScore.svg",
+    path: "#",
+  },
+
+  {
+    id: "discussion",
+    label: "Discussion",
+    icon: "/img/menuDiscussion.svg",
+    path: "collabrations",
+  },
+
+  {
+    id: "users",
+    label: "Users",
     icon: "/img/user.svg",
-    path: "/admin/risk_assessments",
+    path: "/admin/users",
   },
 ];
