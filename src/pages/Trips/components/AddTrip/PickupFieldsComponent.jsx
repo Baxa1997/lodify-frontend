@@ -1,22 +1,28 @@
 import React from "react";
 import {Box, Flex, Text} from "@chakra-ui/react";
+import {useWatch} from "react-hook-form";
 import HFTextField from "../../../../components/HFTextField";
 import HFRadio from "../../../../components/HFRadio";
 import HFSwitch from "../../../../components/HFSwitch";
 import HFSelect from "../../../../components/HFSelect";
 import HFMultiSelect from "@components/HFMultiSelect";
 import HFPhoneInput from "@components/HFPhoneInput";
-import HFDatePicker from "@components/HFDatePicker";
 import HFDateTimePicker from "@components/HFDateTimePicker";
 
 function PickupFieldsComponent({control, field, index}) {
   const normalizeFieldType = (type) => {
     return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";
   };
-
   const isPickup = normalizeFieldType(field?.type) === "pickup";
   const isPickupAndDelivery =
     normalizeFieldType(field?.type) === "pickup and delivery";
+
+  const loadType = useWatch({
+    control,
+    name: `trip_pickups.${index}.load_type`,
+  });
+
+  const showOtherDescription = loadType === "Other";
 
   return (
     <>
@@ -264,7 +270,7 @@ function PickupFieldsComponent({control, field, index}) {
             <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
               Load Type <span style={{color: "#414651"}}>*</span>
             </Text>
-            <HFMultiSelect
+            <HFSelect
               width="100%"
               backgroundColor="#fff"
               border="1px solid #D5D7DA"
@@ -281,6 +287,22 @@ function PickupFieldsComponent({control, field, index}) {
               ]}
             />
           </Box>
+
+          {showOtherDescription && (
+            <Box width="100%" mt={"12px"}>
+              <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
+                Description <span style={{color: "#414651"}}>*</span>
+              </Text>
+              <HFTextField
+                placeholder={"Enter Description"}
+                width="100%"
+                backgroundColor="#fff"
+                border="1px solid #D5D7DA"
+                control={control}
+                name={`trip_pickups.${index}.other_description`}
+              />
+            </Box>
+          )}
 
           <Box mt="16px">
             <Flex gap="12px" id="tripRadio">
