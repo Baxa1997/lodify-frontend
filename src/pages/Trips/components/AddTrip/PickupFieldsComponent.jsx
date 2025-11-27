@@ -368,7 +368,7 @@ function PickupFieldsComponent({control, field, index}) {
             </Flex>
           </Box>
 
-          <Box width="100%" mt="16px">
+          {/* <Box width="100%" mt="16px">
             <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
               Equipment <span style={{color: "#414651"}}>*</span>
             </Text>
@@ -382,7 +382,7 @@ function PickupFieldsComponent({control, field, index}) {
               options={[]}
               view_fields={["label"]}
             />
-          </Box>
+          </Box> */}
 
           <Box width="80%" mt="16px">
             <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
