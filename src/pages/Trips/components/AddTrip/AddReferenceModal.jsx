@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -12,23 +12,52 @@ import {
   Text,
   VStack,
   HStack,
+  Input,
 } from "@chakra-ui/react";
-import HFSelect from "../../../../components/HFSelect";
-import HFTextField from "../../../../components/HFTextField";
+import {useWatch} from "react-hook-form";
+import Select from "../../../../components/Select";
 
 const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
   const [formData, setFormData] = useState({
     stop: "",
-    referenceType: "PU #",
-    referenceNumber: "",
+    reference_type: "PU #",
+    reference_number: "",
+    reference_description: "",
   });
 
-  const stopOptions = [
-    {label: "Select Stop", value: ""},
-    {label: "Stop 1", value: "stop1"},
-    {label: "Stop 2", value: "stop2"},
-    {label: "Stop 3", value: "stop3"},
-  ];
+  const tripPickups = useWatch({
+    control,
+    name: "trip_pickups",
+    defaultValue: [],
+  });
+
+  const normalizeFieldType = (type) => {
+    return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";
+  };
+
+  const stopOptions = useMemo(() => {
+    if (!tripPickups || tripPickups.length === 0) {
+      return [{label: "No stops available", value: ""}];
+    }
+
+    return tripPickups.map((pickup, index) => {
+      const type = normalizeFieldType(pickup?.type || pickup?.stop_type);
+      let label = "";
+
+      if (type === "pickup") {
+        label = `Pickup ${index + 1}`;
+      } else if (type === "pickup and delivery") {
+        label = `Pickup And Delivery ${index + 1}`;
+      } else {
+        label = `Delivery ${index + 1}`;
+      }
+
+      return {
+        label,
+        value: index + 1,
+      };
+    });
+  }, [tripPickups]);
 
   const referenceTypeOptions = [
     {label: "PU #", value: "PU #"},
@@ -36,13 +65,26 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
     {label: "Other #", value: "Other #"},
   ];
 
+  const showReferenceDescription = formData.reference_type === "Other #";
+
   const handleAdd = () => {
-    if (formData.stop && formData.referenceNumber) {
-      onAddReference(formData);
+    const isValid =
+      formData.stop !== "" &&
+      formData.reference_number &&
+      (!showReferenceDescription || formData.reference_description);
+
+    if (isValid) {
+      onAddReference({
+        index: parseInt(formData.stop) || formData.stop, // Store index + 1 as number
+        reference_type: formData.reference_type,
+        reference_number: formData.reference_number,
+        reference_description: formData.reference_description || "",
+      });
       setFormData({
         stop: "",
-        referenceType: "PU #",
-        referenceNumber: "",
+        reference_type: "PU #",
+        reference_number: "",
+        reference_description: "",
       });
       onClose();
     }
@@ -51,8 +93,9 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
   const handleClose = () => {
     setFormData({
       stop: "",
-      referenceType: "PU #",
-      referenceNumber: "",
+      reference_type: "PU #",
+      reference_number: "",
+      reference_description: "",
     });
     onClose();
   };
@@ -71,13 +114,12 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
               <Text mb="6px" fontSize="14px" fontWeight="500" color="#414651">
                 Stop <span style={{color: "#FF6B35"}}>*</span>
               </Text>
-              <HFSelect
-                control={control}
-                name="modal_stop"
+              <Select
                 options={stopOptions}
                 placeholder="Select Stop"
                 border="1px solid #D5D7DA"
                 borderRadius="8px"
+                value={formData.stop}
                 onChange={(value) =>
                   setFormData((prev) => ({...prev, stop: value}))
                 }
@@ -88,15 +130,14 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
               <Text mb="6px" fontSize="14px" fontWeight="500" color="#414651">
                 Reference Type <span style={{color: "#FF6B35"}}>*</span>
               </Text>
-              <HFSelect
-                control={control}
-                name="modal_reference_type"
+              <Select
                 options={referenceTypeOptions}
                 placeholder="PU #"
                 border="1px solid #D5D7DA"
                 borderRadius="8px"
+                value={formData.reference_type}
                 onChange={(value) =>
-                  setFormData((prev) => ({...prev, referenceType: value}))
+                  setFormData((prev) => ({...prev, reference_type: value}))
                 }
               />
             </Box>
@@ -105,20 +146,40 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
               <Text mb="6px" fontSize="14px" fontWeight="500" color="#414651">
                 Reference Number
               </Text>
-              <HFTextField
-                control={control}
-                name="modal_reference_number"
+              <Input
                 placeholder="Enter Reference Number"
                 border="1px solid #D5D7DA"
                 borderRadius="8px"
+                value={formData.reference_number}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    referenceNumber: e.target.value,
+                    reference_number: e.target.value,
                   }))
                 }
               />
             </Box>
+
+            {showReferenceDescription && (
+              <Box>
+                <Text mb="6px" fontSize="14px" fontWeight="500" color="#414651">
+                  Reference Description{" "}
+                  <span style={{color: "#FF6B35"}}>*</span>
+                </Text>
+                <Input
+                  placeholder="Enter Reference Description"
+                  border="1px solid #D5D7DA"
+                  borderRadius="8px"
+                  value={formData.reference_description}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      reference_description: e.target.value,
+                    }))
+                  }
+                />
+              </Box>
+            )}
           </VStack>
         </ModalBody>
 

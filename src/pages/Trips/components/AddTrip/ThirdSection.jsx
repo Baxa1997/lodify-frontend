@@ -1,23 +1,63 @@
-import {AddIcon} from "@chakra-ui/icons";
-import {Box, Button, Flex, Text} from "@chakra-ui/react";
-import {useState} from "react";
-import {useFieldArray} from "react-hook-form";
+import {AddIcon, DeleteIcon} from "@chakra-ui/icons";
+import {Box, Button, Flex, Text, HStack} from "@chakra-ui/react";
+import {useState, useMemo} from "react";
+import {useFieldArray, useWatch} from "react-hook-form";
 import HFFilesField from "../../../../components/HFFilesField";
 import HFTextField from "../../../../components/HFTextField";
+import HFSelect from "../../../../components/HFSelect";
 import Accessorials from "../Accessorials";
 import AddReferenceModal from "./AddReferenceModal";
 
 function ThirdSection({control}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [references, setReferences] = useState([]);
 
   const {fields, append, remove} = useFieldArray({
     control,
     name: "references",
   });
 
+  const tripPickups = useWatch({
+    control,
+    name: "trip_pickups",
+    defaultValue: [],
+  });
+
+  const normalizeFieldType = (type) => {
+    return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";
+  };
+
+  const stopOptions = useMemo(() => {
+    if (!tripPickups || tripPickups.length === 0) {
+      return [{label: "No stops available", value: ""}];
+    }
+
+    return tripPickups?.map((pickup, index) => {
+      const type = normalizeFieldType(pickup?.type || pickup?.stop_type);
+      let label = "";
+
+      if (type === "pickup") {
+        label = `Pickup ${index + 1}`;
+      } else if (type === "pickup and delivery") {
+        label = `Pickup And Delivery ${index + 1}`;
+      } else {
+        label = `Delivery ${index + 1}`;
+      }
+
+      return {
+        label,
+        value: index + 1,
+      };
+    });
+  }, [tripPickups]);
+
+  const referenceTypeOptions = [
+    {label: "PU #", value: "PU #"},
+    {label: "PO #", value: "PO #"},
+    {label: "Other #", value: "Other #"},
+  ];
+
   const handleAddReference = (referenceData) => {
-    setReferences((prev) => [...prev, referenceData]);
+    append(referenceData);
   };
 
   const handleModalOpen = () => {
@@ -27,6 +67,13 @@ function ThirdSection({control}) {
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
+
+  // Watch all references to get current values
+  const watchedReferences = useWatch({
+    control,
+    name: "references",
+    defaultValue: [],
+  });
 
   return (
     <Box
@@ -203,6 +250,111 @@ function ThirdSection({control}) {
           </Box>
         </Flex>
       </Flex>
+
+      {fields?.length > 0 && (
+        <Box mt="24px" w="100%">
+          <Text fontSize="16px" mb="12px" fontWeight="600" color="#181D27">
+            References
+          </Text>
+          <Flex flexDirection="column" gap="6px">
+            {fields?.map((field, index) => {
+              const currentReferenceType =
+                watchedReferences?.[index]?.reference_type ||
+                field.reference_type ||
+                "PU #";
+              const showDescription = currentReferenceType === "Other #";
+
+              return (
+                <Box key={field.id} p="6px 0" borderRadius="8px">
+                  <Flex gap="16px" alignItems="flex-start" flexWrap="wrap">
+                    <Box flex="1" minW="200px">
+                      <Text
+                        mb="6px"
+                        fontSize="14px"
+                        fontWeight="500"
+                        color="#414651">
+                        Stop <span style={{color: "#FF6B35"}}>*</span>
+                      </Text>
+                      <HFSelect
+                        control={control}
+                        name={`references.${index}.index`}
+                        options={stopOptions}
+                        placeholder="Select Stop"
+                        border="1px solid #D5D7DA"
+                        borderRadius="8px"
+                      />
+                    </Box>
+                    <Box flex="1" minW="200px">
+                      <Text
+                        mb="6px"
+                        fontSize="14px"
+                        fontWeight="500"
+                        color="#414651">
+                        Reference Type <span style={{color: "#FF6B35"}}>*</span>
+                      </Text>
+                      <HFSelect
+                        control={control}
+                        name={`references.${index}.type`}
+                        options={referenceTypeOptions}
+                        placeholder="PU #"
+                        border="1px solid #D5D7DA"
+                        borderRadius="8px"
+                      />
+                    </Box>
+                    <Box flex="1" minW="200px">
+                      <Text
+                        mb="6px"
+                        fontSize="14px"
+                        fontWeight="500"
+                        color="#414651">
+                        Reference Number
+                      </Text>
+                      <HFTextField
+                        control={control}
+                        name={`references.${index}.number`}
+                        placeholder="Enter Reference Number"
+                        border="1px solid #D5D7DA"
+                        borderRadius="8px"
+                        size="md"
+                      />
+                    </Box>
+                    {showDescription && (
+                      <Box flex="1" minW="200px">
+                        <Text
+                          mb="6px"
+                          fontSize="14px"
+                          fontWeight="500"
+                          color="#414651">
+                          Reference Description{" "}
+                          <span style={{color: "#FF6B35"}}>*</span>
+                        </Text>
+                        <HFTextField
+                          control={control}
+                          name={`references.${index}.other_description`}
+                          placeholder="Enter Reference Description"
+                          border="1px solid #D5D7DA"
+                          borderRadius="8px"
+                          size="md"
+                        />
+                      </Box>
+                    )}
+                    <Box alignSelf="flex-end">
+                      <Button
+                        onClick={() => remove(index)}
+                        bg="transparent"
+                        _hover={{bg: "#F8F9FA"}}
+                        p="8px"
+                        minW="auto">
+                        <DeleteIcon w="16px" h="16px" color="#FF6B35" />
+                      </Button>
+                    </Box>
+                  </Flex>
+                </Box>
+              );
+            })}
+          </Flex>
+        </Box>
+      )}
 
       <Box mt="24px" display="flex" justifyContent="flex-start">
         <Button
