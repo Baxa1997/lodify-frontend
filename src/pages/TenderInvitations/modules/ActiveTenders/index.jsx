@@ -67,15 +67,15 @@ function ActiveTenders() {
     return loadTypeColors[loadType?.trim()] || "gray";
   };
 
-  const getCustomerInfo = (trip) => {
-    return {
-      companyName: trip.shipper?.name || "N/A",
-      customer:
-        trip.shipper?.contact_name || trip.shipper?.customer_name || "N/A",
-      trips: trip.shipper?.total_trips || 0,
-      rate: trip.shipper?.rating || 0,
-    };
-  };
+  // const getCustomerInfo = (trip) => {
+  //   return {
+  //     companyName: trip.shipper?.name || "N/A",
+  //     customer:
+  //       trip.shipper?.contact_name || trip.shipper?.customer_name || "N/A",
+  //     trips: trip.shipper?.total_trips || 0,
+  //     rate: trip.shipper?.rating || 0,
+  //   };
+  // };
 
   const {
     data: tripsData = [],
@@ -526,7 +526,8 @@ function ActiveTenders() {
                             fontSize="14px"
                             fontWeight="500"
                             color="#535862">
-                            {trip?.origin?.[0]?.equipment_type ?? ""}
+                            {trip?.origin?.[0]?.equipment_type?.[0]?.label ??
+                              ""}
                           </Text>
 
                           <Flex
@@ -537,8 +538,8 @@ function ActiveTenders() {
                             h="22px"
                             borderRadius="50%"
                             bg="#fff">
-                            {trip?.origin?.[0]
-                              ?.equipment_availability?.[0]?.[0] ?? ""}
+                            {trip?.origin?.[0]?.equipment_availability?.[0] ??
+                              ""}
                           </Flex>
                         </Flex>
                       </CTableTd>
@@ -546,7 +547,7 @@ function ActiveTenders() {
                       <CTableTd>
                         <Badge
                           colorScheme={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.[0] ?? ""
+                            trip.origin?.[0]?.load_type?.[0]?.label ?? ""
                           )}
                           variant="subtle"
                           px={3}
@@ -555,7 +556,7 @@ function ActiveTenders() {
                           fontSize="12px"
                           fontWeight="500"
                           _hover={{opacity: 0.8}}>
-                          {trip.origin?.[0]?.load_type?.[0] ?? ""}
+                          {trip.origin?.[0]?.load_type?.[0]?.label ?? ""}
                         </Badge>
                       </CTableTd>
 
@@ -565,7 +566,7 @@ function ActiveTenders() {
                             <Flex alignItems="center" gap={2}>
                               <Flex alignItems="center" gap={2}>
                                 <Text color="#535862" fontWeight="400">
-                                  {trip?.carrier_2?.legal_name}
+                                  {trip?.carrier_2?.legal_name ?? ""}
                                 </Text>
 
                                 {isBroker && (
