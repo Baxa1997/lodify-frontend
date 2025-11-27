@@ -418,7 +418,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                         </Box>
                       </CTableTd>
 
-                      {Boolean(!isBroker) && (
+                      {/* {Boolean(!isBroker) && (
                         <CTableTd>
                           <Flex alignItems="center" gap={2}>
                             {trip?.drivers?.first_name ? (
@@ -503,7 +503,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                             )}
                           </Flex>
                         </CTableTd>
-                      )}
+                      )} */}
 
                       {Boolean(!isBroker) && (
                         <CTableTd>

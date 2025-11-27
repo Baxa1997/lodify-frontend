@@ -137,8 +137,7 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
               bg="#FF6B35"
               color="white"
               _hover={{bg: "#E55A2B"}}
-              onClick={handleAdd}
-              isDisabled={!formData.stop || !formData.referenceNumber}>
+              onClick={handleAdd}>
               Add
             </Button>
           </HStack>

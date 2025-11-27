@@ -4,11 +4,9 @@ import {Box} from "@chakra-ui/react";
 import {Text} from "@chakra-ui/react";
 import HFSelect from "../../../../components/HFSelect";
 import HFTextField from "../../../../components/HFTextField";
-import {useSelector} from "react-redux";
+import AssignTripCarrier from "./AssignTripCarrier";
 
 function FirstSection({control}) {
-  const userData = useSelector((state) => state?.auth?.user_data);
-
   return (
     <Flex
       border="1px solid #E9EAEB"
@@ -58,6 +56,7 @@ function FirstSection({control}) {
           name="created_by"
         />
       </Box>
+      <AssignTripCarrier control={control} name="companies_id_2" />
     </Flex>
   );
 }

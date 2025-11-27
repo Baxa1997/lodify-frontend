@@ -231,6 +231,7 @@ const GoogleMapComponent = ({trucksData = []}) => {
       <GoogleMapReact
         bootstrapURLKeys={{
           key: "AIzaSyAdBRYyeH13KXV-VtXpQuG36A7vbBjibMU",
+          language: "en",
         }}
         defaultCenter={center}
         center={center}

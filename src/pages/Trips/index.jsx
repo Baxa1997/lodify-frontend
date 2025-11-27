@@ -16,13 +16,16 @@ const Trips = () => {
   const clientType = useSelector((state) => state.auth.clientType);
   const [tripType, setTripType] = useState("tender");
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   return (
     <>
       <Flex flexDir={"column"} gap={"20px"}>
         <HeadBreadCrumb />
 
-        <AddTripMenu setIsAutomatedAddTrip={setIsAutomatedAddTrip} />
+        {isBroker && (
+          <AddTripMenu setIsAutomatedAddTrip={setIsAutomatedAddTrip} />
+        )}
 
         <Tabs
           className={styles.tabsContainer}

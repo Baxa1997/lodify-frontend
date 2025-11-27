@@ -74,20 +74,13 @@ export const tableElements = [
 
   {
     id: 13,
-    name: "Driver 2",
-    key: "driver2",
-    sortable: true,
-  },
-
-  {
-    id: 14,
     name: "Rate",
     key: "rate",
     sortable: true,
   },
 
   {
-    id: 15,
+    id: 14,
     name: "Actions",
     key: "actions",
     sortable: false,
