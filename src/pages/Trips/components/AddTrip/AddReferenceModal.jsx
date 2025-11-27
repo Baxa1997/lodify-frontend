@@ -60,9 +60,9 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
   }, [tripPickups]);
 
   const referenceTypeOptions = [
-    {label: "PU #", value: "PU #"},
-    {label: "PO #", value: "PO #"},
-    {label: "Other #", value: "Other #"},
+    {label: "PU #", value: "PU"},
+    {label: "PO #", value: "PO"},
+    {label: "Other #", value: "Other"},
   ];
 
   const showReferenceDescription = formData.reference_type === "Other #";
