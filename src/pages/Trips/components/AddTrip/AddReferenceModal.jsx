@@ -65,7 +65,7 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
     {label: "Other #", value: "Other"},
   ];
 
-  const showReferenceDescription = formData.reference_type === "Other #";
+  const showReferenceDescription = formData.reference_type === "Other";
 
   const handleAdd = () => {
     const isValid =
