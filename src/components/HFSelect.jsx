@@ -15,12 +15,15 @@ function HFSelect({
   view_fields = ["name"],
   disabled = false,
   props,
+  params = null,
 }) {
   const {id} = useParams();
   const [Internaloptions, setInternalOptions] = useState([]);
   const getOptions = async () => {
     if (table_slug) {
-      const response = await tripsService.getSelectOptions(table_slug);
+      const response = params
+        ? await tripsService.getSelectOptionsWithData(table_slug, params)
+        : await tripsService.getSelectOptions(table_slug);
       return setInternalOptions(
         response.data?.response?.map((item) => ({
           label: view_fields?.map((field) => item[field]).join(" "),
@@ -31,10 +34,10 @@ function HFSelect({
   };
 
   useEffect(() => {
-    if (id) {
+    if (table_slug && (id || params)) {
       getOptions();
     }
-  }, [id]);
+  }, [id, JSON.stringify(params), table_slug]);
 
   return (
     <Flex {...props}>

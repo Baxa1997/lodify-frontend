@@ -27,6 +27,12 @@ const tripsService = {
     httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
   updateTrip: (id, data) => httpRequest.put("v2/items/trips", data),
   getSelectOptions: (table_slug) => httpRequest.get(`v2/items/${table_slug}`),
+  getSelectOptionsWithData: (table_slug, data) => {
+    const dataParam = JSON.stringify(data);
+    return httpRequest.get(
+      `v2/items/${table_slug}?data=${encodeURIComponent(dataParam)}`
+    );
+  },
   acceptTrip: (data) => httpRequest.put("v2/items/orders", data),
   rejectTrip: (data) => httpRequest.post("v2/items/rejected_trips", data),
   assignDriver: (data) => httpRequest.put("v2/items/orders", data),

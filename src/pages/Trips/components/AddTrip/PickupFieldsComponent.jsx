@@ -19,10 +19,11 @@ function PickupFieldsComponent({control, field, index}) {
 
   const loadType = useWatch({
     control,
-    name: `trip_pickups.${index}.load_type`,
+    name: `trip_pickups.${index}.load_type_id`,
   });
 
-  const showOtherDescription = loadType === "Other";
+  const showOtherDescription =
+    loadType === "13b35f5f-4a02-4eaf-88a9-6db241b5d96d";
 
   return (
     <>
@@ -275,16 +276,10 @@ function PickupFieldsComponent({control, field, index}) {
               backgroundColor="#fff"
               border="1px solid #D5D7DA"
               control={control}
-              name={`trip_pickups.${index}.load_type`}
-              options={[
-                {label: "Dry", value: "Dry"},
-                {label: "Refrigerated", value: "Refrigerated"},
-                {
-                  label: "Temperature Controlled",
-                  value: "Temperature Controlled",
-                },
-                {label: "Other", value: "Other"},
-              ]}
+              table_slug="load_type"
+              name={`trip_pickups.${index}.load_type_id`}
+              options={[]}
+              view_fields={["label"]}
             />
           </Box>
 
@@ -339,11 +334,11 @@ function PickupFieldsComponent({control, field, index}) {
               backgroundColor="#fff"
               border="1px solid #D5D7DA"
               control={control}
-              name={`trip_pickups.${index}.equipment_type`}
-              options={[
-                {label: "Dry Van 53", value: "Dry Van 53"},
-                {label: "Dry Van 48", value: "Dry Van 48"},
-              ]}
+              view_fields={["label"]}
+              table_slug="equipment_type"
+              name={`trip_pickups.${index}.equipment_type_id`}
+              options={[]}
+              params={{load_type_id: loadType}}
             />
           </Box>
 
@@ -377,19 +372,15 @@ function PickupFieldsComponent({control, field, index}) {
             <Text mb="6px" fontWeight="500" fontSize="14px" color="#181D27">
               Equipment <span style={{color: "#414651"}}>*</span>
             </Text>
-            <HFMultiSelect
+            <HFSelect
               width="100%"
               backgroundColor="#fff"
               border="1px solid #D5D7DA"
               control={control}
               name={`trip_pickups.${index}.equipment`}
-              options={[
-                {label: "Reefer", value: "Reefer"},
-                {label: "Flatbed", value: "Flatbed"},
-                {label: "Stepdeck", value: "Stepdeck"},
-                {label: "Lowboy", value: "Lowboy"},
-                {label: "Other", value: "Other"},
-              ]}
+              table_slug="equipment_type"
+              options={[]}
+              view_fields={["label"]}
             />
           </Box>
 
