@@ -106,7 +106,7 @@ const SearchToggle = ({
             zip_code: responseData?.phy_zip,
             country: responseData?.phy_country,
             email: responseData?.email_address,
-            phone: `+1${responseData?.telephone}`,
+            phone: `+1${responseData?.telephone ?? responseData?.phone}`,
             legal_name: responseData?.legal_name,
             dba_name: responseData?.dba_name,
           });
