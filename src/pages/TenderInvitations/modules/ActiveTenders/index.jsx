@@ -526,11 +526,10 @@ function ActiveTenders() {
                             fontSize="14px"
                             fontWeight="500"
                             color="#535862">
-                            {trip?.origin?.[0]?.equipment_type?.[0]?.label ??
-                              ""}
+                            {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
 
-                          <Flex
+                          {/* <Flex
                             alignItems="center"
                             justifyContent="center"
                             border="1px solid #dcddde"
@@ -540,7 +539,7 @@ function ActiveTenders() {
                             bg="#fff">
                             {trip?.origin?.[0]?.equipment_availability?.[0] ??
                               ""}
-                          </Flex>
+                          </Flex> */}
                         </Flex>
                       </CTableTd>
 
