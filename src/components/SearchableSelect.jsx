@@ -168,18 +168,29 @@ const SearchableSelect = ({
             }-400)`,
           }}
           {...getSizeStyles()}>
-          <Text
-            color={selectedOption ? color : placeholderStyle.color}
-            fontSize={selectedOption ? "inherit" : placeholderStyle.fontSize}>
-            {selectedOption ? selectedOption.label : placeholder}
-          </Text>
+          <Box
+            flex="1"
+            minW="0"
+            overflow="hidden"
+            pr={
+              isClearable && selectedOption ? "40px" : showIcon ? "30px" : "0"
+            }>
+            <Text
+              color={selectedOption ? color : placeholderStyle.color}
+              fontSize={selectedOption ? "inherit" : placeholderStyle.fontSize}
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap">
+              {selectedOption ? selectedOption.label : placeholder}
+            </Text>
+          </Box>
           {isClearable && selectedOption && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleSelect("");
               }}
-              style={{padding: "6px", marginRight: "24px"}}>
+              style={{padding: "6px", marginRight: "24px", flexShrink: 0}}>
               <MdOutlineClear />
             </button>
           )}
@@ -190,7 +201,7 @@ const SearchableSelect = ({
               right="12px"
               top="50%"
               color={iconColor}
-              zIndex={1}
+              zIndex={2}
               pointerEvents="none"
               transition="transform 0.2s ease"
               transform={`translateY(-50%) ${isOpen ? "rotate(180deg)" : ""}`}>
