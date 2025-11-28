@@ -1,5 +1,13 @@
-import React, {useState} from "react";
-import {Box, Text, Flex, Badge, Button} from "@chakra-ui/react";
+import React, {useState, useEffect, useRef} from "react";
+import {
+  Box,
+  Text,
+  Flex,
+  Badge,
+  Button,
+  Tooltip,
+  VStack,
+} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
 import {
@@ -13,11 +21,214 @@ import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
 import {parseISO, format} from "date-fns";
 import {useNavigate} from "react-router-dom";
-import {calculateTimeDifference} from "@utils/timeUtils";
 import ReportDelay from "../../components/ReportDelay/ReportDelay";
 
-const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
-  const navigate = useNavigate();
+const calculateExpiredTime = (apiTime) => {
+  try {
+    if (!apiTime) return 0;
+
+    let targetTime;
+
+    if (typeof apiTime === "string" && apiTime.includes("T")) {
+      targetTime = new Date(apiTime);
+    } else {
+      targetTime = new Date(Date.now() + apiTime * 1000);
+    }
+
+    const now = new Date();
+    const differenceMs = now.getTime() - targetTime.getTime();
+    const differenceSeconds = Math.floor(differenceMs / 1000);
+
+    return Math.max(0, differenceSeconds);
+  } catch (error) {
+    console.error("Error calculating expired time:", error);
+    return 0;
+  }
+};
+
+const formatExpiredTime = (seconds) => {
+  if (seconds === 0) return "0:00 minutes";
+
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  } else {
+    return `${minutes.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")} minutes`;
+  }
+};
+
+const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
+  const buttonsRef = useRef(null);
+  const containerRef = useRef(null);
+  const innerContentRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      !buttonsRef.current ||
+      !tableScrollRef?.current ||
+      !containerRef.current ||
+      !innerContentRef.current
+    )
+      return;
+
+    const buttonsEl = buttonsRef.current;
+    const scrollEl = tableScrollRef.current;
+    const containerEl = containerRef.current;
+    const innerContentEl = innerContentRef.current;
+
+    let initialScrollLeft = scrollEl.scrollLeft || 0;
+    let isInitialized = false;
+    let rafId = null;
+
+    const updateButtonsPosition = () => {
+      if (!buttonsEl || !scrollEl || !containerEl || !innerContentEl) return;
+
+      const currentScrollLeft = scrollEl.scrollLeft || 0;
+
+      if (!isInitialized) {
+        initialScrollLeft = currentScrollLeft;
+        isInitialized = true;
+      }
+
+      const scrollDelta = currentScrollLeft - initialScrollLeft;
+
+      innerContentEl.style.transform = `translate3d(${scrollDelta}px, 0px, 0px)`;
+    };
+
+    updateButtonsPosition();
+
+    const handleScroll = () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      updateButtonsPosition();
+      rafId = requestAnimationFrame(() => {
+        updateButtonsPosition();
+        rafId = null;
+      });
+    };
+
+    const handleResize = () => {
+      isInitialized = false;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      rafId = requestAnimationFrame(() => {
+        updateButtonsPosition();
+        rafId = null;
+      });
+    };
+
+    scrollEl.addEventListener("scroll", handleScroll, {
+      passive: true,
+      capture: true,
+    });
+    window.addEventListener("resize", handleResize, {passive: true});
+
+    return () => {
+      scrollEl.removeEventListener("scroll", handleScroll, {capture: true});
+      window.removeEventListener("resize", handleResize);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, [tableScrollRef]);
+
+  return (
+    <Box ref={containerRef} position="relative" width="100%">
+      <Box
+        ref={buttonsRef}
+        bg="#fff"
+        py="10px"
+        zIndex={5}
+        borderTop="1px solid #e5e7eb"
+        position="relative"
+        width="100%"
+        overflow="hidden">
+        <Box
+          ref={innerContentRef}
+          px="20px"
+          style={{
+            willChange: "transform",
+            backfaceVisibility: "hidden",
+          }}>
+          <Flex
+            maxWidth="1275px"
+            gap="12px"
+            justifyContent="space-between"
+            alignItems="center">
+            <Button
+              bg="#fff"
+              color="#EF6820"
+              border="1px solid #f7b27a"
+              borderRadius="8px"
+              fontSize="14px"
+              fontWeight="600"
+              px="16px"
+              py="8px">
+              View Shipment Details
+            </Button>
+
+            <Flex gap="8px">
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/admin/collabrations`, {
+                    state: {
+                      tripId: trip?.guid,
+                      tripName: trip?.id,
+                    },
+                  });
+                }}
+                h="40px"
+                variant="outline"
+                leftIcon={
+                  <img src="/img/collab.svg" alt="" width="16" height="16" />
+                }
+                fontSize="14px"
+                border="1px solid #f2b27a"
+                color="#EF6820"
+                fontWeight="600">
+                Collaboration
+              </Button>
+              <Button
+                _hover={{bg: "#EF6820"}}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRowClick(trip.guid, trip);
+                }}
+                variant="outline"
+                h="40px"
+                fontSize="14px"
+                fontWeight="600"
+                bg="#EF6820"
+                color="white">
+                More details
+              </Button>
+            </Flex>
+          </Flex>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+const TripRowDetails = ({
+  trip = {},
+  handleRowClick,
+  isExpanded = true,
+  tableScrollRef,
+  navigate: navigateProp,
+}) => {
+  const navigateHook = useNavigate();
+  const navigate = navigateProp || navigateHook;
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
@@ -52,6 +263,16 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
     try {
       const date = parseISO(isoString);
       return `${format(date, "dd MMM, HH:mm")}`;
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function formatDateWithTimezone(isoString) {
+    try {
+      if (!isoString) return "";
+      const date = parseISO(isoString);
+      return `${format(date, "dd MMM, HH:mm zzz")}`;
     } catch (error) {
       return "";
     }
@@ -215,13 +436,16 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                       <Text mb="6px" fontSize="12px" color="#6b7280">
                         {formatScheduleDate(item?.arrive_by)}
                       </Text>
-
-                      <Text color="#000" fontWeight="500">
-                        PO #{tripData?.reference_po ?? "---"}
-                      </Text>
-                      <Text color="#000" fontWeight="500">
-                        BOL #{item?.bol ?? "---"}
-                      </Text>
+                      {item?.type?.[0] === "Pickup" && (
+                        <>
+                          <Text color="#000" fontWeight="500">
+                            PO #{tripData?.reference_po ?? "---"}
+                          </Text>
+                          <Text color="#000" fontWeight="500">
+                            BOL #{item?.bol ?? "---"}
+                          </Text>
+                        </>
+                      )}
                     </Box>
                   </CTableTd>
 
@@ -256,7 +480,7 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
 
                     <Flex alignItems={"center"} gap={"16px"}>
                       <Text color={"#414651"} fontWeight={"500"}>
-                        {item?.equipment_type}
+                        {item?.equipment_type?.label || "---"}
                       </Text>
                       <TripDriverVerification
                         tripData={tripData}
@@ -269,14 +493,14 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                   <CTableTd py="12px" px="20px">
                     <Box>
                       <Badge
-                        bg={getLoadTypeColor(item?.load_type?.[0])}
+                        bg={getLoadTypeColor(item?.load_type?.label)}
                         color="white"
                         px={3}
                         py={1}
                         borderRadius="full"
                         fontSize="12px"
                         fontWeight="500">
-                        {item?.load_type?.[0] || "N/A"}
+                        {item?.load_type?.label || "N/A"}
                       </Badge>
                     </Box>
                   </CTableTd>
@@ -286,42 +510,115 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                       <Text fontSize="12px" color="#181D27">
                         Check in:
                       </Text>
-                      <Flex alignItems="center" gap="8px">
-                        <Text fontSize="12px" color="#181D27">
-                          {Boolean(item?.check_in)
-                            ? formatScheduleDate(item?.check_in)
-                            : "---"}
-                        </Text>
-                        {Boolean(item?.check_in) && (
-                          <Text
-                            fontSize="14px"
-                            fontWeight="700"
-                            color="#175CD3">
-                            M
+                      <Tooltip
+                        bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                        color="white"
+                        borderRadius="md"
+                        p="6px 10px"
+                        hasArrow
+                        label={
+                          <Box minW="180px">
+                            <VStack spacing={2} align="start">
+                              <Text
+                                fontSize="14px"
+                                fontWeight="600"
+                                color="white">
+                                {Boolean(item?.check_in) && ""}
+                                {item?.address || "Location"}
+                              </Text>
+                              <Text
+                                fontSize="12px"
+                                fontWeight="500"
+                                color="white"
+                                width="100%">
+                                Actuals
+                              </Text>
+                              <Text
+                                fontSize="14px"
+                                fontWeight="400"
+                                color="white">
+                                Facility check-in/out -{" "}
+                                {formatDateWithTimezone(item?.check_in) ||
+                                  "---"}
+                              </Text>
+                            </VStack>
+                          </Box>
+                        }
+                        placement="bottom-start"
+                        openDelay={300}>
+                        <Flex alignItems="center" gap="8px">
+                          <Text fontSize="12px" color="#181D27">
+                            {Boolean(item?.check_in)
+                              ? formatScheduleDate(item?.check_in)
+                              : "---"}
                           </Text>
-                        )}
-                      </Flex>
+                          {Boolean(item?.check_in) && (
+                            <Text
+                              fontSize="14px"
+                              fontWeight="700"
+                              color="#175CD3">
+                              M
+                            </Text>
+                          )}
+                        </Flex>
+                      </Tooltip>
                     </Box>
                     <Box>
                       <Text fontSize="12px" color="#181D27">
                         Check out:
                       </Text>
-
-                      <Flex alignItems="center" gap="8px">
-                        <Text fontSize="12px" color="#181D27">
-                          {Boolean(item?.check_out)
-                            ? formatScheduleDate(item?.check_out)
-                            : "---"}
-                        </Text>
-                        {Boolean(item?.check_out) && (
-                          <Text
-                            fontSize="14px"
-                            fontWeight="700"
-                            color="#175CD3">
-                            M
+                      <Tooltip
+                        bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                        color="white"
+                        borderRadius="md"
+                        p="6px 10px"
+                        hasArrow
+                        label={
+                          <Box minW="180px">
+                            <VStack spacing={2} align="start">
+                              <Text
+                                fontSize="14px"
+                                fontWeight="600"
+                                color="white">
+                                {Boolean(item?.check_out) && ""}
+                                {item?.address || "Location"}
+                              </Text>
+                              <Text
+                                fontSize="12px"
+                                fontWeight="500"
+                                color="white"
+                                width="100%">
+                                Actuals
+                              </Text>
+                              <Text
+                                fontSize="14px"
+                                fontWeight="400"
+                                color="white">
+                                Facility check-in/out -{" "}
+                                {formatDateWithTimezone(item?.check_out) ||
+                                  "---"}
+                              </Text>
+                            </VStack>
+                          </Box>
+                        }
+                        placement="bottom-start"
+                        openDelay={300}>
+                        <Flex alignItems="center" gap="8px">
+                          <Text fontSize="12px" color="#181D27">
+                            {Boolean(item?.check_out)
+                              ? formatScheduleDate(item?.check_out)
+                              : "---"}
                           </Text>
-                        )}
-                      </Flex>
+                          {Boolean(item?.check_out) && (
+                            <Text
+                              fontSize="14px"
+                              fontWeight="700"
+                              color="#175CD3">
+                              M
+                            </Text>
+                          )}
+                        </Flex>
+                      </Tooltip>
                     </Box>
                   </CTableTd>
 
@@ -329,35 +626,72 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
                     {/* <Text fontSize="14px" color="#181d27">
                       {formatScheduleDate(item?.arrive_by)}
                     </Text> */}
-                    <Box>
-                      <Flex alignItems="center" gap="6px">
-                        <Text fontSize="14px" color="#181d27">
-                          {formatScheduleDate(item?.arrive_by)}
-                        </Text>
-                        {calculateTimeDifference(item?.arrive_by) <= 0 && (
-                          <img src="/img/delayIcon.svg" alt="" />
-                        )}
-                      </Flex>
-                      {Boolean(!isBroker) && (
-                        <Button
-                          mt="8px"
-                          h="20px"
-                          p="0"
-                          bg="none"
-                          color="#EF6820"
-                          borderRadius="8px"
-                          fontSize="14px"
-                          fontWeight="600"
-                          _hover={{bg: "none"}}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPickup(item);
-                            setIsReportDelayOpen(true);
-                          }}>
-                          Report delay
-                        </Button>
-                      )}
-                    </Box>
+                    {(() => {
+                      const expiredTime = calculateExpiredTime(item?.arrive_by);
+                      const isExpired = expiredTime > 0;
+
+                      return (
+                        <Tooltip
+                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                          color="white"
+                          borderRadius="md"
+                          p="6px 10px"
+                          hasArrow
+                          label={
+                            isExpired ? (
+                              <Box minW="180px">
+                                <VStack spacing={1} align="start">
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    This task has been expired for
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="#FF4444">
+                                    {formatExpiredTime(expiredTime)}
+                                  </Text>
+                                </VStack>
+                              </Box>
+                            ) : null
+                          }
+                          placement="bottom-start"
+                          openDelay={300}
+                          isDisabled={!isExpired}>
+                          <Box>
+                            <Flex gap="6px">
+                              <Text fontSize="14px" color={"#181d27"}>
+                                {formatScheduleDate(item?.arrive_by)}
+                              </Text>
+                              {isExpired && (
+                                <img src="/img/delayIcon.svg" alt="" />
+                              )}
+                            </Flex>
+                            {Boolean(!isBroker) && (
+                              <Button
+                                mt="8px"
+                                h="20px"
+                                p="0"
+                                bg="none"
+                                color="#EF6820"
+                                borderRadius="8px"
+                                fontSize="14px"
+                                fontWeight="600"
+                                _hover={{bg: "none"}}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedPickup(item);
+                                  setIsReportDelayOpen(true);
+                                }}>
+                                Report delay
+                              </Button>
+                            )}
+                          </Box>
+                        </Tooltip>
+                      );
+                    })()}
                   </CTableTd>
                 </CTableRow>
               </CTableBody>
@@ -374,73 +708,6 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
         )}
       </Box>
 
-      <Box
-        position="sticky"
-        bottom={0}
-        left={0}
-        right={0}
-        width="100%"
-        bg="#fff"
-        px="20px"
-        py="10px"
-        zIndex={10}>
-        <Flex
-          maxWidth="1275px"
-          gap="12px"
-          justifyContent="space-between"
-          alignItems="center">
-          <Button
-            bg="#fff"
-            color="#EF6820"
-            border="1px solid #f7b27a"
-            borderRadius="8px"
-            fontSize="14px"
-            fontWeight="600"
-            px="16px"
-            py="8px">
-            View Shipment Details
-          </Button>
-
-          <Flex gap="8px">
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/admin/collabrations`, {
-                  state: {
-                    tripId: trip?.guid,
-                    tripName: trip?.id,
-                  },
-                });
-              }}
-              h="40px"
-              variant="outline"
-              leftIcon={
-                <img src="/img/collab.svg" alt="" width="16" height="16" />
-              }
-              fontSize="14px"
-              border="1px solid #f2b27a"
-              color="#EF6820"
-              fontWeight="600">
-              Collaboration
-            </Button>
-            <Button
-              _hover={{bg: "#EF6820"}}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRowClick(trip.guid, trip);
-              }}
-              variant="outline"
-              h="40px"
-              fontSize="14px"
-              fontWeight="600"
-              bg="#EF6820"
-              color="white">
-              More details
-            </Button>
-          </Flex>
-        </Flex>
-      </Box>
-
       <ReportDelay
         isOpen={isReportDelayOpen}
         onClose={() => {
@@ -450,16 +717,18 @@ const TripRowDetails = ({trip = {}, handleRowClick, isExpanded = true}) => {
         trip={trip}
         pickup={selectedPickup}
       />
+
+      <StickyButtons
+        trip={trip}
+        handleRowClick={handleRowClick}
+        navigate={navigate}
+        tableScrollRef={tableScrollRef}
+      />
     </Box>
   );
 };
 
-const TripStatus = ({
-  status,
-  onExpand = () => {},
-  tripId = "",
-  rowClick = () => {},
-}) => {
+const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
   return (
     <Flex
       onClick={(e) => {

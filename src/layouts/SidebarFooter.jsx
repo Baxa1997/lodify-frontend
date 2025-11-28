@@ -226,7 +226,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
                     color={"#94979C"}
                     fontWeight={"600"}
                     fontSize={"12px"}>
-                    {(userData?.name || userData?.email || "J")
+                    {(userData?.login || userData?.email || "J")
                       .charAt(0)
                       .toUpperCase()}
                   </Box>

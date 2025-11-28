@@ -480,7 +480,7 @@ const TripRowDetails = ({
 
                     <Flex alignItems={"center"} gap={"16px"}>
                       <Text color={"#414651"} fontWeight={"500"}>
-                        {item?.equipment_type}
+                        {item?.equipment_type?.label || "---"}
                       </Text>
                       <TripDriverVerification
                         tripData={tripData}
@@ -493,14 +493,14 @@ const TripRowDetails = ({
                   <CTableTd py="12px" px="20px">
                     <Box>
                       <Badge
-                        bg={getLoadTypeColor(item?.load_type?.[0])}
+                        bg={getLoadTypeColor(item?.load_type?.label)}
                         color="white"
                         px={3}
                         py={1}
                         borderRadius="full"
                         fontSize="12px"
                         fontWeight="500">
-                        {item?.load_type?.[0] || "N/A"}
+                        {item?.load_type?.label || "N/A"}
                       </Badge>
                     </Box>
                   </CTableTd>
