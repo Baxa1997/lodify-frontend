@@ -107,8 +107,11 @@ const EmailOTP = ({
             position: "top-right",
           });
 
-          // After email verification, proceed to next step
-          onNext && onNext();
+          // Set email verified flag in form data
+          setValue("emailVerified", true);
+          
+          // After email verification, proceed to next step (skip validation)
+          onNext && onNext(true);
         }
       } catch (error) {
         console.error("Failed to verify email code:", error);

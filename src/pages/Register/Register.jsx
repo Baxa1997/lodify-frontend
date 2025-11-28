@@ -226,6 +226,7 @@ const Register = () => {
   };
 
   const onSubmit = async (data) => {
+    console.log("datadata", data);
     const passwordValidation = validatePassword(data.password);
     if (passwordValidation !== true) {
       toast({
@@ -255,7 +256,10 @@ const Register = () => {
     try {
       const apiData = {
         company_name: data.company_name,
-        us_dot: data.us_dot,
+        us_dot:
+          localStorage.getItem("number_type") === "US DOT"
+            ? data.us_dot
+            : data?.mc_number,
         identifier: data.identifier,
         physical_address: data.physical_address1,
         mailing_address: data.mailing_address,

@@ -189,7 +189,11 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
             position: "top-right",
           });
 
-          onNext && onNext();
+          // Set email verified flag in form data
+          setValue("emailVerified", true);
+
+          // Proceed to next step (skip validation since email is verified)
+          onNext && onNext(true);
         }
       } catch (error) {
         toast({

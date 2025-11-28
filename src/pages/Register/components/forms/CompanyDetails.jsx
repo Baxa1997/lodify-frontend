@@ -86,7 +86,7 @@ const SearchToggle = ({
   useEffect(() => {
     if (isSuccessMC && mcData && searchType === "MC") {
       const responseData = mcData?.data?.response;
-
+      console.log("responseData", responseData);
       if (responseData) {
         const isTaken =
           responseData.is_taken || responseData.user_exists || false;
@@ -105,7 +105,7 @@ const SearchToggle = ({
             state: responseData?.phy_state,
             zip_code: responseData?.phy_zip,
             country: responseData?.phy_country,
-            email: responseData?.email_address,
+            email: responseData?.email_address ?? mcData?.data?.email,
             phone: `+1${responseData?.telephone ?? responseData?.phone}`,
             legal_name: responseData?.legal_name,
             dba_name: responseData?.dba_name,
@@ -141,7 +141,7 @@ const SearchToggle = ({
     setCompanyData(null);
     setErrorMessage("");
   }, [searchType]);
-  console.log("mcDatamcData", mcData);
+
   return (
     <>
       <Box maxWidth="300px" mb="32px">
