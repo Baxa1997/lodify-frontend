@@ -250,7 +250,7 @@ function ThirdSection({control}) {
         </Flex>
       </Flex>
 
-      {fields?.length > 0 && (
+      {/* {fields?.length > 0 && (
         <Box mt="24px" w="100%">
           <Text fontSize="16px" mb="12px" fontWeight="600" color="#181D27">
             References
@@ -351,7 +351,7 @@ function ThirdSection({control}) {
             })}
           </Flex>
         </Box>
-      )}
+      )} */}
 
       <Box mt="24px" display="flex" justifyContent="flex-start">
         <Button

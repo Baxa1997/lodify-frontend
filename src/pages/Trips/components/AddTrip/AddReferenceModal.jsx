@@ -60,12 +60,12 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
   }, [tripPickups]);
 
   const referenceTypeOptions = [
-    {label: "PU #", value: "PU"},
-    {label: "PO #", value: "PO"},
-    {label: "Other #", value: "Other"},
+    {label: "PU #", value: "PU #"},
+    {label: "PO #", value: "PO #"},
+    {label: "Other #", value: "Other #"},
   ];
 
-  const showReferenceDescription = formData.reference_type === "Other";
+  const showReferenceDescription = formData.reference_type === "Other #";
 
   const handleAdd = () => {
     const isValid =
@@ -82,7 +82,7 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
       });
       setFormData({
         stop: "",
-        reference_type: "PU",
+        reference_type: "PU #",
         reference_number: "",
         reference_description: "",
       });
@@ -93,7 +93,7 @@ const AddReferenceModal = ({isOpen, onClose, control, onAddReference}) => {
   const handleClose = () => {
     setFormData({
       stop: "",
-      reference_type: "PU",
+      reference_type: "PU #",
       reference_number: "",
       reference_description: "",
     });

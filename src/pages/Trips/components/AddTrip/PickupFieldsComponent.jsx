@@ -5,9 +5,10 @@ import HFTextField from "../../../../components/HFTextField";
 import HFRadio from "../../../../components/HFRadio";
 import HFSwitch from "../../../../components/HFSwitch";
 import HFSelect from "../../../../components/HFSelect";
-import HFMultiSelect from "@components/HFMultiSelect";
+
 import HFPhoneInput from "@components/HFPhoneInput";
 import HFDateTimePicker from "@components/HFDateTimePicker";
+import StopReferences from "./StopReferences";
 
 function PickupFieldsComponent({control, field, index}) {
   const normalizeFieldType = (type) => {
@@ -254,6 +255,8 @@ function PickupFieldsComponent({control, field, index}) {
               />
             </Flex>
           </Flex>
+
+          <StopReferences control={control} stopIndex={index} />
 
           <Flex mt={"24px"} gap="16px">
             <HFSwitch
