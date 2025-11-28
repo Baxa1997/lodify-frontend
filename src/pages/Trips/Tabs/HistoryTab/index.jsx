@@ -443,12 +443,14 @@ function HistoryTab({tripType = ""}) {
                                         color="white">
                                         {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
                                       </Text>
-                                      <Text
-                                        fontSize="14px"
-                                        fontWeight="600"
-                                        color="white">
-                                        {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
-                                      </Text>
+                                      {trip?.driver_type === "Team" && (
+                                        <Text
+                                          fontSize="14px"
+                                          fontWeight="600"
+                                          color="white">
+                                          {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
+                                        </Text>
+                                      )}
                                     </VStack>
                                   </Box>
                                 }>
