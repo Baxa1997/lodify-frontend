@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {Box, HStack, Button, Text, Flex} from "@chakra-ui/react";
-import {SearchIcon} from "@chakra-ui/icons";
-import {useGetLodify} from "@services/lodify-user.service";
+import {Box, HStack, Button, Text, Flex, VStack, Input} from "@chakra-ui/react";
+import {SearchIcon, AddIcon, DeleteIcon} from "@chakra-ui/icons";
+import {useGetLodify, useGetLodifyMC} from "@services/lodify-user.service";
 import HFTextField from "@components/HFTextField";
+import {useFieldArray, useWatch} from "react-hook-form";
 
 const SearchToggle = ({
   onNext = () => {},
@@ -15,18 +16,39 @@ const SearchToggle = ({
   const [searchType, setSearchType] = useState("US DOT");
   const [companyData, setCompanyData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [newMcNumber, setNewMcNumber] = useState("");
   const fmcsa = watch("us_dot");
+  const mcNumber = watch("mc_number");
 
+  const {fields, append, remove} = useFieldArray({
+    control,
+    name: "mc_numbers",
+  });
+
+  // US DOT search
   const {data, isSuccess, isError, error, refetch, isLoading} = useGetLodify(
     fmcsa,
     {
       queryKey: ["GET_FMCSA_DATA", fmcsa],
-      enabled: Boolean(fmcsa),
+      enabled: Boolean(fmcsa) && searchType === "US DOT",
     }
   );
 
+  // MC search
+  const {
+    data: mcData,
+    isSuccess: isSuccessMC,
+    isError: isErrorMC,
+    error: errorMC,
+    refetch: refetchMC,
+    isLoading: isLoadingMC,
+  } = useGetLodifyMC(mcNumber, {
+    queryKey: ["GET_MC_DATA", mcNumber],
+    enabled: Boolean(mcNumber) && searchType === "MC",
+  });
+
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && data && searchType === "US DOT") {
       const responseData = data?.data?.[0];
 
       if (responseData) {
@@ -58,17 +80,68 @@ const SearchToggle = ({
         setErrorMessage("Company not found");
       }
     }
-  }, [isSuccess, data, fmcsa, reset, getValues]);
+  }, [isSuccess, data, fmcsa, reset, getValues, searchType]);
+
+  // Handle MC search success
+  useEffect(() => {
+    if (isSuccessMC && mcData && searchType === "MC") {
+      const responseData = mcData?.data?.response;
+
+      if (responseData) {
+        const isTaken =
+          responseData.is_taken || responseData.user_exists || false;
+
+        if (isTaken) {
+          setSearchStatus("taken");
+          setCompanyData(responseData);
+        } else {
+          setSearchStatus("success");
+          setCompanyData(responseData);
+          reset({
+            ...getValues(),
+            mc_number: mcNumber,
+            physical_address1: responseData?.phy_street,
+            city: responseData?.phy_city,
+            state: responseData?.phy_state,
+            zip_code: responseData?.phy_zip,
+            country: responseData?.phy_country,
+            email: responseData?.email_address,
+            phone: `+1${responseData?.telephone}`,
+            legal_name: responseData?.legal_name,
+            dba_name: responseData?.dba_name,
+          });
+        }
+      } else {
+        setSearchStatus("error");
+        setErrorMessage("Company not found");
+      }
+    }
+  }, [isSuccessMC, mcData, mcNumber, reset, getValues, searchType]);
 
   useEffect(() => {
-    if (isError) {
+    if (isError && searchType === "US DOT") {
       setSearchStatus("error");
       setErrorMessage(
         error?.response?.data?.message || "Failed to search company"
       );
     }
-  }, [isError, error]);
+  }, [isError, error, searchType]);
 
+  useEffect(() => {
+    if (isErrorMC && searchType === "MC") {
+      setSearchStatus("error");
+      setErrorMessage(
+        errorMC?.response?.data?.message || "Failed to search company"
+      );
+    }
+  }, [isErrorMC, errorMC, searchType]);
+
+  useEffect(() => {
+    setSearchStatus("idle");
+    setCompanyData(null);
+    setErrorMessage("");
+  }, [searchType]);
+  console.log("mcDatamcData", mcData);
   return (
     <>
       <Box maxWidth="300px" mb="32px">
@@ -98,14 +171,16 @@ const SearchToggle = ({
           bg="#F9FAFB">
           <Button
             boxShadow={"rgba(10, 13, 18, 0.1)"}
-            isDisabled={true}
             size="sm"
             variant="ghost"
             bg={searchType === "MC" ? "#fff" : ""}
             color="#374151"
             fontSize="14px"
             fontWeight="500"
-            onClick={() => setSearchType("MC")}
+            onClick={() => {
+              localStorage.setItem("number_type", "MC");
+              setSearchType("MC");
+            }}
             _hover={{bg: "#F9FAFB"}}>
             MC
           </Button>
@@ -117,53 +192,151 @@ const SearchToggle = ({
             color="#374151"
             fontSize="14px"
             fontWeight="500"
-            onClick={() => setSearchType("US DOT")}
+            onClick={() => {
+              localStorage.setItem("number_type", "US DOT");
+              setSearchType("US DOT");
+            }}
             _hover={{bg: "#F9FAFB"}}>
             US DOT
           </Button>
         </HStack>
 
-        <Box position="relative" flex="1">
-          <HFTextField
-            control={control}
-            name="us_dot"
-            placeholder={`${searchType} Number`}
-          />
-          <SearchIcon
-            w="14px"
-            h="14px"
-            color="#6B7280"
-            position="absolute"
-            right="10px"
-            top="50%"
-            transform="translateY(-50%)"
-            pointerEvents="none"
-          />
-        </Box>
+        {searchType === "US DOT" && (
+          <Box position="relative" flex="1">
+            <HFTextField
+              control={control}
+              name="us_dot"
+              placeholder={`${searchType} Number`}
+            />
+            <SearchIcon
+              w="14px"
+              h="14px"
+              color="#6B7280"
+              position="absolute"
+              right="10px"
+              top="50%"
+              transform="translateY(-50%)"
+              pointerEvents="none"
+            />
+          </Box>
+        )}
+
+        {searchType === "MC" && (
+          <Box position="relative" flex="1">
+            <HFTextField
+              control={control}
+              name="mc_number"
+              placeholder={`${searchType} Number`}
+            />
+            <SearchIcon
+              w="14px"
+              h="14px"
+              color="#6B7280"
+              position="absolute"
+              right="10px"
+              top="50%"
+              transform="translateY(-50%)"
+              pointerEvents="none"
+            />
+          </Box>
+        )}
       </HStack>
 
       {searchStatus === "success" && (
         <>
-          <Box mt="20px">
-            <Text mb="6px" fontWeight="500" fontSize="14px" color="#414651">
-              Your company
-            </Text>
-            <Box
-              p="10px 12px"
-              border="2px solid #EF6820"
-              h="96px"
-              borderRadius="8px">
-              <Text fontWeight="400" color="#181D27">
-                {companyData?.legal_name || ""}
+          {searchType === "US DOT" ? (
+            <Box mt="20px">
+              <Text mb="6px" fontWeight="500" fontSize="14px" color="#414651">
+                Your company
               </Text>
-              <Text fontWeight="400" color="#181D27">
-                US DOT# {companyData?.dot_number || "03472971"}
-              </Text>
-              {/* <Text color="#535862" fontSize="14px">
-                MC# {companyData?.mc_number || "1137291"}
-              </Text> */}
+              <Box
+                p="10px 12px"
+                border="2px solid #EF6820"
+                h="96px"
+                borderRadius="8px">
+                <Text fontWeight="400" color="#181D27">
+                  {companyData?.legal_name || ""}
+                </Text>
+                {searchType === "US DOT" && (
+                  <Text fontWeight="400" color="#181D27">
+                    US DOT# {companyData?.dot_number || ""}
+                  </Text>
+                )}
+                {searchType === "MC" && (
+                  <Text fontWeight="400" color="#181D27">
+                    MC# {mcNumber || ""}
+                  </Text>
+                )}
+              </Box>
             </Box>
-          </Box>
+          ) : (
+            <Box mt="20px">
+              <Text mb="6px" fontWeight="500" fontSize="14px" color="#414651">
+                Your company
+              </Text>
+              <Box
+                p="10px 12px"
+                border="2px solid #EF6820"
+                h="96px"
+                borderRadius="8px">
+                <Text fontWeight="400" color="#181D27">
+                  {mcData?.data?.response?.legal_name || ""}
+                </Text>
+                <Text fontWeight="400" color="#181D27">
+                  {mcData?.data?.response?.mc_mx_ff_numbers?.[1] || ""}
+                </Text>
+              </Box>
+            </Box>
+          )}
+
+          {searchType === "MC" && (
+            <Box mt="24px">
+              <VStack spacing="12px" align="stretch">
+                {fields.map((field, index) => (
+                  <Box
+                    key={field.id}
+                    p="12px"
+                    borderRadius="8px"
+                    border="1px solid #E9EAEB"
+                    bg="#FAFAFA">
+                    <Flex
+                      gap="12px"
+                      alignItems="center"
+                      justifyContent="space-between">
+                      <Box flex="1">
+                        <Text
+                          mb="6px"
+                          fontSize="14px"
+                          fontWeight="500"
+                          color="#414651">
+                          MC Number
+                        </Text>
+                        <HFTextField
+                          control={control}
+                          name={`mc_numbers.${index}.mc_number`}
+                          placeholder="Enter MC Number"
+                          border="1px solid #D5D7DA"
+                          borderRadius="8px"
+                          size="md"
+                        />
+                      </Box>
+                      <Box alignSelf="flex-end" pt="28px">
+                        <Button
+                          onClick={() => remove(index)}
+                          bg="transparent"
+                          _hover={{bg: "#F8F9FA"}}
+                          p="8px"
+                          minW="auto"
+                          size="sm">
+                          <DeleteIcon w="16px" h="16px" color="#FF6B35" />
+                        </Button>
+                      </Box>
+                    </Flex>
+                  </Box>
+                ))}
+              </VStack>
+            </Box>
+          )}
 
           <Button
             _hover={{bg: "#EF6820"}}
@@ -190,6 +363,7 @@ const SearchToggle = ({
               reset({});
               setSearchStatus("idle");
               setCompanyData(null);
+              setNewMcNumber("");
             }}>
             <img src={"/img/backArrow.svg"} alt="arrow-left" />
             <Text fontSize="14px" fontWeight="400" color="#535862">
@@ -216,12 +390,16 @@ const SearchToggle = ({
               <Text fontWeight="400" color="#181D27">
                 {companyData?.legal_name || "EAGLE EYE TRUCKING LLC"}
               </Text>
-              <Text fontWeight="400" color="#181D27">
-                US DOT# {companyData?.dot_number || "03472971"}
-              </Text>
-              {/* <Text color="#535862" fontSize="14px">
-                MC# {companyData?.mc_number || "1137291"}
-              </Text> */}
+              {searchType === "US DOT" && (
+                <Text fontWeight="400" color="#181D27">
+                  US DOT# {companyData?.dot_number || "03472971"}
+                </Text>
+              )}
+              {searchType === "MC" && (
+                <Text fontWeight="400" color="#181D27">
+                  MC# {mcNumber || ""}
+                </Text>
+              )}
             </Box>
           </Box>
 
@@ -265,6 +443,7 @@ const SearchToggle = ({
               reset({});
               setSearchStatus("idle");
               setCompanyData(null);
+              setNewMcNumber("");
             }}>
             <img src={"/img/backArrow.svg"} alt="arrow-left" />
             <Text fontSize="14px" fontWeight="400" color="#535862">
@@ -290,7 +469,8 @@ const SearchToggle = ({
               textAlign="center"
               fontSize="14px"
               fontWeight="500">
-              No records matching USDOT #{fmcsa}{" "}
+              No records matching{" "}
+              {searchType === "US DOT" ? `USDOT #${fmcsa}` : `MC #${mcNumber}`}{" "}
             </Text>
           </Box>
         </>
@@ -299,7 +479,13 @@ const SearchToggle = ({
       {(searchStatus === "idle" || searchStatus === "error") && (
         <>
           <Button
-            onClick={() => refetch()}
+            onClick={() => {
+              if (searchType === "US DOT") {
+                refetch();
+              } else {
+                refetchMC();
+              }
+            }}
             _hover={{bg: "#EF6820"}}
             mb="14px"
             width="100%"
@@ -310,7 +496,7 @@ const SearchToggle = ({
             fontSize="16px"
             fontWeight="600"
             mt="14px"
-            isLoading={isLoading}
+            isLoading={searchType === "US DOT" ? isLoading : isLoadingMC}
             loadingText="Searching...">
             Search
           </Button>
