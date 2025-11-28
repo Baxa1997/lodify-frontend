@@ -9,8 +9,12 @@ import HFSelect from "../../../../components/HFSelect";
 import HFPhoneInput from "@components/HFPhoneInput";
 import HFDateTimePicker from "@components/HFDateTimePicker";
 import StopReferences from "./StopReferences";
+import {useSelector} from "react-redux";
 
 function PickupFieldsComponent({control, field, index}) {
+  const clientType = useSelector((state) => state.auth.clientType);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+
   const normalizeFieldType = (type) => {
     return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";
   };
@@ -282,6 +286,7 @@ function PickupFieldsComponent({control, field, index}) {
               table_slug="load_type"
               name={`trip_pickups.${index}.load_type_id`}
               options={[]}
+              disabled={Boolean(!isBroker)}
               view_fields={["label"]}
             />
           </Box>
@@ -341,6 +346,7 @@ function PickupFieldsComponent({control, field, index}) {
               table_slug="equipment_type"
               name={`trip_pickups.${index}.equipment_type_id`}
               options={[]}
+              disabled={Boolean(!isBroker)}
               params={{load_type_id: loadType}}
             />
           </Box>

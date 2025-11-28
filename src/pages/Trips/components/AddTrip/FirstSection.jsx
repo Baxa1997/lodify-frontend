@@ -5,8 +5,11 @@ import {Text} from "@chakra-ui/react";
 import HFSelect from "../../../../components/HFSelect";
 import HFTextField from "../../../../components/HFTextField";
 import AssignTripCarrier from "./AssignTripCarrier";
+import {useSelector} from "react-redux";
 
 function FirstSection({control}) {
+  const clientType = useSelector((state) => state.auth.clientType);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   return (
     <Flex
       border="1px solid #E9EAEB"
@@ -56,7 +59,9 @@ function FirstSection({control}) {
           name="created_by"
         />
       </Box>
-      <AssignTripCarrier control={control} name="companies_id_2" />
+      {Boolean(isBroker) && (
+        <AssignTripCarrier control={control} name="companies_id_2" />
+      )}
     </Flex>
   );
 }
