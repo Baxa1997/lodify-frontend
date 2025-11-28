@@ -36,6 +36,8 @@ import {TripDriverVerification} from "./components/FunctionalComponents";
 import {ReAssignDriverButton} from "./components/FunctionalComponents";
 import {ReAssignCarrierButton} from "./components/FunctionalComponents";
 import {TripStatus} from "../../components/TabsElements";
+import DriverAssignmentMenu from "./components/DriverAssignmentMenu";
+import DriverAssignmentModal from "./components/DriverAssignmentModal";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -47,6 +49,10 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const [isAssignDriverModalOpen, setIsAssignDriverModalOpen] = useState(false);
   const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
     useState(false);
+  const [isDriverAssignmentModalOpen, setIsDriverAssignmentModalOpen] =
+    useState(false);
+  const [selectedTripForAssignment, setSelectedTripForAssignment] =
+    useState(null);
 
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
@@ -505,7 +511,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                         </CTableTd>
                       )} */}
 
-                      {Boolean(!isBroker) && (
+                      {/* {Boolean(!isBroker) && (
                         <CTableTd>
                           {trip?.driver_type?.[0] === "Team" ? (
                             <Flex alignItems="center" gap={2}>
@@ -586,6 +592,19 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           ) : (
                             <Text color="#535862" fontWeight="400"></Text>
                           )}
+                        </CTableTd>
+                      )} */}
+
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <DriverAssignmentMenu
+                            trip={trip}
+                            onAssignClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTripForAssignment(trip);
+                              setIsDriverAssignmentModalOpen(true);
+                            }}
+                          />
                         </CTableTd>
                       )}
 
@@ -703,6 +722,15 @@ function UpcomingTab({tripType = "", isActive = true}) {
         selectedRow={selectedRow}
         isOpen={isAssignCarrierModalOpen}
         onClose={() => setIsAssignCarrierModalOpen(false)}
+      />
+
+      <DriverAssignmentModal
+        isOpen={isDriverAssignmentModalOpen}
+        onClose={() => {
+          setIsDriverAssignmentModalOpen(false);
+          setSelectedTripForAssignment(null);
+        }}
+        trip={selectedTripForAssignment}
       />
     </Box>
   );
