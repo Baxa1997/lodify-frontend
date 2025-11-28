@@ -1,8 +1,8 @@
-import { Switch } from "@chakra-ui/react";
+import {Switch} from "@chakra-ui/react";
 import styles from "./style.module.scss";
-import { useViewAllProps } from "./useViewAllProps";
-import { ResourceDialog } from "../ResourceDialog";
-import { MotiveResources } from "../MotiveDialog";
+import {useViewAllProps} from "./useViewAllProps";
+import {ResourceDialog} from "../ResourceDialog";
+import {MotiveResources} from "../MotiveDialog";
 
 export const ViewAll = () => {
   const {
@@ -16,15 +16,14 @@ export const ViewAll = () => {
     handleSubmit,
     register,
     handleChange,
+    isLoading,
   } = useViewAllProps();
 
   return (
     <div className={styles.viewAllContainer}>
       <div className={styles.viewList}>
         {resources.map((item) => (
-          <div
-            className={styles.viewCard}
-            key={item.title}>
+          <div className={styles.viewCard} key={item.title}>
             <div className={styles.header}>
               <div className={styles.logo}>
                 <div className={styles.logoIcon}>
@@ -70,6 +69,7 @@ export const ViewAll = () => {
         content={currentContent}
         onSubmit={handleSubmit(onSubmit)}
         register={register}
+        isLoading={isLoading}
       />
       <MotiveResources
         isOpen={isResourceOpen}
