@@ -27,6 +27,19 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Determine max selections based on driver_type
+  const maxSelections = useMemo(() => {
+    const driverType = trip?.driver_type;
+    if (Array.isArray(driverType)) {
+      return driverType.includes("Team") ? 2 : 1;
+    }
+    if (typeof driverType === "string") {
+      return driverType === "Team" ? 2 : 1;
+    }
+    // Default to 2 if driver_type is not available
+    return 2;
+  }, [trip?.driver_type]);
+
   const {data: driversData = [], isLoading} = useQuery({
     queryKey: ["DRIVERS_LIST"],
     queryFn: () => driversService.getList({}),
@@ -104,48 +117,55 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
           }
         }
 
-        if (trip?.drivers_2) {
-          const driver2Guid = trip.drivers_2.guid || trip?.drivers_id_2;
-          const label =
-            `${trip.drivers_2.first_name || ""} ${
-              trip.drivers_2.last_name || ""
-            }`.trim() || "Driver";
+        // Only add driver 2 if driver_type is Team
+        const isTeam = Array.isArray(trip?.driver_type)
+          ? trip.driver_type.includes("Team")
+          : trip?.driver_type === "Team";
 
-          if (driver2Guid) {
-            const driver2Option = driverOptions.find((opt) => {
-              if (opt.value === driver2Guid) return true;
-              if (opt.value && driver2Guid) {
-                return String(opt.value) === String(driver2Guid);
+        if (isTeam) {
+          if (trip?.drivers_2) {
+            const driver2Guid = trip.drivers_2.guid || trip?.drivers_id_2;
+            const label =
+              `${trip.drivers_2.first_name || ""} ${
+                trip.drivers_2.last_name || ""
+              }`.trim() || "Driver";
+
+            if (driver2Guid) {
+              const driver2Option = driverOptions.find((opt) => {
+                if (opt.value === driver2Guid) return true;
+                if (opt.value && driver2Guid) {
+                  return String(opt.value) === String(driver2Guid);
+                }
+                if (label && opt.label) {
+                  return opt.label.toLowerCase() === label.toLowerCase();
+                }
+                return false;
+              });
+              if (driver2Option) {
+                initialDrivers.push(driver2Option);
+              } else {
+                initialDrivers.push({
+                  label,
+                  value: driver2Guid,
+                  driverData: trip.drivers_2,
+                });
               }
-              if (label && opt.label) {
-                return opt.label.toLowerCase() === label.toLowerCase();
-              }
-              return false;
-            });
-            if (driver2Option) {
-              initialDrivers.push(driver2Option);
-            } else {
+            } else if (label !== "Driver") {
               initialDrivers.push({
                 label,
-                value: driver2Guid,
+                value: trip.drivers_2.id || trip?.drivers_id_2 || "",
                 driverData: trip.drivers_2,
               });
             }
-          } else if (label !== "Driver") {
-            initialDrivers.push({
-              label,
-              value: trip.drivers_2.id || trip?.drivers_id_2 || "",
-              driverData: trip.drivers_2,
-            });
-          }
-        } else if (trip?.drivers_id_2 && driverOptions.length > 0) {
-          const driver2Option = driverOptions.find(
-            (opt) =>
-              opt.value === trip.drivers_id_2 ||
-              String(opt.value) === String(trip.drivers_id_2)
-          );
-          if (driver2Option) {
-            initialDrivers.push(driver2Option);
+          } else if (trip?.drivers_id_2 && driverOptions.length > 0) {
+            const driver2Option = driverOptions.find(
+              (opt) =>
+                opt.value === trip.drivers_id_2 ||
+                String(opt.value) === String(trip.drivers_id_2)
+            );
+            if (driver2Option) {
+              initialDrivers.push(driver2Option);
+            }
           }
         }
 
@@ -197,16 +217,24 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
     }
   }, [driverOptions.length, isOpen]);
 
+  // Enforce maxSelections limit - remove excess drivers if driver_type is Solo
+  useEffect(() => {
+    if (isOpen && selectedDrivers.length > maxSelections) {
+      setSelectedDrivers(selectedDrivers.slice(0, maxSelections));
+    }
+  }, [maxSelections, isOpen, selectedDrivers.length]);
+
   const handleSubmit = async () => {
     if (selectedDrivers.length === 0) return;
 
     setLoading(true);
     try {
+      const isTeam = maxSelections === 2;
       const computedData = {
         data: {
           guid: trip?.guid,
           drivers_id: selectedDrivers[0]?.value || null,
-          drivers_id_2: selectedDrivers[1]?.value || null,
+          drivers_id_2: isTeam ? selectedDrivers[1]?.value || null : null,
         },
       };
       await tripsService.assignDriver(computedData);
@@ -246,8 +274,12 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
                 options={filteredOptions}
                 value={selectedDrivers}
                 onChange={setSelectedDrivers}
-                maxSelections={2}
-                placeholder="Select drivers (max 2)"
+                maxSelections={maxSelections}
+                placeholder={
+                  maxSelections === 2
+                    ? "Select drivers (max 2)"
+                    : "Select driver"
+                }
                 searchPlaceholder="Search drivers..."
                 searchText={searchText}
                 setSearchText={setSearchText}

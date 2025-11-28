@@ -175,7 +175,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
         <CTable
           scrollRef={tableScrollRef}
           width="100%"
-          height="calc(100vh - 330px)"
+          height="calc(100vh - 280px)"
           overflow="scroll"
           currentPage={currentPage}
           totalPages={totalPages}
@@ -384,7 +384,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                             {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
 
-                          <Flex
+                          {/* <Flex
                             alignItems="center"
                             justifyContent="center"
                             border="1px solid #dcddde"
@@ -394,7 +394,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                             bg="#fff">
                             {trip?.origin?.[0]?.equipment_availability?.[0] ??
                               ""}
-                          </Flex>
+                          </Flex> */}
                         </Flex>
                       </CTableTd>
 
