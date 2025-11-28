@@ -8,16 +8,14 @@ const Settings = () => {
   return (
     <div>
       <HeadBreadCrumb />
-      <MainHeading mt="20px" mb="20px">
-        Integrations
-      </MainHeading>
-      <MainTabs
+      {/* <MainTabs
         tabList={["Integrations", "Permissions"]}
         tabPanels={[
           <Integrations key={"Integrations"} />,
           <Permissions key={"Permissions"} />,
         ]}
-      />
+      /> */}
+      <Integrations key={"Integrations"} />
     </div>
   );
 };
