@@ -429,7 +429,29 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           <Flex alignItems="center" gap={2}>
                             {trip?.drivers?.first_name ? (
                               <Flex alignItems="center" gap={2}>
-                                <Tooltip
+                                    </Text>
+                                        <Text
+                                          fontSize="14px"
+                                          fontWeight="600"
+                                          color="white">
+                                          {trip?.carrier?.legal_name}
+                                        </Text>
+                                      </VStack>
+                                    </Box>
+                                  }>
+                                  <Flex flexDirection="column" gap={0}>
+                                    <Text color="#535862" fontWeight="400">
+                                      {trip?.drivers?.first_name}
+                                    </Text>
+                                    <Text color="#535862" fontWeight="400">
+                                      {trip?.drivers?.last_name}
+                                    </Text>
+                                  </Flex>
+                                </Tooltip>
+
+                                <ReAssignDriverButton
+                                  driverType="solo"
+                                  trip= <Tooltip
                                   bg="linear-gradient(to bottom, #1a365d, #2d3748)"
                                   color="white"
                                   borderRadius="md"
@@ -456,29 +478,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                                           } ${
                                             trip?.drivers_2?.last_name ?? ""
                                           }`}
-                                        </Text>
-                                        <Text
-                                          fontSize="14px"
-                                          fontWeight="600"
-                                          color="white">
-                                          {trip?.carrier?.legal_name}
-                                        </Text>
-                                      </VStack>
-                                    </Box>
-                                  }>
-                                  <Flex flexDirection="column" gap={0}>
-                                    <Text color="#535862" fontWeight="400">
-                                      {trip?.drivers?.first_name}
-                                    </Text>
-                                    <Text color="#535862" fontWeight="400">
-                                      {trip?.drivers?.last_name}
-                                    </Text>
-                                  </Flex>
-                                </Tooltip>
-
-                                <ReAssignDriverButton
-                                  driverType="solo"
-                                  trip={trip}
+                                   {trip}
                                   setSelectedRow={setSelectedRow}
                                   setIsAssignDriverModalOpen={
                                     setIsAssignDriverModalOpen

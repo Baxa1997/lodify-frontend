@@ -15,26 +15,17 @@ import {
   HStack,
   Badge,
 } from "@chakra-ui/react";
-import {useForm} from "react-hook-form";
-import SearchableSelect from "@components/SearchableSelect";
 import driversService from "@services/driversService";
 import {useQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
 import {useQueryClient} from "@tanstack/react-query";
+import SearchableSelectDrivers from "@components/SearchableSelectDrivers";
 
 const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
   const queryClient = useQueryClient();
-  const {control, watch, setValue, handleSubmit, reset} = useForm({
-    defaultValues: {
-      driver1: trip?.drivers?.guid || trip?.drivers_id || "",
-      driver2: trip?.drivers_2?.guid || trip?.drivers_id_2 || "",
-    },
-  });
-  const [searchText1, setSearchText1] = useState("");
+  const [selectedDrivers, setSelectedDrivers] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const driver1Value = watch("driver1");
-  const driver2Value = watch("driver2");
 
   const {data: driversData = [], isLoading} = useQuery({
     queryKey: ["DRIVERS_LIST"],
@@ -55,35 +46,85 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
     });
   }, [driversData]);
 
-  const filteredOptions1 = useMemo(() => {
-    if (!searchText1) return driverOptions;
-    const searchLower = searchText1.toLowerCase();
+  const filteredOptions = useMemo(() => {
+    if (!searchText) return driverOptions;
+    const searchLower = searchText.toLowerCase();
     return driverOptions.filter((option) =>
       option.label.toLowerCase().includes(searchLower)
     );
-  }, [driverOptions, searchText1]);
+  }, [driverOptions, searchText]);
 
-  const selectedDriver1 = driverOptions.find(
-    (opt) => opt.value === driver1Value
-  );
-
+  // Initialize selected drivers from trip when modal opens
   useEffect(() => {
-    if (trip) {
-      reset({
-        driver1: trip?.drivers?.guid || trip?.drivers_id || "",
-        driver2: trip?.drivers_2?.guid || trip?.drivers_id_2 || "",
-      });
-    }
-  }, [trip, reset]);
+    if (isOpen) {
+      if (trip && driverOptions.length > 0) {
+        const initialDrivers = [];
 
-  const onSubmit = async (data) => {
+        // Get driver 1 (solo) - check both drivers object and drivers_id
+        const driver1Guid = trip?.drivers?.guid || trip?.drivers_id;
+        if (driver1Guid) {
+          const driver1Option = driverOptions.find(
+            (opt) => opt.value === driver1Guid
+          );
+          if (driver1Option) {
+            initialDrivers.push(driver1Option);
+          } else {
+            // If driver not found in options, create option from trip data
+            if (trip?.drivers) {
+              const label =
+                `${trip.drivers.first_name || ""} ${
+                  trip.drivers.last_name || ""
+                }`.trim() || "Driver";
+              initialDrivers.push({
+                label,
+                value: driver1Guid,
+                driverData: trip.drivers,
+              });
+            }
+          }
+        }
+
+        // Get driver 2 (team) - check both drivers_2 object and drivers_id_2
+        const driver2Guid = trip?.drivers_2?.guid || trip?.drivers_id_2;
+        if (driver2Guid) {
+          const driver2Option = driverOptions.find(
+            (opt) => opt.value === driver2Guid
+          );
+          if (driver2Option) {
+            initialDrivers.push(driver2Option);
+          } else {
+            // If driver not found in options, create option from trip data
+            if (trip?.drivers_2) {
+              const label =
+                `${trip.drivers_2.first_name || ""} ${
+                  trip.drivers_2.last_name || ""
+                }`.trim() || "Driver";
+              initialDrivers.push({
+                label,
+                value: driver2Guid,
+                driverData: trip.drivers_2,
+              });
+            }
+          }
+        }
+
+        setSelectedDrivers(initialDrivers);
+      } else if (!trip) {
+        setSelectedDrivers([]);
+      }
+    }
+  }, [trip, isOpen, driverOptions]);
+
+  const handleSubmit = async () => {
+    if (selectedDrivers.length === 0) return;
+
     setLoading(true);
     try {
       const computedData = {
         data: {
           guid: trip?.guid,
-          drivers_id: data.driver1 || null,
-          drivers_id_2: data.driver2 || null,
+          drivers_id: selectedDrivers[0]?.value || null,
+          drivers_id_2: selectedDrivers[1]?.value || null,
         },
       };
       await tripsService.assignDriver(computedData);
@@ -97,11 +138,8 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
   };
 
   const handleClose = () => {
-    reset({
-      driver1: trip?.drivers?.guid || trip?.drivers_id || "",
-      driver2: trip?.drivers_2?.guid || trip?.drivers_id_2 || "",
-    });
-    setSearchText1("");
+    // Reset will happen when modal reopens via useEffect
+    setSearchText("");
     onClose();
   };
 
@@ -110,7 +148,9 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
       <ModalOverlay />
       <ModalContent borderRadius="12px">
         <ModalHeader fontSize="18px" fontWeight="600" color="#181D27" pb="16px">
-          Assign Drivers
+          {trip?.drivers || trip?.drivers_2
+            ? "Reassign Drivers"
+            : "Assign Drivers"}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb="0px">
@@ -118,28 +158,18 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
             <Box>
               <Flex alignItems="center" gap={2} mb="6px">
                 <Text fontSize="14px" fontWeight="500" color="#414651">
-                  Drivers<span style={{color: "#FF6B35"}}>*</span>
+                  Drivers <span style={{color: "#FF6B35"}}>*</span>
                 </Text>
-                {selectedDriver1 && (
-                  <Badge colorScheme="blue" fontSize="10px">
-                    Selected
-                  </Badge>
-                )}
               </Flex>
-              <SearchableSelect
-                options={filteredOptions1}
-                value={driver1Value}
-                onChange={(value) => {
-                  setValue("driver1", value);
-
-                  if (value === driver2Value) {
-                    setValue("driver2", "");
-                  }
-                }}
-                placeholder="Select first driver"
+              <SearchableSelectDrivers
+                options={filteredOptions}
+                value={selectedDrivers}
+                onChange={setSelectedDrivers}
+                maxSelections={2}
+                placeholder="Select drivers (max 2)"
                 searchPlaceholder="Search drivers..."
-                searchText={searchText1}
-                setSearchText={setSearchText1}
+                searchText={searchText}
+                setSearchText={setSearchText}
                 isDisabled={isLoading || loading}
               />
             </Box>
@@ -162,10 +192,10 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
               bg="#FF6B35"
               color="white"
               _hover={{bg: "#E55A2B"}}
-              onClick={handleSubmit(onSubmit)}
+              onClick={handleSubmit}
               isLoading={loading}
-              isDisabled={!driver1Value}>
-              Assign
+              isDisabled={selectedDrivers.length === 0}>
+              {trip?.drivers || trip?.drivers_2 ? "Reassign" : "Assign"}
             </Button>
           </HStack>
         </ModalFooter>
