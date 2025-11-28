@@ -54,9 +54,27 @@ const SearchableSelectDrivers = ({
     return selectedValues
       .map((val) => {
         if (typeof val === "object" && val !== null) {
-          return val;
+          const matchingOption = options.find((opt) => {
+            if (opt.value === val.value) return true;
+            if (opt.value && val.value) {
+              if (String(opt.value) === String(val.value)) return true;
+            }
+            if (opt.label && val.label) {
+              if (opt.label.toLowerCase() === val.label.toLowerCase())
+                return true;
+            }
+            return false;
+          });
+          return matchingOption || val;
         }
-        return options.find((opt) => opt.value === val);
+
+        return options.find((opt) => {
+          if (opt.value === val) return true;
+          if (opt.value && val) {
+            return String(opt.value) === String(val);
+          }
+          return false;
+        });
       })
       .filter(Boolean);
   }, [selectedValues, options]);
@@ -102,30 +120,52 @@ const SearchableSelectDrivers = ({
 
     handleOptions(option);
 
-    const isSelected = selectedOptions.some(
-      (opt) => opt.value === option.value
-    );
+    // Check if option is already selected with multiple comparison methods
+    const isSelected = selectedOptions.some((opt) => {
+      // Direct value comparison
+      if (opt.value === option.value) return true;
+      // String comparison
+      if (opt.value && option.value) {
+        if (String(opt.value) === String(option.value)) return true;
+      }
+      // Label comparison
+      if (opt.label && option.label) {
+        if (opt.label.toLowerCase() === option.label.toLowerCase()) return true;
+      }
+      // Object reference comparison
+      return opt === option;
+    });
 
     let newSelection;
     if (isSelected) {
-      newSelection = selectedOptions.filter(
-        (opt) => opt.value !== option.value
-      );
+      // Remove the selected option
+      newSelection = selectedOptions.filter((opt) => {
+        // Use same comparison logic to find the one to remove
+        if (opt.value === option.value) return false;
+        if (opt.value && option.value) {
+          if (String(opt.value) === String(option.value)) return false;
+        }
+        if (opt.label && option.label) {
+          if (opt.label.toLowerCase() === option.label.toLowerCase())
+            return false;
+        }
+        return opt !== option;
+      });
     } else {
+      // Add the option
       if (selectedOptions.length < maxSelections) {
         newSelection = [...selectedOptions, option];
       } else {
+        // Remove first and add new (sliding window)
         newSelection = [...selectedOptions.slice(1), option];
       }
     }
 
     onChange(newSelection);
 
-    if (newSelection.length >= maxSelections) {
-      setIsOpen(false);
-      setIsFocused(false);
-      setSearchText("");
-    }
+    // Don't close the dropdown - let user select multiple drivers
+    // Only clear search text after selection
+    setSearchText("");
   };
 
   const handleRemove = (optionToRemove, e) => {
@@ -366,9 +406,21 @@ const SearchableSelectDrivers = ({
               <VStack spacing={0} align="stretch">
                 {filteredOptions.length > 0 ? (
                   filteredOptions.map((option, index) => {
-                    const isSelected = selectedOptions.some(
-                      (opt) => opt.value === option.value
-                    );
+                    const isSelected = selectedOptions.some((opt) => {
+                      if (opt.value === option.value) return true;
+                      if (opt.value && option.value) {
+                        if (String(opt.value) === String(option.value))
+                          return true;
+                      }
+                      if (opt.label && option.label) {
+                        if (
+                          opt.label.toLowerCase() === option.label.toLowerCase()
+                        )
+                          return true;
+                      }
+
+                      return opt === option;
+                    });
                     const isDisabled = option.isDisabled || false;
 
                     return (

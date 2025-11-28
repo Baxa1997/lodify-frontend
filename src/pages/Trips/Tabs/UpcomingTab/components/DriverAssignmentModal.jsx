@@ -54,66 +54,148 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
     );
   }, [driverOptions, searchText]);
 
-  // Initialize selected drivers from trip when modal opens
   useEffect(() => {
-    if (isOpen) {
-      if (trip && driverOptions.length > 0) {
+    if (isOpen && trip) {
+      const initializeDrivers = () => {
         const initialDrivers = [];
 
-        // Get driver 1 (solo) - check both drivers object and drivers_id
-        const driver1Guid = trip?.drivers?.guid || trip?.drivers_id;
-        if (driver1Guid) {
-          const driver1Option = driverOptions.find(
-            (opt) => opt.value === driver1Guid
-          );
-          if (driver1Option) {
-            initialDrivers.push(driver1Option);
-          } else {
-            // If driver not found in options, create option from trip data
-            if (trip?.drivers) {
-              const label =
-                `${trip.drivers.first_name || ""} ${
-                  trip.drivers.last_name || ""
-                }`.trim() || "Driver";
+        if (trip?.drivers) {
+          const driver1Guid = trip.drivers.guid || trip?.drivers_id;
+          const label =
+            `${trip.drivers.first_name || ""} ${
+              trip.drivers.last_name || ""
+            }`.trim() || "Driver";
+
+          if (driver1Guid) {
+            const driver1Option = driverOptions.find((opt) => {
+              if (opt.value === driver1Guid) return true;
+              if (opt.value && driver1Guid) {
+                return String(opt.value) === String(driver1Guid);
+              }
+              if (label && opt.label) {
+                return opt.label.toLowerCase() === label.toLowerCase();
+              }
+              return false;
+            });
+            if (driver1Option) {
+              initialDrivers.push(driver1Option);
+            } else {
               initialDrivers.push({
                 label,
                 value: driver1Guid,
                 driverData: trip.drivers,
               });
             }
+          } else if (label !== "Driver") {
+            initialDrivers.push({
+              label,
+              value: trip.drivers.id || trip?.drivers_id || "",
+              driverData: trip.drivers,
+            });
+          }
+        } else if (trip?.drivers_id && driverOptions.length > 0) {
+          const driver1Option = driverOptions.find(
+            (opt) =>
+              opt.value === trip.drivers_id ||
+              String(opt.value) === String(trip.drivers_id)
+          );
+          if (driver1Option) {
+            initialDrivers.push(driver1Option);
           }
         }
 
-        // Get driver 2 (team) - check both drivers_2 object and drivers_id_2
-        const driver2Guid = trip?.drivers_2?.guid || trip?.drivers_id_2;
-        if (driver2Guid) {
-          const driver2Option = driverOptions.find(
-            (opt) => opt.value === driver2Guid
-          );
-          if (driver2Option) {
-            initialDrivers.push(driver2Option);
-          } else {
-            // If driver not found in options, create option from trip data
-            if (trip?.drivers_2) {
-              const label =
-                `${trip.drivers_2.first_name || ""} ${
-                  trip.drivers_2.last_name || ""
-                }`.trim() || "Driver";
+        if (trip?.drivers_2) {
+          const driver2Guid = trip.drivers_2.guid || trip?.drivers_id_2;
+          const label =
+            `${trip.drivers_2.first_name || ""} ${
+              trip.drivers_2.last_name || ""
+            }`.trim() || "Driver";
+
+          if (driver2Guid) {
+            const driver2Option = driverOptions.find((opt) => {
+              if (opt.value === driver2Guid) return true;
+              if (opt.value && driver2Guid) {
+                return String(opt.value) === String(driver2Guid);
+              }
+              if (label && opt.label) {
+                return opt.label.toLowerCase() === label.toLowerCase();
+              }
+              return false;
+            });
+            if (driver2Option) {
+              initialDrivers.push(driver2Option);
+            } else {
               initialDrivers.push({
                 label,
                 value: driver2Guid,
                 driverData: trip.drivers_2,
               });
             }
+          } else if (label !== "Driver") {
+            initialDrivers.push({
+              label,
+              value: trip.drivers_2.id || trip?.drivers_id_2 || "",
+              driverData: trip.drivers_2,
+            });
+          }
+        } else if (trip?.drivers_id_2 && driverOptions.length > 0) {
+          const driver2Option = driverOptions.find(
+            (opt) =>
+              opt.value === trip.drivers_id_2 ||
+              String(opt.value) === String(trip.drivers_id_2)
+          );
+          if (driver2Option) {
+            initialDrivers.push(driver2Option);
           }
         }
 
         setSelectedDrivers(initialDrivers);
-      } else if (!trip) {
-        setSelectedDrivers([]);
-      }
+      };
+
+      initializeDrivers();
+    } else if (isOpen && !trip) {
+      setSelectedDrivers([]);
     }
   }, [trip, isOpen, driverOptions]);
+
+  useEffect(() => {
+    if (
+      isOpen &&
+      trip &&
+      driverOptions.length > 0 &&
+      selectedDrivers.length > 0
+    ) {
+      const updatedDrivers = selectedDrivers.map((selectedDriver) => {
+        const matchingOption = driverOptions.find((opt) => {
+          if (opt.value === selectedDriver.value) return true;
+          if (opt.value && selectedDriver.value) {
+            if (String(opt.value) === String(selectedDriver.value)) return true;
+          }
+          if (opt.label && selectedDriver.label) {
+            if (opt.label.toLowerCase() === selectedDriver.label.toLowerCase())
+              return true;
+          }
+          return false;
+        });
+        return matchingOption || selectedDriver;
+      });
+
+      const needsUpdate = updatedDrivers.some((updated, idx) => {
+        const original = selectedDrivers[idx];
+        if (!original) return false;
+        const valueMatches =
+          updated.value === original.value ||
+          (updated.value &&
+            original.value &&
+            String(updated.value) === String(original.value));
+        return valueMatches && updated !== original;
+      });
+
+      if (needsUpdate) {
+        setSelectedDrivers(updatedDrivers);
+      }
+    }
+  }, [driverOptions.length, isOpen]);
 
   const handleSubmit = async () => {
     if (selectedDrivers.length === 0) return;
@@ -138,7 +220,6 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
   };
 
   const handleClose = () => {
-    // Reset will happen when modal reopens via useEffect
     setSearchText("");
     onClose();
   };
