@@ -9,13 +9,13 @@ import {useFieldArray} from "react-hook-form";
 function StopReferences({control, stopIndex}) {
   const allReferences = useWatch({
     control,
-    name: "references",
+    name: "new_references",
     defaultValue: [],
   });
 
   const {fields, remove} = useFieldArray({
     control,
-    name: "references",
+    name: "new_references",
   });
 
   const stopReferences = useMemo(() => {
@@ -37,9 +37,9 @@ function StopReferences({control, stopIndex}) {
   }, [allReferences, stopIndex, fields]);
 
   const referenceTypeOptions = [
-    {label: "PU #", value: "PU #"},
-    {label: "PO #", value: "PO #"},
-    {label: "Other #", value: "Other #"},
+    {label: "PU #", value: "PU"},
+    {label: "PO #", value: "PO"},
+    {label: "Other #", value: "Other"},
   ];
 
   const findReferenceArrayIndex = (referenceData) => {
@@ -88,7 +88,7 @@ function StopReferences({control, stopIndex}) {
                     </Text>
                     <HFTextField
                       control={control}
-                      name={`references.${arrayIndex}.number`}
+                      name={`new_references.${arrayIndex}.number`}
                       placeholder="Enter Reference Number"
                       border="1px solid #D5D7DA"
                       borderRadius="8px"
@@ -106,7 +106,7 @@ function StopReferences({control, stopIndex}) {
                     </Text>
                     <HFSelect
                       control={control}
-                      name={`references.${arrayIndex}.type`}
+                      name={`new_references.${arrayIndex}.type`}
                       options={referenceTypeOptions}
                       placeholder="PU #"
                       border="1px solid #D5D7DA"
@@ -123,7 +123,7 @@ function StopReferences({control, stopIndex}) {
                     </Text>
                     <HFTextField
                       control={control}
-                      name={`references.${arrayIndex}.number`}
+                      name={`new_references.${arrayIndex}.number`}
                       placeholder="Enter Reference Number"
                       border="1px solid #D5D7DA"
                       borderRadius="8px"
@@ -142,7 +142,7 @@ function StopReferences({control, stopIndex}) {
                       </Text>
                       <HFTextField
                         control={control}
-                        name={`references.${arrayIndex}.other_description`}
+                        name={`new_references.${arrayIndex}.other_description`}
                         placeholder="Enter Reference Description"
                         border="1px solid #D5D7DA"
                         borderRadius="8px"

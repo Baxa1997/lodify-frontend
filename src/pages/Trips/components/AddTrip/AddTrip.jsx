@@ -47,6 +47,7 @@ function AddTrip({tripData = {}}) {
   });
 
   const totalRates = watch("accessorials");
+  console.log("watchwatch", watch());
 
   const {data: rocFileData = {}, isLoading: isRocFileLoading} = useQuery({
     queryKey: ["TRIP_BY_ID", csvFile],

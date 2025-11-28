@@ -37,9 +37,12 @@ const Select = ({
   const selectRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  const selectedOption = options.find(
-    (option) => value && option.value === value
-  );
+  const selectedOption = options.find((option) => {
+    if (Array.isArray(value)) {
+      return option.value === value?.[0];
+    }
+    return value && option.value === value;
+  });
 
   useEffect(() => {
     const handleClickOutside = (event) => {
