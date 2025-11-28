@@ -383,18 +383,6 @@ function UpcomingTab({tripType = "", isActive = true}) {
                             color="#535862">
                             {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
-
-                          {/* <Flex
-                            alignItems="center"
-                            justifyContent="center"
-                            border="1px solid #dcddde"
-                            w="24px"
-                            h="22px"
-                            borderRadius="50%"
-                            bg="#fff">
-                            {trip?.origin?.[0]?.equipment_availability?.[0] ??
-                              ""}
-                          </Flex> */}
                         </Flex>
                       </CTableTd>
 

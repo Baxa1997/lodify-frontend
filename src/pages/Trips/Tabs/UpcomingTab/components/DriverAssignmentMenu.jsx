@@ -22,7 +22,7 @@ const DriverAssignmentMenu = ({trip, onAssignClick}) => {
         trip.drivers_2.last_name || ""
       }`.trim()
     : "";
-
+  console.log("triptrip", trip);
   return (
     <Flex alignItems="center" gap={2} onClick={(e) => e.stopPropagation()}>
       <Tooltip
@@ -40,9 +40,11 @@ const DriverAssignmentMenu = ({trip, onAssignClick}) => {
               <Text fontSize="14px" fontWeight="600" color="white">
                 {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
               </Text>
-              <Text fontSize="14px" fontWeight="600" color="white">
-                {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
-              </Text>
+              {trip?.driver_type === "Team" && (
+                <Text fontSize="14px" fontWeight="600" color="white">
+                  {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
+                </Text>
+              )}
             </VStack>
           </Box>
         }>

@@ -83,19 +83,15 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
     const containerEl = containerRef.current;
     const innerContentEl = innerContentRef.current;
 
-    // Capture initial scroll position when TripRowDetails opens
-    // This accounts for the table's scroll position before opening
     let initialScrollLeft = scrollEl.scrollLeft || 0;
     let isInitialized = false;
     let rafId = null;
 
-    // Get zoom level - account for browser zoom
     const getZoomLevel = () => {
-      // Use visualViewport if available (more accurate for zoom)
       if (window.visualViewport) {
         return window.visualViewport.scale || 1;
       }
-      // Fallback: calculate zoom from device pixel ratio and screen dimensions
+
       return window.devicePixelRatio || 1;
     };
 
@@ -105,30 +101,21 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
       const currentScrollLeft = scrollEl.scrollLeft || 0;
 
       if (!isInitialized) {
-        // Capture the scroll position when first initialized
-        // This is the table's scroll position when TripRowDetails opened
         initialScrollLeft = currentScrollLeft;
         isInitialized = true;
       }
 
-      // Get bounding rects which account for zoom
       const buttonsRect = buttonsEl.getBoundingClientRect();
 
-      // Calculate scroll delta from initial position
       const scrollDelta = currentScrollLeft - initialScrollLeft;
 
-      // Apply horizontal transform to match table horizontal scroll
-      // This keeps buttons aligned horizontally with table content
       innerContentEl.style.transform = `translate3d(${scrollDelta}px, 0px, 0px)`;
       innerContentEl.style.visibility = "visible";
       innerContentEl.style.opacity = "1";
 
-      // Add padding to the scroll container to account for button height
-      // This prevents content from being hidden behind the sticky buttons
-      const buttonHeight = buttonsRect.height || 60; // Default to 60px if not available
+      const buttonHeight = buttonsRect.height || 60;
       const paddingValue = `${buttonHeight}px`;
 
-      // Only update if different to avoid unnecessary reflows
       if (scrollEl.style.paddingBottom !== paddingValue) {
         scrollEl.style.paddingBottom = paddingValue;
       }
@@ -148,7 +135,6 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
     };
 
     const handleResize = () => {
-      // Reset initialization on resize/zoom to recalculate with new zoom level
       isInitialized = false;
       initialScrollLeft = scrollEl.scrollLeft || 0;
       if (rafId) {
@@ -160,9 +146,7 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
       });
     };
 
-    // Handle zoom changes using visualViewport API
     const handleZoom = () => {
-      // Reset to recalculate positions with new zoom level
       isInitialized = false;
       initialScrollLeft = scrollEl.scrollLeft || 0;
       updateButtonsPosition();
@@ -174,7 +158,6 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
     });
     window.addEventListener("resize", handleResize, {passive: true});
 
-    // Listen for zoom changes
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", handleZoom);
       window.visualViewport.addEventListener("scroll", handleZoom);
@@ -187,7 +170,6 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
         window.visualViewport.removeEventListener("resize", handleZoom);
         window.visualViewport.removeEventListener("scroll", handleZoom);
       }
-      // Clean up padding when component unmounts
       if (scrollEl) {
         scrollEl.style.paddingBottom = "";
       }
