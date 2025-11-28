@@ -170,7 +170,7 @@ function TransitTab({tripType = "", isActive = true}) {
       <Box mt={6}>
         <CTable
           width="100%"
-          height="calc(100vh - 330px)"
+          height="calc(100vh - 280px)"
           overflow="auto"
           currentPage={currentPage}
           totalPages={totalPages}

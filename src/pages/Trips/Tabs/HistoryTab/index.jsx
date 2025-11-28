@@ -10,7 +10,7 @@ import {
   Spinner,
   Center,
 } from "@chakra-ui/react";
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -38,6 +38,7 @@ import {
 function HistoryTab({tripType = ""}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const tableScrollRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
@@ -158,9 +159,10 @@ function HistoryTab({tripType = ""}) {
 
       <Box mt={6}>
         <CTable
+          scrollRef={tableScrollRef}
           width="100%"
-          height="calc(100vh - 330px)"
-          overflow="auto"
+          height="calc(100vh - 280px)"
+          overflow="scroll"
           currentPage={currentPage}
           totalPages={totalPages}
           pageSize={pageSize}
@@ -377,7 +379,7 @@ function HistoryTab({tripType = ""}) {
                             {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
 
-                          <Flex
+                          {/* <Flex
                             alignItems="center"
                             justifyContent="center"
                             border="1px solid #dcddde"
@@ -385,9 +387,9 @@ function HistoryTab({tripType = ""}) {
                             h="22px"
                             borderRadius="50%"
                             bg="#fff">
-                            {trip?.origin?.[0]?.equipment_availability?.label ??
+                            {trip?.origin?.[0]?.equipment_availability?.[0] ??
                               ""}
-                          </Flex>
+                          </Flex> */}
                         </Flex>
                       </CTableTd>
 
@@ -403,7 +405,7 @@ function HistoryTab({tripType = ""}) {
                           borderRadius="full"
                           fontSize="12px"
                           fontWeight="500">
-                          {trip.origin?.[0]?.load_type ?? ""}
+                          {trip.origin?.[0]?.load_type?.label ?? ""}
                         </Badge>
                       </CTableTd>
 
@@ -475,54 +477,6 @@ function HistoryTab({tripType = ""}) {
                         </CTableTd>
                       )}
 
-                      {Boolean(!isBroker) && (
-                        <CTableTd>
-                          {trip?.driver_type?.[0] === "Team" ? (
-                            <Tooltip
-                              bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                              color="white"
-                              borderRadius="md"
-                              hasArrow
-                              p="6px 10px"
-                              label={
-                                <Box minW="180px">
-                                  <VStack spacing={1} align="start">
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {trip?.drivers?.company_name}
-                                    </Text>
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {`${trip?.drivers?.first_name} ${trip?.drivers?.last_name}`}
-                                    </Text>
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color="white">
-                                      {`${trip?.drivers_2?.first_name} ${trip?.drivers_2?.last_name}`}
-                                    </Text>
-                                  </VStack>
-                                </Box>
-                              }>
-                              <Flex flexDirection="column" gap={0}>
-                                <Text color="#535862" fontWeight="400">
-                                  {trip?.drivers_2?.first_name}
-                                </Text>
-                                <Text color="#535862" fontWeight="400">
-                                  {trip?.drivers_2?.last_name}
-                                </Text>
-                              </Flex>
-                            </Tooltip>
-                          ) : (
-                            <Text color="#535862" fontWeight="400"></Text>
-                          )}
-                        </CTableTd>
-                      )}
-
                       {Boolean(isBroker) && (
                         <CTableTd>
                           {trip?.carrier?.legal_name && (
@@ -571,6 +525,8 @@ function HistoryTab({tripType = ""}) {
                             handleRowClick={handleRowClick}
                             trip={trip}
                             isExpanded={isExpanded}
+                            tableScrollRef={tableScrollRef}
+                            navigate={navigate}
                           />
                         </Collapse>
                       </CTableTd>

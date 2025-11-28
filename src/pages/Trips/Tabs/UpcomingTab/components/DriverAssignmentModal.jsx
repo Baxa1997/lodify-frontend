@@ -27,7 +27,6 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Determine max selections based on driver_type
   const maxSelections = useMemo(() => {
     const driverType = trip?.driver_type;
     if (Array.isArray(driverType)) {
@@ -36,7 +35,6 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
     if (typeof driverType === "string") {
       return driverType === "Team" ? 2 : 1;
     }
-    // Default to 2 if driver_type is not available
     return 2;
   }, [trip?.driver_type]);
 
@@ -117,7 +115,6 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
           }
         }
 
-        // Only add driver 2 if driver_type is Team
         const isTeam = Array.isArray(trip?.driver_type)
           ? trip.driver_type.includes("Team")
           : trip?.driver_type === "Team";

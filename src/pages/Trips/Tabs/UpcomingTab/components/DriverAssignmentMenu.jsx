@@ -73,7 +73,7 @@ const DriverAssignmentMenu = ({trip, onAssignClick}) => {
           onClick={(e) => e.stopPropagation()}
           _hover={{bg: "gray.100"}}
         />
-        <MenuList onClick={(e) => e.stopPropagation()}>
+        <MenuList zIndex={9} onClick={(e) => e.stopPropagation()}>
           <MenuItem onClick={onAssignClick}>
             {driver1Name || driver2Name ? "Reassign Drivers" : "Assign Drivers"}
           </MenuItem>
