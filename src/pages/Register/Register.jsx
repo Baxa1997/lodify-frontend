@@ -87,7 +87,6 @@ const Register = () => {
     // );
   };
 
-  // Password validation function
   const validatePassword = (password) => {
     if (!password || password.trim() === "") {
       return "Password is required";
@@ -227,7 +226,6 @@ const Register = () => {
   };
 
   const onSubmit = async (data) => {
-    // Validate password before submitting
     const passwordValidation = validatePassword(data.password);
     if (passwordValidation !== true) {
       toast({
@@ -241,7 +239,6 @@ const Register = () => {
       return;
     }
 
-    // Validate password match
     if (data.password !== data.confirmPassword) {
       toast({
         title: "Password Mismatch",
