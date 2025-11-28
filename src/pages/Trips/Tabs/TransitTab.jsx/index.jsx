@@ -378,8 +378,7 @@ function TransitTab({tripType = "", isActive = true}) {
                             fontSize="14px"
                             fontWeight="500"
                             color="#535862">
-                            {trip?.origin?.[0]?.equipment_type?.[0]?.label ??
-                              ""}
+                            {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
 
                           <Flex
@@ -390,7 +389,7 @@ function TransitTab({tripType = "", isActive = true}) {
                             h="22px"
                             borderRadius="50%"
                             bg="#fff">
-                            {trip?.origin?.[0]?.equipment_availability?.[0] ??
+                            {trip?.origin?.[0]?.equipment_availability?.label ??
                               ""}
                           </Flex>
                         </Flex>
@@ -400,7 +399,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         <Badge
                           color={"#fff"}
                           bg={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.[0]?.label ?? ""
+                            trip.origin?.[0]?.load_type?.label ?? ""
                           )}
                           variant="subtle"
                           px={3}
@@ -408,7 +407,7 @@ function TransitTab({tripType = "", isActive = true}) {
                           borderRadius="full"
                           fontSize="12px"
                           fontWeight="500">
-                          {trip.origin?.[0]?.load_type?.[0]?.label ?? ""}
+                          {trip.origin?.[0]?.load_type?.label ?? ""}
                         </Badge>
                       </CTableTd>
 

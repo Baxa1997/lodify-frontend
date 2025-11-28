@@ -411,7 +411,7 @@ function DeclinedTrips() {
                             color="#535862"
                             cursor="pointer"
                             _hover={{textDecoration: "underline"}}>
-                            {trip?.origin?.[0]?.equipment_type ?? ""}
+                            {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
 
                           <Flex
@@ -422,8 +422,8 @@ function DeclinedTrips() {
                             h="22px"
                             borderRadius="50%"
                             bg="#fff">
-                            {trip?.origin?.[0]
-                              ?.equipment_availability?.[0]?.[0] ?? ""}
+                            {trip?.origin?.[0]?.equipment_availability?.label ??
+                              ""}
                           </Flex>
                         </Flex>
                       </CTableTd>
@@ -431,7 +431,7 @@ function DeclinedTrips() {
                       <CTableTd>
                         <Badge
                           colorScheme={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.[0] ?? ""
+                            trip.origin?.[0]?.load_type?.label ?? ""
                           )}
                           variant="subtle"
                           px={3}
@@ -439,7 +439,7 @@ function DeclinedTrips() {
                           borderRadius="full"
                           fontSize="12px"
                           fontWeight="500">
-                          {trip.origin?.[0]?.load_type?.[0] ?? ""}
+                          {trip.origin?.[0]?.load_type?.label ?? ""}
                         </Badge>
                       </CTableTd>
 

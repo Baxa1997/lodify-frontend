@@ -547,7 +547,7 @@ function ActiveTenders() {
                       <CTableTd>
                         <Badge
                           colorScheme={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.[0]?.label ?? ""
+                            trip.origin?.[0]?.load_type?.label ?? ""
                           )}
                           variant="subtle"
                           px={3}
@@ -556,7 +556,7 @@ function ActiveTenders() {
                           fontSize="12px"
                           fontWeight="500"
                           _hover={{opacity: 0.8}}>
-                          {trip.origin?.[0]?.load_type?.[0]?.label ?? ""}
+                          {trip.origin?.[0]?.load_type?.label ?? ""}
                         </Badge>
                       </CTableTd>
 

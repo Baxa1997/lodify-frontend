@@ -704,7 +704,7 @@ function TenderInvitations({tripType = ""}) {
                               color="#535862"
                               cursor="pointer"
                               _hover={{textDecoration: "underline"}}>
-                              {trip?.origin?.[0]?.equipment_type ?? ""}
+                              {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                             </Text>
 
                             <Flex
@@ -753,7 +753,7 @@ function TenderInvitations({tripType = ""}) {
                           openDelay={300}>
                           <Badge
                             colorScheme={getLoadTypeColor(
-                              trip.origin?.[0]?.load_type?.[0] ?? ""
+                              trip.origin?.[0]?.load_type?.label ?? ""
                             )}
                             variant="subtle"
                             px={3}
@@ -763,7 +763,7 @@ function TenderInvitations({tripType = ""}) {
                             fontWeight="500"
                             cursor="pointer"
                             _hover={{opacity: 0.8}}>
-                            {trip.origin?.[0]?.load_type?.[0] ?? ""}
+                            {trip.origin?.[0]?.load_type?.label ?? ""}
                           </Badge>
                         </Tooltip>
                       </CTableTd>

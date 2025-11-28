@@ -374,8 +374,7 @@ function HistoryTab({tripType = ""}) {
                             fontSize="14px"
                             fontWeight="500"
                             color="#535862">
-                            {trip?.origin?.[0]?.equipment_type?.[0]?.label ??
-                              ""}
+                            {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
 
                           <Flex
@@ -386,7 +385,7 @@ function HistoryTab({tripType = ""}) {
                             h="22px"
                             borderRadius="50%"
                             bg="#fff">
-                            {trip?.origin?.[0]?.equipment_availability?.[0] ??
+                            {trip?.origin?.[0]?.equipment_availability?.label ??
                               ""}
                           </Flex>
                         </Flex>
@@ -396,7 +395,7 @@ function HistoryTab({tripType = ""}) {
                         <Badge
                           color={"#fff"}
                           bg={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.[0]?.label ?? ""
+                            trip.origin?.[0]?.load_type?.label ?? ""
                           )}
                           variant="subtle"
                           px={3}
@@ -404,7 +403,7 @@ function HistoryTab({tripType = ""}) {
                           borderRadius="full"
                           fontSize="12px"
                           fontWeight="500">
-                          {trip.origin?.[0]?.load_type?.[0] ?? ""}
+                          {trip.origin?.[0]?.load_type ?? ""}
                         </Badge>
                       </CTableTd>
 

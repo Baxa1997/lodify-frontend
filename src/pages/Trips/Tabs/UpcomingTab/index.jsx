@@ -376,8 +376,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                             fontSize="14px"
                             fontWeight="500"
                             color="#535862">
-                            {trip?.origin?.[0]?.equipment_type?.[0]?.label ??
-                              ""}
+                            {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
 
                           <Flex
@@ -398,7 +397,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                         <Badge
                           color={"#fff"}
                           bg={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.[0]?.label ?? ""
+                            trip.origin?.[0]?.load_type?.label ?? ""
                           )}
                           variant="subtle"
                           px={3}
@@ -406,7 +405,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           borderRadius="full"
                           fontSize="12px"
                           fontWeight="500">
-                          {trip.origin?.[0]?.load_type?.[0]?.label ?? ""}
+                          {trip.origin?.[0]?.load_type?.label ?? ""}
                         </Badge>
                       </CTableTd>
 
