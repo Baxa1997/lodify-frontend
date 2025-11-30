@@ -90,51 +90,69 @@ const StickyButtons = ({
     const parentEl = parentContainerRef.current;
     let rafId = null;
 
+    let prevLeft = null;
+    let prevWidth = null;
+    let prevVisibility = null;
+    let prevPadding = null;
+
     const updatePosition = () => {
       if (!buttonsEl || !scrollEl || !containerEl || !parentEl) return;
 
-      // Get positions relative to viewport
       const scrollRect = scrollEl.getBoundingClientRect();
       const parentRect = parentEl.getBoundingClientRect();
       const buttonsRect = buttonsEl.getBoundingClientRect();
       const buttonHeight = buttonsRect.height || 60;
 
-      // Check if parent container (TripRowDetails) is visible
       const isParentVisible =
         parentRect.bottom > 0 &&
         parentRect.top < window.innerHeight &&
         parentRect.width > 0;
 
       if (isParentVisible) {
-        // Position buttons absolutely relative to parent container
-        // But adjust for horizontal scroll to keep them aligned with scroll container's viewport
-        const scrollLeft = scrollEl.scrollLeft || 0;
+        const leftOffset = Math.round(scrollRect.left - parentRect.left);
+        const width = Math.round(scrollRect.width);
 
-        containerEl.style.position = "absolute";
-        containerEl.style.bottom = "0";
-        // Calculate left position: align with scroll container's viewport, accounting for scroll
-        // The buttons should stay at the left edge of the scroll container's visible area
-        const leftOffset = scrollRect.left - parentRect.left;
-        containerEl.style.left = `${leftOffset}px`;
-        containerEl.style.width = `${scrollRect.width}px`;
-        containerEl.style.maxWidth = `${scrollRect.width}px`;
-        containerEl.style.zIndex = "5";
-        containerEl.style.visibility = "visible";
-        containerEl.style.opacity = "1";
+        if (prevLeft !== leftOffset) {
+          containerEl.style.left = `${leftOffset}px`;
+          prevLeft = leftOffset;
+        }
+
+        if (prevWidth !== width) {
+          containerEl.style.width = `${width}px`;
+          containerEl.style.maxWidth = `${width}px`;
+          prevWidth = width;
+        }
+
+        if (containerEl.style.position !== "absolute") {
+          containerEl.style.position = "absolute";
+        }
+        if (containerEl.style.bottom !== "0") {
+          containerEl.style.bottom = "0";
+        }
+        if (containerEl.style.zIndex !== "5") {
+          containerEl.style.zIndex = "5";
+        }
+
+        if (prevVisibility !== true) {
+          containerEl.style.visibility = "visible";
+          containerEl.style.opacity = "1";
+          prevVisibility = true;
+        }
       } else {
-        // Hide buttons if parent is not visible
-        containerEl.style.visibility = "hidden";
-        containerEl.style.opacity = "0";
+        if (prevVisibility !== false) {
+          containerEl.style.visibility = "hidden";
+          containerEl.style.opacity = "0";
+          prevVisibility = false;
+        }
       }
 
-      // Update padding on scroll container to prevent content from being hidden
       const paddingValue = `${buttonHeight}px`;
-      if (scrollEl.style.paddingBottom !== paddingValue) {
+      if (prevPadding !== paddingValue) {
         scrollEl.style.paddingBottom = paddingValue;
+        prevPadding = paddingValue;
       }
     };
 
-    // Initial position update
     updatePosition();
 
     const handleScroll = () => {
@@ -157,11 +175,17 @@ const StickyButtons = ({
       });
     };
 
-    // Use ResizeObserver to detect changes
     let resizeObserver = null;
+    let resizeRafId = null;
     try {
       resizeObserver = new ResizeObserver(() => {
-        updatePosition();
+        if (resizeRafId) {
+          cancelAnimationFrame(resizeRafId);
+        }
+        resizeRafId = requestAnimationFrame(() => {
+          updatePosition();
+          resizeRafId = null;
+        });
       });
 
       if (buttonsEl && resizeObserver) {
@@ -170,11 +194,13 @@ const StickyButtons = ({
       if (scrollEl && resizeObserver) {
         resizeObserver.observe(scrollEl);
       }
+      if (parentEl && resizeObserver) {
+        resizeObserver.observe(parentEl);
+      }
     } catch (e) {
       resizeObserver = null;
     }
 
-    // Listen to scroll events on the scroll container and window
     scrollEl.addEventListener("scroll", handleScroll, {passive: true});
     window.addEventListener("scroll", handleScroll, {passive: true});
     window.addEventListener("resize", handleResize, {passive: true});
@@ -210,6 +236,9 @@ const StickyButtons = ({
       }
       if (rafId) {
         cancelAnimationFrame(rafId);
+      }
+      if (resizeRafId) {
+        cancelAnimationFrame(resizeRafId);
       }
     };
   }, [tableScrollRef]);
