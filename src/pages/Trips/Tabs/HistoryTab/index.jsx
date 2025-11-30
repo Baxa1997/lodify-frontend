@@ -27,13 +27,13 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import {formatDate} from "@utils/dateFormats";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
-import TripRowDetails from "./TripRowDetails";
 import {
   TripStatus,
   TripProgress,
   TripDriverVerification,
   getLoadTypeColor,
 } from "./components/FunctionalComponents";
+import TripRowDetails from "../../components/TripRowDetails";
 
 function HistoryTab({tripType = ""}) {
   const navigate = useNavigate();

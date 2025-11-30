@@ -27,7 +27,7 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import {formatDate} from "@utils/dateFormats";
-import TripRowDetails from "./TripRowDetails";
+
 import AssignCarrier from "./components/AssignCarrier";
 import {
   TripStatus,
@@ -37,6 +37,7 @@ import {
 } from "./components/FunctionalComponent";
 import DriverAssignmentMenu from "../UpcomingTab/components/DriverAssignmentMenu";
 import DriverAssignmentModal from "../UpcomingTab/components/DriverAssignmentModal";
+import TripRowDetails from "../../components/TripRowDetails";
 
 function TransitTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();

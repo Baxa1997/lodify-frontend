@@ -21,7 +21,7 @@ import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
 import {parseISO, format} from "date-fns";
 import {useNavigate} from "react-router-dom";
-import ReportDelay from "../../components/ReportDelay/ReportDelay";
+import ReportDelay from "./ReportDelay/ReportDelay";
 
 const calculateExpiredTime = (apiTime) => {
   try {
@@ -82,10 +82,16 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
     const scrollEl = tableScrollRef.current;
     const containerEl = containerRef.current;
     const innerContentEl = innerContentRef.current;
-
     let initialScrollLeft = scrollEl.scrollLeft || 0;
     let isInitialized = false;
     let rafId = null;
+
+    const getZoomLevel = () => {
+      if (window.visualViewport) {
+        return window.visualViewport.scale || 1;
+      }
+      return window.devicePixelRatio || 1;
+    };
 
     const updateButtonsPosition = () => {
       if (!buttonsEl || !scrollEl || !containerEl || !innerContentEl) return;
@@ -97,9 +103,20 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
         isInitialized = true;
       }
 
+      const buttonsRect = buttonsEl.getBoundingClientRect();
+
       const scrollDelta = currentScrollLeft - initialScrollLeft;
 
       innerContentEl.style.transform = `translate3d(${scrollDelta}px, 0px, 0px)`;
+      innerContentEl.style.visibility = "visible";
+      innerContentEl.style.opacity = "1";
+
+      const buttonHeight = buttonsRect.height || 60;
+      const paddingValue = `${buttonHeight}px`;
+
+      if (scrollEl.style.paddingBottom !== paddingValue) {
+        scrollEl.style.paddingBottom = paddingValue;
+      }
     };
 
     updateButtonsPosition();
@@ -117,6 +134,7 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
 
     const handleResize = () => {
       isInitialized = false;
+      initialScrollLeft = scrollEl.scrollLeft || 0;
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
@@ -126,15 +144,33 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
       });
     };
 
+    const handleZoom = () => {
+      isInitialized = false;
+      initialScrollLeft = scrollEl.scrollLeft || 0;
+      updateButtonsPosition();
+    };
+
     scrollEl.addEventListener("scroll", handleScroll, {
       passive: true,
       capture: true,
     });
     window.addEventListener("resize", handleResize, {passive: true});
 
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleZoom);
+      window.visualViewport.addEventListener("scroll", handleZoom);
+    }
+
     return () => {
       scrollEl.removeEventListener("scroll", handleScroll, {capture: true});
       window.removeEventListener("resize", handleResize);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", handleZoom);
+        window.visualViewport.removeEventListener("scroll", handleZoom);
+      }
+      if (scrollEl) {
+        scrollEl.style.paddingBottom = "";
+      }
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
@@ -142,12 +178,16 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
   }, [tableScrollRef]);
 
   return (
-    <Box ref={containerRef} position="relative" width="100%">
+    <Box
+      ref={containerRef}
+      position="sticky"
+      bottom="0"
+      width="100%"
+      zIndex={5}>
       <Box
         ref={buttonsRef}
         bg="#fff"
         py="10px"
-        zIndex={5}
         borderTop="1px solid #e5e7eb"
         position="relative"
         width="100%"

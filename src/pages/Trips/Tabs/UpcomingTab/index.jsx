@@ -27,7 +27,7 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import {formatDate} from "@utils/dateFormats";
-import TripRowDetails from "./TripRowDetails";
+import TripRowDetails from "../../components/TripRowDetails";
 import AssignDriver from "./components/AssignDriver";
 import AssignCarrier from "./components/AssignCarrier";
 import {getLoadTypeColor} from "./hooks";
