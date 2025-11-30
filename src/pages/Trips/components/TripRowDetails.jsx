@@ -64,10 +64,18 @@ const formatExpiredTime = (seconds) => {
   }
 };
 
-const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
+const StickyButtons = ({
+  trip,
+  handleRowClick,
+  navigate,
+  tableScrollRef,
+  sidebarOpen = true,
+}) => {
   const buttonsRef = useRef(null);
   const containerRef = useRef(null);
   const innerContentRef = useRef(null);
+  const zoomLevelRef = useRef(1);
+  const lastZoomLevelRef = useRef(1);
 
   useEffect(() => {
     if (
@@ -90,6 +98,12 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
       if (window.visualViewport) {
         return window.visualViewport.scale || 1;
       }
+      // Fallback: calculate zoom from devicePixelRatio and screen dimensions
+      const screenWidth = window.screen.width;
+      const windowWidth = window.innerWidth;
+      if (screenWidth && windowWidth) {
+        return screenWidth / windowWidth;
+      }
       return window.devicePixelRatio || 1;
     };
 
@@ -97,6 +111,14 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
       if (!buttonsEl || !scrollEl || !containerEl || !innerContentEl) return;
 
       const currentScrollLeft = scrollEl.scrollLeft || 0;
+      const currentZoom = getZoomLevel();
+      zoomLevelRef.current = currentZoom;
+
+      // If zoom changed significantly, reset initialization
+      if (Math.abs(currentZoom - lastZoomLevelRef.current) > 0.01) {
+        isInitialized = false;
+        lastZoomLevelRef.current = currentZoom;
+      }
 
       if (!isInitialized) {
         initialScrollLeft = currentScrollLeft;
@@ -119,13 +141,15 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
       }
     };
 
+    // Initialize zoom level
+    zoomLevelRef.current = getZoomLevel();
+    lastZoomLevelRef.current = zoomLevelRef.current;
     updateButtonsPosition();
 
     const handleScroll = () => {
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
-      updateButtonsPosition();
       rafId = requestAnimationFrame(() => {
         updateButtonsPosition();
         rafId = null;
@@ -133,8 +157,14 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
     };
 
     const handleResize = () => {
-      isInitialized = false;
-      initialScrollLeft = scrollEl.scrollLeft || 0;
+      const newZoom = getZoomLevel();
+      // Check if it's actually a zoom change or just a resize
+      if (Math.abs(newZoom - zoomLevelRef.current) > 0.01) {
+        isInitialized = false;
+        initialScrollLeft = scrollEl.scrollLeft || 0;
+        zoomLevelRef.current = newZoom;
+        lastZoomLevelRef.current = newZoom;
+      }
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
@@ -145,10 +175,44 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
     };
 
     const handleZoom = () => {
-      isInitialized = false;
-      initialScrollLeft = scrollEl.scrollLeft || 0;
-      updateButtonsPosition();
+      const newZoom = getZoomLevel();
+      if (Math.abs(newZoom - zoomLevelRef.current) > 0.01) {
+        isInitialized = false;
+        // Reset to current scroll position when zoom changes
+        initialScrollLeft = scrollEl.scrollLeft || 0;
+        zoomLevelRef.current = newZoom;
+        lastZoomLevelRef.current = newZoom;
+      }
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      rafId = requestAnimationFrame(() => {
+        updateButtonsPosition();
+        rafId = null;
+      });
     };
+
+    // Use ResizeObserver to detect layout changes (including zoom)
+    // This helps catch zoom changes that might not trigger other events
+    let resizeObserver = null;
+    try {
+      resizeObserver = new ResizeObserver((entries) => {
+        // Only react if the size actually changed (zoom affects size)
+        for (const entry of entries) {
+          if (entry.target === scrollEl) {
+            handleZoom();
+            break;
+          }
+        }
+      });
+
+      if (scrollEl && resizeObserver) {
+        resizeObserver.observe(scrollEl);
+      }
+    } catch (e) {
+      // ResizeObserver not supported, fallback to other methods
+      resizeObserver = null;
+    }
 
     scrollEl.addEventListener("scroll", handleScroll, {
       passive: true,
@@ -161,12 +225,24 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
       window.visualViewport.addEventListener("scroll", handleZoom);
     }
 
+    // Also listen to zoom events via media query if available
+    const mediaQuery = window.matchMedia("(min-resolution: 0.001dpcm)");
+    if (mediaQuery && mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleZoom);
+    }
+
     return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       scrollEl.removeEventListener("scroll", handleScroll, {capture: true});
       window.removeEventListener("resize", handleResize);
       if (window.visualViewport) {
         window.visualViewport.removeEventListener("resize", handleZoom);
         window.visualViewport.removeEventListener("scroll", handleZoom);
+      }
+      if (mediaQuery && mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleZoom);
       }
       if (scrollEl) {
         scrollEl.style.paddingBottom = "";
@@ -200,7 +276,7 @@ const StickyButtons = ({trip, handleRowClick, navigate, tableScrollRef}) => {
             backfaceVisibility: "hidden",
           }}>
           <Flex
-            maxWidth="1275px"
+            maxWidth={sidebarOpen ? "1075px" : "1275px"}
             gap="12px"
             justifyContent="space-between"
             alignItems="center">
@@ -271,6 +347,7 @@ const TripRowDetails = ({
   const navigate = navigateProp || navigateHook;
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
+  const sidebarOpen = useSelector((state) => state.sidebar.sidebar);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const [isReportDelayOpen, setIsReportDelayOpen] = useState(false);
   const [selectedPickup, setSelectedPickup] = useState(null);
@@ -763,6 +840,7 @@ const TripRowDetails = ({
         handleRowClick={handleRowClick}
         navigate={navigate}
         tableScrollRef={tableScrollRef}
+        sidebarOpen={sidebarOpen}
       />
     </Box>
   );

@@ -85,7 +85,6 @@ const Chat = () => {
       project_id: projectId,
     };
 
-    // Add type filter if provided
     if (roomTypeFilter) {
       roomsListPayload.type = roomTypeFilter;
     }
