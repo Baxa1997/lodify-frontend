@@ -289,12 +289,6 @@ const AllCarriers = () => {
             />
           </Flex>
         )}
-
-        {/* {!hasNextPage && carriersData.length > 0 && (
-          <Text textAlign="center" py="20px" color="#6B7280" fontSize="14px">
-            No more carriers to load
-          </Text>
-        )} */}
       </Box>
 
       <SignAndAcceptModal
