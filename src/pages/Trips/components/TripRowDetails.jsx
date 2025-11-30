@@ -70,182 +70,143 @@ const StickyButtons = ({
   navigate,
   tableScrollRef,
   sidebarOpen = true,
+  parentContainerRef,
 }) => {
   const buttonsRef = useRef(null);
   const containerRef = useRef(null);
-  const innerContentRef = useRef(null);
-  const zoomLevelRef = useRef(1);
-  const lastZoomLevelRef = useRef(1);
 
   useEffect(() => {
     if (
       !buttonsRef.current ||
       !tableScrollRef?.current ||
       !containerRef.current ||
-      !innerContentRef.current
+      !parentContainerRef?.current
     )
       return;
 
     const buttonsEl = buttonsRef.current;
     const scrollEl = tableScrollRef.current;
     const containerEl = containerRef.current;
-    const innerContentEl = innerContentRef.current;
-    let initialScrollLeft = scrollEl.scrollLeft || 0;
-    let isInitialized = false;
+    const parentEl = parentContainerRef.current;
     let rafId = null;
 
-    const getZoomLevel = () => {
-      if (window.visualViewport) {
-        return window.visualViewport.scale || 1;
-      }
-      // Fallback: calculate zoom from devicePixelRatio and screen dimensions
-      const screenWidth = window.screen.width;
-      const windowWidth = window.innerWidth;
-      if (screenWidth && windowWidth) {
-        return screenWidth / windowWidth;
-      }
-      return window.devicePixelRatio || 1;
-    };
+    const updatePosition = () => {
+      if (!buttonsEl || !scrollEl || !containerEl || !parentEl) return;
 
-    const updateButtonsPosition = () => {
-      if (!buttonsEl || !scrollEl || !containerEl || !innerContentEl) return;
-
-      const currentScrollLeft = scrollEl.scrollLeft || 0;
-      const currentZoom = getZoomLevel();
-      zoomLevelRef.current = currentZoom;
-
-      // If zoom changed significantly, reset initialization
-      if (Math.abs(currentZoom - lastZoomLevelRef.current) > 0.01) {
-        isInitialized = false;
-        lastZoomLevelRef.current = currentZoom;
-      }
-
-      if (!isInitialized) {
-        initialScrollLeft = currentScrollLeft;
-        isInitialized = true;
-      }
-
+      // Get positions relative to viewport
+      const scrollRect = scrollEl.getBoundingClientRect();
+      const parentRect = parentEl.getBoundingClientRect();
       const buttonsRect = buttonsEl.getBoundingClientRect();
-
-      const scrollDelta = currentScrollLeft - initialScrollLeft;
-
-      innerContentEl.style.transform = `translate3d(${scrollDelta}px, 0px, 0px)`;
-      innerContentEl.style.visibility = "visible";
-      innerContentEl.style.opacity = "1";
-
       const buttonHeight = buttonsRect.height || 60;
-      const paddingValue = `${buttonHeight}px`;
 
+      // Check if parent container (TripRowDetails) is visible
+      const isParentVisible =
+        parentRect.bottom > 0 &&
+        parentRect.top < window.innerHeight &&
+        parentRect.width > 0;
+
+      if (isParentVisible) {
+        // Position buttons absolutely relative to parent container
+        // But adjust for horizontal scroll to keep them aligned with scroll container's viewport
+        const scrollLeft = scrollEl.scrollLeft || 0;
+
+        containerEl.style.position = "absolute";
+        containerEl.style.bottom = "0";
+        // Calculate left position: align with scroll container's viewport, accounting for scroll
+        // The buttons should stay at the left edge of the scroll container's visible area
+        const leftOffset = scrollRect.left - parentRect.left;
+        containerEl.style.left = `${leftOffset}px`;
+        containerEl.style.width = `${scrollRect.width}px`;
+        containerEl.style.maxWidth = `${scrollRect.width}px`;
+        containerEl.style.zIndex = "5";
+        containerEl.style.visibility = "visible";
+        containerEl.style.opacity = "1";
+      } else {
+        // Hide buttons if parent is not visible
+        containerEl.style.visibility = "hidden";
+        containerEl.style.opacity = "0";
+      }
+
+      // Update padding on scroll container to prevent content from being hidden
+      const paddingValue = `${buttonHeight}px`;
       if (scrollEl.style.paddingBottom !== paddingValue) {
         scrollEl.style.paddingBottom = paddingValue;
       }
     };
 
-    // Initialize zoom level
-    zoomLevelRef.current = getZoomLevel();
-    lastZoomLevelRef.current = zoomLevelRef.current;
-    updateButtonsPosition();
+    // Initial position update
+    updatePosition();
 
     const handleScroll = () => {
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
       rafId = requestAnimationFrame(() => {
-        updateButtonsPosition();
+        updatePosition();
         rafId = null;
       });
     };
 
     const handleResize = () => {
-      const newZoom = getZoomLevel();
-      // Check if it's actually a zoom change or just a resize
-      if (Math.abs(newZoom - zoomLevelRef.current) > 0.01) {
-        isInitialized = false;
-        initialScrollLeft = scrollEl.scrollLeft || 0;
-        zoomLevelRef.current = newZoom;
-        lastZoomLevelRef.current = newZoom;
-      }
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
       rafId = requestAnimationFrame(() => {
-        updateButtonsPosition();
+        updatePosition();
         rafId = null;
       });
     };
 
-    const handleZoom = () => {
-      const newZoom = getZoomLevel();
-      if (Math.abs(newZoom - zoomLevelRef.current) > 0.01) {
-        isInitialized = false;
-        // Reset to current scroll position when zoom changes
-        initialScrollLeft = scrollEl.scrollLeft || 0;
-        zoomLevelRef.current = newZoom;
-        lastZoomLevelRef.current = newZoom;
-      }
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-      rafId = requestAnimationFrame(() => {
-        updateButtonsPosition();
-        rafId = null;
-      });
-    };
-
-    // Use ResizeObserver to detect layout changes (including zoom)
-    // This helps catch zoom changes that might not trigger other events
+    // Use ResizeObserver to detect changes
     let resizeObserver = null;
     try {
-      resizeObserver = new ResizeObserver((entries) => {
-        // Only react if the size actually changed (zoom affects size)
-        for (const entry of entries) {
-          if (entry.target === scrollEl) {
-            handleZoom();
-            break;
-          }
-        }
+      resizeObserver = new ResizeObserver(() => {
+        updatePosition();
       });
 
+      if (buttonsEl && resizeObserver) {
+        resizeObserver.observe(buttonsEl);
+      }
       if (scrollEl && resizeObserver) {
         resizeObserver.observe(scrollEl);
       }
     } catch (e) {
-      // ResizeObserver not supported, fallback to other methods
       resizeObserver = null;
     }
 
-    scrollEl.addEventListener("scroll", handleScroll, {
-      passive: true,
-      capture: true,
-    });
+    // Listen to scroll events on the scroll container and window
+    scrollEl.addEventListener("scroll", handleScroll, {passive: true});
+    window.addEventListener("scroll", handleScroll, {passive: true});
     window.addEventListener("resize", handleResize, {passive: true});
 
     if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", handleZoom);
-      window.visualViewport.addEventListener("scroll", handleZoom);
-    }
-
-    // Also listen to zoom events via media query if available
-    const mediaQuery = window.matchMedia("(min-resolution: 0.001dpcm)");
-    if (mediaQuery && mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleZoom);
+      window.visualViewport.addEventListener("resize", handleResize);
+      window.visualViewport.addEventListener("scroll", handleScroll);
     }
 
     return () => {
       if (resizeObserver) {
         resizeObserver.disconnect();
       }
-      scrollEl.removeEventListener("scroll", handleScroll, {capture: true});
+      scrollEl.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
       if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", handleZoom);
-        window.visualViewport.removeEventListener("scroll", handleZoom);
-      }
-      if (mediaQuery && mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleZoom);
+        window.visualViewport.removeEventListener("resize", handleResize);
+        window.visualViewport.removeEventListener("scroll", handleScroll);
       }
       if (scrollEl) {
         scrollEl.style.paddingBottom = "";
+      }
+      if (containerEl) {
+        containerEl.style.position = "";
+        containerEl.style.bottom = "";
+        containerEl.style.left = "";
+        containerEl.style.width = "";
+        containerEl.style.maxWidth = "";
+        containerEl.style.zIndex = "";
+        containerEl.style.visibility = "";
+        containerEl.style.opacity = "";
       }
       if (rafId) {
         cancelAnimationFrame(rafId);
@@ -254,83 +215,70 @@ const StickyButtons = ({
   }, [tableScrollRef]);
 
   return (
-    <Box
-      ref={containerRef}
-      position="sticky"
-      bottom="0"
-      width="100%"
-      zIndex={5}>
+    <Box ref={containerRef} bg="#fff">
       <Box
         ref={buttonsRef}
         bg="#fff"
         py="10px"
         borderTop="1px solid #e5e7eb"
-        position="relative"
         width="100%"
-        overflow="hidden">
-        <Box
-          ref={innerContentRef}
-          px="20px"
-          style={{
-            willChange: "transform",
-            backfaceVisibility: "hidden",
-          }}>
-          <Flex
-            maxWidth={sidebarOpen ? "1075px" : "1275px"}
-            gap="12px"
-            justifyContent="space-between"
-            alignItems="center">
+        px="20px">
+        <Flex
+          maxWidth={sidebarOpen ? "1075px" : "1275px"}
+          margin="0 auto"
+          gap="12px"
+          justifyContent="space-between"
+          alignItems="center">
+          <Button
+            bg="#fff"
+            color="#EF6820"
+            border="1px solid #f7b27a"
+            borderRadius="8px"
+            fontSize="14px"
+            fontWeight="600"
+            px="16px"
+            py="8px">
+            View Shipment Details
+          </Button>
+
+          <Flex gap="8px">
             <Button
-              bg="#fff"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/admin/collabrations`, {
+                  state: {
+                    tripId: trip?.guid,
+                    tripName: trip?.id,
+                  },
+                });
+              }}
+              h="40px"
+              variant="outline"
+              leftIcon={
+                <img src="/img/collab.svg" alt="" width="16" height="16" />
+              }
+              fontSize="14px"
+              border="1px solid #f2b27a"
               color="#EF6820"
-              border="1px solid #f7b27a"
-              borderRadius="8px"
+              fontWeight="600">
+              Collaboration
+            </Button>
+            <Button
+              _hover={{bg: "#EF6820"}}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRowClick(trip.guid, trip);
+              }}
+              variant="outline"
+              h="40px"
               fontSize="14px"
               fontWeight="600"
-              px="16px"
-              py="8px">
-              View Shipment Details
+              bg="#EF6820"
+              color="white">
+              More details
             </Button>
-
-            <Flex gap="8px">
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/admin/collabrations`, {
-                    state: {
-                      tripId: trip?.guid,
-                      tripName: trip?.id,
-                    },
-                  });
-                }}
-                h="40px"
-                variant="outline"
-                leftIcon={
-                  <img src="/img/collab.svg" alt="" width="16" height="16" />
-                }
-                fontSize="14px"
-                border="1px solid #f2b27a"
-                color="#EF6820"
-                fontWeight="600">
-                Collaboration
-              </Button>
-              <Button
-                _hover={{bg: "#EF6820"}}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRowClick(trip.guid, trip);
-                }}
-                variant="outline"
-                h="40px"
-                fontSize="14px"
-                fontWeight="600"
-                bg="#EF6820"
-                color="white">
-                More details
-              </Button>
-            </Flex>
           </Flex>
-        </Box>
+        </Flex>
       </Box>
     </Box>
   );
@@ -351,6 +299,7 @@ const TripRowDetails = ({
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const [isReportDelayOpen, setIsReportDelayOpen] = useState(false);
   const [selectedPickup, setSelectedPickup] = useState(null);
+  const tripRowDetailsRef = useRef(null);
 
   const {
     data: detailedTripData = {},
@@ -484,7 +433,12 @@ const TripRowDetails = ({
   };
 
   return (
-    <Box zIndex={5} bg="#fff" minHeight="200px" position="relative">
+    <Box
+      ref={tripRowDetailsRef}
+      zIndex={5}
+      bg="#fff"
+      minHeight="200px"
+      position="relative">
       <Box
         p="8px 20px"
         pb="0px"
@@ -841,6 +795,7 @@ const TripRowDetails = ({
         navigate={navigate}
         tableScrollRef={tableScrollRef}
         sidebarOpen={sidebarOpen}
+        parentContainerRef={tripRowDetailsRef}
       />
     </Box>
   );
