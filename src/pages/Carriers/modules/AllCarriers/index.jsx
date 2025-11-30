@@ -25,6 +25,7 @@ import carrierService from "@services/carrierService";
 import {useSelector} from "react-redux";
 import useDebounce from "@hooks/useDebounce";
 import SearchInput from "@components/SearchInput";
+import SignAndAcceptModal from "../../components/SignAndAcceptModal";
 
 const tableElements = [
   {label: "Company Name", key: "500px"},
@@ -39,6 +40,8 @@ const AllCarriers = () => {
   const toast = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingCarrierId, setLoadingCarrierId] = useState(null);
+  const [isSignModalOpen, setIsSignModalOpen] = useState(false);
+  const [selectedCarrier, setSelectedCarrier] = useState(null);
   const envId = useSelector((state) => state.auth.environmentId);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
 
@@ -104,39 +107,52 @@ const AllCarriers = () => {
   }, [carriersData, searchQuery]);
 
   const handleAddCarrier = (carrier) => {
-    setLoadingCarrierId(carrier?.guid);
+    setSelectedCarrier(carrier);
+    setIsSignModalOpen(true);
+  };
+
+  const handleSignAccept = async (signatureData) => {
+    if (!selectedCarrier) return;
+
+    setLoadingCarrierId(selectedCarrier?.guid);
     const data = {
       joined_at: new Date().toISOString(),
       brokers_id: brokersId,
-      companies_id: carrier?.guid,
+      companies_id: selectedCarrier?.guid,
+      signature: signatureData.signature,
+      signed_date: signatureData.date,
     };
-    carrierService
-      .addCarrier(data)
-      .then(() => {
-        refetch();
-        toast({
-          title: "Carrier Added Successfully!",
-          description: "The carrier has been added to your list",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          position: "top-right",
-        });
-      })
-      .catch((error) => {
-        console.log("error", error);
-        toast({
-          title: "Failed to Add Carrier",
-          description: error?.response?.data?.message || "Please try again",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "top-right",
-        });
-      })
-      .finally(() => {
-        setLoadingCarrierId(null);
+
+    try {
+      await carrierService.addCarrier(data);
+      refetch();
+      toast({
+        title: "Carrier Added Successfully!",
+        description: "The carrier has been added to your list",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
       });
+    } catch (error) {
+      console.log("error", error);
+      toast({
+        title: "Failed to Add Carrier",
+        description: error?.response?.data?.message || "Please try again",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } finally {
+      setLoadingCarrierId(null);
+      setSelectedCarrier(null);
+    }
+  };
+
+  const handleSignModalClose = () => {
+    setIsSignModalOpen(false);
+    setSelectedCarrier(null);
   };
 
   useEffect(() => {
@@ -280,6 +296,15 @@ const AllCarriers = () => {
           </Text>
         )} */}
       </Box>
+
+      <SignAndAcceptModal
+        isOpen={isSignModalOpen}
+        onClose={handleSignModalClose}
+        onAccept={handleSignAccept}
+        brokerName={
+          selectedCarrier?.company_name || selectedCarrier?.legal_name || ""
+        }
+      />
     </Box>
   );
 };
