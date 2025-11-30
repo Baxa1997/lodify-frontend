@@ -9,6 +9,7 @@ import HFSelect from "../../../../components/HFSelect";
 import HFPhoneInput from "@components/HFPhoneInput";
 import HFDateTimePicker from "@components/HFDateTimePicker";
 import StopReferences from "./StopReferences";
+import StopAssignments from "./StopAssignments";
 import {useSelector} from "react-redux";
 
 function PickupFieldsComponent({control, field, index}) {
@@ -87,6 +88,8 @@ function PickupFieldsComponent({control, field, index}) {
           </>
         )}
       </Flex>
+
+      <StopAssignments control={control} index={index} />
 
       <Flex mt="24px" justifyContent="space-between">
         <Box width={"65%"} borderRight="1px solid #D5D7DA" pr="20px">
@@ -288,6 +291,7 @@ function PickupFieldsComponent({control, field, index}) {
               options={[]}
               disabled={Boolean(!isBroker)}
               view_fields={["label"]}
+              fetchOnClick={true}
             />
           </Box>
 
@@ -348,6 +352,7 @@ function PickupFieldsComponent({control, field, index}) {
               options={[]}
               disabled={Boolean(!isBroker)}
               params={{load_type_id: loadType}}
+              fetchOnClick={true}
             />
           </Box>
 

@@ -61,10 +61,16 @@ const Select = ({
     };
   }, [isOpen]);
 
-  const handleToggle = () => {
+  const handleToggle = (e) => {
     if (!isDisabled) {
-      setIsOpen(!isOpen);
-      setIsFocused(!isOpen);
+      e?.stopPropagation?.();
+      const willOpen = !isOpen;
+      setIsOpen(willOpen);
+      setIsFocused(willOpen);
+      // Call onClick when opening the dropdown
+      if (willOpen && props.onClick && !isOpen) {
+        props.onClick();
+      }
     }
   };
 
