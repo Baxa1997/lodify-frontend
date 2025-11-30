@@ -19,6 +19,7 @@ const Chat = () => {
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasProcessedTripId, setHasProcessedTripId] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
+  const [roomTypeFilter, setRoomTypeFilter] = useState(null);
   const loginName = useSelector((state) => state.auth.user_data?.login);
   const projectId = useSelector((state) => state.auth.projectId);
 
@@ -78,7 +79,18 @@ const Chat = () => {
 
   useEffect(() => {
     if (!socket || !isConnected || !userId) return;
-    socket.emit("rooms list", {row_id: userId, project_id: projectId});
+
+    const roomsListPayload = {
+      row_id: userId,
+      project_id: projectId,
+    };
+
+    // Add type filter if provided
+    if (roomTypeFilter) {
+      roomsListPayload.type = roomTypeFilter;
+    }
+
+    socket.emit("rooms list", roomsListPayload);
 
     const handleRoomsList = (data) => {
       const roomsData = data || [];
@@ -115,7 +127,18 @@ const Chat = () => {
       socket.off("error", handleError);
       socket.off("message sent", handleMessageSent);
     };
-  }, [socket, isConnected, userId, conversation?.id]);
+  }, [
+    socket,
+    isConnected,
+    userId,
+    conversation?.id,
+    roomTypeFilter,
+    projectId,
+  ]);
+
+  const handleTabChange = (type) => {
+    setRoomTypeFilter(type);
+  };
 
   useEffect(() => {
     const existingRoom = rooms.find((room) => room.item_id === tripId);
@@ -310,6 +333,7 @@ const Chat = () => {
           rooms={rooms}
           setConversation={handleConversationSelect}
           isConnected={isConnected}
+          onTabChange={handleTabChange}
         />
         <ChatArea
           rooms={rooms}
