@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useChat} from "../../context/ChatContext";
 import ConversationItem from "../ConversationItem/ConversationItem";
 import SearchBar from "../SearchBar/SearchBar";
@@ -13,7 +13,6 @@ import {
   TabList,
   Tab,
 } from "@chakra-ui/react";
-import {MdEdit} from "react-icons/md";
 
 const ConversationList = ({
   rooms = [],
@@ -30,7 +29,7 @@ const ConversationList = ({
     isEditing,
   } = useChat();
 
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(0);
 
   const totalUnreadCount = rooms.reduce((sum, room) => {
     return sum + (room?.unread_message_count || 0);
@@ -58,8 +57,6 @@ const ConversationList = ({
       type = "single";
     } else if (index === 1) {
       type = "group";
-    } else if (index === 2) {
-      type = "invitation";
     }
 
     if (onTabChange) {
@@ -142,18 +139,6 @@ const ConversationList = ({
               py="12px"
               mr="24px">
               Load Messages
-            </Tab>
-            <Tab
-              _selected={{
-                color: "#EF6820",
-                borderBottom: "2px solid #EF6820",
-              }}
-              color="#6B7280"
-              fontWeight="600"
-              fontSize="12px"
-              px="0"
-              py="12px">
-              Invitations
             </Tab>
           </TabList>
         </Tabs>

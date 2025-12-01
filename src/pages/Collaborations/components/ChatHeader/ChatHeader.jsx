@@ -45,7 +45,7 @@ const ChatHeader = ({
           bg="#F79009"
           fontSize="18px"
           justifyContent="center">
-          {to_name?.[0].toUpperCase()}
+          {to_name?.[0]?.toUpperCase()}
         </Box>
         <Box>
           <Flex flexDirection="column" gap="0px">
