@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useRef, useCallback} from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import {ChatProvider} from "../../context/ChatContext";
 import ConversationList from "../ConversationList/ConversationList";
 import ChatArea from "../ChatArea/ChatArea";
@@ -18,22 +18,23 @@ const dedupeRooms = (roomsArray = []) => {
   return Array.from(map.values());
 };
 
+const MIN_ROOMS_LOADING_DURATION = 500;
+
 const Chat = () => {
   const {state: locationState} = useLocation();
   const socket = useSocket();
   const [isAddRoomOpen, setIsAddRoomOpen] = useState(false);
   const {isConnected, connectionError} = useSocketConnection();
   const [rooms, setRooms] = useState([]);
+  const [roomsLoading, setRoomsLoading] = useState(false);
+  const roomsLoadStartRef = useRef(null);
+  const roomsLoadTimeoutRef = useRef(null);
   const [conversation, setConversation] = useState(null);
   const [presence, setPresence] = useState({});
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasProcessedTripId, setHasProcessedTripId] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
   const [roomTypeFilter, setRoomTypeFilter] = useState("group");
-  const lastRequestedRoomsTypeRef = useRef(null);
-  const ignoreRoomsListRef = useRef(false);
-  const roomsListIgnoreTimeoutRef = useRef(null);
-  const expectingRoomsListRef = useRef(false);
   const loginName = useSelector((state) => state.auth.user_data?.login);
   const projectId = useSelector((state) => state.auth.projectId);
 
@@ -44,14 +45,6 @@ const Chat = () => {
   useEffect(() => {
     setHasProcessedTripId(false);
   }, [tripId]);
-
-  useEffect(() => {
-    return () => {
-      if (roomsListIgnoreTimeoutRef.current) {
-        clearTimeout(roomsListIgnoreTimeoutRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (!socket || !userId || !isConnected) return;
@@ -98,147 +91,67 @@ const Chat = () => {
     };
   }, [socket, userId, isConnected, projectId]);
 
-  const emitRoomsList = useCallback(
-    (typeOverride = null) => {
-      if (!socket || !isConnected || !userId) {
-        return;
-      }
-      const effectiveType = typeOverride ?? roomTypeFilter ?? undefined;
-      ignoreRoomsListRef.current = false;
-      if (roomsListIgnoreTimeoutRef.current) {
-        clearTimeout(roomsListIgnoreTimeoutRef.current);
-        roomsListIgnoreTimeoutRef.current = null;
-      }
-      expectingRoomsListRef.current = true;
-      lastRequestedRoomsTypeRef.current = effectiveType;
-      socket.emit("rooms list", {
-        row_id: userId,
-        project_id: projectId,
-        type: effectiveType,
-      });
-    },
-    [socket, isConnected, userId, projectId, roomTypeFilter]
-  );
+  const beginRoomsLoading = () => {
+    roomsLoadStartRef.current = Date.now();
+    setRoomsLoading(true);
+    if (roomsLoadTimeoutRef.current) {
+      clearTimeout(roomsLoadTimeoutRef.current);
+      roomsLoadTimeoutRef.current = null;
+    }
+  };
 
-  const createTripRoom = useCallback(() => {
-    if (
-      !tripId ||
-      !tripName ||
-      !socket ||
-      !userId ||
-      !isConnected ||
-      isInitializing
-    ) {
-      return;
+  const completeRoomsLoading = () => {
+    const startTime = roomsLoadStartRef.current;
+    const elapsed = startTime
+      ? Date.now() - startTime
+      : MIN_ROOMS_LOADING_DURATION;
+    const remaining = Math.max(MIN_ROOMS_LOADING_DURATION - elapsed, 0);
+
+    if (roomsLoadTimeoutRef.current) {
+      clearTimeout(roomsLoadTimeoutRef.current);
+      roomsLoadTimeoutRef.current = null;
     }
 
-    setIsInitializing(true);
-
-    socket.emit(
-      "create room",
-      {
-        name: "",
-        type: "group",
-        row_id: userId,
-        item_id: tripId,
-        from_name: loginName,
-        project_id: projectId,
-        to_name: tripName,
-        attributes: {
-          broker: locationState?.broker,
-          carrier: locationState?.carrier,
-        },
-      },
-      (response) => {
-        if (response && response.room) {
-          setConversation(response.room);
-          setRooms((prevRooms) => [...prevRooms, response.room]);
-          setHasProcessedTripId(true);
-          setIsInitializing(false);
-          // Fetch updated rooms list after creating room to ensure it's in the list
-          emitRoomsList("group");
-        } else if (response && response.error) {
-          console.error("Error creating room:", response.error);
-          setIsInitializing(false);
-          setHasProcessedTripId(false);
-        } else {
-          setIsInitializing(false);
-          setHasProcessedTripId(false);
-        }
-      }
-    );
-  }, [
-    tripId,
-    tripName,
-    socket,
-    userId,
-    isConnected,
-    isInitializing,
-    loginName,
-    projectId,
-    locationState,
-    emitRoomsList,
-  ]);
-
-  // Refs to avoid stale closures
-  const conversationRef = useRef(conversation);
-  const tripIdRef = useRef(tripId);
-  const hasProcessedTripIdRef = useRef(hasProcessedTripId);
-  const isInitializingRef = useRef(isInitializing);
-
-  useEffect(() => {
-    conversationRef.current = conversation;
-  }, [conversation]);
-
-  useEffect(() => {
-    tripIdRef.current = tripId;
-  }, [tripId]);
-
-  useEffect(() => {
-    hasProcessedTripIdRef.current = hasProcessedTripId;
-  }, [hasProcessedTripId]);
-
-  useEffect(() => {
-    isInitializingRef.current = isInitializing;
-  }, [isInitializing]);
+    if (remaining === 0) {
+      setRoomsLoading(false);
+      roomsLoadStartRef.current = null;
+    } else {
+      roomsLoadTimeoutRef.current = setTimeout(() => {
+        setRoomsLoading(false);
+        roomsLoadTimeoutRef.current = null;
+        roomsLoadStartRef.current = null;
+      }, remaining);
+    }
+  };
 
   useEffect(() => {
     if (!socket || !isConnected || !userId) return;
 
-    emitRoomsList();
+    beginRoomsLoading();
+
+    socket.emit("rooms list", {
+      row_id: userId,
+      project_id: projectId,
+      type: roomTypeFilter,
+    });
 
     const handleRoomsList = (data) => {
-      // Only process rooms list events that we explicitly requested
-      // Ignore unsolicited updates (e.g., those emitted after receiving messages)
-      if (!expectingRoomsListRef.current) {
-        return;
-      }
-      expectingRoomsListRef.current = false;
-
-      // Also respect the ignore flag from message sending
-      if (ignoreRoomsListRef.current) {
-        return;
-      }
-
       const roomsData = Array.isArray(data) ? data : [];
-      const currentConversation = conversationRef.current;
-      const currentRoomTypeFilter = roomTypeFilter;
-
       setRooms((prevRooms) => {
         const sanitizedRooms = dedupeRooms(roomsData);
-        if (!currentRoomTypeFilter) {
+        if (!roomTypeFilter) {
           return sanitizedRooms;
         }
 
         const otherRooms = prevRooms.filter(
-          (room) => room.type !== currentRoomTypeFilter
+          (room) => room.type !== roomTypeFilter
         );
 
         const mergedRooms = dedupeRooms([...sanitizedRooms, ...otherRooms]);
 
-        if (currentConversation?.id) {
+        if (conversation?.id) {
           return mergedRooms.map((room) => {
-            if (room.id === currentConversation.id) {
+            if (room.id === conversation.id) {
               return {
                 ...room,
                 unread_message_count: 0,
@@ -250,35 +163,12 @@ const Chat = () => {
 
         return mergedRooms;
       });
-
-      const currentType = lastRequestedRoomsTypeRef.current;
-      const currentTripId = tripIdRef.current;
-      const currentHasProcessedTripId = hasProcessedTripIdRef.current;
-      const currentIsInitializing = isInitializingRef.current;
-
-      if (
-        currentTripId &&
-        currentType === "group" &&
-        socket &&
-        isConnected &&
-        userId
-      ) {
-        const existingTripRoom = roomsData.find(
-          (room) => room.item_id === currentTripId
-        );
-
-        if (existingTripRoom?.id) {
-          setConversation(existingTripRoom);
-          setHasProcessedTripId(true);
-          setIsInitializing(false);
-        } else if (!currentHasProcessedTripId && !currentIsInitializing) {
-          createTripRoom();
-        }
-      }
+      completeRoomsLoading();
     };
 
     const handleError = (error) => {
       console.error("Socket error received:", error);
+      completeRoomsLoading();
     };
 
     const handleMessageSent = (data) => {
@@ -293,6 +183,10 @@ const Chat = () => {
       socket.off("rooms list", handleRoomsList);
       socket.off("error", handleError);
       socket.off("message sent", handleMessageSent);
+      if (roomsLoadTimeoutRef.current) {
+        clearTimeout(roomsLoadTimeoutRef.current);
+        roomsLoadTimeoutRef.current = null;
+      }
     };
   }, [
     socket,
@@ -300,8 +194,7 @@ const Chat = () => {
     userId,
     projectId,
     roomTypeFilter,
-    emitRoomsList,
-    createTripRoom,
+    conversation?.id,
   ]);
 
   const handleTabChange = (type) => {
@@ -316,18 +209,70 @@ const Chat = () => {
   }, [rooms, roomTypeFilter]);
 
   useEffect(() => {
-    if (!tripId || hasProcessedTripId) {
-      return;
-    }
-
     const existingRoom = rooms.find((room) => room.item_id === tripId);
 
-    if (existingRoom?.id) {
+    if (Boolean(existingRoom?.id)) {
       setConversation(existingRoom);
       setHasProcessedTripId(true);
+    } else if (
+      Boolean(tripId && tripName) &&
+      Boolean(socket) &&
+      Boolean(!conversation?.id)
+    ) {
+      setIsInitializing(true);
+      setHasProcessedTripId(true);
+      console.log("locationStatelocationState", {
+        name: "",
+        type: "group",
+        row_id: userId,
+        item_id: tripId,
+        from_name: loginName,
+        project_id: projectId,
+        to_name: tripName,
+        attributes: {
+          broker: locationState?.broker,
+          carrier: locationState?.carrier,
+        },
+      });
+      socket.emit(
+        "create room",
+        {
+          name: "",
+          type: "group",
+          row_id: userId,
+          item_id: tripId,
+          from_name: loginName,
+          project_id: projectId,
+          to_name: tripName,
+          attributes: {
+            broker: locationState?.broker,
+            carrier: locationState?.carrier,
+          },
+        },
+        (response) => {
+          if (response && response.room) {
+            setConversation(response.room);
+            setRooms((prevRooms) => [...prevRooms, response.room]);
+            setIsInitializing(false);
+          } else if (response && response.error) {
+            console.error("Error creating room:", response.error);
+            setIsInitializing(false);
+          }
+        }
+      );
+    } else {
       setIsInitializing(false);
+      setConversation(existingRoom);
     }
-  }, [tripId, rooms, hasProcessedTripId]);
+  }, [
+    rooms.length,
+    socket,
+    userId,
+    isInitializing,
+    loginName,
+    projectId,
+    hasProcessedTripId,
+  ]);
 
   const sendMessage = (content, type = "text", fileInfo = null) => {
     if (!conversation?.id || !loginUser) {
@@ -351,15 +296,6 @@ const Chat = () => {
       messageData.parent_id = replyingTo.id || replyingTo._id;
     }
 
-    if (roomsListIgnoreTimeoutRef.current) {
-      clearTimeout(roomsListIgnoreTimeoutRef.current);
-    }
-    ignoreRoomsListRef.current = true;
-    roomsListIgnoreTimeoutRef.current = setTimeout(() => {
-      ignoreRoomsListRef.current = false;
-      roomsListIgnoreTimeoutRef.current = null;
-    }, 1500);
-
     socket.emit("chat message", messageData, (response) => {
       if (response && response.error) {
         console.error("❌ Server error response:", response.error);
@@ -380,28 +316,22 @@ const Chat = () => {
   };
 
   const handleConversationSelect = (selectedConversation) => {
-    if (!selectedConversation || !selectedConversation.id) {
-      return;
-    }
-
-    // Set the conversation - this will trigger MessagesList to load messages
     setConversation(selectedConversation);
-
-    // Update rooms list to mark this room as read
-    setRooms((prevRooms) => {
-      const roomIndex = prevRooms.findIndex(
-        (room) => room.id === selectedConversation.id
-      );
-      if (roomIndex !== -1) {
-        const updatedRooms = [...prevRooms];
-        updatedRooms[roomIndex] = {
-          ...updatedRooms[roomIndex],
-          unread_message_count: 0,
-        };
-        return updatedRooms;
-      }
-      return prevRooms;
-    });
+    if (selectedConversation && selectedConversation.id) {
+      setRooms((prevRooms) => {
+        const roomIndex = prevRooms.findIndex(
+          (room) => room.id === selectedConversation.id
+        );
+        if (roomIndex !== -1) {
+          const updatedRooms = [...prevRooms];
+          updatedRooms[roomIndex] = {
+            ...updatedRooms[roomIndex],
+          };
+          return updatedRooms;
+        }
+        return prevRooms;
+      });
+    }
   };
 
   useEffect(() => {
@@ -484,14 +414,7 @@ const Chat = () => {
     } else {
       setRoomTypeFilter("single");
     }
-  }, [tripId]);
-
-  useEffect(() => {
-    if (!tripId || !socket || !isConnected || !userId) {
-      return;
-    }
-    emitRoomsList("group");
-  }, [tripId, socket, isConnected, userId, projectId, emitRoomsList]);
+  }, []);
 
   return (
     <ChatProvider>
@@ -502,6 +425,7 @@ const Chat = () => {
           setConversation={handleConversationSelect}
           isConnected={isConnected}
           onTabChange={handleTabChange}
+          isLoading={roomsLoading}
         />
         <ChatArea
           rooms={rooms}
