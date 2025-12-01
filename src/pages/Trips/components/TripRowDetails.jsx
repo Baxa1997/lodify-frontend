@@ -472,7 +472,7 @@ const TripRowDetails = ({
 
     return `${baseHeight + minRows * rowHeight + padding}px`;
   };
-  console.log("tripDatatripData", tripData);
+
   return (
     <Box
       ref={tripRowDetailsRef}
@@ -514,22 +514,24 @@ const TripRowDetails = ({
               bg="white">
               <CTableHead zIndex={2} borderRadius="8px 8px 0 0" bg="#fff">
                 <CTableRow>
-                  {getTableHeads(item?.type?.[0])?.map((head) => (
-                    <CTableTh
-                      zIndex={-1}
-                      maxW="334px"
-                      width="334px"
-                      key={head.index}
-                      bg="#fff"
-                      py="6px"
-                      px="20px"
-                      fontSize="16px"
-                      fontWeight="600"
-                      color="#181d27"
-                      borderBottom="1px solid #e5e7eb">
-                      {head.label}
-                    </CTableTh>
-                  ))}
+                  {getTableHeads(item?.type?.[0])
+                    ?.filter((head) => Boolean(!isBroker) && index !== 5)
+                    ?.map((head) => (
+                      <CTableTh
+                        zIndex={-1}
+                        maxW="334px"
+                        width="334px"
+                        key={head.index}
+                        bg="#fff"
+                        py="6px"
+                        px="20px"
+                        fontSize="16px"
+                        fontWeight="600"
+                        color="#181d27"
+                        borderBottom="1px solid #e5e7eb">
+                        {head.label}
+                      </CTableTh>
+                    ))}
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -804,19 +806,21 @@ const TripRowDetails = ({
                     })()}
                   </CTableTd>
 
-                  <CTableTd py="12px" px="20px">
-                    <Flex>
-                      <Text>
-                        {item?.drivers_1?.first_name ?? " "}{" "}
-                        {item?.drivers_1?.last_name ?? " "}
-                      </Text>
-                      <Text>
-                        {" "}
-                        {item?.drivers_2?.first_name ?? " "}{" "}
-                        {item?.drivers_2?.last_name ?? " "}
-                      </Text>
-                    </Flex>
-                  </CTableTd>
+                  {Boolean(!isBroker) && (
+                    <CTableTd py="12px" px="20px">
+                      <Flex>
+                        <Text>
+                          {item?.drivers_1?.first_name ?? " "}{" "}
+                          {item?.drivers_1?.last_name ?? " "}
+                        </Text>
+                        <Text>
+                          {" "}
+                          {item?.drivers_2?.first_name ?? " "}{" "}
+                          {item?.drivers_2?.last_name ?? " "}
+                        </Text>
+                      </Flex>
+                    </CTableTd>
+                  )}
                 </CTableRow>
               </CTableBody>
             </CTable>
