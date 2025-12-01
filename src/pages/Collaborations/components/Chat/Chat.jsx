@@ -18,23 +18,19 @@ const dedupeRooms = (roomsArray = []) => {
   return Array.from(map.values());
 };
 
-const MIN_ROOMS_LOADING_DURATION = 500;
-
 const Chat = () => {
   const {state: locationState} = useLocation();
   const socket = useSocket();
   const [isAddRoomOpen, setIsAddRoomOpen] = useState(false);
   const {isConnected, connectionError} = useSocketConnection();
   const [rooms, setRooms] = useState([]);
-  const [roomsLoading, setRoomsLoading] = useState(false);
-  const roomsLoadStartRef = useRef(null);
-  const roomsLoadTimeoutRef = useRef(null);
   const [conversation, setConversation] = useState(null);
   const [presence, setPresence] = useState({});
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasProcessedTripId, setHasProcessedTripId] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
   const [roomTypeFilter, setRoomTypeFilter] = useState("group");
+  const expectingRoomsRef = useRef(false);
   const loginName = useSelector((state) => state.auth.user_data?.login);
   const projectId = useSelector((state) => state.auth.projectId);
 
@@ -91,43 +87,11 @@ const Chat = () => {
     };
   }, [socket, userId, isConnected, projectId]);
 
-  const beginRoomsLoading = () => {
-    roomsLoadStartRef.current = Date.now();
-    setRoomsLoading(true);
-    if (roomsLoadTimeoutRef.current) {
-      clearTimeout(roomsLoadTimeoutRef.current);
-      roomsLoadTimeoutRef.current = null;
-    }
-  };
-
-  const completeRoomsLoading = () => {
-    const startTime = roomsLoadStartRef.current;
-    const elapsed = startTime
-      ? Date.now() - startTime
-      : MIN_ROOMS_LOADING_DURATION;
-    const remaining = Math.max(MIN_ROOMS_LOADING_DURATION - elapsed, 0);
-
-    if (roomsLoadTimeoutRef.current) {
-      clearTimeout(roomsLoadTimeoutRef.current);
-      roomsLoadTimeoutRef.current = null;
-    }
-
-    if (remaining === 0) {
-      setRoomsLoading(false);
-      roomsLoadStartRef.current = null;
-    } else {
-      roomsLoadTimeoutRef.current = setTimeout(() => {
-        setRoomsLoading(false);
-        roomsLoadTimeoutRef.current = null;
-        roomsLoadStartRef.current = null;
-      }, remaining);
-    }
-  };
-
   useEffect(() => {
     if (!socket || !isConnected || !userId) return;
 
-    beginRoomsLoading();
+    // Mark that we expect the next "rooms list" event to be a response
+    expectingRoomsRef.current = true;
 
     socket.emit("rooms list", {
       row_id: userId,
@@ -136,6 +100,11 @@ const Chat = () => {
     });
 
     const handleRoomsList = (data) => {
+      if (!expectingRoomsRef.current) {
+        return;
+      }
+      expectingRoomsRef.current = false;
+
       const roomsData = Array.isArray(data) ? data : [];
       setRooms((prevRooms) => {
         const sanitizedRooms = dedupeRooms(roomsData);
@@ -163,12 +132,10 @@ const Chat = () => {
 
         return mergedRooms;
       });
-      completeRoomsLoading();
     };
 
     const handleError = (error) => {
       console.error("Socket error received:", error);
-      completeRoomsLoading();
     };
 
     const handleMessageSent = (data) => {
@@ -183,19 +150,8 @@ const Chat = () => {
       socket.off("rooms list", handleRoomsList);
       socket.off("error", handleError);
       socket.off("message sent", handleMessageSent);
-      if (roomsLoadTimeoutRef.current) {
-        clearTimeout(roomsLoadTimeoutRef.current);
-        roomsLoadTimeoutRef.current = null;
-      }
     };
-  }, [
-    socket,
-    isConnected,
-    userId,
-    projectId,
-    roomTypeFilter,
-    conversation?.id,
-  ]);
+  }, [socket, isConnected, userId, projectId, roomTypeFilter]);
 
   const handleTabChange = (type) => {
     setRoomTypeFilter(type);
@@ -221,19 +177,7 @@ const Chat = () => {
     ) {
       setIsInitializing(true);
       setHasProcessedTripId(true);
-      console.log("locationStatelocationState", {
-        name: "",
-        type: "group",
-        row_id: userId,
-        item_id: tripId,
-        from_name: loginName,
-        project_id: projectId,
-        to_name: tripName,
-        attributes: {
-          broker: locationState?.broker,
-          carrier: locationState?.carrier,
-        },
-      });
+
       socket.emit(
         "create room",
         {
@@ -425,7 +369,6 @@ const Chat = () => {
           setConversation={handleConversationSelect}
           isConnected={isConnected}
           onTabChange={handleTabChange}
-          isLoading={roomsLoading}
         />
         <ChatArea
           rooms={rooms}
