@@ -221,7 +221,19 @@ const Chat = () => {
     ) {
       setIsInitializing(true);
       setHasProcessedTripId(true);
-
+      console.log("locationStatelocationState", {
+        name: "",
+        type: "group",
+        row_id: userId,
+        item_id: tripId,
+        from_name: loginName,
+        project_id: projectId,
+        to_name: tripName,
+        attributes: {
+          broker: locationState?.broker,
+          carrier: locationState?.carrier,
+        },
+      });
       socket.emit(
         "create room",
         {
@@ -233,7 +245,8 @@ const Chat = () => {
           project_id: projectId,
           to_name: tripName,
           attributes: {
-            trip_id: tripId,
+            broker: locationState?.broker,
+            carrier: locationState?.carrier,
           },
         },
         (response) => {

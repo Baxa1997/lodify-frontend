@@ -452,6 +452,8 @@ function TransitTab({tripType = "", isActive = true}) {
                                 tripId: trip.guid,
                                 tripName: trip.id,
                                 tab: 1,
+                                broker: trip?.broker_user,
+                                carrier: trip?.carrier,
                               },
                             });
                           }}

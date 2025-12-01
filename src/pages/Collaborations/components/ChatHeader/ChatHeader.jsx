@@ -3,6 +3,7 @@ import {Flex, Box, Text, Button} from "@chakra-ui/react";
 import {format} from "date-fns";
 import {ChevronLeftIcon} from "@chakra-ui/icons";
 import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
 
 const ChatHeader = ({
   conversation,
@@ -10,9 +11,12 @@ const ChatHeader = ({
   presence = {},
   setConversation = () => {},
 }) => {
+  const clientType = useSelector((state) => state.auth.clientType);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const navigate = useNavigate();
-  const {name, to_name, type, username, avatar, isGroup, item_id} =
-    conversation;
+  const {to_name, type, username, item_id, attributes} = conversation;
+  const broker = attributes?.broker;
+  const carrier = attributes?.carrier;
 
   const activeLast = useMemo(() => {
     const userPresence = presence[conversation?.to_row_id];
@@ -36,7 +40,7 @@ const ChatHeader = ({
       });
     }
   };
-
+  console.log("carriercarrier", carrier);
   return (
     <Flex p="10px 8px" alignItems="center" justifyContent="space-between">
       <Flex gap="12px" alignItems="center">
@@ -67,7 +71,11 @@ const ChatHeader = ({
             flexDirection="column"
             gap="0px">
             <Text fontSize="16px" fontWeight="600" color="#181D27">
-              {to_name}
+              {type === "group"
+                ? isBroker
+                  ? `${carrier?.legal_name ?? ""} `
+                  : `${broker?.first_name ?? ""} ${broker?.last_name ?? ""}`
+                : to_name}
             </Text>
             <Flex alignItems="center" gap="4px" h="20px" borderRadius="4px">
               <Text fontSize="14px" fontWeight="400" color={"#535862"}>

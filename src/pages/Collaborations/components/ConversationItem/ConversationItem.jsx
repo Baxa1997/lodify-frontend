@@ -3,6 +3,7 @@ import styles from "./ConversationItem.module.scss";
 import {checkValidUrl} from "@utils/checkValidUrl";
 import {calculateTimeHoursDifferenceInTimeZone} from "@utils/dateFormats";
 import {useSocket} from "@context/SocketProvider";
+import {useSelector} from "react-redux";
 
 const ConversationItem = ({conversation, isSelected, onClick}) => {
   const {
@@ -14,9 +15,14 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
     type,
     last_message_created_at,
     unread_message_count = 0,
+    attributes,
   } = conversation;
+  const broker = attributes?.broker;
+  const carrier = attributes?.carrier;
 
   const socket = useSocket();
+  const clientType = useSelector((state) => state.auth.clientType);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const getMessagePreview = () => {
     if (checkValidUrl(last_message)) {
       return "📎 File";
@@ -66,7 +72,13 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
       <div className={styles.content}>
         <div className={styles.header}>
           <div className={styles.nameContainer}>
-            <span className={styles.name}>{to_name || "Unknown"}</span>
+            <span className={styles.name}>
+              {type === "group"
+                ? isBroker
+                  ? `${carrier?.legal_name ?? ""} `
+                  : `${broker?.first_name ?? ""} ${broker?.last_name ?? ""}`
+                : to_name}
+            </span>
           </div>
           {unread_message_count > 0 && (
             <div className={styles.unreadBadge}>

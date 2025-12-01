@@ -506,6 +506,8 @@ function HistoryTab({tripType = ""}) {
                                 tripId: trip.guid,
                                 tripName: trip.id,
                                 tab: 1,
+                                broker: trip?.broker_user,
+                                carrier: trip?.carrier,
                               },
                             });
                           }}
