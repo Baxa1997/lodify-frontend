@@ -88,7 +88,6 @@ const TrailersTab = () => {
   };
 
   const getVerificationStatusColor = (status) => {
-    // Handle array of strings
     if (Array.isArray(status)) {
       const statusValue = status[0]?.toLowerCase();
       switch (statusValue) {
@@ -249,19 +248,15 @@ const TrailersTab = () => {
                   cursor: "pointer",
                 }}
                 onClick={() => handleRowClick(asset.id || asset.guid)}>
-                <CTableTd>
-                  {asset.unit_number || asset.unitNumber || asset.name || "N/A"}
-                </CTableTd>
+                <CTableTd>{asset.vehicle_number || "N/A"}</CTableTd>
                 <CTableTd>{asset.type || asset.asset_type || "N/A"}</CTableTd>
                 <CTableTd>{asset.make || "N/A"}</CTableTd>
                 <CTableTd>{asset.fuel || asset.fuel_type || "N/A"}</CTableTd>
                 <CTableTd>
                   {asset.model_year || asset.modelYear || asset.year || "N/A"}
                 </CTableTd>
-                <CTableTd>
-                  {asset.license_plate || asset.licensePlate || "N/A"}
-                </CTableTd>
-                <CTableTd>{asset.vin || "N/A"}</CTableTd>
+                <CTableTd>{asset.licence_plate || "N/A"}</CTableTd>
+                <CTableTd>{asset.vin_number || "N/A"}</CTableTd>
                 <CTableTd>
                   <Badge
                     colorScheme={getVerificationStatusColor(
