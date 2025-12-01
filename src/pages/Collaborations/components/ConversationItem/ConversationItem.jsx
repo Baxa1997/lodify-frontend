@@ -76,7 +76,7 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
               {type === "group"
                 ? isBroker
                   ? `${carrier?.legal_name ?? ""} `
-                  : `${broker?.first_name ?? ""} ${broker?.last_name ?? ""}`
+                  : `${broker?.legal_name ?? ""} `
                 : to_name}
             </span>
           </div>

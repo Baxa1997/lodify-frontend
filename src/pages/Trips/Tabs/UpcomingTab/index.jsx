@@ -488,7 +488,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                                 tripId: trip.guid,
                                 tripName: trip.id,
                                 tab: 1,
-                                broker: trip?.broker_user,
+                                broker: trip?.invited_by,
                                 carrier: trip?.carrier,
                               },
                             });

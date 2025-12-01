@@ -70,24 +70,34 @@ const ChatHeader = ({
             onClick={goTripsPage}
             flexDirection="column"
             gap="0px">
-            <Text fontSize="16px" fontWeight="600" color="#181D27">
-              {type === "group"
-                ? isBroker
-                  ? `${carrier?.legal_name ?? ""} `
-                  : `${broker?.first_name ?? ""} ${broker?.last_name ?? ""}`
-                : to_name}
-            </Text>
-            <Flex alignItems="center" gap="4px" h="20px" borderRadius="4px">
-              <Text fontSize="14px" fontWeight="400" color={"#535862"}>
-                {activeLast?.status === "online"
-                  ? "online"
-                  : activeLast?.last_seen_at
-                  ? `last seen ${format(
-                      new Date(activeLast.last_seen_at),
-                      "MM/dd/yyyy HH:mm"
-                    )}`
-                  : "offline"}
+            {type !== "group" ? (
+              <Text fontSize="16px" fontWeight="600" color="#181D27">
+                {to_name}
               </Text>
+            ) : (
+              <Text fontSize="16px" fontWeight="600" color="#181D27">
+                Load {to_name}
+              </Text>
+            )}
+            <Flex alignItems="center" gap="4px" h="20px" borderRadius="4px">
+              {type !== "group" ? (
+                <Text fontSize="14px" fontWeight="400" color={"#535862"}>
+                  {activeLast?.status === "online"
+                    ? "online"
+                    : activeLast?.last_seen_at
+                    ? `last seen ${format(
+                        new Date(activeLast.last_seen_at),
+                        "MM/dd/yyyy HH:mm"
+                      )}`
+                    : "offline"}
+                </Text>
+              ) : (
+                <Text fontSize="14px" fontWeight="400" color={"#535862"}>
+                  {isBroker
+                    ? `${carrier?.legal_name ?? ""} `
+                    : `${broker?.legal_name ?? ""} `}
+                </Text>
+              )}
             </Flex>
           </Flex>
           <Text fontSize="14px" fontWeight="400" color="#535862">
