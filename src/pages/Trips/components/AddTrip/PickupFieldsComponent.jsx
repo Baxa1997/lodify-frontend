@@ -89,7 +89,7 @@ function PickupFieldsComponent({control, field, index}) {
         )}
       </Flex>
 
-      <StopAssignments control={control} index={index} />
+      {Boolean(isPickup) && <StopAssignments control={control} index={index} />}
 
       <Flex mt="24px" justifyContent="space-between">
         <Box width={"65%"} borderRight="1px solid #D5D7DA" pr="20px">

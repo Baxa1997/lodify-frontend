@@ -232,6 +232,9 @@ const Chat = () => {
           from_name: loginName,
           project_id: projectId,
           to_name: tripName,
+          attributes: {
+            trip_id: tripId,
+          },
         },
         (response) => {
           if (response && response.room) {
