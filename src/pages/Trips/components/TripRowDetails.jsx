@@ -457,6 +457,11 @@ const TripRowDetails = ({
       label: "ETA",
       key: "eta",
     },
+    {
+      index: 5,
+      label: "Driver 1",
+      key: "driver",
+    },
   ];
 
   const getMinHeight = () => {
@@ -467,7 +472,7 @@ const TripRowDetails = ({
 
     return `${baseHeight + minRows * rowHeight + padding}px`;
   };
-
+  console.log("tripDatatripData", tripData);
   return (
     <Box
       ref={tripRowDetailsRef}
@@ -731,9 +736,6 @@ const TripRowDetails = ({
                   </CTableTd>
 
                   <CTableTd py="12px" px="20px">
-                    {/* <Text fontSize="14px" color="#181d27">
-                      {formatScheduleDate(item?.arrive_by)}
-                    </Text> */}
                     {(() => {
                       const expiredTime = calculateExpiredTime(item?.arrive_by);
                       const isExpired = expiredTime > 0;
@@ -800,6 +802,20 @@ const TripRowDetails = ({
                         </Tooltip>
                       );
                     })()}
+                  </CTableTd>
+
+                  <CTableTd py="12px" px="20px">
+                    <Flex>
+                      <Text>
+                        {item?.drivers_1?.first_name ?? " "}{" "}
+                        {item?.drivers_1?.last_name ?? " "}
+                      </Text>
+                      <Text>
+                        {" "}
+                        {item?.drivers_2?.first_name ?? " "}{" "}
+                        {item?.drivers_2?.last_name ?? " "}
+                      </Text>
+                    </Flex>
                   </CTableTd>
                 </CTableRow>
               </CTableBody>

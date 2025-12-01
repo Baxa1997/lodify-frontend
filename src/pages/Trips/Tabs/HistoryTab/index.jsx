@@ -168,7 +168,7 @@ function HistoryTab({tripType = ""}) {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}>
-          <CTableHead zIndex={1}>
+          <CTableHead zIndex={8}>
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) =>
