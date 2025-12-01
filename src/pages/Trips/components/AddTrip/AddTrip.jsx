@@ -47,7 +47,6 @@ function AddTrip({tripData = {}}) {
   });
 
   const totalRates = watch("accessorials");
-  console.log("watchwatch", watch());
 
   const {data: rocFileData = {}, isLoading: isRocFileLoading} = useQuery({
     queryKey: ["TRIP_BY_ID", csvFile],
@@ -84,11 +83,65 @@ function AddTrip({tripData = {}}) {
     }
   }, [rocFileData]);
 
+  const assignDriversToPickups = async (tripId, pickups) => {
+    if (!pickups || !Array.isArray(pickups) || !tripId) return;
+
+    const assignmentPromises = [];
+
+    for (const pickup of pickups) {
+      const driver1Id =
+        typeof pickup.drivers_id === "object" && pickup.drivers_id?.guid
+          ? pickup.drivers_id.guid
+          : pickup.drivers_id;
+
+      if (driver1Id) {
+        assignmentPromises.push(
+          tripsService.updatePickup({
+            data: {
+              drivers_id: driver1Id,
+              guid: tripId,
+            },
+          })
+        );
+      }
+
+      const driver2Id =
+        typeof pickup.drivers_id_2 === "object" && pickup.drivers_id_2?.guid
+          ? pickup.drivers_id_2.guid
+          : pickup.drivers_id_2;
+
+      if (driver2Id) {
+        assignmentPromises.push(
+          tripsService.updatePickup({
+            data: {
+              drivers_id_2: driver2Id,
+              guid: tripId,
+            },
+          })
+        );
+      }
+    }
+
+    if (assignmentPromises.length > 0) {
+      try {
+        await Promise.all(assignmentPromises);
+      } catch (error) {
+        console.error("Error assigning drivers to pickups:", error);
+      }
+    }
+  };
+
   const createTripMutation = useMutation({
     mutationFn: (data) => {
       return tripsService.createTrip(data);
     },
-    onSuccess: (response) => {
+    onSuccess: async (response, variables) => {
+      const tripId =
+        response?.data?.response?.[0]?.guid || response?.guid || id;
+      const pickups = variables?.data?.object_data?.trip_pickups || [];
+
+      await assignDriversToPickups(tripId, pickups);
+
       toast({
         title: "Trip Created Successfully",
         description: "The trip has been created successfully.",
@@ -116,7 +169,11 @@ function AddTrip({tripData = {}}) {
     mutationFn: (data) => {
       return tripsService.updateTrip(id, data);
     },
-    onSuccess: (response) => {
+    onSuccess: async (response, variables) => {
+      const pickups = variables?.data?.object_data?.trip_pickups || [];
+
+      await assignDriversToPickups(id, pickups);
+
       toast({
         title: "Trip Updated Successfully",
         description: "The trip has been updated successfully.",

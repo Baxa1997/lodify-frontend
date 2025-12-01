@@ -22,17 +22,14 @@ function HFSelect({
   const isLoadingRef = useRef(false);
 
   const getOptions = async () => {
-    // If options already exist, don't make a request
     if (Internaloptions.length > 0) {
       return;
     }
 
-    // Prevent duplicate requests: only fetch if not already loading
     if (!table_slug || isLoadingRef.current) {
       return;
     }
 
-    // Set loading flag immediately to prevent concurrent calls
     isLoadingRef.current = true;
 
     try {
@@ -56,7 +53,6 @@ function HFSelect({
     if (table_slug && (id || params)) {
       getOptions();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, JSON.stringify(params), table_slug]);
 
   return (

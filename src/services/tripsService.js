@@ -39,6 +39,7 @@ const tripsService = {
   assignCarrier: (data) =>
     httpRequest.post("v2/invoke_function/lodify-gateway/trips/reassign", data),
   reportDelay: (data) => httpRequest.post("v2/items/trip_logs", data),
+  updatePickup: (data) => httpRequest.put("v2/items/pickup", data),
 };
 
 export default tripsService;

@@ -42,7 +42,19 @@ export const transformTripData = (data) => {
     lodify_fees_id: data.lodify_fee?.guid || data.lodify_fees_id,
     service_fee: data.lodify_fee?.amount || data.service_fee,
 
-    trip_pickups: Array.isArray(data.pickups) ? data.pickups : [],
+    trip_pickups: Array.isArray(data.pickups)
+      ? data.pickups.map((pickup) => ({
+          ...pickup,
+          drivers_id:
+            pickup.drivers_1?.guid ||
+            pickup.drivers_id ||
+            (typeof pickup.drivers_1 === "string" ? pickup.drivers_1 : null),
+          drivers_id_2:
+            pickup.drivers_2?.guid ||
+            pickup.drivers_id_2 ||
+            (typeof pickup.drivers_2 === "string" ? pickup.drivers_2 : null),
+        }))
+      : [],
 
     accessorials: Array.isArray(data.accessorials) ? data.accessorials : [],
   };
