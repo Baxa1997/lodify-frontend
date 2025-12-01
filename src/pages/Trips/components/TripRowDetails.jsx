@@ -149,7 +149,7 @@ const StickyButtons = ({
       const paddingValue = `${buttonHeight}px`;
       if (prevPadding !== paddingValue) {
         scrollEl.style.paddingBottom = paddingValue;
-        // Also add padding to parent container to prevent content from being hidden
+
         if (parentEl.style.paddingBottom !== paddingValue) {
           parentEl.style.paddingBottom = paddingValue;
         }
@@ -285,6 +285,7 @@ const StickyButtons = ({
                   state: {
                     tripId: trip?.guid,
                     tripName: trip?.id,
+                    tab: 1,
                   },
                 });
               }}

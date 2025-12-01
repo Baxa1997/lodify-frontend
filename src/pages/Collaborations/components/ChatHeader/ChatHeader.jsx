@@ -2,6 +2,7 @@ import React, {useMemo} from "react";
 import {Flex, Box, Text, Button} from "@chakra-ui/react";
 import {format} from "date-fns";
 import {ChevronLeftIcon} from "@chakra-ui/icons";
+import {useNavigate} from "react-router-dom";
 
 const ChatHeader = ({
   conversation,
@@ -9,7 +10,9 @@ const ChatHeader = ({
   presence = {},
   setConversation = () => {},
 }) => {
-  const {name, to_name, type, username, avatar, isGroup} = conversation;
+  const navigate = useNavigate();
+  const {name, to_name, type, username, avatar, isGroup, item_id} =
+    conversation;
 
   const activeLast = useMemo(() => {
     const userPresence = presence[conversation?.to_row_id];
@@ -23,6 +26,16 @@ const ChatHeader = ({
       };
     }
   }, [presence, conversation?.to_row_id]);
+
+  const goTripsPage = () => {
+    if (type === "group") {
+      navigate(`/admin/trips/${item_id}`, {
+        state: {
+          tab: 1,
+        },
+      });
+    }
+  };
 
   return (
     <Flex p="10px 8px" alignItems="center" justifyContent="space-between">
@@ -48,7 +61,11 @@ const ChatHeader = ({
           {to_name?.[0]?.toUpperCase()}
         </Box>
         <Box>
-          <Flex flexDirection="column" gap="0px">
+          <Flex
+            cursor="pointer"
+            onClick={goTripsPage}
+            flexDirection="column"
+            gap="0px">
             <Text fontSize="16px" fontWeight="600" color="#181D27">
               {to_name}
             </Text>

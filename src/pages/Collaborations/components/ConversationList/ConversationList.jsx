@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useChat} from "../../context/ChatContext";
 import ConversationItem from "../ConversationItem/ConversationItem";
 import SearchBar from "../SearchBar/SearchBar";
@@ -12,7 +12,9 @@ import {
   Tabs,
   TabList,
   Tab,
+  Spinner,
 } from "@chakra-ui/react";
+import {useLocation} from "react-router-dom";
 
 const ConversationList = ({
   rooms = [],
@@ -20,6 +22,7 @@ const ConversationList = ({
   isConnected,
   setIsAddRoomOpen = () => {},
   onTabChange = () => {},
+  isLoading = false,
 }) => {
   const {
     selectedConversationId,
@@ -30,6 +33,12 @@ const ConversationList = ({
   } = useChat();
 
   const [activeTab, setActiveTab] = useState(0);
+  const {state: locationState} = useLocation();
+  useEffect(() => {
+    if (locationState?.tab) {
+      setActiveTab(locationState?.tab);
+    }
+  }, [locationState?.tab]);
 
   const totalUnreadCount = rooms.reduce((sum, room) => {
     return sum + (room?.unread_message_count || 0);
@@ -144,35 +153,50 @@ const ConversationList = ({
         </Tabs>
       </Box>
 
-      <div className={styles.conversations}>
-        {filteredRooms?.length > 0 ? (
-          filteredRooms.map((conversation, index) => (
-            <ConversationItem
-              key={conversation.id}
-              conversation={conversation}
-              isSelected={conversation.id === selectedConversationId}
-              onClick={() => {
-                selectConversation(conversation.id);
-                setConversation(conversation);
-              }}
-              isEditing={isEditing}
-              isConnected={isConnected}
-            />
-          ))
-        ) : (
-          <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>💬</div>
-            <p className={styles.emptyMessage}>
-              {searchQuery ? "No chats found" : "No chats yet"}
-            </p>
-            <p className={styles.emptySubMessage}>
-              {searchQuery
-                ? "Try a different search term"
-                : "Start a new conversation"}
-            </p>
-          </div>
-        )}
-      </div>
+      {isLoading ? (
+        <Flex
+          className={styles.conversations}
+          align="center"
+          justify="center"
+          direction="column"
+          gap="8px"
+          color="#6B7280">
+          <Spinner size="md" color="#EF6820" thickness="4px" />
+          <Text fontWeight="500" fontSize="14px">
+            Refreshing conversations...
+          </Text>
+        </Flex>
+      ) : (
+        <div className={styles.conversations}>
+          {filteredRooms?.length > 0 ? (
+            filteredRooms.map((conversation, index) => (
+              <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                isSelected={conversation.id === selectedConversationId}
+                onClick={() => {
+                  selectConversation(conversation.id);
+                  setConversation(conversation);
+                }}
+                isEditing={isEditing}
+                isConnected={isConnected}
+              />
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>💬</div>
+              <p className={styles.emptyMessage}>
+                {searchQuery ? "No chats found" : "No chats yet"}
+              </p>
+              <p className={styles.emptySubMessage}>
+                {searchQuery
+                  ? "Try a different search term"
+                  : "Start a new conversation"}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

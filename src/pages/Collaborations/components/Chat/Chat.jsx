@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import {ChatProvider} from "../../context/ChatContext";
 import ConversationList from "../ConversationList/ConversationList";
 import ChatArea from "../ChatArea/ChatArea";
@@ -8,18 +8,33 @@ import {useSocket, useSocketConnection} from "@context/SocketProvider";
 import AddRoom from "../AddRoom";
 import {useLocation} from "react-router-dom";
 
+const dedupeRooms = (roomsArray = []) => {
+  const map = new Map();
+  roomsArray.forEach((room) => {
+    if (room?.id) {
+      map.set(room.id, room);
+    }
+  });
+  return Array.from(map.values());
+};
+
+const MIN_ROOMS_LOADING_DURATION = 500;
+
 const Chat = () => {
   const {state: locationState} = useLocation();
   const socket = useSocket();
   const [isAddRoomOpen, setIsAddRoomOpen] = useState(false);
   const {isConnected, connectionError} = useSocketConnection();
   const [rooms, setRooms] = useState([]);
+  const [roomsLoading, setRoomsLoading] = useState(false);
+  const roomsLoadStartRef = useRef(null);
+  const roomsLoadTimeoutRef = useRef(null);
   const [conversation, setConversation] = useState(null);
   const [presence, setPresence] = useState({});
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasProcessedTripId, setHasProcessedTripId] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
-  const [roomTypeFilter, setRoomTypeFilter] = useState(null);
+  const [roomTypeFilter, setRoomTypeFilter] = useState("group");
   const loginName = useSelector((state) => state.auth.user_data?.login);
   const projectId = useSelector((state) => state.auth.projectId);
 
@@ -27,7 +42,6 @@ const Chat = () => {
   const loginUser = useSelector((state) => state.auth.user_data?.login);
   const tripId = locationState?.tripId;
   const tripName = locationState?.tripName;
-
   useEffect(() => {
     setHasProcessedTripId(false);
   }, [tripId]);
@@ -75,42 +89,86 @@ const Chat = () => {
       socket.off("disconnect", handleSocketDisconnect);
       cleanup();
     };
-  }, [socket, userId, isConnected]);
+  }, [socket, userId, isConnected, projectId]);
+
+  const beginRoomsLoading = () => {
+    roomsLoadStartRef.current = Date.now();
+    setRoomsLoading(true);
+    if (roomsLoadTimeoutRef.current) {
+      clearTimeout(roomsLoadTimeoutRef.current);
+      roomsLoadTimeoutRef.current = null;
+    }
+  };
+
+  const completeRoomsLoading = () => {
+    const startTime = roomsLoadStartRef.current;
+    const elapsed = startTime
+      ? Date.now() - startTime
+      : MIN_ROOMS_LOADING_DURATION;
+    const remaining = Math.max(MIN_ROOMS_LOADING_DURATION - elapsed, 0);
+
+    if (roomsLoadTimeoutRef.current) {
+      clearTimeout(roomsLoadTimeoutRef.current);
+      roomsLoadTimeoutRef.current = null;
+    }
+
+    if (remaining === 0) {
+      setRoomsLoading(false);
+      roomsLoadStartRef.current = null;
+    } else {
+      roomsLoadTimeoutRef.current = setTimeout(() => {
+        setRoomsLoading(false);
+        roomsLoadTimeoutRef.current = null;
+        roomsLoadStartRef.current = null;
+      }, remaining);
+    }
+  };
 
   useEffect(() => {
     if (!socket || !isConnected || !userId) return;
 
-    const roomsListPayload = {
+    beginRoomsLoading();
+
+    socket.emit("rooms list", {
       row_id: userId,
       project_id: projectId,
-    };
-
-    if (roomTypeFilter) {
-      roomsListPayload.type = roomTypeFilter;
-    }
-
-    socket.emit("rooms list", roomsListPayload);
+      type: roomTypeFilter,
+    });
 
     const handleRoomsList = (data) => {
-      const roomsData = data || [];
-      if (conversation?.id) {
-        const updatedRooms = roomsData.map((room) => {
-          if (room.id === conversation.id) {
-            return {
-              ...room,
-              unread_message_count: 0,
-            };
-          }
-          return room;
-        });
-        setRooms(updatedRooms);
-      } else {
-        setRooms(roomsData);
-      }
+      const roomsData = Array.isArray(data) ? data : [];
+      setRooms((prevRooms) => {
+        const sanitizedRooms = dedupeRooms(roomsData);
+        if (!roomTypeFilter) {
+          return sanitizedRooms;
+        }
+
+        const otherRooms = prevRooms.filter(
+          (room) => room.type !== roomTypeFilter
+        );
+
+        const mergedRooms = dedupeRooms([...sanitizedRooms, ...otherRooms]);
+
+        if (conversation?.id) {
+          return mergedRooms.map((room) => {
+            if (room.id === conversation.id) {
+              return {
+                ...room,
+                unread_message_count: 0,
+              };
+            }
+            return room;
+          });
+        }
+
+        return mergedRooms;
+      });
+      completeRoomsLoading();
     };
 
     const handleError = (error) => {
       console.error("Socket error received:", error);
+      completeRoomsLoading();
     };
 
     const handleMessageSent = (data) => {
@@ -125,19 +183,30 @@ const Chat = () => {
       socket.off("rooms list", handleRoomsList);
       socket.off("error", handleError);
       socket.off("message sent", handleMessageSent);
+      if (roomsLoadTimeoutRef.current) {
+        clearTimeout(roomsLoadTimeoutRef.current);
+        roomsLoadTimeoutRef.current = null;
+      }
     };
   }, [
     socket,
     isConnected,
     userId,
-    conversation?.id,
-    roomTypeFilter,
     projectId,
+    roomTypeFilter,
+    conversation?.id,
   ]);
 
   const handleTabChange = (type) => {
     setRoomTypeFilter(type);
   };
+
+  const filteredRooms = useMemo(() => {
+    if (!roomTypeFilter) {
+      return rooms;
+    }
+    return rooms.filter((room) => room.type === roomTypeFilter);
+  }, [rooms, roomTypeFilter]);
 
   useEffect(() => {
     const existingRoom = rooms.find((room) => room.item_id === tripId);
@@ -180,7 +249,6 @@ const Chat = () => {
       setConversation(existingRoom);
     }
   }, [
-    tripId,
     rooms.length,
     socket,
     userId,
@@ -268,7 +336,7 @@ const Chat = () => {
 
     const messageReadInterval = setInterval(() => {
       sendMessageRead();
-    }, 30000);
+    }, 1000);
 
     return () => {
       clearInterval(messageReadInterval);
@@ -324,15 +392,24 @@ const Chat = () => {
     };
   }, [socket, conversation?.id]);
 
+  useEffect(() => {
+    if (Boolean(tripId)) {
+      setRoomTypeFilter("group");
+    } else {
+      setRoomTypeFilter("single");
+    }
+  }, []);
+
   return (
     <ChatProvider>
       <div className={styles.chatContainer}>
         <ConversationList
           setIsAddRoomOpen={setIsAddRoomOpen}
-          rooms={rooms}
+          rooms={filteredRooms}
           setConversation={handleConversationSelect}
           isConnected={isConnected}
           onTabChange={handleTabChange}
+          isLoading={roomsLoading}
         />
         <ChatArea
           rooms={rooms}
