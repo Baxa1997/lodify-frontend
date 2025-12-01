@@ -17,12 +17,19 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
   const isInitialLoadRef = useRef(false);
   const isLoadingPaginationRef = useRef(false);
 
+  // Refs to avoid stale closures in socket handlers
+  const conversationRef = useRef(conversation);
+  const loggedInUserRef = useRef(loggedInUser);
+  const userIdRef = useRef(userId);
+  const projectIdRef = useRef(projectId);
+
   const [pagination, setPagination] = useState({
     limit: 20,
     offset: 0,
     hasMoreMessages: true,
     isLoadingMore: false,
   });
+  const paginationRef = useRef(pagination);
 
   const scrollToBottom = (behavior = "smooth") => {
     requestAnimationFrame(() => {
@@ -46,8 +53,11 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
       !conversation?.id ||
       pagination.isLoadingMore ||
       !pagination.hasMoreMessages
-    )
-      setPagination((prev) => ({...prev, isLoadingMore: true}));
+    ) {
+      return;
+    }
+
+    setPagination((prev) => ({...prev, isLoadingMore: true}));
 
     const nextOffset = pagination.offset + pagination.limit;
 
@@ -101,6 +111,28 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     prevMessageCountRef.current = localMessages.length;
   }, [localMessages]);
 
+  // Keep refs in sync with current values
+  useEffect(() => {
+    conversationRef.current = conversation;
+  }, [conversation]);
+
+  useEffect(() => {
+    loggedInUserRef.current = loggedInUser;
+  }, [loggedInUser]);
+
+  useEffect(() => {
+    userIdRef.current = userId;
+  }, [userId]);
+
+  useEffect(() => {
+    projectIdRef.current = projectId;
+  }, [projectId]);
+
+  // Keep pagination ref in sync
+  useEffect(() => {
+    paginationRef.current = pagination;
+  }, [pagination]);
+
   useEffect(() => {
     prevMessageCountRef.current = 0;
     isInitialLoadRef.current = true;
@@ -119,6 +151,10 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     if (!socket) return;
 
     const handleRoomHistory = (messages) => {
+      // Get current conversation to ensure we only process messages for the active room
+      const currentConversation = conversationRef.current;
+      if (!currentConversation?.id) return;
+
       const messagesToSet = Array.isArray(messages)
         ? messages
         : messages?.data && Array.isArray(messages.data)
@@ -126,12 +162,40 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
         : null;
 
       if (messagesToSet) {
-        if (pagination.isLoadingMore) {
+        // When you join a room, the server returns messages for that room
+        // Filter to ensure we only process messages for the current conversation
+        // (in case of race conditions when switching rooms quickly)
+        const filteredMessages = messagesToSet.filter((msg) => {
+          // If message has room_id, it must match current conversation
+          if (msg.room_id) {
+            return msg.room_id === currentConversation.id;
+          }
+          // If no room_id, assume it's for the room we just joined (server behavior)
+          return true;
+        });
+
+        // If we have messages but none match current room, ignore this response
+        if (filteredMessages.length === 0 && messagesToSet.length > 0) {
+          // Check if any message has a room_id that doesn't match
+          const hasMismatchedRoom = messagesToSet.some(
+            (msg) => msg.room_id && msg.room_id !== currentConversation.id
+          );
+          if (hasMismatchedRoom) {
+            return; // Messages are for a different room
+          }
+        }
+
+        // Check if we're loading more messages (pagination)
+        const currentPagination = paginationRef.current;
+        const isLoadingMore =
+          currentPagination?.isLoadingMore || isLoadingPaginationRef.current;
+
+        if (isLoadingMore) {
           const container = messagesContainerRef.current;
           const prevScrollHeight = container?.scrollHeight || 0;
           const prevScrollTop = container?.scrollTop || 0;
 
-          if (messagesToSet.length === 0) {
+          if (filteredMessages.length === 0) {
             setPagination((prev) => ({
               ...prev,
               hasMoreMessages: false,
@@ -145,7 +209,7 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
           setLocalMessages((prevMessages) => {
             const deduplicatedMessages = deduplicateMessages(
               prevMessages,
-              messagesToSet
+              filteredMessages
             );
             return deduplicatedMessages;
           });
@@ -153,7 +217,7 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
           setPagination((prev) => ({
             ...prev,
             offset: prev.offset + prev.limit,
-            hasMoreMessages: messagesToSet.length >= prev.limit,
+            hasMoreMessages: filteredMessages.length >= prev.limit,
             isLoadingMore: false,
           }));
 
@@ -165,7 +229,8 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
             }
           });
         } else {
-          setLocalMessages(messagesToSet);
+          // Initial load - replace all messages
+          setLocalMessages(filteredMessages);
           isInitialLoadRef.current = true;
         }
       } else {
@@ -174,17 +239,23 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     };
 
     const handleReceiveMessage = (message) => {
-      if (message.room_id === conversation?.id) {
+      // Use refs to get current values, avoiding stale closures
+      const currentConversation = conversationRef.current;
+      const currentUserId = userIdRef.current;
+      const currentLoggedInUser = loggedInUserRef.current;
+      const currentProjectId = projectIdRef.current;
+
+      if (message.room_id === currentConversation?.id) {
         if (
           socket &&
           socket.connected &&
-          userId &&
-          message.from !== loggedInUser
+          currentUserId &&
+          message.from !== currentLoggedInUser
         ) {
           socket.emit("message:read", {
-            row_id: userId,
-            room_id: conversation.id,
-            project_id: projectId,
+            row_id: currentUserId,
+            room_id: currentConversation.id,
+            project_id: currentProjectId,
           });
         }
 
@@ -203,10 +274,11 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     const handleMessageRead = (response) => {
       if (response && response.room_id) {
         const roomId = response.room_id;
+        const currentLoggedInUser = loggedInUserRef.current;
 
         setLocalMessages((prevMessages) => {
           return prevMessages.map((msg) => {
-            if (msg.room_id === roomId && msg.from === loggedInUser) {
+            if (msg.room_id === roomId && msg.from === currentLoggedInUser) {
               return {
                 ...msg,
                 read: Array.isArray(msg.read)
@@ -232,18 +304,12 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
       socket.off("chat message", handleReceiveMessage);
       socket.off("message.read", handleMessageRead);
     };
-  }, [
-    socket,
-    conversation?.id,
-    deduplicateMessages,
-    loggedInUser,
-    userId,
-    pagination.isLoadingMore,
-  ]);
+  }, [socket, deduplicateMessages]);
 
   useEffect(() => {
-    if (!socket || !conversation?.id || !userId) return;
+    if (!socket || !conversation?.id || !userId || !isConnected) return;
 
+    // Clear messages when switching rooms
     setLocalMessages([]);
     prevMessageCountRef.current = 0;
     isInitialLoadRef.current = true;
@@ -256,17 +322,23 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
       isLoadingMore: false,
     });
 
+    // Join room and load messages when conversation changes
+    // The server will respond with "room history" event containing messages
     socket.emit("join room", {
       room_id: conversation.id,
       row_id: userId,
       limit: 20,
       offset: 0,
     });
-    socket.emit("presence:get", {
-      row_id: conversation.to_row_id,
-      project_id: projectId,
-    });
-  }, [socket, conversation?.id, userId]);
+
+    // Get presence info if available
+    if (conversation.to_row_id) {
+      socket.emit("presence:get", {
+        row_id: conversation.to_row_id,
+        project_id: projectIdRef.current,
+      });
+    }
+  }, [socket, conversation?.id, userId, isConnected, projectId]);
 
   const groupMessagesByDate = (messages) => {
     const groups = [];
