@@ -39,13 +39,23 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
   };
 
   const getInitials = () => {
-    if (to_name) {
+    if (Boolean(type === "group")) {
+      const orName = isBroker
+        ? `${carrier?.legal_name ?? ""} `
+        : `${broker?.legal_name ?? ""} `;
+      return orName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 1);
+    } else {
       return to_name
         .split(" ")
         .map((n) => n[0])
         .join("")
         .toUpperCase()
-        .slice(0, 2);
+        .slice(0, 1);
     }
     return "U";
   };

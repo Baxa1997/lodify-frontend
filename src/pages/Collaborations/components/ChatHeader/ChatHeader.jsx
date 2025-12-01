@@ -40,7 +40,10 @@ const ChatHeader = ({
       });
     }
   };
-  console.log("carriercarrier", carrier);
+  const orName = isBroker
+    ? `${carrier?.legal_name ?? ""} `
+    : `${broker?.legal_name ?? ""} `;
+
   return (
     <Flex p="10px 8px" alignItems="center" justifyContent="space-between">
       <Flex gap="12px" alignItems="center">
@@ -62,7 +65,9 @@ const ChatHeader = ({
           bg="#F79009"
           fontSize="18px"
           justifyContent="center">
-          {to_name?.[0]?.toUpperCase()}
+          {type === "group"
+            ? orName?.[0]?.toUpperCase()
+            : to_name?.[0]?.toUpperCase()}
         </Box>
         <Box>
           <Flex
