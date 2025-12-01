@@ -16,12 +16,7 @@ import {
 } from "@chakra-ui/react";
 import {format} from "date-fns";
 
-const SignAndAcceptModal = ({
-  isOpen,
-  onClose,
-  onAccept,
-  brokerName = "",
-}) => {
+const SignAndAcceptModal = ({isOpen, onClose, onAccept, brokerName = ""}) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
@@ -43,7 +38,7 @@ const SignAndAcceptModal = ({
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
+
     if (e.touches) {
       return {
         x: (e.touches[0].clientX - rect.left) * scaleX,
@@ -124,11 +119,7 @@ const SignAndAcceptModal = ({
           <VStack spacing="20px" align="stretch">
             {/* Broker Field */}
             <Box>
-              <Text
-                mb="6px"
-                fontSize="14px"
-                fontWeight="500"
-                color="#414651">
+              <Text mb="6px" fontSize="14px" fontWeight="500" color="#414651">
                 Broker <span style={{color: "#FF6B35"}}>*</span>
               </Text>
               <Input
@@ -148,11 +139,7 @@ const SignAndAcceptModal = ({
 
             {/* Date Field */}
             <Box>
-              <Text
-                mb="6px"
-                fontSize="14px"
-                fontWeight="500"
-                color="#414651">
+              <Text mb="6px" fontSize="14px" fontWeight="500" color="#414651">
                 Date (Today) <span style={{color: "#FF6B35"}}>*</span>
               </Text>
               <Input
@@ -172,11 +159,7 @@ const SignAndAcceptModal = ({
 
             {/* Signature Field */}
             <Box>
-              <Text
-                mb="6px"
-                fontSize="14px"
-                fontWeight="500"
-                color="#414651">
+              <Text mb="6px" fontSize="14px" fontWeight="500" color="#414651">
                 Sign <span style={{color: "#FF6B35"}}>*</span>
               </Text>
               <Box
@@ -239,7 +222,7 @@ const SignAndAcceptModal = ({
                 fontSize="14px"
                 fontWeight="500"
                 onClick={handleAccept}
-                isDisabled={!hasSignature}
+                // isDisabled={!hasSignature}
                 _hover={{bg: "#E55A2B"}}>
                 Accept
               </Button>
@@ -252,4 +235,3 @@ const SignAndAcceptModal = ({
 };
 
 export default SignAndAcceptModal;
-

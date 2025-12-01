@@ -149,6 +149,10 @@ const StickyButtons = ({
       const paddingValue = `${buttonHeight}px`;
       if (prevPadding !== paddingValue) {
         scrollEl.style.paddingBottom = paddingValue;
+        // Also add padding to parent container to prevent content from being hidden
+        if (parentEl.style.paddingBottom !== paddingValue) {
+          parentEl.style.paddingBottom = paddingValue;
+        }
         prevPadding = paddingValue;
       }
     };
@@ -223,6 +227,9 @@ const StickyButtons = ({
       }
       if (scrollEl) {
         scrollEl.style.paddingBottom = "";
+      }
+      if (parentEl) {
+        parentEl.style.paddingBottom = "";
       }
       if (containerEl) {
         containerEl.style.position = "";
@@ -466,12 +473,13 @@ const TripRowDetails = ({
       ref={tripRowDetailsRef}
       zIndex={5}
       bg="#fff"
-      minHeight="200px"
-      position="relative">
+      position="relative"
+      width="100%">
       <Box
         p="8px 20px"
         pb="0px"
         overflowX="auto"
+        overflowY="visible"
         sx={{
           "&::-webkit-scrollbar": {
             height: "6px",
