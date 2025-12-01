@@ -487,6 +487,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                               state: {
                                 tripId: trip.guid,
                                 tripName: trip.id,
+                                tab: 1,
                               },
                             });
                           }}

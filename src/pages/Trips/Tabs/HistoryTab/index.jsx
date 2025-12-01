@@ -505,6 +505,7 @@ function HistoryTab({tripType = ""}) {
                               state: {
                                 tripId: trip.guid,
                                 tripName: trip.id,
+                                tab: 1,
                               },
                             });
                           }}
