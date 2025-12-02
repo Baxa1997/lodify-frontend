@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {Flex} from "@chakra-ui/react";
 import {Box} from "@chakra-ui/react";
 import {Text} from "@chakra-ui/react";
@@ -11,14 +11,14 @@ import {useQuery} from "@tanstack/react-query";
 import assetsService from "../../../../services/assetsService";
 import tripsService from "../../../../services/tripsService";
 import {useToast} from "@chakra-ui/react";
+import {Controller} from "react-hook-form";
+import Select from "../../../../components/Select";
 
-function FirstSection({control, watch}) {
+function FirstSection({control, setValue}) {
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const {id: tripId} = useParams();
   const toast = useToast();
-  const [tractorValue, setTractorValue] = useState(null);
-  const [trailerValue, setTrailerValue] = useState(null);
 
   const {data: trucksData} = useQuery({
     queryKey: ["TRUCKS_LIST"],
@@ -42,22 +42,20 @@ function FirstSection({control, watch}) {
     enabled: !!tripId,
   });
 
-  const watchedTractor = watch("tractors_id");
-  const watchedTrailer = watch("assets_id");
+  const handleTractorChange = async (value) => {
+    if (!tripId || !value) return;
 
-  useEffect(() => {
-    if (watchedTractor && watchedTractor !== tractorValue && tripId) {
-      setTractorValue(watchedTractor);
-      assignTractor(watchedTractor);
-    }
-  }, [watchedTractor, tripId]);
+    setValue("assets_id", value);
+    await assignTractor(value);
+  };
 
-  useEffect(() => {
-    if (watchedTrailer && watchedTrailer !== trailerValue && tripId) {
-      setTrailerValue(watchedTrailer);
-      assignTrailer(watchedTrailer);
-    }
-  }, [watchedTrailer, tripId]);
+  const handleTrailerChange = async (value) => {
+    if (!tripId || !value) return;
+
+    setValue("trailers_id", value);
+
+    await assignTrailer(value);
+  };
 
   const assignTractor = async (assetsId) => {
     if (!tripId || !assetsId) return;
@@ -203,12 +201,21 @@ function FirstSection({control, watch}) {
               Tractor <span>*</span>
             </Text>
             {tripId ? (
-              <HFSelect
+              <Controller
                 control={control}
                 name="assets_id"
-                options={trucksData || []}
-                size="md"
-                disabled={!tripId}
+                render={({field}) => (
+                  <Select
+                    {...field}
+                    options={trucksData || []}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleTractorChange(value);
+                    }}
+                    size="md"
+                    isDisabled={!tripId}
+                  />
+                )}
               />
             ) : (
               <HFTextField
@@ -231,12 +238,21 @@ function FirstSection({control, watch}) {
               Trailer <span>*</span>
             </Text>
             {tripId ? (
-              <HFSelect
+              <Controller
                 control={control}
                 name="trailers_id"
-                options={trailersData || []}
-                size="md"
-                disabled={!tripId}
+                render={({field}) => (
+                  <Select
+                    {...field}
+                    options={trailersData || []}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleTrailerChange(value);
+                    }}
+                    size="md"
+                    isDisabled={!tripId}
+                  />
+                )}
               />
             ) : (
               <HFTextField

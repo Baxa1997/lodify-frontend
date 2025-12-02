@@ -316,7 +316,7 @@ function AddTrip({tripData = {}}) {
         )}
 
         <form action="" onSubmit={handleSubmit(onSubmit)}>
-          <FirstSection control={control} watch={watch} />
+          <FirstSection control={control} setValue={setValue} />
           <ThirdSection control={control} />
 
           <PackageSection setValue={setValue} control={control} />
