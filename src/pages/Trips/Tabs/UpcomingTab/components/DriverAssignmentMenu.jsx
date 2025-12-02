@@ -10,6 +10,7 @@ import {
   Box,
   Tooltip,
   VStack,
+  Button,
 } from "@chakra-ui/react";
 import {MdMoreVert} from "react-icons/md";
 
@@ -22,7 +23,7 @@ const DriverAssignmentMenu = ({trip, onAssignClick}) => {
         trip.drivers_2.last_name || ""
       }`.trim()
     : "";
-  console.log("triptrip", trip);
+
   return (
     <Flex alignItems="center" gap={2} onClick={(e) => e.stopPropagation()}>
       <Tooltip
@@ -60,19 +61,36 @@ const DriverAssignmentMenu = ({trip, onAssignClick}) => {
             </Text>
           )}
           {!driver1Name && !driver2Name && (
-            <Text color="#A4A7AE" fontWeight="400" fontSize="14px">
+            <Text
+              onClick={onAssignClick}
+              color="#A4A7AE"
+              fontWeight="400"
+              fontSize="14px">
               No driver assigned
             </Text>
           )}
         </Box>
       </Tooltip>
-      <Menu>
+      <Button
+        bg="none"
+        border="none"
+        px="0"
+        minWidth="22px"
+        width="22px"
+        minHeight="22px"
+        height="22px"
+        onClick={onAssignClick}>
+        <MdMoreVert />
+      </Button>
+      {/* <Menu>
         <MenuButton
           as={IconButton}
           icon={<MdMoreVert />}
           variant="ghost"
           size="sm"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
           _hover={{bg: "gray.100"}}
         />
         <MenuList zIndex={9} onClick={(e) => e.stopPropagation()}>
@@ -80,7 +98,7 @@ const DriverAssignmentMenu = ({trip, onAssignClick}) => {
             {driver1Name || driver2Name ? "Reassign Drivers" : "Assign Drivers"}
           </MenuItem>
         </MenuList>
-      </Menu>
+      </Menu> */}
     </Flex>
   );
 };
