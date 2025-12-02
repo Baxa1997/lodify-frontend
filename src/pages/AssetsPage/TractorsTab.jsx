@@ -1,6 +1,6 @@
 import React from "react";
 import FiltersComponent from "../../components/FiltersComponent";
-import {Badge, Box} from "@chakra-ui/react";
+import {Box, Flex} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -17,11 +17,12 @@ import {useQuery} from "@tanstack/react-query";
 import assetsService from "../../services/assetsService";
 import AddAssetsModal from "./components/AddAssetsModal";
 import {
+  getLoadEligibilityColor,
   getVerificationStatusColor,
-  tableElements,
+  tractorTableElements,
 } from "./components/mockElements";
 import useDebounce from "../../hooks/useDebounce";
-import DriverAssign from "./components/DriverAssign";
+import {AiOutlineExclamationCircle} from "react-icons/ai";
 
 const TractorsTab = () => {
   const navigate = useNavigate();
@@ -136,7 +137,7 @@ const TractorsTab = () => {
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead>
-            {tableElements.map((element) => (
+            {tractorTableElements.map((element) => (
               <CTableTh
                 key={element.key}
                 sortable={element.sortable}
@@ -158,20 +159,39 @@ const TractorsTab = () => {
                   cursor: "pointer",
                 }}
                 onClick={() => handleRowClick(asset.id || asset.guid, asset)}>
-                <CTableTd>{asset.units || asset.unit_number || "N/A"}</CTableTd>
-                <CTableTd>{asset.type || asset.asset_type || "N/A"}</CTableTd>
-                <CTableTd>{asset.make || "N/A"}</CTableTd>
+                <CTableTd>{asset.vehicle_number || "N/A"}</CTableTd>
+                <CTableTd>{asset.licence_plate || "N/A"}</CTableTd>
+                <CTableTd>{asset.type?.[0] || "N/A"}</CTableTd>
                 <CTableTd>
                   {asset.fuel_types_id_data?.name || asset.fuel_type || "N/A"}
                 </CTableTd>
                 <CTableTd>
                   {asset.model_year || asset.modelYear || asset.year || "N/A"}
                 </CTableTd>
-                <CTableTd>
-                  {asset.licence_plate || asset.licence_plate || "N/A"}
-                </CTableTd>
                 <CTableTd>{asset.vin_number || "N/A"}</CTableTd>
                 <CTableTd>
+                  <Flex
+                    gap="4px"
+                    alignItems="center"
+                    justifyContent="center"
+                    h="24px"
+                    w="100px"
+                    bg={getLoadEligibilityColor(
+                      asset.load_eligibility ?? "Eligible"
+                    )}
+                    px={3}
+                    py={1}
+                    borderRadius="16px"
+                    fontSize="14px"
+                    fontWeight="600"
+                    color="white">
+                    <span>
+                      <AiOutlineExclamationCircle />{" "}
+                    </span>{" "}
+                    {asset.load_eligibility || "Eligible"}
+                  </Flex>
+                </CTableTd>
+                {/* <CTableTd>
                   <Badge
                     colorScheme={getVerificationStatusColor(
                       asset.status || asset.status
@@ -186,10 +206,10 @@ const TractorsTab = () => {
                       ? (asset.status || asset.status)[0] || "N/A"
                       : asset.status || asset.status || "N/A"}
                   </Badge>
-                </CTableTd>
-                <CTableTd>
+                </CTableTd> */}
+                {/* <CTableTd>
                   <DriverAssign asset={asset} />
-                </CTableTd>
+                </CTableTd> */}
               </CTableRow>
             ))}
           </CTableBody>

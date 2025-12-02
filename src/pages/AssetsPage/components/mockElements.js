@@ -54,48 +54,114 @@ export const tableElements = [
   },
 ];
 
-export const getVerificationStatusColor = (status) => {
-  if (Array.isArray(status)) {
-    const statusValue = status[0]?.toLowerCase();
-    switch (statusValue) {
-      case "verified":
-        return "green";
-      case "needs attention":
-      case "pending":
-      case "unverified":
-        return "red";
-      case "in review":
-      case "processing":
-        return "orange";
-      case "expired":
-        return "red";
-      case "approved":
-        return "green";
-      case "rejected":
-      case "denied":
-        return "red";
-      default:
-        return "gray";
-    }
-  }
+export const tractorTableElements = [
+  {
+    key: "unitNumber",
+    label: "Unit #",
+    sortable: true,
+  },
 
-  switch (status?.toLowerCase()) {
-    case "verified":
-      return "green";
-    case "needs attention":
-    case "pending":
-    case "unverified":
-      return "red";
-    case "in review":
-    case "processing":
-      return "orange";
-    case "expired":
-      return "red";
-    case "approved":
-      return "green";
-    case "rejected":
-    case "denied":
-      return "red";
+  {
+    key: "unitId",
+    label: "Unit ID",
+    sortable: true,
+  },
+
+  {
+    key: "tractor_type",
+    label: "Tractor Type",
+    sortable: true,
+  },
+
+  {
+    key: "make",
+    label: "Make",
+    sortable: true,
+  },
+
+  {
+    key: "modelYear",
+    label: "Model year",
+    sortable: true,
+  },
+
+  {
+    key: "vin",
+    label: "VIN",
+    sortable: true,
+  },
+
+  {
+    key: "load_eligibility",
+    label: "Load eligibility",
+    sortable: true,
+  },
+];
+
+// export const getVerificationStatusColor = (status) => {
+//   if (Array.isArray(status)) {
+//     const statusValue = status[0]?.toLowerCase();
+//     switch (statusValue) {
+//       case "verified":
+//         return "green";
+//       case "needs attention":
+//       case "pending":
+//       case "unverified":
+//         return "red";
+//       case "in review":
+//       case "processing":
+//         return "orange";
+//       case "expired":
+//         return "red";
+//       case "approved":
+//         return "green";
+//       case "rejected":
+//       case "denied":
+//         return "red";
+//       default:
+//         return "gray";
+//     }
+//   }
+
+//   switch (status?.toLowerCase()) {
+//     case "verified":
+//       return "green";
+//     case "needs attention":
+//     case "pending":
+//     case "unverified":
+//       return "red";
+//     case "in review":
+//     case "processing":
+//       return "orange";
+//     case "expired":
+//       return "red";
+//     case "approved":
+//       return "green";
+//     case "rejected":
+//     case "denied":
+//       return "red";
+//     default:
+//       return "gray";
+//   }
+// };
+
+export const getLoadEligibilityColor = (status) => {
+  switch (status) {
+    case "Eligible":
+      return "#17B26A";
+    case "Not Eligible":
+      return "#F04438";
+    default:
+      return "gray";
+  }
+};
+
+export const getVerificationStatusColor = (status) => {
+  switch (status) {
+    case "Verified":
+      return "#17B26A";
+    case "Unverified":
+      return "#F04438";
     default:
       return "gray";
   }

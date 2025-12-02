@@ -1,6 +1,6 @@
 import React from "react";
 import FiltersComponent from "../../components/FiltersComponent";
-import {Badge, Box} from "@chakra-ui/react";
+import {Badge, Box, Flex} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -16,6 +16,8 @@ import CTableRow from "../../components/tableElements/CTableRow";
 import {useQuery} from "@tanstack/react-query";
 import assetsService from "../../services/assetsService";
 import useDebounce from "../../hooks/useDebounce";
+import {AiOutlineExclamationCircle} from "react-icons/ai";
+import {getVerificationStatusColor} from "./components/mockElements";
 
 const TrailersTab = () => {
   const navigate = useNavigate();
@@ -87,53 +89,52 @@ const TrailersTab = () => {
     navigate(`/admin/assets/${assetId}`);
   };
 
-  const getVerificationStatusColor = (status) => {
-    if (Array.isArray(status)) {
-      const statusValue = status[0]?.toLowerCase();
-      switch (statusValue) {
-        case "verified":
-          return "green";
-        case "needs attention":
-        case "pending":
-        case "unverified":
-          return "red";
-        case "in review":
-        case "processing":
-          return "orange";
-        case "expired":
-          return "red";
-        case "approved":
-          return "green";
-        case "rejected":
-        case "denied":
-          return "red";
-        default:
-          return "gray";
-      }
-    }
+  // const getVerificationStatusColor = (status) => {
+  //   if (Array.isArray(status)) {
+  //     const statusValue = status[0]?.toLowerCase();
+  //     switch (statusValue) {
+  //       case "verified":
+  //         return "green";
+  //       case "needs attention":
+  //       case "pending":
+  //       case "unverified":
+  //         return "red";
+  //       case "in review":
+  //       case "processing":
+  //         return "orange";
+  //       case "expired":
+  //         return "red";
+  //       case "approved":
+  //         return "green";
+  //       case "rejected":
+  //       case "denied":
+  //         return "red";
+  //       default:
+  //         return "gray";
+  //     }
+  //   }
 
-    // Handle single string
-    switch (status?.toLowerCase()) {
-      case "verified":
-        return "green";
-      case "needs attention":
-      case "pending":
-      case "unverified":
-        return "red";
-      case "in review":
-      case "processing":
-        return "orange";
-      case "expired":
-        return "red";
-      case "approved":
-        return "green";
-      case "rejected":
-      case "denied":
-        return "red";
-      default:
-        return "gray";
-    }
-  };
+  //   switch (status?.toLowerCase()) {
+  //     case "verified":
+  //       return "green";
+  //     case "needs attention":
+  //     case "pending":
+  //     case "unverified":
+  //       return "red";
+  //     case "in review":
+  //     case "processing":
+  //       return "orange";
+  //     case "expired":
+  //       return "red";
+  //     case "approved":
+  //       return "green";
+  //     case "rejected":
+  //     case "denied":
+  //       return "red";
+  //     default:
+  //       return "gray";
+  //   }
+  // };
 
   if (isLoading) {
     return (
@@ -198,7 +199,7 @@ const TrailersTab = () => {
                   sortConfig.key === "fuel" ? sortConfig.direction : null
                 }
                 onSort={() => handleSort("fuel")}>
-                Fuel
+                Model year
               </CTableTh>
               <CTableTh
                 sortable={true}
@@ -206,7 +207,7 @@ const TrailersTab = () => {
                   sortConfig.key === "modelYear" ? sortConfig.direction : null
                 }
                 onSort={() => handleSort("modelYear")}>
-                Model year
+                License plate
               </CTableTh>
               <CTableTh
                 sortable={true}
@@ -216,16 +217,9 @@ const TrailersTab = () => {
                     : null
                 }
                 onSort={() => handleSort("licensePlate")}>
-                License plate
-              </CTableTh>
-              <CTableTh
-                sortable={true}
-                sortDirection={
-                  sortConfig.key === "vin" ? sortConfig.direction : null
-                }
-                onSort={() => handleSort("vin")}>
                 VIN
               </CTableTh>
+
               <CTableTh
                 sortable={true}
                 sortDirection={
@@ -249,34 +243,34 @@ const TrailersTab = () => {
                 }}
                 onClick={() => handleRowClick(asset.id || asset.guid)}>
                 <CTableTd>{asset.vehicle_number || "N/A"}</CTableTd>
-                <CTableTd>{asset.type || asset.asset_type || "N/A"}</CTableTd>
+                <CTableTd>
+                  {asset.type?.[0] || asset.asset_type || "N/A"}
+                </CTableTd>
                 <CTableTd>{asset.make || "N/A"}</CTableTd>
-                <CTableTd>{asset.fuel || asset.fuel_type || "N/A"}</CTableTd>
                 <CTableTd>
                   {asset.model_year || asset.modelYear || asset.year || "N/A"}
                 </CTableTd>
                 <CTableTd>{asset.licence_plate || "N/A"}</CTableTd>
                 <CTableTd>{asset.vin_number || "N/A"}</CTableTd>
                 <CTableTd>
-                  <Badge
-                    colorScheme={getVerificationStatusColor(
-                      asset.verification_status || asset.verificationStatus
-                    )}
-                    variant="subtle"
+                  <Flex
+                    gap="4px"
+                    alignItems="center"
+                    justifyContent="center"
+                    h="24px"
+                    w="100px"
+                    bg={getVerificationStatusColor("Verified")}
                     px={3}
                     py={1}
-                    borderRadius="full"
-                    fontSize="12px"
-                    fontWeight="500">
-                    {Array.isArray(
-                      asset.verification_status || asset.verificationStatus
-                    )
-                      ? (asset.verification_status ||
-                          asset.verificationStatus)[0] || "N/A"
-                      : asset.verification_status ||
-                        asset.verificationStatus ||
-                        "N/A"}
-                  </Badge>
+                    borderRadius="16px"
+                    fontSize="14px"
+                    fontWeight="600"
+                    color="white">
+                    <span>
+                      <AiOutlineExclamationCircle />{" "}
+                    </span>{" "}
+                    {asset.load_eligibility || "Verified"}
+                  </Flex>
                 </CTableTd>
               </CTableRow>
             ))}
