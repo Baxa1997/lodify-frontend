@@ -1,15 +1,31 @@
 import styles from "./styles.module.scss";
-import { Box, Button, Text, HStack, VStack, Flex } from "@chakra-ui/react";
-import { FaCheck, FaTimes } from "react-icons/fa";
-import { useMainInfoProps } from "./useMainInfoProps";
+import {
+  Box,
+  Button,
+  Text,
+  HStack,
+  VStack,
+  Flex,
+  Icon,
+  useToast,
+} from "@chakra-ui/react";
+import {FaCheck, FaTimes} from "react-icons/fa";
+import {StarIcon} from "@chakra-ui/icons";
+import {useMainInfoProps} from "./useMainInfoProps";
 import StarRating from "@components/Rating";
+import {useSearchParams, useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {useState} from "react";
+import carrierService from "@services/carrierService";
 
-export const MainInfo = ({ generalInfo }) => {
-
-  const  {
-    getTypeImage,
-    companyData,
-  } = useMainInfoProps();
+export const MainInfo = ({generalInfo}) => {
+  const {getTypeImage, companyData} = useMainInfoProps();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [isConnecting, setIsConnecting] = useState(false);
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const carrierId = searchParams.get("id");
 
   const {
     ownbus_16,
@@ -184,99 +200,168 @@ export const MainInfo = ({ generalInfo }) => {
     },
   ];
 
+  const handleConnectCarrier = async () => {
+    if (!carrierId || !brokersId) {
+      toast({
+        title: "Error",
+        description: "Missing carrier ID or broker ID",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
+    setIsConnecting(true);
+    const data = {
+      joined_at: new Date().toISOString(),
+      brokers_id: brokersId,
+      companies_id: carrierId,
+    };
+
+    try {
+      await carrierService.addCarrier(data);
+      toast({
+        title: "Carrier Connected Successfully!",
+        description: "The carrier has been added to your list",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      navigate("/admin/carriers");
+    } catch (error) {
+      console.log("error", error);
+      toast({
+        title: "Failed to Connect Carrier",
+        description: error?.response?.data?.message || "Please try again",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const formatIds = () => {
+    const parts = [];
+    if (generalInfo?.state) parts.push(generalInfo.state);
+    if (generalInfo?.dot_number) parts.push(`DOT ${generalInfo.dot_number}`);
+    if (generalInfo?.docket_number)
+      parts.push(`MC ${generalInfo.docket_number}`);
+    if (generalInfo?.scac_code) parts.push(`SCAC - ${generalInfo.scac_code}`);
+    return parts.join(" / ");
+  };
+
   return (
     <Box className={styles.container}>
       <Box className={styles.headerSection}>
-        <Box className={styles.companyHeader}>
-          <VStack
-            align="flex-start"
-            spacing={3}
-          >
-            {/* <StarRating
-              value={companyData.rating}
-              size={20}
-            /> */}
-            <Text
-              fontSize="24px"
-              fontWeight="bold"
-              color="gray.800"
-            >
-              {generalInfo.legal_name}
+        {/* Carrier Connect Card */}
+        <Box
+          bg="white"
+          borderRadius="12px"
+          border="1px solid #E2E8F0"
+          p="24px"
+          mb="24px"
+          boxShadow="0 1px 3px rgba(0, 0, 0, 0.1)">
+          <Flex justify="space-between" align="flex-start" mb="20px">
+            <VStack align="flex-start" spacing="12px" flex="1">
+              <HStack spacing="4px">
+                {[...Array(5)].map((_, i) => (
+                  <Icon
+                    key={i}
+                    as={StarIcon}
+                    w="20px"
+                    h="20px"
+                    color="gold"
+                    fill="currentColor"
+                  />
+                ))}
+              </HStack>
+              <Text fontSize="20px" fontWeight="700" color="#181D27">
+                {generalInfo.legal_name || generalInfo.company_name || "N/A"}
+              </Text>
+              <Text fontSize="14px" color="#535862" fontWeight="400">
+                {formatIds() || "N/A"}
+              </Text>
+            </VStack>
+            {carrierId && (
+              <Button
+                bg="#EF6820"
+                color="white"
+                borderRadius="8px"
+                px="24px"
+                py="12px"
+                fontSize="14px"
+                fontWeight="600"
+                _hover={{bg: "#D45A1A"}}
+                isLoading={isConnecting}
+                loadingText="Connecting..."
+                onClick={handleConnectCarrier}>
+                Connect Carrier
+              </Button>
+            )}
+          </Flex>
+
+          <Box borderTop="1px solid #E2E8F0" pt="20px">
+            <Text fontSize="16px" fontWeight="400" mb="16px" color="#535862">
+              Dispatch Contacts
             </Text>
-            <Text
-              fontSize="14px"
-              color="gray.600"
-            >
-              DOT {generalInfo.dot_number} / {generalInfo.docket_number}
-            </Text>
-          </VStack>
-          {/* <Button
-            bg="#F97316"
-            color="white"
-            _hover={{ bg: "#EA580C" }}
-            px={4}
-            py={3}
-            borderRadius="8px"
-            fontSize="14px"
-            fontWeight="600"
-          >
-            Connect Carrier
-          </Button> */}
+            <VStack align="flex-start" spacing="12px">
+              {generalInfo.phone && (
+                <HStack spacing={3}>
+                  <img
+                    src="/img/phone.svg"
+                    alt="phone"
+                    width="20px"
+                    height="20px"
+                  />
+                  <Text fontSize="14px" color="#181D27" fontWeight="500">
+                    {generalInfo.phone}
+                  </Text>
+                </HStack>
+              )}
+              {generalInfo.email && (
+                <HStack spacing={3}>
+                  <img
+                    src="/img/mailpin.svg"
+                    alt="mail"
+                    width="20px"
+                    height="20px"
+                  />
+                  <Text fontSize="14px" color="#181D27" fontWeight="500">
+                    {generalInfo.email}
+                  </Text>
+                </HStack>
+              )}
+              {generalInfo.physical_address && (
+                <HStack spacing={3}>
+                  <img
+                    src="/img/markerPin.svg"
+                    alt="map"
+                    width="20px"
+                    height="20px"
+                  />
+                  <Text fontSize="14px" color="#181D27" fontWeight="500">
+                    {generalInfo.physical_address}
+                  </Text>
+                </HStack>
+              )}
+            </VStack>
+          </Box>
         </Box>
 
-        <Box className={styles.contactsSection}>
-          <Text
-            fontSize="16px"
-            fontWeight="400"
-            mb={"16px"}
-            color="#535862"
-          >
-            Dispatch Contacts
-          </Text>
-          <VStack
-            align="flex-start"
-            flexDir={"row"}
-            spacing={"24px"}
-          >
-            <HStack spacing={3}>
-              <img
-                src="/img/phone.svg"
-                alt="phone"
-              />
-              <Text
-                fontSize="14px"
-                color="#181D27"
-                fontWeight="500"
-              >
-                {generalInfo.phone}
-              </Text>
-            </HStack>
-            <HStack spacing={3}>
-              <img
-                src="/img/mailpin.svg"
-                alt="mail"
-              />
-              <Text
-                fontSize="14px"
-                color="#181D27"
-                fontWeight="500"
-              >
-                {generalInfo.email}
-              </Text>
-            </HStack>
-            <HStack spacing={3}>
-              <img
-                src="/img/markerPin.svg"
-                alt="map"
-              />
-              <Text
-                fontSize="14px"
-                color="#181D27"
-                fontWeight="500"
-              >
-                {generalInfo.physical_address}
-              </Text>
-            </HStack>
+        <Box className={styles.companyHeader}>
+          <VStack align="flex-start" spacing={3}>
+            <Text fontSize="24px" fontWeight="bold" color="gray.800">
+              {generalInfo.legal_name}
+            </Text>
+            <Text fontSize="14px" color="gray.600">
+              DOT {generalInfo.dot_number} / {generalInfo.docket_number}
+            </Text>
           </VStack>
         </Box>
 
@@ -286,34 +371,22 @@ export const MainInfo = ({ generalInfo }) => {
             gridTemplateColumns="repeat(4, 1fr)"
             gap="6px"
             bg="white"
-            borderRadius="12px"
-          >
+            borderRadius="12px">
             {metrics.map((metric, index) => (
-              <Flex
-                key={index}
-                alignItems="center"
-                gap="6px"
-                flexGrow={1}
-              >
-                <Flex
-                  flexDir={"row"}
-                  alignItems="center"
-                  gap="6px"
-                >
+              <Flex key={index} alignItems="center" gap="6px" flexGrow={1}>
+                <Flex flexDir={"row"} alignItems="center" gap="6px">
                   <Text
                     h="20px"
                     fontSize="14px"
                     color="#535862"
-                    whiteSpace="nowrap"
-                  >
+                    whiteSpace="nowrap">
                     {metric.label}:
                   </Text>
                   <Text
                     h="20px"
                     fontSize="14px"
                     fontWeight="500"
-                    color="#181D27"
-                  >
+                    color="#181D27">
                     {metric.value}
                   </Text>
                 </Flex>
@@ -323,16 +396,12 @@ export const MainInfo = ({ generalInfo }) => {
           </Box>
         </Box>
 
-        <Flex
-          borderBottom="1px solid #E9EAEB"
-          p="16px"
-        >
+        <Flex borderBottom="1px solid #E9EAEB" p="16px">
           <Box
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
             gap="12px"
-            width="100%"
-          >
+            width="100%">
             {powerUnits.map((unit, index) => (
               <Flex
                 key={index}
@@ -340,20 +409,12 @@ export const MainInfo = ({ generalInfo }) => {
                 borderRadius="8px"
                 border="1px solid #E9EAEB"
                 justifyContent="space-between"
-                p="14px 14px 14px 16px"
-              >
+                p="14px 14px 14px 16px">
                 <Box>
-                  <Text
-                    color="#535862"
-                    fontSize="16px"
-                  >
+                  <Text color="#535862" fontSize="16px">
                     {unit.title}
                   </Text>
-                  <Text
-                    color="#181D27"
-                    fontSize="22px"
-                    fontWeight="500"
-                  >
+                  <Text color="#181D27" fontSize="22px" fontWeight="500">
                     {unit.count}
                   </Text>
                 </Box>
@@ -363,24 +424,15 @@ export const MainInfo = ({ generalInfo }) => {
           </Box>
         </Flex>
 
-        <Box
-          borderBottom="1px solid #E9EAEB"
-          p="16px"
-        >
-          <Text
-            mb="16px"
-            fontSize={"16px"}
-            color="#181D27"
-            fontWeight={600}
-          >
+        <Box borderBottom="1px solid #E9EAEB" p="16px">
+          <Text mb="16px" fontSize={"16px"} color="#181D27" fontWeight={600}>
             Verified Carrier Resources on Lodify
           </Text>
           <Box
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
             gap="12px"
-            width="100%"
-          >
+            width="100%">
             {verifiedCarrierResources.map((unit, index) => (
               <Flex
                 key={index}
@@ -388,20 +440,12 @@ export const MainInfo = ({ generalInfo }) => {
                 borderRadius="8px"
                 border="1px solid #E9EAEB"
                 justifyContent="space-between"
-                p="14px 14px 14px 16px"
-              >
+                p="14px 14px 14px 16px">
                 <Box>
-                  <Text
-                    color="#535862"
-                    fontSize="16px"
-                  >
+                  <Text color="#535862" fontSize="16px">
                     {unit.title}
                   </Text>
-                  <Text
-                    color="#181D27"
-                    fontSize="22px"
-                    fontWeight="500"
-                  >
+                  <Text color="#181D27" fontSize="22px" fontWeight="500">
                     {unit.count}
                   </Text>
                 </Box>
@@ -733,8 +777,7 @@ export const MainInfo = ({ generalInfo }) => {
   );
 };
 
-
-const StatusIcon = ({ status }) => {
+const StatusIcon = ({status}) => {
   return status === "success" ? (
     <Flex
       w="17px"
@@ -742,12 +785,8 @@ const StatusIcon = ({ status }) => {
       borderRadius="50%"
       bg="#EDFCF2"
       justifyContent="center"
-      alignItems="center"
-    >
-      <FaCheck
-        color="#22C55E"
-        size={12}
-      />
+      alignItems="center">
+      <FaCheck color="#22C55E" size={12} />
     </Flex>
   ) : (
     <Flex
@@ -756,13 +795,8 @@ const StatusIcon = ({ status }) => {
       borderRadius="50%"
       bg="#FFEBEA"
       justifyContent="center"
-      alignItems="center"
-    >
-      <FaTimes
-        color="#FF3B30"
-        size={12}
-      />
+      alignItems="center">
+      <FaTimes color="#FF3B30" size={12} />
     </Flex>
   );
 };
-

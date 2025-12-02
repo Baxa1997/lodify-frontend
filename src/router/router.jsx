@@ -19,6 +19,7 @@ import AcceptDecline from "../pages/AcceptDecline";
 import Brokers from "../pages/Brokers";
 import Reviews from "../pages/Reviews";
 import Compliance from "../pages/Compliance";
+import CompanyProfile from "../pages/CompanyProfile";
 
 const Login = lazy(() => import("../pages/Login/Login"));
 const RoleSelection = lazy(() =>
@@ -128,6 +129,7 @@ const Router = () => {
         <Route path="shipper" element={<Shipper />} />
         <Route path="representative" element={<Representative />} />
         <Route path="carriers" element={<Carriers />} />
+        <Route path="company" element={<CompanyProfile />} />
         <Route path="go-ready-trucks" element={<GoReadyTrucks />} />
         <Route path="collabrations" element={<Collaborations />} />
         <Route path="tender-invitations" element={<TenderInvitations />} />

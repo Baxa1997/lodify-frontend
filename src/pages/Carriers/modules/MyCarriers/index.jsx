@@ -4,33 +4,19 @@ import {
   Flex,
   Spinner,
   Text,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Button,
   HStack,
   Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
+  Badge,
+  VStack,
 } from "@chakra-ui/react";
-import {StarIcon, SearchIcon} from "@chakra-ui/icons";
+import {StarIcon, ExternalLinkIcon} from "@chakra-ui/icons";
 import {useInfiniteQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
 import {useSelector} from "react-redux";
 import useDebounce from "@hooks/useDebounce";
 import SearchInput from "@components/SearchInput";
-
-const tableElements = [
-  {label: "Company Name", key: "500px"},
-  {label: "Email", key: "250px"},
-  {label: "Phone", key: "250px"},
-  {label: "Rating", key: "150px"},
-  {label: "Action", key: "150px"},
-];
+import {format} from "date-fns";
 
 const MyCarriers = () => {
   const containerRef = useRef();
@@ -145,6 +131,15 @@ const MyCarriers = () => {
     setSearchQuery(value);
   }, 500);
 
+  const getCompanyInitials = (name) => {
+    if (!name) return "C";
+    const words = name.split(" ");
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
   return (
     <Box>
       <Box mt="20px" mb="16px">
@@ -156,77 +151,144 @@ const MyCarriers = () => {
         ref={containerRef}
         h="calc(100vh - 220px)"
         overflowY="auto"
-        style={{scrollbarWidth: "none"}}
-        border="1px solid #E2E8F0"
-        borderRadius="12px">
-        <Table variant="simple" bg="white" borderRadius="12px">
-          <Thead
-            bg="#FFFFFF"
-            position="sticky"
-            top="-1px"
-            zIndex="10"
-            boxShadow="0 2px 4px rgba(0, 0, 0, 0.08)">
-            <Tr>
-              {tableElements.map((element) => (
-                <Th
-                  key={element.label}
-                  width={element?.key}
-                  color="#1E293B"
-                  fontSize="14px"
-                  textTransform="capitalize"
-                  fontWeight="600"
-                  borderBottom="none"
-                  py="16px">
-                  {element?.label}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {filteredCarriers.length > 0 &&
-              filteredCarriers.map((carrier) => (
-                <Tr
+        style={{scrollbarWidth: "none"}}>
+        {filteredCarriers.length > 0 ? (
+          <Box
+            display="grid"
+            gridTemplateColumns="repeat(3, 1fr)"
+            gap="24px"
+            width="100%">
+            {filteredCarriers.map((carrier) => {
+              const companyName =
+                carrier.company_name || carrier.legal_name || "N/A";
+              const rating = carrier.rating ?? "5.0";
+              const email = carrier.email || "";
+              const connectedDate = carrier.connected_date
+                ? format(new Date(carrier.connected_date), "MM/dd/yyyy")
+                : format(new Date(), "MM/dd/yyyy");
+
+              return (
+                <Box
                   key={carrier.guid}
-                  _hover={{bg: "#F9FAFB"}}
-                  borderBottom="1px solid #E5E7EB">
-                  <Td py="14px" borderBottom="none">
-                    <Text fontSize="14px" fontWeight="600" color="#181D27">
-                      {carrier.company_name || carrier.legal_name || "N/A"}
-                    </Text>
-                  </Td>
-                  <Td py="14px" borderBottom="none">
-                    <Text fontSize="14px" color="#535862">
-                      {carrier.email || "N/A"}
-                    </Text>
-                  </Td>
-                  <Td py="14px" borderBottom="none">
-                    <Text fontSize="14px" color="#535862">
-                      {carrier.phone || "N/A"}
-                    </Text>
-                  </Td>
-                  <Td py="14px" borderBottom="none">
-                    <HStack spacing={1}>
-                      <Text fontSize="14px" fontWeight="600" color="#181D27">
-                        {carrier.rating ?? "5.0"}
+                  w="100%"
+                  h="250px"
+                  bg="white"
+                  borderRadius="12px"
+                  border="1px solid #E2E8F0"
+                  boxShadow="0 1px 3px rgba(0, 0, 0, 0.1)"
+                  display="flex"
+                  flexDirection="column"
+                  transition="all 0.2s">
+                  <Flex
+                    p="20px 20px 0"
+                    justify="space-between"
+                    align="flex-start"
+                    mb="14px">
+                    <Box
+                      w="48px"
+                      h="48px"
+                      borderRadius="8px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      border="1px solid #E2E8F0">
+                      <Text fontSize="18px" fontWeight="700" color="#181D27">
+                        {getCompanyInitials(companyName)}
                       </Text>
-                      <Icon as={StarIcon} w="14px" h="14px" color="gold" />
-                    </HStack>
-                  </Td>
-                  <Td textAlign="left" py="14px" borderBottom="none">
+                    </Box>
+                    <VStack align="flex-end" spacing="8px">
+                      <Badge
+                        bg="#10B981"
+                        color="white"
+                        px="12px"
+                        py="4px"
+                        borderRadius="16px"
+                        fontSize="12px"
+                        fontWeight="500">
+                        Access Enabled
+                      </Badge>
+                      <HStack spacing="4px">
+                        <Text fontSize="14px" fontWeight="600" color="#181D27">
+                          {rating}
+                        </Text>
+                        <HStack spacing="2px">
+                          {[...Array(5)].map((_, i) => (
+                            <Icon
+                              key={i}
+                              as={StarIcon}
+                              w="14px"
+                              h="14px"
+                              color="gold"
+                              fill="currentColor"
+                            />
+                          ))}
+                        </HStack>
+                      </HStack>
+                    </VStack>
+                  </Flex>
+
+                  <Text
+                    px="20px"
+                    fontSize="16px"
+                    fontWeight="600"
+                    color="#181D27"
+                    mb="8px"
+                    noOfLines={2}>
+                    {companyName}
+                  </Text>
+
+                  <Text
+                    px="20px"
+                    fontSize="14px"
+                    fontWeight="400"
+                    color="#535862"
+                    mb="8px">
+                    Connected {connectedDate}
+                  </Text>
+
+                  <HStack px="20px" spacing="6px" mb="12px">
+                    <Text fontSize="14px" color="#EF6820" fontWeight="500">
+                      {email || "N/A"}
+                    </Text>
+                    {email && (
+                      <Icon
+                        as={ExternalLinkIcon}
+                        w="14px"
+                        h="14px"
+                        color="#EF6820"
+                      />
+                    )}
+                  </HStack>
+
+                  <Flex
+                    p="10px 24px"
+                    borderTop="1px solid #E2E8F0"
+                    justify="flex-end">
                     <Button
                       size="sm"
                       color="#EF6820"
                       variant="ghost"
-                      fontWeight="500"
+                      fontWeight="700"
+                      fontSize="14px"
                       _hover={{bg: "#FEF3EE"}}
                       onClick={() => handleViewCarrier(carrier)}>
                       View
                     </Button>
-                  </Td>
-                </Tr>
-              ))}
-          </Tbody>
-        </Table>
+                  </Flex>
+                </Box>
+              );
+            })}
+          </Box>
+        ) : (
+          <Flex
+            justify="center"
+            align="center"
+            h="400px"
+            color="#6B7280"
+            fontSize="16px">
+            No carriers found
+          </Flex>
+        )}
 
         {isFetchingNextPage && (
           <Flex justify="center" align="center" py="20px">
@@ -239,12 +301,6 @@ const MyCarriers = () => {
             />
           </Flex>
         )}
-
-        {/* {!hasNextPage && carriersData.length > 0 && (
-          <Text textAlign="center" py="20px" color="#6B7280" fontSize="14px">
-            No more carriers to load
-          </Text>
-        )} */}
       </Box>
     </Box>
   );

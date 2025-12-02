@@ -1,17 +1,11 @@
-import {Flex, Text} from "@chakra-ui/react";
-import {useSelector} from "react-redux";
+import {Flex} from "@chakra-ui/react";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import styles from "../../styles/tabs.module.scss";
-import {useState} from "react";
 import HeadBreadCrumb from "@components/HeadBreadCrumb";
 import MyCarriers from "./modules/MyCarriers";
 import AllCarriers from "./modules/AllCarriers";
 
 const Carriers = () => {
-  const [isAutomatedAddTrip, setIsAutomatedAddTrip] = useState(false);
-  const clientType = useSelector((state) => state.auth.clientType);
-  const [tripType, setTripType] = useState("tender");
-
   return (
     <>
       <Flex flexDir={"column"} gap={"20px"}>
@@ -19,9 +13,9 @@ const Carriers = () => {
 
         <Tabs className={styles.tabsContainer}>
           <TabList>
-            <Tab onClick={() => setTripType("tender")}>My Carriers</Tab>
-            <Tab onClick={() => setTripType("tender")}>All Carriers</Tab>
-            <Tab onClick={() => setTripType("tender")}>Invitations</Tab>
+            <Tab>My Carriers</Tab>
+            <Tab>All Carriers</Tab>
+            {/* <Tab>Invitations</Tab> */}
           </TabList>
 
           <TabPanel>
@@ -31,9 +25,9 @@ const Carriers = () => {
             <AllCarriers />
           </TabPanel>
 
-          <TabPanel>
+          {/* <TabPanel>
             <AllCarriers />
-          </TabPanel>
+          </TabPanel> */}
           {/* <TabPanel>
             <Invitations />
           </TabPanel> */}
