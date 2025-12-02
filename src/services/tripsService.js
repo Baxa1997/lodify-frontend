@@ -35,9 +35,11 @@ const tripsService = {
       `v2/items/${table_slug}?data=${encodeURIComponent(dataParam)}`
     );
   },
+  getTrailersList: () => httpRequest.get("v2/items/trailers"),
   acceptTrip: (data) => httpRequest.put("v2/items/orders", data),
   rejectTrip: (data) => httpRequest.post("v2/items/rejected_trips", data),
   assignDriver: (data) => httpRequest.put("v2/items/orders", data),
+  updateOrder: (data) => httpRequest.put("v2/items/orders", data),
   assignCarrier: (data) =>
     httpRequest.post("v2/invoke_function/lodify-gateway/trips/reassign", data),
   reportDelay: (data) => httpRequest.post("v2/items/trip_logs", data),

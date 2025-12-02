@@ -30,7 +30,7 @@ function AddTrip({tripData = {}}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  console.log("tripDatatripData", tripData);
+
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const {
@@ -251,9 +251,9 @@ function AddTrip({tripData = {}}) {
     if (tripData?.created_by) {
       setValue("created_by", tripData?.created_by?.legal_name);
     } else {
-      setValue("created_by", `${userData?.full_name ?? ""}`);
+      setValue("created_by", "");
     }
-  }, []);
+  }, [tripData]);
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
@@ -316,7 +316,7 @@ function AddTrip({tripData = {}}) {
         )}
 
         <form action="" onSubmit={handleSubmit(onSubmit)}>
-          <FirstSection control={control} />
+          <FirstSection control={control} watch={watch} />
           <ThirdSection control={control} />
 
           <PackageSection setValue={setValue} control={control} />
