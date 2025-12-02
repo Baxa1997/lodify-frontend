@@ -26,6 +26,8 @@ const tripsService = {
   createTrip: (data) =>
     httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
   updateTrip: (id, data) => httpRequest.put("v2/items/trips", data),
+  updateTripWith: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
   getSelectOptions: (table_slug) => httpRequest.get(`v2/items/${table_slug}`),
   getSelectOptionsWithData: (table_slug, data) => {
     const dataParam = JSON.stringify(data);

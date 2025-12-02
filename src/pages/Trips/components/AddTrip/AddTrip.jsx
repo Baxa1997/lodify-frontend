@@ -30,7 +30,7 @@ function AddTrip({tripData = {}}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-
+  console.log("tripDatatripData", tripData);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const {
@@ -167,7 +167,7 @@ function AddTrip({tripData = {}}) {
 
   const updateTripMutation = useMutation({
     mutationFn: (data) => {
-      return tripsService.updateTrip(id, data);
+      return tripsService.updateTripWith(data);
     },
     onSuccess: async (response, variables) => {
       const pickups = variables?.data?.object_data?.trip_pickups || [];
@@ -248,11 +248,8 @@ function AddTrip({tripData = {}}) {
   };
 
   useEffect(() => {
-    if (userData?.first_name || userData?.last_name) {
-      setValue(
-        "created_by",
-        `${userData?.first_name ?? ""} ${userData?.last_name ?? ""}`
-      );
+    if (tripData?.created_by) {
+      setValue("created_by", tripData?.created_by?.legal_name);
     } else {
       setValue("created_by", `${userData?.full_name ?? ""}`);
     }
