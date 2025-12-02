@@ -188,67 +188,69 @@ function FirstSection({control, watch}) {
           <AssignTripCarrier control={control} name="companies_id_2" />
         )}
       </Flex>
-      <Flex
-        mt="12px"
-        alignItems="center"
-        gap="24px"
-        justifyContent="space-between">
-        <Box w={"100%"}>
-          <Text
-            mb={"6px"}
-            fontSize={"14px"}
-            fontWeight={"500"}
-            color={"#414651"}>
-            Tractor <span>*</span>
-          </Text>
-          {tripId ? (
-            <HFSelect
-              control={control}
-              name="assets_id"
-              options={trucksData || []}
-              size="md"
-              disabled={!tripId}
-            />
-          ) : (
-            <HFTextField
-              disabled={true}
-              placeholder="Tractor"
-              border="1px solid #D5D7DA"
-              size="md"
-              width={"100%"}
-              control={control}
-              name="tractor"
-            />
-          )}
-        </Box>
-        <Box w={"100%"}>
-          <Text
-            mb={"6px"}
-            fontSize={"14px"}
-            fontWeight={"500"}
-            color={"#414651"}>
-            Trailer <span>*</span>
-          </Text>
-          {tripId ? (
-            <HFSelect
-              control={control}
-              name="trailers_id"
-              options={trailersData || []}
-              size="md"
-              disabled={!tripId}
-            />
-          ) : (
-            <HFTextField
-              disabled={true}
-              border="1px solid #D5D7DA"
-              size="md"
-              width={"100%"}
-              control={control}
-              name="trailer"
-            />
-          )}
-        </Box>
-      </Flex>
+      {Boolean(!isBroker) && (
+        <Flex
+          mt="12px"
+          alignItems="center"
+          gap="24px"
+          justifyContent="space-between">
+          <Box w={"100%"}>
+            <Text
+              mb={"6px"}
+              fontSize={"14px"}
+              fontWeight={"500"}
+              color={"#414651"}>
+              Tractor <span>*</span>
+            </Text>
+            {tripId ? (
+              <HFSelect
+                control={control}
+                name="assets_id"
+                options={trucksData || []}
+                size="md"
+                disabled={!tripId}
+              />
+            ) : (
+              <HFTextField
+                disabled={true}
+                placeholder="Tractor"
+                border="1px solid #D5D7DA"
+                size="md"
+                width={"100%"}
+                control={control}
+                name="tractor"
+              />
+            )}
+          </Box>
+          <Box w={"100%"}>
+            <Text
+              mb={"6px"}
+              fontSize={"14px"}
+              fontWeight={"500"}
+              color={"#414651"}>
+              Trailer <span>*</span>
+            </Text>
+            {tripId ? (
+              <HFSelect
+                control={control}
+                name="trailers_id"
+                options={trailersData || []}
+                size="md"
+                disabled={!tripId}
+              />
+            ) : (
+              <HFTextField
+                disabled={true}
+                border="1px solid #D5D7DA"
+                size="md"
+                width={"100%"}
+                control={control}
+                name="trailer"
+              />
+            )}
+          </Box>
+        </Flex>
+      )}
     </Box>
   );
 }
