@@ -73,14 +73,14 @@ const Chat = () => {
     loggedInUserRef.current = loginUser;
   }, [loginUser]);
 
-  useEffect(() => {
-    roomsRef.current = rooms;
-  }, [rooms]);
+  // useEffect(() => {
+  //   roomsRef.current = rooms;
+  // }, [rooms]);
 
-  useEffect(() => {
-    setHasProcessedTripId(false);
-    shouldAutoEnterTripRoomRef.current = true; // Reset auto-enter flag when tripId changes
-  }, [tripId]);
+  // useEffect(() => {
+  //   setHasProcessedTripId(false);
+  //   shouldAutoEnterTripRoomRef.current = true;
+  // }, [tripId]);
 
   useEffect(() => {
     if (!socket || !userId || !isConnected) return;

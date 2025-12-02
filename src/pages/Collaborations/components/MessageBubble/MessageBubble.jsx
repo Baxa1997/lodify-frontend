@@ -35,7 +35,7 @@ const MessageBubble = ({
     parent_id,
     parent_message,
   } = message;
-
+  console.log("messagemessage", message);
   const isRead = useMemo(() => {
     if (!isOwn) return false;
     return !!read_at;
