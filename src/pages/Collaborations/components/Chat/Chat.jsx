@@ -49,6 +49,9 @@ const Chat = () => {
   const tripIdRef = useRef(tripId);
   const hasProcessedTripIdRef = useRef(hasProcessedTripId);
   const roomTypeFilterRef = useRef(roomTypeFilter);
+  const loggedInUserRef = useRef(loginUser);
+  const roomsRef = useRef(rooms);
+  const shouldAutoEnterTripRoomRef = useRef(true);
 
   useEffect(() => {
     conversationRef.current = conversation;
@@ -67,7 +70,16 @@ const Chat = () => {
   }, [roomTypeFilter]);
 
   useEffect(() => {
+    loggedInUserRef.current = loginUser;
+  }, [loginUser]);
+
+  useEffect(() => {
+    roomsRef.current = rooms;
+  }, [rooms]);
+
+  useEffect(() => {
     setHasProcessedTripId(false);
+    shouldAutoEnterTripRoomRef.current = true; // Reset auto-enter flag when tripId changes
   }, [tripId]);
 
   useEffect(() => {
@@ -152,11 +164,21 @@ const Chat = () => {
     if (!socket) return;
 
     const handleRoomsList = (data) => {
-      if (ignoreRoomsListRef.current) {
+      const roomsData = Array.isArray(data) ? data : [];
+
+      if (ignoreRoomsListRef.current && roomsData.length > 0) {
+        const currentRooms = roomsRef.current;
+        const existingRoomIds = new Set(currentRooms.map((r) => r.id));
+        const hasNewRooms = roomsData.some(
+          (room) => room.id && !existingRoomIds.has(room.id)
+        );
+
+        if (!hasNewRooms) {
+          return;
+        }
+      } else if (ignoreRoomsListRef.current) {
         return;
       }
-
-      const roomsData = Array.isArray(data) ? data : [];
       const currentConversation = conversationRef.current;
       const currentRoomTypeFilter = roomTypeFilterRef.current;
 
@@ -166,14 +188,30 @@ const Chat = () => {
         }
 
         const sanitizedRooms = dedupeRooms(roomsData);
+
         if (!currentRoomTypeFilter) {
           return sanitizedRooms.length > 0 ? sanitizedRooms : prevRooms;
         }
 
-        const otherRooms = prevRooms.filter(
+        const existingRoomsMap = new Map(
+          prevRooms.map((room) => [room.id, room])
+        );
+
+        sanitizedRooms.forEach((newRoom) => {
+          existingRoomsMap.set(newRoom.id, newRoom);
+        });
+
+        const allRooms = dedupeRooms(Array.from(existingRoomsMap.values()));
+
+        const otherRooms = allRooms.filter(
           (room) => room.type !== currentRoomTypeFilter
         );
-        const mergedRooms = dedupeRooms([...sanitizedRooms, ...otherRooms]);
+        const filteredRooms = allRooms.filter(
+          (room) => room.type === currentRoomTypeFilter
+        );
+
+        const mergedRooms = dedupeRooms([...filteredRooms, ...otherRooms]);
+
         if (mergedRooms.length === 0 && prevRooms.length > 0) {
           return prevRooms;
         }
@@ -204,14 +242,48 @@ const Chat = () => {
       console.log("Message sent confirmation:", data);
     };
 
+    const handleReceiveMessage = (message) => {
+      if (message && message.room_id) {
+        const currentConversation = conversationRef.current;
+        const currentLoggedInUser = loggedInUserRef.current;
+
+        if (message.from !== currentLoggedInUser) {
+          setRooms((prevRooms) => {
+            const roomExists = prevRooms.some(
+              (room) => room.id === message.room_id
+            );
+
+            if (roomExists) {
+              return prevRooms.map((room) => {
+                if (room.id === message.room_id) {
+                  if (message.room_id !== currentConversation?.id) {
+                    return {
+                      ...room,
+                      unread_message_count:
+                        (room.unread_message_count || 0) + 1,
+                    };
+                  }
+                }
+                return room;
+              });
+            }
+
+            return prevRooms;
+          });
+        }
+      }
+    };
+
     socket.on("rooms list", handleRoomsList);
     socket.on("error", handleError);
     socket.on("message sent", handleMessageSent);
+    socket.on("chat message", handleReceiveMessage);
 
     return () => {
       socket.off("rooms list", handleRoomsList);
       socket.off("error", handleError);
       socket.off("message sent", handleMessageSent);
+      socket.off("chat message", handleReceiveMessage);
     };
   }, [socket]);
 
@@ -238,6 +310,7 @@ const Chat = () => {
 
   const handleTabChange = (type) => {
     setRoomTypeFilter(type);
+    shouldAutoEnterTripRoomRef.current = false;
   };
 
   const filteredRooms = useMemo(() => {
@@ -252,8 +325,9 @@ const Chat = () => {
       return;
     }
 
-    const currentHasProcessedTripId = hasProcessedTripIdRef.current;
-    if (currentHasProcessedTripId) {
+    if (!shouldAutoEnterTripRoomRef.current) {
+      setHasProcessedTripId(true);
+      setIsInitializing(false);
       return;
     }
 
@@ -379,6 +453,14 @@ const Chat = () => {
 
   const handleConversationSelect = (selectedConversation) => {
     setConversation(selectedConversation);
+
+    if (selectedConversation && tripId) {
+      const isTripRoom = selectedConversation.item_id === tripId;
+      if (!isTripRoom) {
+        shouldAutoEnterTripRoomRef.current = false;
+      }
+    }
+
     if (selectedConversation && selectedConversation.id) {
       setRooms((prevRooms) => {
         const roomIndex = prevRooms.findIndex(
