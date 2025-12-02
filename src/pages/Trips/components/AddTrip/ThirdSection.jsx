@@ -13,7 +13,7 @@ function ThirdSection({control}) {
 
   const {fields, append, remove} = useFieldArray({
     control,
-    name: "references",
+    name: "new_references",
   });
 
   const tripPickups = useWatch({
@@ -51,9 +51,9 @@ function ThirdSection({control}) {
   }, [tripPickups]);
 
   const referenceTypeOptions = [
-    {label: "PU #", value: "PU #"},
-    {label: "PO #", value: "PO #"},
-    {label: "Other #", value: "Other #"},
+    {label: "PU #", value: "PU"},
+    {label: "PO #", value: "PO"},
+    {label: "Other #", value: "Other"},
   ];
 
   const handleAddReference = (referenceData) => {
@@ -70,7 +70,7 @@ function ThirdSection({control}) {
 
   const watchedReferences = useWatch({
     control,
-    name: "references",
+    name: "new_references",
     defaultValue: [],
   });
 
@@ -249,109 +249,6 @@ function ThirdSection({control}) {
           </Box>
         </Flex>
       </Flex>
-
-      {/* {fields?.length > 0 && (
-        <Box mt="24px" w="100%">
-          <Text fontSize="16px" mb="12px" fontWeight="600" color="#181D27">
-            References
-          </Text>
-          <Flex flexDirection="column" gap="6px">
-            {fields?.map((field, index) => {
-              const currentReferenceType =
-                watchedReferences?.[index]?.type || field.type || "PU #";
-              const showDescription = currentReferenceType === "Other #";
-
-              return (
-                <Box key={field.id} p="6px 0" borderRadius="8px">
-                  <Flex gap="16px" alignItems="flex-start" flexWrap="wrap">
-                    <Box flex="1" minW="200px">
-                      <Text
-                        mb="6px"
-                        fontSize="14px"
-                        fontWeight="500"
-                        color="#414651">
-                        Stop <span style={{color: "#FF6B35"}}>*</span>
-                      </Text>
-                      <HFSelect
-                        control={control}
-                        name={`references.${index}.index`}
-                        options={stopOptions}
-                        placeholder="Select Stop"
-                        border="1px solid #D5D7DA"
-                        borderRadius="8px"
-                      />
-                    </Box>
-                    <Box flex="1" minW="200px">
-                      <Text
-                        mb="6px"
-                        fontSize="14px"
-                        fontWeight="500"
-                        color="#414651">
-                        Reference Type <span style={{color: "#FF6B35"}}>*</span>
-                      </Text>
-                      <HFSelect
-                        control={control}
-                        name={`references.${index}.type`}
-                        options={referenceTypeOptions}
-                        placeholder="PU #"
-                        border="1px solid #D5D7DA"
-                        borderRadius="8px"
-                      />
-                    </Box>
-                    <Box flex="1" minW="200px">
-                      <Text
-                        mb="6px"
-                        fontSize="14px"
-                        fontWeight="500"
-                        color="#414651">
-                        Reference Number
-                      </Text>
-                      <HFTextField
-                        control={control}
-                        name={`references.${index}.number`}
-                        placeholder="Enter Reference Number"
-                        border="1px solid #D5D7DA"
-                        borderRadius="8px"
-                        size="md"
-                      />
-                    </Box>
-                    {showDescription && (
-                      <Box flex="1" minW="200px">
-                        <Text
-                          mb="6px"
-                          fontSize="14px"
-                          fontWeight="500"
-                          color="#414651">
-                          Reference Description{" "}
-                          <span style={{color: "#FF6B35"}}>*</span>
-                        </Text>
-                        <HFTextField
-                          control={control}
-                          name={`references.${index}.other_description`}
-                          placeholder="Enter Reference Description"
-                          border="1px solid #D5D7DA"
-                          borderRadius="8px"
-                          size="md"
-                        />
-                      </Box>
-                    )}
-                    <Box alignSelf="flex-end">
-                      <Button
-                        onClick={() => remove(index)}
-                        bg="transparent"
-                        _hover={{bg: "#F8F9FA"}}
-                        p="8px"
-                        minW="auto">
-                        <DeleteIcon w="16px" h="16px" color="#FF6B35" />
-                      </Button>
-                    </Box>
-                  </Flex>
-                </Box>
-              );
-            })}
-          </Flex>
-        </Box>
-      )} */}
 
       <Box mt="24px" display="flex" justifyContent="flex-start">
         <Button

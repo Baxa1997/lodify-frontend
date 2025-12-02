@@ -18,6 +18,8 @@ function StopReferences({control, stopIndex}) {
     name: "new_references",
   });
 
+  console.log("fieldsfields", fields);
+
   const stopReferences = useMemo(() => {
     if (!allReferences || !Array.isArray(allReferences)) return [];
     return allReferences
@@ -77,8 +79,8 @@ function StopReferences({control, stopIndex}) {
 
             return (
               <Box key={fieldId} borderRadius="8px">
-                <Flex gap="12px" alignItems="flex-start" flexWrap="wrap">
-                  <Box flex="1" minW="200px">
+                <Flex gap="6px" alignItems="flex-start" flexWrap="wrap">
+                  <Box flex="1" minW="180px">
                     <Text
                       mb="6px"
                       fontSize="14px"
@@ -96,7 +98,7 @@ function StopReferences({control, stopIndex}) {
                     />
                   </Box>
 
-                  <Box flex="1" minW="200px">
+                  <Box flex="1" minW="180px">
                     <Text
                       mb="6px"
                       fontSize="14px"
@@ -113,7 +115,7 @@ function StopReferences({control, stopIndex}) {
                       borderRadius="8px"
                     />
                   </Box>
-                  <Box flex="1" minW="200px">
+                  <Box flex="1" minW="180px">
                     <Text
                       mb="6px"
                       fontSize="14px"
@@ -131,7 +133,7 @@ function StopReferences({control, stopIndex}) {
                     />
                   </Box>
                   {showDescription && (
-                    <Box flex="1" minW="200px">
+                    <Box flex="1" minW="180px">
                       <Text
                         mb="6px"
                         fontSize="14px"
