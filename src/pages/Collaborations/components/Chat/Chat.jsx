@@ -45,7 +45,6 @@ const Chat = () => {
   const tripId = locationState?.tripId;
   const tripName = locationState?.tripName;
 
-  // Refs to avoid stale closures
   const conversationRef = useRef(conversation);
   const tripIdRef = useRef(tripId);
   const hasProcessedTripIdRef = useRef(hasProcessedTripId);
@@ -162,16 +161,22 @@ const Chat = () => {
       const currentRoomTypeFilter = roomTypeFilterRef.current;
 
       setRooms((prevRooms) => {
+        if (roomsData.length === 0 && prevRooms.length > 0) {
+          return prevRooms;
+        }
+
         const sanitizedRooms = dedupeRooms(roomsData);
         if (!currentRoomTypeFilter) {
-          return sanitizedRooms;
+          return sanitizedRooms.length > 0 ? sanitizedRooms : prevRooms;
         }
 
         const otherRooms = prevRooms.filter(
           (room) => room.type !== currentRoomTypeFilter
         );
-
         const mergedRooms = dedupeRooms([...sanitizedRooms, ...otherRooms]);
+        if (mergedRooms.length === 0 && prevRooms.length > 0) {
+          return prevRooms;
+        }
 
         if (currentConversation?.id) {
           return mergedRooms.map((room) => {
