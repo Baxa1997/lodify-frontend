@@ -19,8 +19,6 @@ export const transformTripData = (data) => {
     rate_confirmation: normalizeFileField(data.rate_confirmation),
     bold_pod: normalizeFileField(data.bold_pod || data.bol_pod),
     other_files: normalizeFileField(data.other_files),
-    tractors_id: data.tractor?.guid || data.tractors_id,
-    trailers_id: data.trailer?.guid || data.trailers_id,
     shippers_id: data.shipper?.guid || data.shippers_id,
     companies_id_2: data.created_by?.guid || data.companies_id_2,
 

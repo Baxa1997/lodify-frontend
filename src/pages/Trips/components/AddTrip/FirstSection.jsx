@@ -43,7 +43,7 @@ function FirstSection({control, watch}) {
   });
 
   const watchedTractor = watch("tractors_id");
-  const watchedTrailer = watch("trailers_id");
+  const watchedTrailer = watch("assets_id");
 
   useEffect(() => {
     if (watchedTractor && watchedTractor !== tractorValue && tripId) {
@@ -204,7 +204,7 @@ function FirstSection({control, watch}) {
           {tripId ? (
             <HFSelect
               control={control}
-              name="tractors_id"
+              name="assets_id"
               options={trucksData || []}
               size="md"
               disabled={!tripId}
