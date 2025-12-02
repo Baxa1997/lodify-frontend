@@ -17,7 +17,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
   const isInitialLoadRef = useRef(false);
   const isLoadingPaginationRef = useRef(false);
 
-  // Refs to avoid stale closures in socket handlers
   const conversationRef = useRef(conversation);
   const loggedInUserRef = useRef(loggedInUser);
   const userIdRef = useRef(userId);
@@ -111,7 +110,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     prevMessageCountRef.current = localMessages.length;
   }, [localMessages]);
 
-  // Keep refs in sync with current values
   useEffect(() => {
     conversationRef.current = conversation;
   }, [conversation]);
@@ -128,7 +126,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     projectIdRef.current = projectId;
   }, [projectId]);
 
-  // Keep pagination ref in sync
   useEffect(() => {
     paginationRef.current = pagination;
   }, [pagination]);
@@ -151,7 +148,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     if (!socket) return;
 
     const handleRoomHistory = (messages) => {
-      // Get current conversation to ensure we only process messages for the active room
       const currentConversation = conversationRef.current;
       if (!currentConversation?.id) return;
 
@@ -162,30 +158,23 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
         : null;
 
       if (messagesToSet) {
-        // When you join a room, the server returns messages for that room
-        // Filter to ensure we only process messages for the current conversation
-        // (in case of race conditions when switching rooms quickly)
         const filteredMessages = messagesToSet.filter((msg) => {
-          // If message has room_id, it must match current conversation
           if (msg.room_id) {
             return msg.room_id === currentConversation.id;
           }
-          // If no room_id, assume it's for the room we just joined (server behavior)
+
           return true;
         });
 
-        // If we have messages but none match current room, ignore this response
         if (filteredMessages.length === 0 && messagesToSet.length > 0) {
-          // Check if any message has a room_id that doesn't match
           const hasMismatchedRoom = messagesToSet.some(
             (msg) => msg.room_id && msg.room_id !== currentConversation.id
           );
           if (hasMismatchedRoom) {
-            return; // Messages are for a different room
+            return;
           }
         }
 
-        // Check if we're loading more messages (pagination)
         const currentPagination = paginationRef.current;
         const isLoadingMore =
           currentPagination?.isLoadingMore || isLoadingPaginationRef.current;
@@ -229,7 +218,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
             }
           });
         } else {
-          // Initial load - replace all messages
           setLocalMessages(filteredMessages);
           isInitialLoadRef.current = true;
         }
@@ -239,7 +227,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
     };
 
     const handleReceiveMessage = (message) => {
-      // Use refs to get current values, avoiding stale closures
       const currentConversation = conversationRef.current;
       const currentUserId = userIdRef.current;
       const currentLoggedInUser = loggedInUserRef.current;
@@ -309,7 +296,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
   useEffect(() => {
     if (!socket || !conversation?.id || !userId || !isConnected) return;
 
-    // Clear messages when switching rooms
     setLocalMessages([]);
     prevMessageCountRef.current = 0;
     isInitialLoadRef.current = true;
@@ -322,8 +308,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
       isLoadingMore: false,
     });
 
-    // Join room and load messages when conversation changes
-    // The server will respond with "room history" event containing messages
     socket.emit("join room", {
       room_id: conversation.id,
       row_id: userId,
@@ -331,7 +315,6 @@ const MessagesList = ({rooms = [], conversation, isConnected, onReply}) => {
       offset: 0,
     });
 
-    // Get presence info if available
     if (conversation.to_row_id) {
       socket.emit("presence:get", {
         row_id: conversation.to_row_id,

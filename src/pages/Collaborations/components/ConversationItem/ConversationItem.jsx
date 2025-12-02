@@ -17,6 +17,7 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
     unread_message_count = 0,
     attributes,
   } = conversation;
+
   const broker = attributes?.broker;
   const carrier = attributes?.carrier;
 
