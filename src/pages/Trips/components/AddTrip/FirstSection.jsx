@@ -202,6 +202,7 @@ function FirstSection({control, setValue}) {
             </Text>
             {tripId ? (
               <Controller
+                rules={{required: true}}
                 control={control}
                 name="assets_id"
                 render={({field}) => (
@@ -235,7 +236,7 @@ function FirstSection({control, setValue}) {
               fontSize={"14px"}
               fontWeight={"500"}
               color={"#414651"}>
-              Trailer <span>*</span>
+              Trailer
             </Text>
             {tripId ? (
               <Controller

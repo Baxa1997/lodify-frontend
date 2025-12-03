@@ -1,10 +1,9 @@
 import React, {useEffect} from "react";
 import styles from "./ConversationItem.module.scss";
 import {checkValidUrl} from "@utils/checkValidUrl";
-import {calculateTimeHoursDifferenceInTimeZone} from "@utils/dateFormats";
 import {useSocket} from "@context/SocketProvider";
 import {useSelector} from "react-redux";
-import {Box, Flex, Text} from "@chakra-ui/react";
+import {Badge, Box, Flex, Text} from "@chakra-ui/react";
 
 const ConversationItem = ({conversation, isSelected, onClick}) => {
   const {
@@ -104,7 +103,23 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
               <div className={styles.header}>
                 <div className={styles.nameContainer}>
                   <span style={{color: "#181D27"}} className={styles.name}>
-                    Load {to_name}
+                    Load {to_name}{" "}
+                    {unread_message_count > 0 && (
+                      <Badge
+                        bg="#EF6820"
+                        color="white"
+                        borderRadius="full"
+                        px="8px"
+                        py="2px"
+                        mb="5px"
+                        ml="8px"
+                        fontSize="12px"
+                        fontWeight="600">
+                        {unread_message_count > 99
+                          ? "99+"
+                          : unread_message_count}
+                      </Badge>
+                    )}
                   </span>
                 </div>
               </div>

@@ -48,10 +48,9 @@ function AssignTripCarrier({control, name = "carrier"}) {
     <>
       <Box w={"100%"}>
         <Text mb={"6px"} fontSize={"14px"} fontWeight={"500"} color={"#414651"}>
-          Carrier <span>*</span>
+          Carrier
         </Text>
         <HFSearchableSelect
-          required
           size="md"
           control={control}
           name={name}

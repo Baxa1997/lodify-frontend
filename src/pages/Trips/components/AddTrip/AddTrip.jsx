@@ -248,7 +248,6 @@ function AddTrip({tripData = {}}) {
   };
 
   useEffect(() => {
-    console.log("userDatauserData", userData);
     if (Boolean(isBroker)) {
       if (tripData?.created_by) {
         setValue("created_by", tripData?.created_by?.legal_name);
