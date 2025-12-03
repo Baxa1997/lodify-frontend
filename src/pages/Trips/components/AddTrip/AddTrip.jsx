@@ -251,7 +251,7 @@ function AddTrip({tripData = {}}) {
     if (tripData?.created_by) {
       setValue("created_by", tripData?.created_by?.legal_name);
     } else {
-      setValue("created_by", "");
+      setValue("created_by", userData?.full_name ?? "");
     }
   }, [tripData]);
 
