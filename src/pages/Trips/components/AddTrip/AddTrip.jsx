@@ -255,14 +255,18 @@ function AddTrip({tripData = {}}) {
       } else {
         setValue(
           "created_by",
-          `${userData?.first_name} ${userData?.last_name}` ?? ""
+          `${userData?.first_name ?? ""} ${userData?.last_name ?? ""}` ?? ""
         );
       }
     } else {
-      setValue(
-        "created_by",
-        `${userData?.first_name}   ${userData?.last_name}` ?? ""
-      );
+      if (tripData?.created_by) {
+        setValue("created_by", tripData?.created_by?.legal_name);
+      } else {
+        setValue(
+          "created_by",
+          `${userData?.first_name ?? ""} ${userData?.last_name ?? ""}` ?? ""
+        );
+      }
     }
   }, [tripData, isBroker]);
 
