@@ -15,6 +15,7 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
     isOnline,
     type,
     last_message_created_at,
+    last_message_from,
     unread_message_count = 0,
     attributes,
   } = conversation;
@@ -25,6 +26,21 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
   const socket = useSocket();
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const loginUser = useSelector((state) => state.auth.user_data?.login);
+
+  const getSenderName = () => {
+    if (!last_message_from) return null;
+
+    if (
+      loginUser &&
+      String(last_message_from).trim().toLowerCase() ===
+        String(loginUser).trim().toLowerCase()
+    ) {
+      return "You";
+    }
+
+    return last_message_from;
+  };
   const getMessagePreview = () => {
     if (checkValidUrl(last_message)) {
       return "📎 File";
@@ -32,13 +48,13 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
     return last_message || "No messages yet";
   };
 
-  const getTimeDisplay = () => {
-    const time = calculateTimeHoursDifferenceInTimeZone(
-      last_message_created_at
-    );
-    if (time === "Online") return "online";
-    return time || "now";
-  };
+  // const getTimeDisplay = () => {
+  //   const time = calculateTimeHoursDifferenceInTimeZone(
+  //     last_message_created_at
+  //   );
+  //   if (time === "Online") return "online";
+  //   return time || "now";
+  // };
 
   const getInitials = () => {
     if (Boolean(type === "group")) {
@@ -108,7 +124,11 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
             ml="6px"
             w="100%"
             className={styles.messagePreview}>
-            <span style={{color: "#535862", fontWeight: "600"}}>You:</span>{" "}
+            {getSenderName() && (
+              <span style={{color: "#535862", fontWeight: "600"}}>
+                {getSenderName()}:
+              </span>
+            )}{" "}
             {getMessagePreview()}
           </Box>
         </div>
@@ -144,7 +164,11 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
             ml="6px"
             w="100%"
             className={styles.messagePreview}>
-            <span style={{color: "#535862", fontWeight: "600"}}>You:</span>{" "}
+            {getSenderName() && (
+              <span style={{color: "#535862", fontWeight: "600"}}>
+                {getSenderName()}:
+              </span>
+            )}{" "}
             {getMessagePreview()}
           </Box>
         </div>
