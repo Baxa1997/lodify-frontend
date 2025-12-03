@@ -252,6 +252,11 @@ function AddTrip({tripData = {}}) {
     if (Boolean(isBroker)) {
       if (tripData?.created_by) {
         setValue("created_by", tripData?.created_by?.legal_name);
+      } else {
+        setValue(
+          "created_by",
+          `${userData?.first_name} ${userData?.last_name}` ?? ""
+        );
       }
     } else {
       setValue(
