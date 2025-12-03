@@ -73,9 +73,9 @@ const Chat = () => {
     loggedInUserRef.current = loginUser;
   }, [loginUser]);
 
-  // useEffect(() => {
-  //   roomsRef.current = rooms;
-  // }, [rooms]);
+  useEffect(() => {
+    roomsRef.current = rooms;
+  }, [rooms]);
 
   useEffect(() => {
     setHasProcessedTripId(false);
@@ -189,19 +189,42 @@ const Chat = () => {
 
         const sanitizedRooms = dedupeRooms(roomsData);
 
-        if (!currentRoomTypeFilter) {
-          return sanitizedRooms.length > 0 ? sanitizedRooms : prevRooms;
-        }
-
         const existingRoomsMap = new Map(
           prevRooms.map((room) => [room.id, room])
         );
 
         sanitizedRooms.forEach((newRoom) => {
-          existingRoomsMap.set(newRoom.id, newRoom);
+          const existingRoom = existingRoomsMap.get(newRoom.id);
+          if (existingRoom) {
+            // Merge existing room with new room data, preserving unread count and last message if not in new data
+            existingRoomsMap.set(newRoom.id, {
+              ...existingRoom,
+              ...newRoom,
+              unread_message_count:
+                newRoom.unread_message_count !== undefined
+                  ? newRoom.unread_message_count
+                  : existingRoom.unread_message_count,
+              last_message:
+                newRoom.last_message !== undefined &&
+                newRoom.last_message !== null
+                  ? newRoom.last_message
+                  : existingRoom.last_message,
+              last_message_created_at:
+                newRoom.last_message_created_at !== undefined &&
+                newRoom.last_message_created_at !== null
+                  ? newRoom.last_message_created_at
+                  : existingRoom.last_message_created_at,
+            });
+          } else {
+            existingRoomsMap.set(newRoom.id, newRoom);
+          }
         });
 
         const allRooms = dedupeRooms(Array.from(existingRoomsMap.values()));
+
+        if (!currentRoomTypeFilter) {
+          return allRooms.length > 0 ? allRooms : prevRooms;
+        }
 
         const otherRooms = allRooms.filter(
           (room) => room.type !== currentRoomTypeFilter
@@ -247,30 +270,39 @@ const Chat = () => {
         const currentConversation = conversationRef.current;
         const currentLoggedInUser = loggedInUserRef.current;
 
-        if (message.from !== currentLoggedInUser) {
-          setRooms((prevRooms) => {
-            const roomExists = prevRooms.some(
-              (room) => room.id === message.room_id
-            );
+        setRooms((prevRooms) => {
+          const roomExists = prevRooms.some(
+            (room) => room.id === message.room_id
+          );
 
-            if (roomExists) {
-              return prevRooms.map((room) => {
-                if (room.id === message.room_id) {
+          if (roomExists) {
+            return prevRooms.map((room) => {
+              if (room.id === message.room_id) {
+                const updatedRoom = {
+                  ...room,
+                  last_message:
+                    message.message || message.content || room.last_message,
+                  last_message_created_at:
+                    message.created_at ||
+                    message.timestamp ||
+                    room.last_message_created_at,
+                };
+
+                if (message.from !== currentLoggedInUser) {
                   if (message.room_id !== currentConversation?.id) {
-                    return {
-                      ...room,
-                      unread_message_count:
-                        (room.unread_message_count || 0) + 1,
-                    };
+                    updatedRoom.unread_message_count =
+                      (room.unread_message_count || 0) + 1;
                   }
                 }
-                return room;
-              });
-            }
 
-            return prevRooms;
-          });
-        }
+                return updatedRoom;
+              }
+              return room;
+            });
+          }
+
+          return prevRooms;
+        });
       }
     };
 
@@ -314,10 +346,20 @@ const Chat = () => {
   };
 
   const filteredRooms = useMemo(() => {
-    if (!roomTypeFilter) {
-      return rooms;
+    let filtered = rooms;
+    if (roomTypeFilter) {
+      filtered = rooms.filter((room) => room.type === roomTypeFilter);
     }
-    return rooms.filter((room) => room.type === roomTypeFilter);
+
+    return [...filtered].sort((a, b) => {
+      const timeA = a.last_message_created_at
+        ? new Date(a.last_message_created_at).getTime()
+        : 0;
+      const timeB = b.last_message_created_at
+        ? new Date(b.last_message_created_at).getTime()
+        : 0;
+      return timeB - timeA;
+    });
   }, [rooms, roomTypeFilter]);
 
   useEffect(() => {
@@ -437,6 +479,22 @@ const Chat = () => {
         console.error("❌ Server error response:", response.error);
       } else {
         console.log("✅ Server success response:", response);
+
+        // Update room's last message when message is sent
+        if (conversation?.id) {
+          setRooms((prevRooms) => {
+            return prevRooms.map((room) => {
+              if (room.id === conversation.id) {
+                return {
+                  ...room,
+                  last_message: content,
+                  last_message_created_at: new Date().toISOString(),
+                };
+              }
+              return room;
+            });
+          });
+        }
 
         setReplyingTo(null);
       }
