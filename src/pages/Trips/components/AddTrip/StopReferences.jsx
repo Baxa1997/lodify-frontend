@@ -18,8 +18,6 @@ function StopReferences({control, stopIndex}) {
     name: "new_references",
   });
 
-  console.log("fieldsfields", fields);
-
   const stopReferences = useMemo(() => {
     if (!allReferences || !Array.isArray(allReferences)) return [];
     return allReferences

@@ -248,12 +248,18 @@ function AddTrip({tripData = {}}) {
   };
 
   useEffect(() => {
-    if (tripData?.created_by) {
-      setValue("created_by", tripData?.created_by?.legal_name);
+    console.log("userDatauserData", userData);
+    if (Boolean(isBroker)) {
+      if (tripData?.created_by) {
+        setValue("created_by", tripData?.created_by?.legal_name);
+      }
     } else {
-      setValue("created_by", userData?.full_name ?? "");
+      setValue(
+        "created_by",
+        `${userData?.first_name}   ${userData?.last_name}` ?? ""
+      );
     }
-  }, [tripData]);
+  }, [tripData, isBroker]);
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
