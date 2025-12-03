@@ -25,7 +25,6 @@ const SearchToggle = ({
     name: "mc_numbers",
   });
 
-  // US DOT search
   const {data, isSuccess, isError, error, refetch, isLoading} = useGetLodify(
     fmcsa,
     {
@@ -34,7 +33,6 @@ const SearchToggle = ({
     }
   );
 
-  // MC search
   const {
     data: mcData,
     isSuccess: isSuccessMC,

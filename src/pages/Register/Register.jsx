@@ -226,7 +226,6 @@ const Register = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log("datadata", data);
     const passwordValidation = validatePassword(data.password);
     if (passwordValidation !== true) {
       toast({
