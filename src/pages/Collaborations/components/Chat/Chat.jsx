@@ -77,10 +77,10 @@ const Chat = () => {
   //   roomsRef.current = rooms;
   // }, [rooms]);
 
-  // useEffect(() => {
-  //   setHasProcessedTripId(false);
-  //   shouldAutoEnterTripRoomRef.current = true;
-  // }, [tripId]);
+  useEffect(() => {
+    setHasProcessedTripId(false);
+    shouldAutoEnterTripRoomRef.current = true;
+  }, [tripId]);
 
   useEffect(() => {
     if (!socket || !userId || !isConnected) return;

@@ -115,23 +115,7 @@ function StopReferences({control, stopIndex}) {
                       borderRadius="8px"
                     />
                   </Box>
-                  <Box flex="1" minW="180px">
-                    <Text
-                      mb="6px"
-                      fontSize="14px"
-                      fontWeight="500"
-                      color="#414651">
-                      Reference Number
-                    </Text>
-                    <HFTextField
-                      control={control}
-                      name={`new_references.${arrayIndex}.number`}
-                      placeholder="Enter Reference Number"
-                      border="1px solid #D5D7DA"
-                      borderRadius="8px"
-                      size="md"
-                    />
-                  </Box>
+
                   {showDescription && (
                     <Box flex="1" minW="180px">
                       <Text
