@@ -4,6 +4,7 @@ import {checkValidUrl} from "@utils/checkValidUrl";
 import {calculateTimeHoursDifferenceInTimeZone} from "@utils/dateFormats";
 import {useSocket} from "@context/SocketProvider";
 import {useSelector} from "react-redux";
+import {Box, Flex, Text} from "@chakra-ui/react";
 
 const ConversationItem = ({conversation, isSelected, onClick}) => {
   const {
@@ -70,43 +71,85 @@ const ConversationItem = ({conversation, isSelected, onClick}) => {
   }, [socket, conversation?.id]);
 
   return (
-    <div
-      className={`${styles.conversationItem} ${
-        isSelected ? styles.selected : ""
-      }`}
-      onClick={onClick}>
-      <div className={styles.avatarContainer}>
-        <div className={styles.avatar}>{getInitials()}</div>
-        {isOnline && <div className={styles.onlineIndicator}></div>}
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <div className={styles.nameContainer}>
-            <span className={styles.name}>
-              {type === "group"
-                ? isBroker
-                  ? `${carrier?.legal_name ?? ""} `
-                  : `${broker?.legal_name ?? ""}  ${to_name} `
-                : to_name}
-            </span>
-          </div>
-          {unread_message_count > 0 && (
-            <div className={styles.unreadBadge}>
-              {unread_message_count > 99 ? "99+" : unread_message_count}
+    <>
+      {type === "group" ? (
+        <div
+          className={`${styles.conversationItemGroup} ${
+            isSelected ? styles.selected : ""
+          }`}
+          onClick={onClick}>
+          <Flex pt="10px">
+            <div className={styles.avatarContainer}>
+              <div className={styles.avatar}>{getInitials()}</div>
+              {isOnline && <div className={styles.onlineIndicator}></div>}
             </div>
-          )}
-        </div>
 
-        <div className={styles.messageContainer}>
-          <div className={styles.messagePreview}>
-            <span>You:</span> {getMessagePreview()}
-          </div>
+            <div className={styles.content}>
+              <div className={styles.header}>
+                <div className={styles.nameContainer}>
+                  <span style={{color: "#181D27"}} className={styles.name}>
+                    Load {to_name}
+                  </span>
+                </div>
+              </div>
 
-          <div className={styles.timestamp}>{getTimeDisplay()}</div>
+              <Text fontSize="14px" fontWeight="400" color="#535862">
+                {type === "group"
+                  ? isBroker
+                    ? `${carrier?.legal_name ?? ""} `
+                    : `${broker?.legal_name ?? ""}  `
+                  : to_name}
+              </Text>
+            </div>
+          </Flex>
+          <Box
+            mt="16px"
+            mb="6px"
+            ml="6px"
+            w="100%"
+            className={styles.messagePreview}>
+            <span style={{color: "#535862", fontWeight: "600"}}>You:</span>{" "}
+            {getMessagePreview()}
+          </Box>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div
+          className={`${styles.conversationItemGroup} ${
+            isSelected ? styles.selected : ""
+          }`}
+          onClick={onClick}>
+          <Flex pt="10px">
+            <div className={styles.avatarContainer}>
+              <div className={styles.avatar}>{getInitials()}</div>
+              {isOnline && <div className={styles.onlineIndicator}></div>}
+            </div>
+
+            <div className={styles.content}>
+              <div className={styles.header}>
+                <div className={styles.nameContainer}>
+                  <span style={{color: "#181D27"}} className={styles.name}>
+                    {to_name}
+                  </span>
+                </div>
+              </div>
+
+              <Text fontSize="14px" fontWeight="400" color="#535862">
+                {to_name}
+              </Text>
+            </div>
+          </Flex>
+          <Box
+            mt="16px"
+            mb="6px"
+            ml="6px"
+            w="100%"
+            className={styles.messagePreview}>
+            <span style={{color: "#535862", fontWeight: "600"}}>You:</span>{" "}
+            {getMessagePreview()}
+          </Box>
+        </div>
+      )}
+    </>
   );
 };
 

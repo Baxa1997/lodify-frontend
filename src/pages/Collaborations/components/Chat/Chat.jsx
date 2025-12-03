@@ -213,6 +213,11 @@ const Chat = () => {
                 newRoom.last_message_created_at !== null
                   ? newRoom.last_message_created_at
                   : existingRoom.last_message_created_at,
+              last_message_from:
+                newRoom.last_message_from !== undefined &&
+                newRoom.last_message_from !== null
+                  ? newRoom.last_message_from
+                  : existingRoom.last_message_from,
             });
           } else {
             existingRoomsMap.set(newRoom.id, newRoom);
@@ -285,6 +290,7 @@ const Chat = () => {
                     message.created_at ||
                     message.timestamp ||
                     room.last_message_created_at,
+                  last_message_from: message.from || room.last_message_from,
                 };
 
                 if (message.from !== currentLoggedInUser) {
@@ -514,6 +520,7 @@ const Chat = () => {
                   ...room,
                   last_message: content,
                   last_message_created_at: new Date().toISOString(),
+                  last_message_from: loginUser,
                 };
               }
               return room;
