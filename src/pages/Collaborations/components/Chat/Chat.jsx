@@ -196,7 +196,6 @@ const Chat = () => {
         sanitizedRooms.forEach((newRoom) => {
           const existingRoom = existingRoomsMap.get(newRoom.id);
           if (existingRoom) {
-            // Merge existing room with new room data, preserving unread count and last message if not in new data
             existingRoomsMap.set(newRoom.id, {
               ...existingRoom,
               ...newRoom,
@@ -367,21 +366,44 @@ const Chat = () => {
       return;
     }
 
+    const currentHasProcessedTripId = hasProcessedTripIdRef.current;
+    if (currentHasProcessedTripId) {
+      return;
+    }
+
     if (!shouldAutoEnterTripRoomRef.current) {
+      hasProcessedTripIdRef.current = true;
       setHasProcessedTripId(true);
       setIsInitializing(false);
       return;
     }
 
-    const existingRoom = rooms.find((room) => room.item_id === tripId);
+    const currentConversation = conversationRef.current;
+    if (currentConversation && currentConversation.item_id !== tripId) {
+      shouldAutoEnterTripRoomRef.current = false;
+      hasProcessedTripIdRef.current = true;
+      setHasProcessedTripId(true);
+      setIsInitializing(false);
+      return;
+    }
+
+    if (currentConversation && currentConversation.item_id === tripId) {
+      hasProcessedTripIdRef.current = true;
+      setHasProcessedTripId(true);
+      setIsInitializing(false);
+      return;
+    }
+
+    const currentRooms = roomsRef.current.length > 0 ? roomsRef.current : rooms;
+    const existingRoom = currentRooms.find((room) => room.item_id === tripId);
 
     if (existingRoom?.id) {
       setConversation(existingRoom);
+      hasProcessedTripIdRef.current = true;
       setHasProcessedTripId(true);
       setIsInitializing(false);
     } else {
       setIsInitializing(true);
-      setHasProcessedTripId(true);
 
       socket.emit(
         "create room",
@@ -402,6 +424,8 @@ const Chat = () => {
           if (response && response.room) {
             const newRoom = response.room;
             setConversation(newRoom);
+            hasProcessedTripIdRef.current = true;
+            setHasProcessedTripId(true);
             setRooms((prevRooms) => {
               const exists = prevRooms.some((r) => r.id === newRoom.id);
               if (exists) {
@@ -423,9 +447,11 @@ const Chat = () => {
           } else if (response && response.error) {
             console.error("Error creating room:", response.error);
             setIsInitializing(false);
+            hasProcessedTripIdRef.current = false;
             setHasProcessedTripId(false);
           } else {
             setIsInitializing(false);
+            hasProcessedTripIdRef.current = false;
             setHasProcessedTripId(false);
           }
         }
@@ -480,7 +506,6 @@ const Chat = () => {
       } else {
         console.log("✅ Server success response:", response);
 
-        // Update room's last message when message is sent
         if (conversation?.id) {
           setRooms((prevRooms) => {
             return prevRooms.map((room) => {
@@ -512,10 +537,14 @@ const Chat = () => {
   const handleConversationSelect = (selectedConversation) => {
     setConversation(selectedConversation);
 
-    if (selectedConversation && tripId) {
-      const isTripRoom = selectedConversation.item_id === tripId;
-      if (!isTripRoom) {
+    if (tripId) {
+      if (!selectedConversation) {
         shouldAutoEnterTripRoomRef.current = false;
+      } else {
+        const isTripRoom = selectedConversation.item_id === tripId;
+        if (!isTripRoom) {
+          shouldAutoEnterTripRoomRef.current = false;
+        }
       }
     }
 
