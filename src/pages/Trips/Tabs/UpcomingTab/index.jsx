@@ -37,10 +37,28 @@ import {ReAssignCarrierButton} from "./components/FunctionalComponents";
 import {TripStatus} from "../../components/TabsElements";
 import DriverAssignmentMenu from "./components/DriverAssignmentMenu";
 import DriverAssignmentModal from "./components/DriverAssignmentModal";
+import TractorAssignmentMenu from "./components/TractorAssignmentMenu";
+import TractorAssignmentModal from "./components/TractorAssignmentModal";
+import TrailerAssignmentMenu from "./components/TrailerAssignmentMenu";
+import TrailerAssignmentModal from "./components/TrailerAssignmentModal";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const getOrderedColumns = () => {
+    const filteredElements = tableElements?.filter((element) =>
+      isBroker
+        ? element.key !== "invited_by" &&
+          element?.key !== "driver" &&
+          element?.key !== "driver2" &&
+          element?.key !== "tracktor_unit_id" &&
+          element?.key !== "trailer_unit_id"
+        : element?.key !== "carrier"
+    );
+
+    return filteredElements;
+  };
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
@@ -52,6 +70,18 @@ function UpcomingTab({tripType = "", isActive = true}) {
     useState(false);
   const [selectedTripForAssignment, setSelectedTripForAssignment] =
     useState(null);
+  const [isTractorAssignmentModalOpen, setIsTractorAssignmentModalOpen] =
+    useState(false);
+  const [
+    selectedTripForTractorAssignment,
+    setSelectedTripForTractorAssignment,
+  ] = useState(null);
+  const [isTrailerAssignmentModalOpen, setIsTrailerAssignmentModalOpen] =
+    useState(false);
+  const [
+    selectedTripForTrailerAssignment,
+    setSelectedTripForTrailerAssignment,
+  ] = useState(null);
 
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
@@ -60,7 +90,6 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
-
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
@@ -184,29 +213,19 @@ function UpcomingTab({tripType = "", isActive = true}) {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead zIndex={8}>
             <Box as={"tr"}>
-              {tableElements
-                ?.filter((element) =>
-                  isBroker
-                    ? element.key !== "invited_by" &&
-                      element?.key !== "driver" &&
-                      element?.key !== "driver2"
-                    : element?.key !== "carrier"
-                )
-                .map((element) => (
-                  <CTableTh
-                    zIndex={-1}
-                    maxW="334px"
-                    sortable={element.sortable}
-                    sortDirection={
-                      sortConfig.key === element.key
-                        ? sortConfig.direction
-                        : null
-                    }
-                    key={element.id}
-                    onSort={() => handleSort(element.key)}>
-                    {element.name}
-                  </CTableTh>
-                ))}
+              {getOrderedColumns().map((element) => (
+                <CTableTh
+                  zIndex={-1}
+                  maxW="334px"
+                  sortable={element.sortable}
+                  sortDirection={
+                    sortConfig.key === element.key ? sortConfig.direction : null
+                  }
+                  key={element.id}
+                  onSort={() => handleSort(element.key)}>
+                  {element.name}
+                </CTableTh>
+              ))}
             </Box>
           </CTableHead>
 
@@ -358,21 +377,31 @@ function UpcomingTab({tripType = "", isActive = true}) {
                         </CTableTd>
                       )}
 
-                      <CTableTd>
-                        <Box>
-                          <Text h="20px" color="#181D27">
-                            {trip?.tractors?.plate_number ?? "---"}
-                          </Text>
-                        </Box>
-                      </CTableTd>
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <TractorAssignmentMenu
+                            trip={trip}
+                            onAssignClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTripForTractorAssignment(trip);
+                              setIsTractorAssignmentModalOpen(true);
+                            }}
+                          />
+                        </CTableTd>
+                      )}
 
-                      <CTableTd>
-                        <Box>
-                          <Text h="20px" color="#181D27">
-                            {trip?.trailers?.plate_number ?? "---"}
-                          </Text>
-                        </Box>
-                      </CTableTd>
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                          <TrailerAssignmentMenu
+                            trip={trip}
+                            onAssignClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTripForTrailerAssignment(trip);
+                              setIsTrailerAssignmentModalOpen(true);
+                            }}
+                          />
+                        </CTableTd>
+                      )}
 
                       <CTableTd>
                         <Flex gap="12px" justifyContent="space-between">
@@ -550,6 +579,24 @@ function UpcomingTab({tripType = "", isActive = true}) {
           setSelectedTripForAssignment(null);
         }}
         trip={selectedTripForAssignment}
+      />
+
+      <TractorAssignmentModal
+        isOpen={isTractorAssignmentModalOpen}
+        onClose={() => {
+          setIsTractorAssignmentModalOpen(false);
+          setSelectedTripForTractorAssignment(null);
+        }}
+        trip={selectedTripForTractorAssignment}
+      />
+
+      <TrailerAssignmentModal
+        isOpen={isTrailerAssignmentModalOpen}
+        onClose={() => {
+          setIsTrailerAssignmentModalOpen(false);
+          setSelectedTripForTrailerAssignment(null);
+        }}
+        trip={selectedTripForTrailerAssignment}
       />
     </Box>
   );
