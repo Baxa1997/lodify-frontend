@@ -43,7 +43,7 @@ const TractorAssignmentModal = ({isOpen, onClose, trip}) => {
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
-
+  console.log("tractorsDatatractorsDatatractorsData", tractorsData);
   const tractorOptions = useMemo(() => {
     return tractorsData.map((tractor) => ({
       label: tractor.licence_plate || tractor.name || "N/A",
