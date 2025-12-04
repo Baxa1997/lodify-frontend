@@ -26,6 +26,7 @@ import {Violation} from "../Violation";
 import {Connection} from "../Connection";
 import {VictimIdentity} from "../VictimIdentity";
 import Assessments from "../Assessments";
+import Insights from "../Insights";
 
 export const Overview = ({
   generalInfo,
@@ -41,12 +42,13 @@ export const Overview = ({
         <Connection />
         <VictimIdentity />
         <Assessments />
+        <Insights />
+        <State />
         <Equipment />
         <Authority
           carrierDetails={carrierDetails}
           companySnapshot={companySnapshot}
         />
-        <State />
         <ActiveAndPendingInsurance />
         <Safety data={companySnapshot} />
         <Operations companySnapshot={companySnapshot} operation={operation} />
@@ -56,7 +58,7 @@ export const Overview = ({
       data={generalInfo}
       companySnapshot={companySnapshot}
     /> */}
-      {/* <LaneInsights data={companySnapshot} /> */}
+
       {/* <CompanyInformation data={companySnapshot} /> */}
       {/* <SmsResult /> */}
       {/* <CrashIndicator /> */}
