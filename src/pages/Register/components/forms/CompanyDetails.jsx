@@ -13,7 +13,11 @@ const SearchToggle = ({
   getValues,
 }) => {
   const [searchStatus, setSearchStatus] = useState("idle");
-  const [searchType, setSearchType] = useState("US DOT");
+
+  const [searchType, setSearchType] = useState(() => {
+    const stored = localStorage.getItem("number_type");
+    return stored || "US DOT";
+  });
   const [companyData, setCompanyData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [newMcNumber, setNewMcNumber] = useState("");
@@ -139,6 +143,15 @@ const SearchToggle = ({
     setCompanyData(null);
     setErrorMessage("");
   }, [searchType]);
+
+  // Ensure number_type in localStorage defaults to "US DOT" if not set
+  useEffect(() => {
+    const storedNumberType = localStorage.getItem("number_type");
+    if (!storedNumberType) {
+      // Default is always US DOT
+      localStorage.setItem("number_type", "US DOT");
+    }
+  }, []);
 
   return (
     <>

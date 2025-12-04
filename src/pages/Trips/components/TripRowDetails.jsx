@@ -516,7 +516,7 @@ const TripRowDetails = ({
               <CTableHead zIndex={2} borderRadius="8px 8px 0 0" bg="#fff">
                 <CTableRow>
                   {getTableHeads(item?.type?.[0])
-                    ?.filter((head) => Boolean(!isBroker) && index !== 5)
+                    ?.filter((head) => !isBroker || head.index !== 5)
                     ?.map((head) => (
                       <CTableTh
                         zIndex={-1}

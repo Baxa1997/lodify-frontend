@@ -18,7 +18,6 @@ const Register = () => {
   const [registerSuccess, setRegisterSuccess] = useState(false);
 
   const {
-    register,
     handleSubmit,
     formState: {errors},
     watch,
@@ -257,21 +256,21 @@ const Register = () => {
         company_name: data.company_name,
         us_dot:
           localStorage.getItem("number_type") === "US DOT"
-            ? data.us_dot
+            ? data?.us_dot
             : data?.mc_number,
-        identifier: data.identifier,
-        physical_address: data.physical_address1,
-        mailing_address: data.mailing_address,
-        city: data.city,
-        state: data.state,
-        zip_code: data.zip_code,
+        identifier: data?.identifier,
+        physical_address: data?.physical_address1,
+        mailing_address: data?.mailing_address,
+        city: data?.city,
+        state: data?.state,
+        zip_code: data?.zip_code,
         country: data.country,
-        login: data.login,
+        login: data?.login,
         password: data.password,
         phone: data.phone || "",
         email: data.email,
         type: "login",
-        client_type_id: data.client_type_id,
+        client_type_id: data?.client_type_id,
         role_id: data.role_id,
         register_user_type: localStorage.getItem("register_user_type"),
         number_type: localStorage.getItem("number_type"),
