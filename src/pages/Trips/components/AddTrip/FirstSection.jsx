@@ -14,7 +14,7 @@ import {useToast} from "@chakra-ui/react";
 import {Controller} from "react-hook-form";
 import Select from "../../../../components/Select";
 
-function FirstSection({control, setValue}) {
+function FirstSection({tripType = "", control, setValue}) {
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const {id: tripId} = useParams();
@@ -208,13 +208,14 @@ function FirstSection({control, setValue}) {
                 render={({field}) => (
                   <Select
                     {...field}
+                    isDisabled={tripType === "upcoming" ? true : false}
                     options={trucksData || []}
                     onChange={(value) => {
                       field.onChange(value);
                       handleTractorChange(value);
                     }}
                     size="md"
-                    isDisabled={!tripId}
+                    // isDisabled={!tripId}
                   />
                 )}
               />
@@ -245,13 +246,14 @@ function FirstSection({control, setValue}) {
                 render={({field}) => (
                   <Select
                     {...field}
+                    isDisabled={tripType === "upcoming" ? true : false}
                     options={trailersData || []}
                     onChange={(value) => {
                       field.onChange(value);
                       handleTrailerChange(value);
                     }}
                     size="md"
-                    isDisabled={!tripId}
+                    // isDisabled={!tripId}
                   />
                 )}
               />

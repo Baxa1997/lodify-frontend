@@ -162,6 +162,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
     navigate(`/admin/trips/${id}`, {
       state: {
         label: `${trip?.drivers?.first_name}.${trip?.drivers?.last_name}`,
+        tripType: "upcoming",
       },
     });
   };

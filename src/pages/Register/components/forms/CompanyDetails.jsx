@@ -84,7 +84,6 @@ const SearchToggle = ({
     }
   }, [isSuccess, data, fmcsa, reset, getValues, searchType]);
 
-  // Handle MC search success
   useEffect(() => {
     if (isSuccessMC && mcData && searchType === "MC") {
       const responseData = mcData?.data?.response;
@@ -144,11 +143,9 @@ const SearchToggle = ({
     setErrorMessage("");
   }, [searchType]);
 
-  // Ensure number_type in localStorage defaults to "US DOT" if not set
   useEffect(() => {
     const storedNumberType = localStorage.getItem("number_type");
     if (!storedNumberType) {
-      // Default is always US DOT
       localStorage.setItem("number_type", "US DOT");
     }
   }, []);

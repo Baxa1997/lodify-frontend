@@ -21,6 +21,7 @@ function AddTrip({tripData = {}}) {
   const toast = useToast();
   const location = useLocation();
   const {state} = location;
+  const tripType = state?.tripType ?? "";
   const csvFile = state?.csv ?? "";
 
   const clientType = useSelector((state) => state.auth.clientType);
@@ -330,7 +331,11 @@ function AddTrip({tripData = {}}) {
         )}
 
         <form action="" onSubmit={handleSubmit(onSubmit)}>
-          <FirstSection control={control} setValue={setValue} />
+          <FirstSection
+            tripType={tripType}
+            control={control}
+            setValue={setValue}
+          />
           <ThirdSection control={control} />
 
           <PackageSection setValue={setValue} control={control} />
