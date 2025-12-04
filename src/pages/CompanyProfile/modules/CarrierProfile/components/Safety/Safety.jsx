@@ -1,188 +1,176 @@
-import { Box, Text } from "@chakra-ui/react";
-import { StatusText } from "../../../../components/StatusText";
-import { CardData } from "../../../../components/CardData";
-import { format, isValid } from "date-fns";
-import { InfoAccordionItem, InfoAccordionButton, InfoAccordionPanel, InfoAccordionTitle } from "../../../../components/InfoAccordion";
-import { DataTable } from "@components/DataTable";
-import { useSafetyProps } from "./useSafetyProps";
-import MainHeading from "@components/MainHeading";
+import React, {useState} from "react";
+import {Box, Text, Flex, HStack, VStack, Button} from "@chakra-ui/react";
+import {
+  InfoAccordionItem,
+  InfoAccordionButton,
+  InfoAccordionPanel,
+  InfoAccordionTitle,
+} from "../../../../components/InfoAccordion";
+import Chart from "react-google-charts";
 
-export const Safety = ({ data = {} }) => {
+export const Safety = ({data = {}}) => {
+  const [selectedTab, setSelectedTab] = useState(0);
 
-  // const {
-  //   safety_rating_date,
-  //   safety_rating,
-  //   safety_review_date,
-  //   safety_type,
-  //   mcs_150_form_date,
-  //   mcs_150_year,
-  //   mcs_150_mileage,
-  // } = data;
+  const safetyCategories = [
+    "Unsafe Driving",
+    "Hours of Service Compliance",
+    "Vehicle Maintenance",
+    "Controlled Substances & Alcohol",
+    "Driver Fitness",
+  ];
 
-  const {
-    enabled,
-    headData,
-    bodyData,
-    count,
-    page,
-    setPage,
-    limit,
-    setLimit,
-    onAccordionChange,
-    filterOptions,
-    handleFilter,
-    filter,
-  } = useSafetyProps();
+  const chartData = [
+    ["Month", "Carrier actual safety rate", "Nat'l Average"],
+    ["Jan", 45, 75],
+    ["Feb", 48, 75],
+    ["Mar", 50, 75],
+    ["Apr", 52, 75],
+    ["May", 55, 75],
+    ["Jun", 58, 75],
+    ["Jul", 60, 75],
+    ["Aug", 63, 75],
+    ["Sep", 65, 75],
+    ["Oct", 68, 75],
+    ["Nov", 72, 75],
+    ["Dec", 75, 75],
+  ];
 
-  return <Box>
-    <InfoAccordionItem >
-      <InfoAccordionButton>
-        <InfoAccordionTitle>
-          Safety
-        </InfoAccordionTitle>
-      </InfoAccordionButton>
-      <InfoAccordionPanel>
-        {/* <Box
-          display="flex"
-          alignItems="flex-start"
-          gap="20px"
-        >
-          <CardData
-            display="flex"
-            flexDirection="column"
-            flexGrow={1}
-            gap="8px"
-          >
-            <Text
-              fontSize="16px"
-              fontWeight="600"
-              color="secondary.700"
-            >
-              Safety
-            </Text>
-            <StatusText
-              title="Safety Rating:"
-              data={safety_rating}
-            />
-            <StatusText
-              title="Rating Date:"
-              data={isValid(new Date(safety_rating_date)) ? format(new Date(safety_rating_date), "dd/MM/yyyy") : ""}
-            />
-          </CardData>
-          <CardData
-            display="flex"
-            flexDirection="column"
-            flexGrow={1}
-            gap="8px"
-          >
-            <Text
-              fontSize="16px"
-              fontWeight="600"
-              color="secondary.700"
-            >
-              MCS-150 Most Recent
-            </Text>
-            <StatusText
-              title="Date:"
-              data={mcs_150_form_date}
-            />
-            <StatusText
-              title="MCS-150 Year:"
-              data={mcs_150_year}
-            />
-            <StatusText
-              title="MCS-150 Miles:"
-              data={mcs_150_mileage}
-            />
-          </CardData>
-          <CardData
-            display="flex"
-            flexDirection="column"
-            flexGrow={1}
-            gap="8px"
-          >
-            <Text
-              fontSize="16px"
-              fontWeight="600"
-              color="secondary.700"
-            >
-              Latest Review
-            </Text>
-            <StatusText
-              title="Review Type:"
-              data={safety_type}
-            />
-            <StatusText
-              title="Review Date:"
-              data={safety_review_date}
-            />
-            <StatusText
-              title="Document:"
-              data="None"
-            />
-            <StatusText
-              title="Reported Miles:"
-              data="None"
-            />
-          </CardData>
-        </Box> */}
+  const chartOptions = {
+    chart: {
+      title: "",
+    },
+    hAxis: {
+      textStyle: {color: "#6B7280", fontSize: 11},
+      gridlines: {color: "#F3F4F6"},
+      baselineColor: "#E5E7EB",
+    },
+    vAxis: {
+      textStyle: {color: "transparent"},
+      gridlines: {color: "#F3F4F6"},
+      baselineColor: "#E5E7EB",
+      minValue: 0,
+      maxValue: 100,
+      format: "",
+    },
+    legend: {
+      position: "none",
+    },
+    colors: ["#EF6820", "#000000"],
+    lineWidth: 3,
+    pointSize: 0,
+    chartArea: {
+      left: 50,
+      top: 20,
+      right: 20,
+      bottom: 50,
+      width: "85%",
+      height: "75%",
+    },
+    backgroundColor: "transparent",
+    series: {
+      0: {lineWidth: 3, pointSize: 0},
+      1: {lineWidth: 2, pointSize: 0, type: "line"},
+    },
+  };
 
-        <Box
-          display="grid"
-          gridTemplateColumns="repeat(5, 1fr)"
-          gap="10px"
-          mb="20px"
-        >
-          {
-            filterOptions?.map(item => <FilterBox
-              key={item}
-              title={item}
-              isSelected={filter === item}
-              onChange={handleFilter}
-            />)
-          }
-        </Box>
+  return (
+    <Box>
+      <InfoAccordionItem>
+        <InfoAccordionButton>
+          <InfoAccordionTitle>Safety</InfoAccordionTitle>
+        </InfoAccordionButton>
+        <InfoAccordionPanel>
+          <VStack spacing="20px" align="stretch">
+            <Box>
+              <Flex gap="8px" flexWrap="wrap">
+                {safetyCategories.map((category, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => setSelectedTab(index)}
+                    variant="ghost"
+                    fontSize="14px"
+                    fontWeight={selectedTab === index ? "600" : "500"}
+                    color={selectedTab === index ? "#EF6820" : "#6B7280"}
+                    borderBottom={
+                      selectedTab === index
+                        ? "2px solid #EF6820"
+                        : "2px solid transparent"
+                    }
+                    borderRadius="0"
+                    px="12px"
+                    py="8px"
+                    h="auto"
+                    _hover={{
+                      color: "#EF6820",
+                      bg: "transparent",
+                    }}
+                    _active={{
+                      bg: "transparent",
+                    }}>
+                    {category}
+                  </Button>
+                ))}
+              </Flex>
+            </Box>
 
-        <Box>
-          <DataTable
-            headData={headData}
-            data={bodyData}
-            border="1px solid"
-            borderColor="gray.border-main"
-            borderRadius="12px"
-            count={count}
-            page={page}
-            limit={limit}
-            setLimit={setLimit}
-            setPage={setPage}
-            pagination
-            tableProps={{
-              layout: "fixed",
-            }}
-          />
-        </Box>
-      </InfoAccordionPanel>
-    </InfoAccordionItem>
-  </Box>;
-};
+            {selectedTab !== null && (
+              <VStack spacing="20px" align="stretch" mt="20px">
+                <Text fontSize="16px" fontWeight="600" color="#181D27" mb="8px">
+                  {safetyCategories[selectedTab]}
+                </Text>
 
-const FilterBox = ({ title, isSelected, onChange }) => {
-  return <Box
-    onClick={() => onChange(title)}
-    border="1px solid"
-    borderColor={isSelected ? "orange.500" : "gray.border-main"}
-    borderRadius="12px"
-    py="20px"
-    px="16px"
-    display="flex"
-    flexDirection="column"
-    alignItems="center"
-    justifyContent="center"
-    textAlign="center"
-    cursor="pointer"
-    fontWeight="600"
-    fontSize="12px"
-  >
-    {title}
-  </Box>;
+                <Box
+                  bg="white"
+                  border="1px solid #E5E7EB"
+                  borderRadius="12px"
+                  p="24px">
+                  <Box w="100%" h="300px">
+                    <Chart
+                      chartType="LineChart"
+                      data={chartData}
+                      options={chartOptions}
+                      width="100%"
+                      height="300px"
+                    />
+                  </Box>
+
+                  {/* Legend */}
+                  <HStack
+                    spacing="24px"
+                    mt="16px"
+                    pt="16px"
+                    borderTop="1px solid #E5E7EB">
+                    <HStack spacing="8px" align="center">
+                      <Box
+                        w="12px"
+                        h="12px"
+                        borderRadius="50%"
+                        bg="#EF6820"
+                        flexShrink={0}
+                      />
+                      <Text fontSize="12px" color="#6B7280" fontWeight="400">
+                        Carrier actual safety rate
+                      </Text>
+                    </HStack>
+                    <HStack spacing="8px" align="center">
+                      <Box
+                        w="12px"
+                        h="12px"
+                        borderRadius="50%"
+                        bg="#000000"
+                        flexShrink={0}
+                      />
+                      <Text fontSize="12px" color="#6B7280" fontWeight="400">
+                        Nat'l Average % as of DATE 08/29/2025*
+                      </Text>
+                    </HStack>
+                  </HStack>
+                </Box>
+              </VStack>
+            )}
+          </VStack>
+        </InfoAccordionPanel>
+      </InfoAccordionItem>
+    </Box>
+  );
 };

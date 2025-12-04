@@ -52,9 +52,9 @@ export const DataTable = ({
       >
         {caption && <TableCaption>{caption}</TableCaption>}
         <Thead
-          bgColor="gray.50"
+          bgColor="#F9FAFB"
           borderBottom="1px solid"
-          borderColor="gray.200"
+          borderColor="#E5E7EB"
           position="sticky"
           top="0"
           zIndex="1"
@@ -64,10 +64,13 @@ export const DataTable = ({
               <Th
                 key={index}
                 isNumeric={head.isNumeric}
-                width={"130px"}
-                color="gray.900"
+                width={head.thProps?.width || "130px"}
+                color="#374151"
                 fontWeight={"600"}
                 fontSize={"12px"}
+                textTransform="uppercase"
+                letterSpacing="0.5px"
+                borderBottom="1px solid #E5E7EB"
                 {...head.thProps}
               >
                 <Box
@@ -119,10 +122,15 @@ export const DataTable = ({
                       return (
                         <Td
                           key={colIndex}
-                          padding="8px 6px"
-                          width={"180px"}
+                          width={head.tdProps?.width || "180px"}
                           fontWeight={"400"}
                           fontSize={"14px"}
+                          color="#374151"
+                          borderBottom="1px solid #F3F4F6"
+                          bg="white"
+                          px={head.tdProps?.px || "16px"}
+                          py={head.tdProps?.py || "12px"}
+                          {...head.tdProps}
                         >
                           <Box
                             display="flex"
@@ -161,12 +169,16 @@ export const DataTable = ({
 
                     return (
                       <Td
-                        padding="8px 6px"
                         key={colIndex}
                         isNumeric={head.isNumeric}
-                        width={"180px"}
+                        width={head.tdProps?.width || "180px"}
                         fontWeight={"400"}
                         fontSize={"14px"}
+                        color="#374151"
+                        borderBottom="1px solid #F3F4F6"
+                        bg="white"
+                        px={head.tdProps?.px || "16px"}
+                        py={head.tdProps?.py || "12px"}
                         {...head.tdProps}
                       >
                         {head?.render

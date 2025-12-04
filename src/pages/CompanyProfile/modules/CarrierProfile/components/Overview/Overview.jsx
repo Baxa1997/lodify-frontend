@@ -20,9 +20,12 @@ import {State} from "../State";
 import {Equipment} from "../Equipment";
 import {Authority} from "../Authority";
 import {Safety} from "../Safety";
+import {Inspections} from "../Inspections";
 import {ActiveAndPendingInsurance} from "../ActiveAndPendingInsurance";
 import {Operations} from "../Operations";
 import {Violation} from "../Violation";
+import {Performance} from "../Performance";
+import {MatchedData} from "../MatchedData";
 import {Connection} from "../Connection";
 import {VictimIdentity} from "../VictimIdentity";
 import Assessments from "../Assessments";
@@ -51,8 +54,11 @@ export const Overview = ({
         />
         <ActiveAndPendingInsurance />
         <Safety data={companySnapshot} />
+        <Inspections />
         <Operations companySnapshot={companySnapshot} operation={operation} />
         <Violation />
+        <Performance />
+        <MatchedData />
       </InfoAccordion>
       {/* <MainSection
       data={generalInfo}
