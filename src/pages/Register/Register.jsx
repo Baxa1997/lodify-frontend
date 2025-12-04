@@ -285,6 +285,7 @@ const Register = () => {
       toast({
         title: "Registration Failed",
         description:
+          error?.data ||
           error?.response?.data?.message ||
           "Failed to create account. Please try again.",
         status: "error",

@@ -75,6 +75,7 @@ const SearchToggle = ({
             phone: `+1${responseData?.telephone ?? responseData?.phone}`,
             legal_name: responseData?.legal_name,
             dba_name: responseData?.dba_name,
+            docket1: responseData?.docket1,
           });
         }
       } else {
@@ -87,7 +88,7 @@ const SearchToggle = ({
   useEffect(() => {
     if (isSuccessMC && mcData && searchType === "MC") {
       const responseData = mcData?.data?.response;
-      console.log("responseData", responseData);
+
       if (responseData) {
         const isTaken =
           responseData.is_taken || responseData.user_exists || false;

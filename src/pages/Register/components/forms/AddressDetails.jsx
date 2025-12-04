@@ -613,7 +613,7 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         <HFTextField
           borderColor={"#d6d7da"}
           control={control}
-          name="mc_number"
+          name="docket1"
           label="MC"
           placeholder="MC number"
           disabled
