@@ -23,6 +23,9 @@ import {Safety} from "../Safety";
 import {ActiveAndPendingInsurance} from "../ActiveAndPendingInsurance";
 import {Operations} from "../Operations";
 import {Violation} from "../Violation";
+import {Connection} from "../Connection";
+import {VictimIdentity} from "../VictimIdentity";
+import Assessments from "../Assessments";
 
 export const Overview = ({
   generalInfo,
@@ -35,12 +38,15 @@ export const Overview = ({
     <Box display="flex" alignItems="flex-start" gap="24px" pt="32px">
       <SidebarTabs />
       <InfoAccordion>
-        <State />
+        <Connection />
+        <VictimIdentity />
+        <Assessments />
         <Equipment />
         <Authority
           carrierDetails={carrierDetails}
           companySnapshot={companySnapshot}
         />
+        <State />
         <ActiveAndPendingInsurance />
         <Safety data={companySnapshot} />
         <Operations companySnapshot={companySnapshot} operation={operation} />

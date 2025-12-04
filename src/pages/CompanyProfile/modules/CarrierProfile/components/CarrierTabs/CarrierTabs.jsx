@@ -1,6 +1,6 @@
-import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
+import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
 import styles from "@styles/tabs.module.scss";
-import { Overview } from "../Overview";
+import {Overview} from "../Overview";
 
 export const CarrierTabs = ({
   carrierDetails,
@@ -13,6 +13,11 @@ export const CarrierTabs = ({
     <Tabs className={styles.tabsContainer}>
       <TabList>
         <Tab>Overview</Tab>
+        <Tab>Users</Tab>
+        <Tab>Classifications</Tab>
+        <Tab>Associations</Tab>
+        <Tab>Questionnaire</Tab>
+        <Tab>Agreements</Tab>
       </TabList>
       <TabPanel>
         <Overview
