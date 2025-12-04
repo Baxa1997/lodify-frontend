@@ -1,21 +1,33 @@
-import { useSelector } from "react-redux";
-import { useGetCarrierDetails, useGetCompanySingle, useGetInsuranceHistory } from "../../services/companyInfo.service";
-import { useEffect, useState } from "react";
-import { useGetTable } from "@services/items.service";
-import { useGetCompanyId } from "@hooks/useGetCompanyId";
+import {useSelector} from "react-redux";
+import {
+  useGetCarrierDetails,
+  useGetCompanySingle,
+  useGetInsuranceHistory,
+} from "../../services/companyInfo.service";
+import {useEffect, useState} from "react";
+import {useGetTable} from "@services/items.service";
+import {useSearchParams} from "react-router-dom";
 
 export const useCarrierProfileProps = () => {
-  const companies_id = useGetCompanyId();
+  const [searchParams] = useSearchParams();
+  const companies_id = searchParams.get("id");
 
   const [companySnapshot, setCompanySnapshot] = useState({});
   const [carrierDetails, setCarrierDetails] = useState({});
   const [insuranceHistory, setInsuranceHistory] = useState([]);
   const [operation, setOperation] = useState({});
 
-  const { data: companyInfoData, isSuccess: companyIsSuccess } = useGetCompanySingle({}, companies_id);
-  const { data: carrierDetailData, isSuccess: carrierDetailIsSuccess } = useGetCarrierDetails({}, companies_id);
-  const { data: insuranceHistoryData, isSuccess: insuranceHistoryIsSuccess } = useGetInsuranceHistory({}, companies_id);
-  const { data: operationData, isSuccess: operationIsSuccess } = useGetTable("operations", {  }, { data: JSON.stringify({ companies_id }) });
+  const {data: companyInfoData, isSuccess: companyIsSuccess} =
+    useGetCompanySingle({}, companies_id);
+  const {data: carrierDetailData, isSuccess: carrierDetailIsSuccess} =
+    useGetCarrierDetails({}, companies_id);
+  const {data: insuranceHistoryData, isSuccess: insuranceHistoryIsSuccess} =
+    useGetInsuranceHistory({}, companies_id);
+  const {data: operationData, isSuccess: operationIsSuccess} = useGetTable(
+    "operations",
+    {},
+    {data: JSON.stringify({companies_id})}
+  );
 
   const generalInfo = {
     ...companySnapshot,
@@ -24,26 +36,25 @@ export const useCarrierProfileProps = () => {
   };
 
   useEffect(() => {
-    if(companyIsSuccess) {
+    if (companyIsSuccess) {
       const companyDataResponse = companyInfoData?.response;
       setCompanySnapshot(companyDataResponse);
     }
 
-    if(carrierDetailIsSuccess) {
+    if (carrierDetailIsSuccess) {
       const carrierDataResponse = carrierDetailData?.response?.[0];
       setCarrierDetails(carrierDataResponse);
     }
 
-    if(insuranceHistoryIsSuccess) {
+    if (insuranceHistoryIsSuccess) {
       const insuranceHistoryDataResponse = insuranceHistoryData?.response;
       setInsuranceHistory(insuranceHistoryDataResponse);
     }
 
-    if(operationIsSuccess) {
+    if (operationIsSuccess) {
       const operationDataResponse = operationData?.response?.[0];
       setOperation(operationDataResponse);
     }
-
   }, [companyInfoData, carrierDetailData, insuranceHistoryData, operationData]);
 
   return {

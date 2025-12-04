@@ -210,7 +210,11 @@ export const MainInfo = ({generalInfo}) => {
             <Text fontSize="16px" fontWeight="400" mb="16px" color="#535862">
               Dispatch Contacts
             </Text>
-            <VStack align="flex-start" spacing="12px">
+            <VStack
+              flexDirection={"row"}
+              align="flex-start"
+              gap="24px"
+              pb="12px">
               {generalInfo.phone && (
                 <HStack spacing={3}>
                   <img

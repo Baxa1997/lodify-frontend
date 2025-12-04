@@ -1,11 +1,11 @@
 import { useGetTable } from "@services/items.service";
 import CustomBadge from "../../../../../../components/CustomBadge/CustomBadge";
-import { useGetCompanyId } from "@hooks/useGetCompanyId";
+import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 
 export const useEquipmentProps = () => {
-
-  const companies_id = useGetCompanyId();
+  const [searchParams] = useSearchParams();
+  const companies_id = searchParams.get("id");
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);

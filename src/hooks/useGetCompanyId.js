@@ -1,8 +1,11 @@
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
+import {useSearchParams} from "react-router-dom";
 
 export const useGetCompanyId = () => {
+  const searchParams = useSearchParams();
+  const companyId = searchParams.get("id");
 
-  const { companies_id: companyId, guid } = useSelector(state => state.auth.user_data);
+  const {guid} = useSelector((state) => state.auth.user_data);
 
   const companies_id = companyId || guid;
 

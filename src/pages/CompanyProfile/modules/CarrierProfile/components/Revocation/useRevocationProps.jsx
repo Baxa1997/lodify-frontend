@@ -1,10 +1,10 @@
-import { useGetCompanyId } from "@hooks/useGetCompanyId";
+import { useSearchParams } from "react-router-dom";
 import { useGetTable } from "@services/items.service";
 import { useState } from "react";
 
 export const useRevocationProps = () => {
-
-  const companies_id = useGetCompanyId();
+  const [searchParams] = useSearchParams();
+  const companies_id = searchParams.get("id");
 
   const [enabled, setEnabled] = useState(false);
 
