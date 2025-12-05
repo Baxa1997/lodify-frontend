@@ -184,22 +184,22 @@ function Insights() {
           </VStack>
 
           <Box borderTop="1px solid #E5E7EB" pt="24px" mt="24px">
-            <Accordion allowToggle>
+            <Accordion allowToggle defaultIndex={[]}>
               <AccordionItem
                 border="1px solid #E5E7EB"
-                borderRadius="8px"
+                borderRadius="12px"
                 bg="white">
                 <AccordionButton
                   p="16px 20px"
                   _hover={{bg: "#fff"}}
-                  _expanded={{bg: "#fff"}}>
+                  _expanded={{bg: "#fff"}}
+                  borderRadius="12px">
                   <Flex
                     flex="1"
                     align="center"
                     justify="space-between"
-                    textAlign="left"
-                    border="1px solid #E5E7EB">
-                    <HStack spacing="8px">
+                    textAlign="left">
+                    <HStack spacing="12px">
                       <Text fontSize="16px" fontWeight="600" color="#181D27">
                         Insights Details
                       </Text>
@@ -210,11 +210,14 @@ function Insights() {
                         py={1}
                         borderRadius="full"
                         fontSize="12px"
-                        fontWeight="600">
-                        Total insights Discovered: 3
+                        fontWeight="600"
+                        textTransform="uppercase">
+                        TOTAL INSIGHTS DISCOVERED: 3
                       </Badge>
                     </HStack>
-                    <AccordionIcon />
+                    <Box ml="auto">
+                      <AccordionIcon color="#181D27" fontSize="20px" />
+                    </Box>
                   </Flex>
                 </AccordionButton>
                 <AccordionPanel pb="20px" px="20px">
@@ -292,37 +295,47 @@ function Insights() {
                                   <AccordionButton
                                     p="16px"
                                     _hover={{bg: "#fff"}}
-                                    _expanded={{bg: "#fff"}}>
+                                    _expanded={{bg: "#fff"}}
+                                    textAlign="left">
                                     <Flex
                                       minW="300px"
-                                      w={"fit-content"}
+                                      w={"100%"}
                                       bg="#FAFAFA"
                                       borderRadius="8px"
                                       p="12px 16px"
                                       gap="12px"
-                                      justifyContent="space-between">
-                                      <Box>
+                                      justifyContent="space-between"
+                                      alignItems="center">
+                                      <Box flex="1" textAlign="left">
                                         <Text
                                           color="#181D27"
                                           fontSize="14px"
-                                          fontWeight="500">
+                                          fontWeight="500"
+                                          textAlign="left">
                                           {item.name}
                                         </Text>
                                         <Text
                                           color="#6B7280"
                                           fontSize="14px"
-                                          fontWeight="400">
+                                          fontWeight="400"
+                                          textAlign="left">
                                           {item.date}
                                         </Text>
                                       </Box>
-                                      <Box>
-                                        <AiOutlineExclamationCircle
-                                          width="20px"
-                                          height="20px"
-                                          fontSize="20px"
-                                          color="#EF6820"
+                                      <HStack spacing="8px" flexShrink={0}>
+                                        <Box>
+                                          <AiOutlineExclamationCircle
+                                            width="20px"
+                                            height="20px"
+                                            fontSize="20px"
+                                            color="#EF6820"
+                                          />
+                                        </Box>
+                                        <AccordionIcon
+                                          color="#181D27"
+                                          fontSize="16px"
                                         />
-                                      </Box>
+                                      </HStack>
                                     </Flex>
                                   </AccordionButton>
                                   <AccordionPanel pb="16px" px="16px">
