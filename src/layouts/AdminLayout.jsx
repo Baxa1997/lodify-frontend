@@ -144,6 +144,8 @@ const AdminLayout = () => {
             padding: `${
               pathname === "/admin/collabrations" ? "0" : "22px 24px"
             }`,
+            minHeight: "100vh",
+            willChange: "transform",
           }}>
           <Suspense fallback={<ContentLoader />}>
             <Outlet />

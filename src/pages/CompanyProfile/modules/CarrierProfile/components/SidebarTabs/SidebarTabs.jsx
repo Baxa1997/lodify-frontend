@@ -25,7 +25,11 @@ export const SidebarTabs = () => {
     <Flex
       flexDir={"column"}
       gap={"4px"}
-      w="175px">
+      w="175px"
+      flexShrink={0}
+      position="sticky"
+      top="32px"
+      alignSelf="flex-start">
       {tabs.map((tab, index) => (
         <Text
           as="a"

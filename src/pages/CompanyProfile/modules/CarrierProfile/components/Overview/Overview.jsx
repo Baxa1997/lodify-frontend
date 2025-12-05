@@ -39,27 +39,35 @@ export const Overview = ({
   operation,
 }) => {
   return (
-    <Box display="flex" alignItems="flex-start" gap="24px" pt="32px">
+    <Box
+      display="flex"
+      alignItems="stretch"
+      gap="24px"
+      pt="32px"
+      minH="100%"
+      position="relative">
       <SidebarTabs />
-      <InfoAccordion>
-        <Connection />
-        <VictimIdentity />
-        <Assessments />
-        <Insights />
-        <State />
-        <Equipment />
-        <Authority
-          carrierDetails={carrierDetails}
-          companySnapshot={companySnapshot}
-        />
-        <ActiveAndPendingInsurance />
-        <Safety data={companySnapshot} />
-        <Inspections />
-        <Operations companySnapshot={companySnapshot} operation={operation} />
-        <Violation />
-        <Performance />
-        <MatchedData />
-      </InfoAccordion>
+      <Box flex="1" minW="0">
+        <InfoAccordion>
+          <Connection />
+          <VictimIdentity />
+          <Assessments />
+          <Insights />
+          <State />
+          <Equipment />
+          <Authority
+            carrierDetails={carrierDetails}
+            companySnapshot={companySnapshot}
+          />
+          <ActiveAndPendingInsurance />
+          <Safety data={companySnapshot} />
+          <Inspections />
+          <Operations companySnapshot={companySnapshot} operation={operation} />
+          <Violation />
+          <Performance />
+          <MatchedData />
+        </InfoAccordion>
+      </Box>
       {/* <MainSection
       data={generalInfo}
       companySnapshot={companySnapshot}
