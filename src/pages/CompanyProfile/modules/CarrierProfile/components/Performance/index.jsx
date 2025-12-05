@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Text, Flex, HStack, VStack, Link, Tooltip} from "@chakra-ui/react";
+import {Box, Text, Flex, VStack, Link, Tooltip} from "@chakra-ui/react";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
@@ -7,9 +7,9 @@ import {
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
 import Chart from "react-google-charts";
+import {MdKeyboardArrowRight} from "react-icons/md";
 
 export const Performance = () => {
-  // Summary Cards Data
   const summaryData = {
     overall: {
       score: "99%",
@@ -38,7 +38,6 @@ export const Performance = () => {
     },
   };
 
-  // Detailed Cards Data
   const detailedData = {
     onTime: {
       percentage: 100,
@@ -102,7 +101,6 @@ export const Performance = () => {
     },
   };
 
-  // Summary Card Component
   const SummaryCard = ({
     label,
     value,
@@ -115,32 +113,33 @@ export const Performance = () => {
       return (
         <Box
           bg="white"
-          borderRadius="12px"
           p="20px"
+          borderRadius="12px"
           border="1px solid #E5E7EB"
-          flex="1"
-          minW="0">
-          <Flex alignItems="center" gap="8px" mb="12px">
+          minW="0"
+          h="130px">
+          <Flex alignItems="center" gap="8px" mb="8px">
             <Text fontSize="14px" fontWeight="500" color="#181D27">
               {label}
             </Text>
           </Flex>
-          <Flex alignItems="center" gap="12px" mb="12px">
-            <Text fontSize="32px" fontWeight="600" color="#181D27">
+          <Flex h="32px" alignItems="center" gap="12px" mb="8px">
+            <Text fontSize="24px" fontWeight="600" color="#181D27">
               {value}
             </Text>
             <Box
               w="48px"
-              h="48px"
-              borderRadius="50%"
-              bg={overall.gradeColor}
+              h="32px"
+              borderRadius="6px"
+              bg={"#dcfae6"}
               display="flex"
               alignItems="center"
+              border="1px solid #abefc6"
               justifyContent="center">
               <Text
                 fontSize="24px"
                 fontWeight="700"
-                color="white"
+                color="#079455"
                 lineHeight="1">
                 {overall.grade}
               </Text>
@@ -172,12 +171,14 @@ export const Performance = () => {
       <Box
         bg="white"
         borderRadius="12px"
-        p="20px"
+        p="16px"
         border="1px solid #E5E7EB"
         flex="1"
-        minW="0">
-        <Flex alignItems="center" gap="6px" mb="12px">
-          <Text fontSize="14px" fontWeight="500" color="#181D27">
+        minW="0"
+        h="130px"
+        w="175px">
+        <Flex alignItems="center" gap="6px" mb="8px">
+          <Text fontSize="12px" fontWeight="500" color="#181D27">
             {label}
           </Text>
           {tooltipLabel && (
@@ -200,7 +201,7 @@ export const Performance = () => {
             </Tooltip>
           )}
         </Flex>
-        <Text fontSize="32px" fontWeight="600" color="#181D27" mb="8px">
+        <Text fontSize="24px" fontWeight="600" color="#181D27" mb="8px">
           {value}
         </Text>
         <Text fontSize="12px" color="#6B7280" fontWeight="400">
@@ -210,7 +211,6 @@ export const Performance = () => {
     );
   };
 
-  // Circular Progress Component
   const CircularProgress = ({percentage, color}) => {
     const remaining = 100 - percentage;
     const chartData = [
@@ -233,13 +233,13 @@ export const Performance = () => {
     };
 
     return (
-      <Box position="relative" w="160px" h="160px" flexShrink={0}>
+      <Box position="relative" w="144px" h="144px" flexShrink={0}>
         <Chart
           chartType="PieChart"
           data={chartData}
           options={options}
-          width="160px"
-          height="160px"
+          width="144px"
+          height="144px"
         />
         <Box
           position="absolute"
@@ -249,7 +249,7 @@ export const Performance = () => {
           textAlign="center"
           w="100%">
           <Text
-            fontSize="32px"
+            fontSize="28px"
             fontWeight="600"
             color="#181D27"
             lineHeight="1.2">
@@ -262,21 +262,32 @@ export const Performance = () => {
 
   const DetailedMetricCard = ({title, data}) => {
     return (
-      <Box bg="white" border="1px solid #E5E7EB" borderRadius="12px" p="24px">
-        <VStack spacing="20px" align="stretch">
-          <Box>
-            <Text fontSize="16px" fontWeight="600" color="#181D27" mb="4px">
-              {title}
-            </Text>
-            <Text fontSize="14px" color="#6B7280" fontWeight="600" mb="8px">
+      <Flex
+        bg="white"
+        flexDirection="column"
+        justifyContent="space-between"
+        border="1px solid #E5E7EB"
+        borderRadius="12px">
+        <VStack spacing="10px" align="stretch">
+          <Text
+            borderBottom="1px solid #E5E7EB"
+            fontSize="14px"
+            fontWeight="700"
+            color="#181D27"
+            mb="4px"
+            p="12px 20px">
+            {title}
+          </Text>
+          <Box mb="20px" px="20px">
+            <Text fontSize="14px" color="#181D27" fontWeight="500" mb="4px">
               {data.subtitle}
             </Text>
-            <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
+            <Text fontSize="12px" color="#6B7280" lineHeight="1.5">
               {data.description}
             </Text>
           </Box>
 
-          <Flex gap="32px" alignItems="flex-start">
+          <Flex px="12px" gap="24px" alignItems="flex-start">
             <Box position="relative" flexShrink={0}>
               <CircularProgress
                 percentage={data.percentage}
@@ -341,18 +352,23 @@ export const Performance = () => {
             </Box>
           </Flex>
 
-          <Flex justifyContent="flex-end" mt="4px">
+          <Flex
+            alignItems="center"
+            justifyContent="flex-end"
+            p="12px 20px"
+            borderTop="1px solid #E5E7EB">
             <Link
               href="#"
               fontSize="14px"
               color="#175CD3"
               fontWeight="500"
               _hover={{textDecoration: "underline"}}>
-              View details &gt;
+              View details
             </Link>
+            <MdKeyboardArrowRight w="20px" h="20px" />
           </Flex>
         </VStack>
-      </Box>
+      </Flex>
     );
   };
 
@@ -404,11 +420,15 @@ export const Performance = () => {
               display="grid"
               gridTemplateColumns={{base: "1fr", lg: "1fr 1fr"}}
               gap="24px">
-              <DetailedMetricCard title="On time" data={detailedData.onTime} />
               <DetailedMetricCard
-                title="Acceptance"
-                data={detailedData.acceptance}
+                title="App usage"
+                data={detailedData.appUsage}
               />
+              <DetailedMetricCard
+                title="Disruption-free"
+                data={detailedData.disruptionFree}
+              />
+
               <DetailedMetricCard
                 title="App usage"
                 data={detailedData.appUsage}
