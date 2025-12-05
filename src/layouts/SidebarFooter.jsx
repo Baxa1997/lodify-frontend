@@ -173,7 +173,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
         </>
       ) : (
         <>
-          <Tooltip label="Settings" placement="right" hasArrow>
+          {/* <Tooltip label="Settings" placement="right" hasArrow>
             <Button
               as={Button}
               variant="ghost"
@@ -192,7 +192,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
               mb="8px">
               <img src="/img/setting.svg" alt="Settings" />
             </Button>
-          </Tooltip>
+          </Tooltip> */}
 
           <Box ref={profileRef} position="relative" zIndex={99999}>
             <Menu

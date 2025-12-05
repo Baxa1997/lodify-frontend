@@ -13,16 +13,16 @@ function Assessments() {
     ["Month", "Load Limit"],
     ["Jan", 20],
     ["Feb", 25],
-    ["Mar", 30],
+    ["Mar", 34],
     ["Apr", 35],
-    ["May", 40],
+    ["May", 30],
     ["Jun", 45],
-    ["Jul", 50],
-    ["Aug", 55],
-    ["Sep", 60],
-    ["Oct", 65],
-    ["Nov", 70],
-    ["Dec", 75],
+    ["Jul", 55],
+    ["Aug", 65],
+    ["Sep", 45],
+    ["Oct", 55],
+    ["Nov", 32],
+    ["Dec", 43],
   ];
 
   const loadLimitOptions = {
@@ -44,18 +44,19 @@ function Assessments() {
     },
     legend: {position: "none"},
     colors: ["#EF6820"],
-    areaOpacity: 0.2,
+    areaOpacity: 0.1,
     lineWidth: 3,
     pointSize: 0,
     chartArea: {
-      left: 50,
+      left: 10,
       top: 10,
-      right: 20,
-      bottom: 50,
-      width: "85%",
+      right: 10,
+      bottom: 20,
+      width: "110%",
       height: "75%",
+      backgroundColor: "#fff",
     },
-    backgroundColor: "transparent",
+    backgroundColor: "#fff",
   };
 
   const assessmentItems = [
@@ -92,11 +93,11 @@ function Assessments() {
                 Assessment
               </Text>
               <Badge
-                bg="#10B981"
+                bg="#17B26A"
                 color="white"
                 px="12px"
                 py="4px"
-                borderRadius="6px"
+                borderRadius="12px"
                 fontSize="12px"
                 fontWeight="600">
                 Pass
@@ -106,11 +107,12 @@ function Assessments() {
               {assessmentItems.map((item, index) => (
                 <HStack
                   key={index}
-                  spacing="8px"
-                  p="8px 12px"
-                  bg="#F9FAFB"
-                  borderRadius="8px"
-                  border="1px solid #E5E7EB">
+                  spacing="6px"
+                  p="2px 10px"
+                  bg="#fff"
+                  borderRadius="16px"
+                  border="1px solid #079455"
+                  w="fit-content">
                   <Box
                     as="img"
                     src="/img/check-circle.svg"
@@ -119,7 +121,11 @@ function Assessments() {
                     h="16px"
                     flexShrink={0}
                   />
-                  <Text fontSize="14px" fontWeight="500" color="#181D27">
+                  <Text
+                    fontSize="14px"
+                    fontWeight="500"
+                    color="#181D27"
+                    whiteSpace="nowrap">
                     {item}
                   </Text>
                 </HStack>
@@ -127,14 +133,13 @@ function Assessments() {
             </Flex>
           </Box>
 
-          {/* Right Card: Load Limit */}
           <Box
             flex="1"
             bg="white"
             borderRadius="12px"
             border="1px solid #E5E7EB"
             p="20px"
-            minW={{base: "100%", md: "300px"}}>
+            minW={{base: "100%", md: "400px"}}>
             <Text fontSize="16px" fontWeight="600" color="#181D27" mb="16px">
               Load Limit
             </Text>
