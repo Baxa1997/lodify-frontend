@@ -43,7 +43,7 @@ export const DataTable = ({
   };
 
   return (
-    <Box overflow={"auto"} {...props}>
+    <Box borderRadius="12px" {...props}>
       <Table variant="simple" {...tableProps}>
         {caption && <TableCaption>{caption}</TableCaption>}
         <Thead

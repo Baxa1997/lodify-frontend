@@ -4,6 +4,7 @@ import {Box} from "@chakra-ui/react";
 import {TripsNeedingAttention} from "./components/TripsNeedingAttention";
 import {PerformanceGrade} from "./components/PerformanceGrade";
 import {SafetyStatus} from "./components/SafetyStatus";
+import {GoReadyTrucks} from "./components/GoReadyTrucks";
 
 const Dashboard = () => {
   return (
@@ -13,6 +14,7 @@ const Dashboard = () => {
         <TripsNeedingAttention />
         <PerformanceGrade />
         <SafetyStatus />
+        <GoReadyTrucks />
       </Box>
     </>
   );
