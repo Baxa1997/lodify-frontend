@@ -152,10 +152,10 @@ export const Classifications = () => {
           <HStack spacing="12px" alignItems="center">
             <Box
               as="img"
-              src="/img/filePhoto.svg"
+              src="/img/authority.svg"
               alt="authority"
-              w="20px"
-              h="20px"
+              w="28px"
+              h="28px"
               flexShrink={1}
             />
             <InfoAccordionTitle>Authoriy</InfoAccordionTitle>

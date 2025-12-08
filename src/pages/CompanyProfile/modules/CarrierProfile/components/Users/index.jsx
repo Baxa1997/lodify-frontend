@@ -308,10 +308,10 @@ export const Users = () => {
         <Flex alignItems="center" gap="12px">
           <Box
             as="img"
-            src="/img/filePhoto.svg"
+            src="/img/rateConfirm.svg"
             alt="document"
-            w="20px"
-            h="20px"
+            w="32px"
+            h="32px"
             flexShrink={0}
           />
 

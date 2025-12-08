@@ -233,21 +233,41 @@ export const Performance = () => {
     };
 
     return (
-      <Box position="relative" w="144px" h="144px" flexShrink={0}>
-        <Chart
-          chartType="PieChart"
-          data={chartData}
-          options={options}
-          width="144px"
-          height="144px"
-        />
+      <Box
+        position="relative"
+        w="144px"
+        h="144px"
+        minW="144px"
+        maxW="144px"
+        minH="144px"
+        maxH="144px"
+        flexShrink={0}
+        overflow="hidden">
+        <Box
+          w="144px"
+          h="144px"
+          minW="144px"
+          maxW="144px"
+          minH="144px"
+          maxH="144px"
+          position="relative">
+          <Chart
+            chartType="PieChart"
+            data={chartData}
+            options={options}
+            width={144}
+            height={144}
+            style={{width: "144px", height: "144px"}}
+          />
+        </Box>
         <Box
           position="absolute"
           top="50%"
           left="50%"
           transform="translate(-50%, -50%)"
           textAlign="center"
-          w="100%">
+          w="100%"
+          pointerEvents="none">
           <Text
             fontSize="28px"
             fontWeight="600"

@@ -3,7 +3,7 @@ export const menuItems = [
     id: "dashboard",
     label: "Dashboard",
     icon: "/img/dashboard.svg",
-    path: "#",
+    path: "dashboard",
   },
   {
     id: "notifications",
@@ -125,7 +125,7 @@ export const brokerMenuItems = [
     id: "dashboard",
     label: "Dashboard",
     icon: "/img/dashboard.svg",
-    path: "#",
+    path: "dashboard",
   },
 
   {
