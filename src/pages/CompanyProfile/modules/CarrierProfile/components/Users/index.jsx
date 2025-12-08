@@ -191,10 +191,10 @@ export const Users = () => {
             <Flex alignItems="center" gap="12px">
               <Box
                 as="img"
-                src="/img/check-circle.svg"
+                src="/img/verifiedUsers.svg"
                 alt="check"
-                w="20px"
-                h="20px"
+                w="32px"
+                h="32px"
                 flexShrink={0}
               />
               <Box>
@@ -265,10 +265,11 @@ export const Users = () => {
           <Flex mb="16px" alignItems="center" gap="12px">
             <Box
               as="img"
-              src="/img/contacts.svg"
-              alt="contacts"
-              w="20px"
-              h="20px"
+              src="/img/contacts2.svg"
+              alt="check"
+              w="32px"
+              h="32px"
+              flexShrink={0}
             />
 
             <Box>

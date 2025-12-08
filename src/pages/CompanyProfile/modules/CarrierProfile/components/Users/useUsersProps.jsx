@@ -16,7 +16,6 @@ export const useUsersProps = () => {
     "Dispatch",
   ]);
 
-  // Fetch verified users data
   const {data: verifiedUsersData} = useGetTable(
     "verified_users",
     {},
@@ -29,7 +28,6 @@ export const useUsersProps = () => {
     }
   );
 
-  // Fetch contacts data
   const {data: contactsData} = useGetTable(
     "contacts",
     {},
@@ -43,7 +41,6 @@ export const useUsersProps = () => {
     }
   );
 
-  // Mock data for verified users
   const defaultVerifiedUsers = [
     {
       name: "Samantha Cole",
@@ -83,7 +80,6 @@ export const useUsersProps = () => {
     },
   ];
 
-  // Mock data for contacts
   const defaultContacts = [
     {
       status: "Claims",
@@ -96,10 +92,9 @@ export const useUsersProps = () => {
     },
   ];
 
-  // Verified Users table head data
   const verifiedUsersHeadData = [
     {
-      label: "NAME",
+      label: "Name",
       key: "name",
       thProps: {
         width: "180px",
@@ -112,7 +107,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "PHONE NUMBER",
+      label: "Phone Number",
       key: "phone",
       thProps: {
         width: "180px",
@@ -125,7 +120,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "EMAIL",
+      label: "Email",
       key: "email",
       thProps: {
         width: "220px",
@@ -138,7 +133,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "FIRST SEEN",
+      label: "First Seen",
       key: "first_seen",
       thProps: {
         width: "220px",
@@ -151,7 +146,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "LAST SEEN",
+      label: "Last Seen",
       key: "last_seen",
       thProps: {
         width: "220px",
@@ -164,7 +159,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "COUNTRY",
+      label: "Country",
       key: "country",
       thProps: {
         width: "150px",
@@ -178,13 +173,12 @@ export const useUsersProps = () => {
     },
   ];
 
-  // Contacts table head data
   const contactsHeadData = [
     {
-      label: "STATUS",
+      label: "Status",
       key: "status",
       thProps: {
-        width: "120px",
+        width: "180px",
         px: "16px",
         py: "12px",
       },
@@ -194,7 +188,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "NAME",
+      label: "Name",
       key: "name",
       thProps: {
         width: "180px",
@@ -207,7 +201,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "PHONE",
+      label: "Phone",
       key: "phone",
       thProps: {
         width: "180px",
@@ -220,7 +214,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "EMAIL",
+      label: "Email",
       key: "email",
       thProps: {
         width: "220px",
@@ -233,7 +227,7 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "CREATED",
+      label: "Created",
       key: "created",
       thProps: {
         width: "180px",

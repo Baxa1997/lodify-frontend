@@ -46,7 +46,9 @@ export const CarrierTabs = ({
 
       <TabPanel>
         <Box className={tabStyles.classificationsTabPanel}>
-          <InfoAccordion className={tabStyles.classificationsAccordion}>
+          <InfoAccordion
+            className={tabStyles.classificationsAccordion}
+            defaultIndex={[0]}>
             <Classifications
               carrierDetails={carrierDetails}
               companySnapshot={companySnapshot}
