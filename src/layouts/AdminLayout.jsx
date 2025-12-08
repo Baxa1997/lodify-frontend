@@ -11,7 +11,6 @@ import {sidebarActions} from "../store/sidebar";
 
 const AdminLayout = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
   const pathname = location.pathname;
   const sidebarOpen = useSelector((state) => state.sidebar.sidebar);
@@ -146,6 +145,9 @@ const AdminLayout = () => {
             }`,
             minHeight: "100vh",
             willChange: "transform",
+            backgroundColor: pathname?.includes("dashboard")
+              ? "#f5f5f5"
+              : "#ffff",
           }}>
           <Suspense fallback={<ContentLoader />}>
             <Outlet />
