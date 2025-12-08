@@ -489,6 +489,7 @@ $shadow-sidebar: 4px 0 20px rgba(0, 0, 0, 0.1);
 
 .pageContent {
   flex: 1;
+  z-index: 66;
   background-color: #fff;
   min-height: 100vh;
   position: relative;

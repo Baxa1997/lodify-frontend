@@ -1,7 +1,11 @@
 import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
+import {Box} from "@chakra-ui/react";
 import styles from "@styles/tabs.module.scss";
+import tabStyles from "./styles.module.scss";
 import {Overview} from "../Overview";
 import {Users} from "../Users";
+import {Classifications} from "../Classifications";
+import {InfoAccordion} from "../../../../components/InfoAccordion";
 
 export const CarrierTabs = ({
   carrierDetails,
@@ -38,6 +42,22 @@ export const CarrierTabs = ({
           insuranceHistory={insuranceHistory}
           operation={operation}
         />
+      </TabPanel>
+
+      <TabPanel>
+        <Box pt="32px" width="100%" maxW="100%">
+          <Box className={tabStyles.classificationsAccordionWrapper}>
+            <InfoAccordion>
+              <Classifications
+                carrierDetails={carrierDetails}
+                companySnapshot={companySnapshot}
+                generalInfo={generalInfo}
+                insuranceHistory={insuranceHistory}
+                operation={operation}
+              />
+            </InfoAccordion>
+          </Box>
+        </Box>
       </TabPanel>
     </Tabs>
   );
