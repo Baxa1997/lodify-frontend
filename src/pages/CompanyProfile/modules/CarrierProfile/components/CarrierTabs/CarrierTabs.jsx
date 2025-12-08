@@ -45,18 +45,16 @@ export const CarrierTabs = ({
       </TabPanel>
 
       <TabPanel>
-        <Box pt="32px" width="100%" maxW="100%">
-          <Box className={tabStyles.classificationsAccordionWrapper}>
-            <InfoAccordion>
-              <Classifications
-                carrierDetails={carrierDetails}
-                companySnapshot={companySnapshot}
-                generalInfo={generalInfo}
-                insuranceHistory={insuranceHistory}
-                operation={operation}
-              />
-            </InfoAccordion>
-          </Box>
+        <Box className={tabStyles.classificationsTabPanel}>
+          <InfoAccordion className={tabStyles.classificationsAccordion}>
+            <Classifications
+              carrierDetails={carrierDetails}
+              companySnapshot={companySnapshot}
+              generalInfo={generalInfo}
+              insuranceHistory={insuranceHistory}
+              operation={operation}
+            />
+          </InfoAccordion>
         </Box>
       </TabPanel>
     </Tabs>

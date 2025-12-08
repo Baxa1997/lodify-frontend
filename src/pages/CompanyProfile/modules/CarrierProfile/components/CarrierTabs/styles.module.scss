@@ -1,11 +1,25 @@
-// .classificationsAccordionWrapper {
-//   width: 100%;
-//   max-width: 100%;
+.classificationsTabPanel {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-top: 32px;
+  display: block;
+}
 
-//   :global(.accordionContainer) {
-//     max-width: 100% !important;
-//   }
-// }
+.classificationsAccordion {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  box-sizing: border-box;
+  display: block;
+}
+
+.classificationsTabPanel :global(.accordionContainer) {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  box-sizing: border-box;
+}
 
 .container {
   margin-top: 20px;
