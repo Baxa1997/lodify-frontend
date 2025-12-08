@@ -62,7 +62,7 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
               <li key={item.id} className={styles.navItem}>
                 {!sidebarOpen ? (
                   hasChildren ? (
-                    <Menu placement="right-start" strategy="fixed">
+                    <Menu placement="right-start">
                       <Tooltip
                         placement="right"
                         label={item?.label || ""}
@@ -91,8 +91,7 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
                         borderRadius="lg"
                         boxShadow="0 4px 20px rgba(0, 0, 0, 0.3)"
                         p={0}
-                        minW="250px"
-                        zIndex={10001}>
+                        minW="250px">
                         <SidebarChildMenu
                           menuItem={item}
                           onNavigate={(path) => navigate(path)}

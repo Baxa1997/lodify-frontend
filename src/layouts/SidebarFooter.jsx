@@ -150,7 +150,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
                 border="1px solid #333"
                 borderRadius="8px"
                 minW="200px"
-                zIndex={99999}
+                zIndex={100001}
                 position="absolute"
                 left="250px"
                 top="0"
@@ -194,7 +194,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
             </Button>
           </Tooltip> */}
 
-          <Box ref={profileRef} position="relative" zIndex={99999}>
+          <Box ref={profileRef} position="relative" zIndex={10001}>
             <Menu
               isOpen={isProfileOpen}
               onClose={() => setIsProfileOpen(false)}
@@ -237,7 +237,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
                 border="1px solid #333"
                 borderRadius="8px"
                 minW="150px"
-                zIndex={99999}
+                zIndex={10001}
                 position="absolute"
                 left="60px"
                 top="0"

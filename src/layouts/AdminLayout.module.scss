@@ -28,16 +28,13 @@ $shadow-sidebar: 4px 0 20px rgba(0, 0, 0, 0.1);
   color: $white;
   display: flex;
   flex-direction: column;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: fixed;
   height: 100vh;
   z-index: 1000;
   box-shadow: $shadow-sidebar;
-  overflow: hidden;
-  will-change: width;
-  top: 0;
-  left: 0;
+  overflow: visible;
 
   &.closed {
     width: 80px;
@@ -286,17 +283,14 @@ $shadow-sidebar: 4px 0 20px rgba(0, 0, 0, 0.1);
   margin-left: 280px;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
-  width: calc(100% - 280px);
-  overflow-x: hidden;
-  will-change: margin-left, width;
-  position: relative;
+  width: 100%;
+  overflow: hidden;
 }
 
 .adminLayout:has(.sidebar.closed) .mainContent {
   margin-left: 80px;
-  width: calc(100% - 80px);
 }
 
 .topHeader {
@@ -489,11 +483,7 @@ $shadow-sidebar: 4px 0 20px rgba(0, 0, 0, 0.1);
 
 .pageContent {
   flex: 1;
-  z-index: 66;
   background-color: #fff;
-  min-height: 100vh;
-  position: relative;
-  transition: none;
 }
 
 @media (max-width: 768px) {
