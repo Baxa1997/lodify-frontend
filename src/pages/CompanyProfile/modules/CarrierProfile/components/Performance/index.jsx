@@ -153,7 +153,7 @@ export const Performance = () => {
             display="flex"
             alignItems="center"
             gap="6px"
-            _hover={{textDecoration: "underline"}}>
+            _hover={{textDecoration: "underline", color: "#EF6820"}}>
             <Box
               as="img"
               src="/img/questionRound.svg"

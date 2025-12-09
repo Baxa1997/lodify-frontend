@@ -61,7 +61,7 @@ export const PerformanceCard = ({
             display="flex"
             alignItems="center"
             gap="6px"
-            _hover={{textDecoration: "underline"}}>
+            _hover={{textDecoration: "underline", color: "#EF6820"}}>
             <Flex
               borderRadius="50%"
               border="1px solid #EF6820"

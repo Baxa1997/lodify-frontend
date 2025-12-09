@@ -265,15 +265,19 @@ export const PerformanceByDrivers = () => {
           display="flex"
           alignItems="center"
           gap="6px"
-          _hover={{textDecoration: "underline"}}
+          _hover={{textDecoration: "underline", color: "#EF6820"}}
           whiteSpace="nowrap">
-          <Box
-            as="img"
-            src="/img/questionRound.svg"
-            alt="info"
+          <Flex
+            borderRadius="50%"
+            border="1px solid #EF6820"
+            p="4px"
             w="16px"
             h="16px"
-          />
+            fontSize="12px"
+            justifyContent="center"
+            alignItems="center">
+            ?
+          </Flex>
           What are active weeks?
         </Link>
       </Flex>

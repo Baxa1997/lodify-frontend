@@ -5,6 +5,8 @@ import styles from "../../styles/tabs.module.scss";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import Performance from "./modules/Performance";
 import Safety from "./modules/Safety";
+import CompanyExecution from "./modules/CompanyExecution";
+import DriverExecution from "./modules/DriverExecution";
 
 const ScoreCards = () => {
   return (
@@ -32,6 +34,12 @@ const ScoreCards = () => {
         </TabPanel>
         <TabPanel>
           <Safety />
+        </TabPanel>
+        <TabPanel>
+          <CompanyExecution />
+        </TabPanel>
+        <TabPanel>
+          <DriverExecution />
         </TabPanel>
       </Tabs>
     </>

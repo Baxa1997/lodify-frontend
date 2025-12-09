@@ -1,12 +1,10 @@
 import React from "react";
-import {PerformanceGrade} from "./components/PerformanceGrade";
-import PerformanceFilter from "./components/PerformanceFilter";
-import DetailedMetricCard from "./components/DetailMetricCard";
+import {PerformanceGrade} from "../Performance/components/PerformanceGrade";
+import PerformanceFilter from "../Performance/components/PerformanceFilter";
+import DetailedMetricCard from "../Performance/components/DetailMetricCard";
 import {Box} from "@chakra-ui/react";
-import {ScoreCardsPerformance} from "./components/ScoreCardsPerformance";
-import {PerformanceByDrivers} from "./components/PerformanceByDrivers";
 
-const Performance = () => {
+const CompanyExecution = () => {
   return (
     <>
       <PerformanceGrade />
@@ -109,11 +107,8 @@ const Performance = () => {
           }}
         />
       </Box>
-
-      <ScoreCardsPerformance />
-      <PerformanceByDrivers />
     </>
   );
 };
 
-export default Performance;
+export default CompanyExecution;

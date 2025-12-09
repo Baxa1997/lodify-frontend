@@ -36,40 +36,29 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
             />
           </Box>
 
-          <VStack spacing="6px" width="40%" align="flex-start" pt="8px">
-            <Text fontSize="14px" fontWeight="600" color="#181D27" mb="4px">
-              {data?.details?.value}
-              {data?.details?.contribution && (
-                <Text
-                  as="span"
-                  fontSize="12px"
-                  color="#6B7280"
-                  fontWeight="400"
-                  ml="4px">
-                  ({data?.details?.contribution})
-                </Text>
-              )}
-            </Text>
-            <Text fontSize="13px" color="#6B7280" fontWeight="400">
-              {data?.details?.label}
-            </Text>
-
-            <Text fontSize="14px" fontWeight="600" color="#181D27" mb="4px">
-              {data?.details?.value}
-              {data?.details?.contribution && (
-                <Text
-                  as="span"
-                  fontSize="12px"
-                  color="#6B7280"
-                  fontWeight="400"
-                  ml="4px">
-                  ({data?.details?.contribution})
-                </Text>
-              )}
-            </Text>
-            <Text fontSize="13px" color="#6B7280" fontWeight="400">
-              {data?.details?.label}
-            </Text>
+          <VStack spacing="16px" width="40%" align="flex-start" pt="8px" flex="1">
+            {(Array.isArray(data?.details) ? data.details : [data?.details])
+              .filter(Boolean)
+              .map((detail, index) => (
+                <Box key={index}>
+                  <Text fontSize="14px" fontWeight="600" color="#181D27" mb="4px">
+                    {detail?.value}
+                    {detail?.contribution && (
+                      <Text
+                        as="span"
+                        fontSize="12px"
+                        color="#6B7280"
+                        fontWeight="400"
+                        ml="4px">
+                        ({detail.contribution})
+                      </Text>
+                    )}
+                  </Text>
+                  <Text fontSize="13px" color="#6B7280" fontWeight="400">
+                    {detail?.label}
+                  </Text>
+                </Box>
+              ))}
           </VStack>
 
           <Box
