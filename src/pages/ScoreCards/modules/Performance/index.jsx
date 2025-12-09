@@ -4,6 +4,7 @@ import PerformanceFilter from "./components/PerformanceFilter";
 import DetailedMetricCard from "./components/DetailMetricCard";
 import {Box} from "@chakra-ui/react";
 import {ScoreCardsPerformance} from "./components/ScoreCardsPerformance";
+import {PerformanceByDrivers} from "./components/PerformanceByDrivers";
 
 const Performance = () => {
   return (
@@ -82,6 +83,7 @@ const Performance = () => {
       </Box>
 
       <ScoreCardsPerformance />
+      <PerformanceByDrivers />
     </>
   );
 };
