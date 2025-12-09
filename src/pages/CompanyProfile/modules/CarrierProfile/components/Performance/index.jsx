@@ -241,7 +241,6 @@ export const Performance = () => {
         maxW="144px"
         minH="144px"
         maxH="144px"
-        flexShrink={0}
         overflow="hidden">
         <Box
           w="144px"
