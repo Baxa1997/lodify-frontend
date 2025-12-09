@@ -4,6 +4,7 @@ import {Text} from "@chakra-ui/react";
 import styles from "../../styles/tabs.module.scss";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import Performance from "./modules/Performance";
+import Safety from "./modules/Safety";
 
 const ScoreCards = () => {
   return (
@@ -30,7 +31,7 @@ const ScoreCards = () => {
           <Performance />
         </TabPanel>
         <TabPanel>
-          <Text>My</Text>
+          <Safety />
         </TabPanel>
       </Tabs>
     </>
