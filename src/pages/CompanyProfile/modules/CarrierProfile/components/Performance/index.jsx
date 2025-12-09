@@ -307,7 +307,7 @@ export const Performance = () => {
           </Box>
 
           <Flex px="12px" gap="24px" alignItems="flex-start">
-            <Box position="relative" flexShrink={0}>
+            <Box position="relative">
               <CircularProgress
                 percentage={data.percentage}
                 color={data.color}
@@ -342,7 +342,6 @@ export const Performance = () => {
             <Box
               w="24px"
               h="24px"
-              flexShrink={0}
               display="flex"
               alignItems="center"
               justifyContent="center"
