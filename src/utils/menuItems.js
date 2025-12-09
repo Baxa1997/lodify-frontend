@@ -99,10 +99,10 @@ export const menuItems = [
   },
 
   {
-    id: "scorecards",
+    id: "score-cards",
     label: "Score Cards",
     icon: "/img/menuScore.svg",
-    path: "#",
+    path: "score-cards",
   },
 
   {
@@ -212,10 +212,10 @@ export const brokerMenuItems = [
   // },
 
   {
-    id: "scorecards",
+    id: "score-cards",
     label: "Score Cards",
     icon: "/img/menuScore.svg",
-    path: "#",
+    path: "score-cards",
   },
 
   {
