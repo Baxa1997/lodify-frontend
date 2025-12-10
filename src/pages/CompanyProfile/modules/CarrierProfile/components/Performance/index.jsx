@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Box, Text, Flex, VStack, Link, Tooltip} from "@chakra-ui/react";
 import {
   InfoAccordionItem,
@@ -212,6 +212,10 @@ export const Performance = () => {
   };
 
   const CircularProgress = ({percentage, color}) => {
+    const [chartKey, setChartKey] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+    const containerRef = useRef(null);
+
     const remaining = 100 - percentage;
     const chartData = [
       ["Label", "Value"],
@@ -228,54 +232,134 @@ export const Performance = () => {
         0: {color: color},
         1: {color: "#F3F4F6"},
       },
-      chartArea: {left: 0, top: 0, width: "100%", height: "100%"},
+      chartArea: {left: 0, bottom: "30%", width: "100%", height: "100%"},
       backgroundColor: "transparent",
     };
 
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setChartKey((prev) => prev + 1);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+      if (!containerRef.current) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !isVisible) {
+              setIsVisible(true);
+
+              setTimeout(() => {
+                setChartKey((prev) => prev + 1);
+              }, 50);
+            }
+          });
+        },
+        {threshold: 0.1}
+      );
+
+      observer.observe(containerRef.current);
+
+      return () => {
+        observer.disconnect();
+      };
+    }, [isVisible]);
+
+    useEffect(() => {
+      const handleResize = () => {
+        setChartKey((prev) => prev + 1);
+      };
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
-      <Box
-        position="relative"
-        w="144px"
-        h="144px"
-        minW="144px"
-        maxW="144px"
-        minH="144px"
-        maxH="144px"
-        overflow="hidden">
+      <>
+        <style>
+          {`
+            .performance-chart-wrapper svg,
+            .performance-chart-wrapper > div,
+            .performance-chart-wrapper > div > div {
+              width: 160px !important;
+              height: 160px !important;
+              min-width: 160px !important;
+              max-width: 160px !important;
+              min-height: 160px !important;
+              max-height: 160px !important;
+            }
+          `}
+        </style>
         <Box
-          w="144px"
-          h="144px"
-          minW="144px"
-          maxW="144px"
-          minH="144px"
-          maxH="144px"
-          position="relative">
-          <Chart
-            chartType="PieChart"
-            data={chartData}
-            options={options}
-            width={144}
-            height={144}
-            style={{width: "144px", height: "144px"}}
-          />
+          ref={containerRef}
+          position="relative"
+          w="160px"
+          h="160px"
+          minW="160px"
+          maxW="160px"
+          minH="160px"
+          maxH="160px"
+          overflow="hidden"
+          className="performance-chart-wrapper"
+          style={{
+            width: "160px !important",
+            height: "160px !important",
+            minWidth: "160px !important",
+            maxWidth: "160px !important",
+            minHeight: "160px !important",
+            maxHeight: "160px !important",
+          }}>
+          <Box
+            w="160px"
+            h="160px"
+            minW="160px"
+            maxW="160px"
+            minH="160px"
+            maxH="160px"
+            position="relative"
+            style={{
+              width: "160px !important",
+              height: "160px !important",
+              minWidth: "160px !important",
+              maxWidth: "160px !important",
+              minHeight: "160px !important",
+              maxHeight: "160px !important",
+            }}>
+            <Chart
+              key={chartKey}
+              chartType="PieChart"
+              data={chartData}
+              options={options}
+              width={160}
+              height={160}
+              style={{
+                width: "160px !important",
+                height: "160px !important",
+              }}
+            />
+          </Box>
+          <Box
+            position="absolute"
+            top="85%"
+            left="50%"
+            transform="translate(-50%, -50%)"
+            textAlign="center"
+            w="100%"
+            pointerEvents="none">
+            <Text
+              fontSize="26px"
+              fontWeight="600"
+              color="#181D27"
+              lineHeight="1.2">
+              {percentage}%
+            </Text>
+          </Box>
         </Box>
-        <Box
-          position="absolute"
-          top="50%"
-          left="50%"
-          transform="translate(-50%, -50%)"
-          textAlign="center"
-          w="100%"
-          pointerEvents="none">
-          <Text
-            fontSize="28px"
-            fontWeight="600"
-            color="#181D27"
-            lineHeight="1.2">
-            {percentage}%
-          </Text>
-        </Box>
-      </Box>
+      </>
     );
   };
 

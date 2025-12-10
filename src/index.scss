@@ -265,21 +265,3 @@ select {
   scrollbar-width: none;
   scrollbar-color: none;
 }
-
-#circular-progress-container {
-  svg {
-    background-color: #10b981;
-    width: 144px !important;
-    height: 144px !important;
-    path {
-      margin-right: 100px;
-      width: 144px !important;
-      height: 144px !important;
-      stroke: #10b981;
-    }
-    g {
-      width: 144px !important;
-      height: 144px !important;
-    }
-  }
-}
