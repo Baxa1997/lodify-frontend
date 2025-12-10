@@ -9,17 +9,17 @@ import {
 } from "@chakra-ui/react";
 import {useEquipmentProps} from "./useEquipmentProps";
 import {DataTable} from "@components/DataTable";
+import SimplePagination from "@components/SimplePagination";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
   InfoAccordionPanel,
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
-import {InfoCard} from "../InfoCard";
-import {LuChevronUp, LuChevronDown} from "react-icons/lu";
 
 export const Equipment = () => {
   const {
+    fleetStatsData,
     headData,
     bodyData,
     page,
@@ -133,7 +133,7 @@ export const Equipment = () => {
                       borderRadius="4px"
                       fontSize="11px"
                       fontWeight="600">
-                      Top 10%
+                      {fleetStatsData?.pct_2_4 ?? 0}%
                     </Badge>
                     <Tooltip
                       label="Percentile Ranking Compared to Peers"
@@ -187,7 +187,7 @@ export const Equipment = () => {
                       borderRadius="4px"
                       fontSize="11px"
                       fontWeight="600">
-                      Top 30%
+                      {fleetStatsData?.pct_4_plus ?? 0}%
                     </Badge>
                     <Tooltip
                       label="Percentile Ranking Compared to Peers"
@@ -241,7 +241,7 @@ export const Equipment = () => {
                       borderRadius="4px"
                       fontSize="11px"
                       fontWeight="600">
-                      Top 10%
+                      {fleetStatsData?.pct_0_2 ?? 0}%
                     </Badge>
                     <Tooltip
                       label="Percentile Ranking Compared to Peers"
@@ -272,17 +272,15 @@ export const Equipment = () => {
               bg="white"
               border="1px solid #E5E7EB"
               borderRadius="12px"
-              overflow="hidden">
-              <Box
-                overflowX="auto"
-                overflowY="auto"
-                maxH="500px"
-                flex="1"
-                minH="0">
+              overflow="hidden"
+              display="flex"
+              flexDirection="column"
+              maxH="500px">
+              <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
                 <DataTable
                   headData={headData}
                   data={bodyData}
-                  pagination
+                  pagination={false}
                   count={count}
                   page={page}
                   limit={limit}
@@ -296,6 +294,24 @@ export const Equipment = () => {
                   }}
                 />
               </Box>
+              {count > 0 && (
+                <Box
+                  borderTop="1px solid #E5E7EB"
+                  bg="white"
+                  p="12px 24px"
+                  flexShrink={0}
+                  position="sticky"
+                  bottom="0"
+                  zIndex="10">
+                  <SimplePagination
+                    limit={limit}
+                    setLimit={setLimit}
+                    page={page}
+                    setPage={setPage}
+                    pageCount={Math.ceil(count / limit)}
+                  />
+                </Box>
+              )}
             </Box>
           </VStack>
         </InfoAccordionPanel>

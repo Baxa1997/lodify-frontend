@@ -43,16 +43,17 @@ export const DataTable = ({
   };
 
   return (
-    <Box borderRadius="12px" {...props}>
-      <Table variant="simple" {...tableProps}>
-        {caption && <TableCaption>{caption}</TableCaption>}
-        <Thead
-          bgColor="#F9FAFB"
-          borderBottom="1px solid"
-          borderColor="#E5E7EB"
-          position="sticky"
-          top="0"
-          zIndex="10">
+    <Box borderRadius="12px" display="flex" flexDirection="column" {...props}>
+      <Box flex="1" overflow="auto">
+        <Table variant="simple" {...tableProps}>
+          {caption && <TableCaption>{caption}</TableCaption>}
+          <Thead
+            bgColor="#F9FAFB"
+            borderBottom="1px solid"
+            borderColor="#E5E7EB"
+            position="sticky"
+            top="0"
+            zIndex="10">
           <Tr>
             {headData?.map((head, index) => (
               <Th
@@ -251,9 +252,17 @@ export const DataTable = ({
             ))
           )}
         </Tbody>
-      </Table>
+        </Table>
+      </Box>
       {pagination && (
-        <Box width="100%">
+        <Box
+          width="100%"
+          borderTop="1px solid"
+          borderColor="#E5E7EB"
+          bg="white"
+          position="sticky"
+          bottom="0"
+          zIndex="10">
           <Box padding="12px 24px" width="100%">
             <SimplePagination
               limit={limit}

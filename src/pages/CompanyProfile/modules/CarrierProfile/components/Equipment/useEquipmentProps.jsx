@@ -12,6 +12,7 @@ export const useEquipmentProps = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [equipmentData, setEquipmentData] = useState([]);
+  const [fleetStatsData, setFleetStatsData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,8 +35,20 @@ export const useEquipmentProps = () => {
         },
       });
 
+      const response2 = await carrierService?.getCarrierInfo({
+        data: {
+          method: "get",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "fleet_stats",
+        },
+      });
+      console.log("response2response2", response2);
       const data = response?.data?.response || [];
+      const fleetStats = response2?.data || {};
       setEquipmentData(data);
+      setFleetStatsData(fleetStats);
 
       if (data.length === limit) {
         setTotalCount(page * limit + 1);
@@ -169,6 +182,7 @@ export const useEquipmentProps = () => {
   const bodyData = equipmentData;
 
   return {
+    fleetStatsData,
     headData,
     bodyData,
     page,
