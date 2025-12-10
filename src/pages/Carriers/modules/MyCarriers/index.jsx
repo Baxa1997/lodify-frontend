@@ -140,6 +140,20 @@ const MyCarriers = () => {
     return name.substring(0, 2).toUpperCase();
   };
 
+  if (isLoading) {
+    return (
+      <Flex justify="center" align="center" h="400px">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="#fff"
+          color="#EF6820"
+          size="lg"
+        />
+      </Flex>
+    );
+  }
+
   return (
     <Box>
       <Box mt="20px" mb="16px">

@@ -162,7 +162,7 @@ const Login = () => {
     setIsLoading(true);
     const data = {
       password: values?.password ? values?.password : "",
-      username: values?.username ? values?.password : "",
+      username: values?.username ? values?.username : "",
       ...values,
     };
 
