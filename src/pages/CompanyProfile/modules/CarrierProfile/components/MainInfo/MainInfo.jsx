@@ -14,10 +14,10 @@ import {useSearchParams, useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {useState} from "react";
 import carrierService from "@services/carrierService";
-import {MetricsSection} from "./components/MetricsSection";
 import {PowerUnitsSection} from "./components/PowerUnitsSection";
 import {VerifiedCarrierResourcesSection} from "./components/VerifiedCarrierResourcesSection";
 import {CarriersPerformance} from "./components/CarriersPerformance";
+import MetricsSection from "./components/MetricsSection";
 
 export const MainInfo = ({generalInfo}) => {
   const [searchParams] = useSearchParams();

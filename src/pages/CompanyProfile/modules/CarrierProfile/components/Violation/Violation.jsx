@@ -6,6 +6,7 @@ import {
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
 import {DataTable} from "@components/DataTable";
+import SimplePagination from "@components/SimplePagination";
 import {useViolationProps} from "./useViolationProps";
 
 export const Violation = () => {
@@ -18,6 +19,7 @@ export const Violation = () => {
     setLimit,
     count,
     getViolationData,
+    isLoading,
   } = useViolationProps();
 
   return (
@@ -38,23 +40,55 @@ export const Violation = () => {
         </Box>
       </InfoAccordionButton>
       <InfoAccordionPanel>
-        <DataTable
-          headData={headData}
-          data={bodyData}
+        <Box
           border="1px solid"
           borderColor="gray.border-main"
           borderRadius="12px"
-          tableProps={{
-            layout: "fixed",
-            overflow: "scroll",
-          }}
-          page={page}
-          setPage={setPage}
-          limit={limit}
-          setLimit={setLimit}
-          count={count}
-          pagination
-        />
+          overflow="hidden"
+          display="flex"
+          flexDirection="column">
+          <Box
+            overflowX="auto"
+            overflowY="auto"
+            maxH="600px"
+            position="relative"
+            flex="1">
+            <Box minW="max-content">
+              <DataTable
+                headData={headData}
+                data={bodyData}
+                border="none"
+                borderRadius="0"
+                tableProps={{
+                  layout: "fixed",
+                  minW: "max-content",
+                }}
+                page={page}
+                setPage={setPage}
+                limit={limit}
+                setLimit={setLimit}
+                count={count}
+                pagination={false}
+                isLoading={isLoading}
+              />
+            </Box>
+          </Box>
+          {count > 0 && (
+            <Box
+              borderTop="1px solid"
+              borderColor="gray.border-main"
+              bg="white"
+              p="12px 24px">
+              <SimplePagination
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                pageCount={Math.ceil(count / limit)}
+              />
+            </Box>
+          )}
+        </Box>
       </InfoAccordionPanel>
     </InfoAccordionItem>
   );

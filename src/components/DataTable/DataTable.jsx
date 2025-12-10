@@ -44,7 +44,7 @@ export const DataTable = ({
 
   return (
     <Box borderRadius="12px" {...props}>
-      <Table variant="simple" overflow="scroll" {...tableProps}>
+      <Table variant="simple" {...tableProps}>
         {caption && <TableCaption>{caption}</TableCaption>}
         <Thead
           bgColor="#F9FAFB"
@@ -52,7 +52,7 @@ export const DataTable = ({
           borderColor="#E5E7EB"
           position="sticky"
           top="0"
-          zIndex="1">
+          zIndex="10">
           <Tr>
             {headData?.map((head, index) => (
               <Th
