@@ -15,7 +15,6 @@ const Carriers = () => {
           <TabList>
             <Tab>My Carriers</Tab>
             <Tab>All Carriers</Tab>
-            {/* <Tab>Invitations</Tab> */}
           </TabList>
 
           <TabPanel>

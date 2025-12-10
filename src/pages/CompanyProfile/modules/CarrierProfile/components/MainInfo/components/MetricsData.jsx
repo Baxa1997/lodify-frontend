@@ -1,24 +1,24 @@
-export const metrics = ({generalInfo}) => {
+export const metrics = ({generalInfo, new_info}) => {
   return [
     {
       label: "Common",
-      value: generalInfo.phone,
+      value: new_info?.phone,
       status: "success",
     },
     {
       label: "Broker",
-      value: generalInfo.broker_stat === "N" ? "Inactive" : "Active",
-      status: generalInfo.broker_stat === "N" ? "error" : "success",
+      value: new_info?.broker === "N" ? "Inactive" : "Active",
+      status: new_info?.broker === "N" ? "error" : "success",
     },
     {
       label: "Safety Rating",
-      value: generalInfo.safety_rating,
-      status: generalInfo.safety_rating !== "None" ? "success" : "error",
+      value: new_info?.safety_rating,
+      status: new_info?.safety_rating !== "None" ? "success" : "error",
     },
     {
       label: "ELD",
-      value: generalInfo.broker_stat === "N" ? "Inactive" : "Active",
-      status: generalInfo.broker_stat === "N" ? "error" : "success",
+      value: getIntegrationName(new_info?.integrations),
+      status: new_info?.integrations?.length > 0 ? "success" : "error",
     },
     {
       label: "Contract",
@@ -27,17 +27,17 @@ export const metrics = ({generalInfo}) => {
     },
     {
       label: "Operating Status",
-      value: generalInfo?.companies_id_data?.operating_status,
+      value: new_info?.operating_status,
       status: "success",
     },
     {
       label: "Certifications",
-      value: generalInfo.safety_rating,
-      status: generalInfo.safety_rating !== "None" ? "success" : "error",
+      value: new_info?.safety_rating,
+      status: new_info?.safety_rating !== "None" ? "success" : "error",
     },
     {
       label: "TIN",
-      value: generalInfo?.companies_id_data?.operating_status,
+      value: new_info?.tin,
       status: "success",
     },
   ];
@@ -103,4 +103,11 @@ export const verifiedCarrierResources = ({generalInfo}) => {
       count: generalInfo?.equipment_id_data?.truck_units,
     },
   ];
+};
+
+export const getIntegrationName = (integrations) => {
+  return (
+    integrations?.map((integration) => integration.type?.[0])?.join(", ") ||
+    "N/A"
+  );
 };

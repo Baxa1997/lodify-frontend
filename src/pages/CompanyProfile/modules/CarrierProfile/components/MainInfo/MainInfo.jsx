@@ -26,7 +26,8 @@ export const MainInfo = ({generalInfo}) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const carrierId = searchParams.get("id");
-
+  const {new_info} = generalInfo;
+  console.log("new_info", new_info);
   const {
     ownbus_16,
     owncoach,
@@ -139,7 +140,6 @@ export const MainInfo = ({generalInfo}) => {
       });
       navigate("/admin/carriers");
     } catch (error) {
-      console.log("error", error);
       toast({
         title: "Failed to Connect Carrier",
         description: error?.response?.data?.message || "Please try again",
@@ -155,11 +155,10 @@ export const MainInfo = ({generalInfo}) => {
 
   const formatIds = () => {
     const parts = [];
-    if (generalInfo?.state) parts.push(generalInfo.state);
-    if (generalInfo?.dot_number) parts.push(`DOT ${generalInfo.dot_number}`);
-    if (generalInfo?.docket_number)
-      parts.push(`MC ${generalInfo.docket_number}`);
-    if (generalInfo?.scac_code) parts.push(`SCAC - ${generalInfo.scac_code}`);
+    if (new_info?.state) parts.push(new_info.state);
+    if (new_info?.us_dot_number) parts.push(`DOT ${new_info.us_dot_number}`);
+    if (new_info?.docket_number) parts.push(`${new_info.docket_number}`);
+    if (new_info?.scac_code) parts.push(`SCAC - ${new_info.scac_code}`);
     return parts.join(" / ");
   };
 
@@ -182,7 +181,7 @@ export const MainInfo = ({generalInfo}) => {
                 ))}
               </HStack>
               <Text fontSize="20px" fontWeight="700" color="#181D27">
-                {generalInfo.legal_name || generalInfo.company_name || "N/A"}
+                {new_info.legal_name || new_info.company_name || "N/A"}
               </Text>
               <Text fontSize="14px" color="#535862" fontWeight="400">
                 {formatIds() || "N/A"}
@@ -215,7 +214,7 @@ export const MainInfo = ({generalInfo}) => {
               align="flex-start"
               gap="24px"
               pb="12px">
-              {generalInfo.phone && (
+              {new_info.phone && (
                 <HStack spacing={3}>
                   <img
                     src="/img/phone.svg"
@@ -224,11 +223,11 @@ export const MainInfo = ({generalInfo}) => {
                     height="20px"
                   />
                   <Text fontSize="14px" color="#181D27" fontWeight="500">
-                    {generalInfo.phone}
+                    {new_info?.phone}
                   </Text>
                 </HStack>
               )}
-              {generalInfo.email && (
+              {new_info?.email && (
                 <HStack spacing={3}>
                   <img
                     src="/img/mailpin.svg"
@@ -237,11 +236,11 @@ export const MainInfo = ({generalInfo}) => {
                     height="20px"
                   />
                   <Text fontSize="14px" color="#181D27" fontWeight="500">
-                    {generalInfo.email}
+                    {new_info?.email}
                   </Text>
                 </HStack>
               )}
-              {generalInfo.physical_address && (
+              {new_info?.physical_address && (
                 <HStack spacing={3}>
                   <img
                     src="/img/markerPin.svg"
@@ -250,7 +249,7 @@ export const MainInfo = ({generalInfo}) => {
                     height="20px"
                   />
                   <Text fontSize="14px" color="#181D27" fontWeight="500">
-                    {generalInfo.physical_address}
+                    {new_info?.physical_address}
                   </Text>
                 </HStack>
               )}
@@ -259,7 +258,7 @@ export const MainInfo = ({generalInfo}) => {
         </Box>
 
         <Box className={styles.metricsSection}>
-          <MetricsSection generalInfo={generalInfo} />
+          <MetricsSection generalInfo={generalInfo} new_info={new_info} />
         </Box>
         <PowerUnitsSection
           generalInfo={generalInfo}

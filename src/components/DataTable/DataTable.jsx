@@ -44,7 +44,7 @@ export const DataTable = ({
 
   return (
     <Box borderRadius="12px" {...props}>
-      <Table variant="simple" {...tableProps}>
+      <Table variant="simple" overflow="scroll" {...tableProps}>
         {caption && <TableCaption>{caption}</TableCaption>}
         <Thead
           bgColor="#F9FAFB"

@@ -17,8 +17,10 @@ import {useSelector} from "react-redux";
 import useDebounce from "@hooks/useDebounce";
 import SearchInput from "@components/SearchInput";
 import {format} from "date-fns";
+import {useNavigate} from "react-router-dom";
 
 const MyCarriers = () => {
+  const navigate = useNavigate();
   const containerRef = useRef();
   const [searchQuery, setSearchQuery] = useState("");
   const envId = useSelector((state) => state.auth.environmentId);
@@ -90,7 +92,7 @@ const MyCarriers = () => {
   }, [carriersData, searchQuery]);
 
   const handleViewCarrier = (carrier) => {
-    console.log("View carrier:", carrier);
+    navigate(`/admin/company?id=${carrier.guid}`);
   };
 
   useEffect(() => {

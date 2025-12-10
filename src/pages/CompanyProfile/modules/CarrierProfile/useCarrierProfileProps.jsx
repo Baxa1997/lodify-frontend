@@ -7,6 +7,8 @@ import {
 import {useEffect, useState} from "react";
 import {useGetTable} from "@services/items.service";
 import {useSearchParams} from "react-router-dom";
+import carrierService from "@services/carrierService";
+import {useQuery} from "@tanstack/react-query";
 
 export const useCarrierProfileProps = () => {
   const [searchParams] = useSearchParams();
@@ -29,10 +31,35 @@ export const useCarrierProfileProps = () => {
     {data: JSON.stringify({companies_id})}
   );
 
+  const {
+    data: carrierInfoData = {},
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ["CARRIER_INFO", companies_id],
+    queryFn: () =>
+      carrierService.getCarrierInfo({
+        data: {
+          method: "get",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "carrier_info",
+        },
+      }),
+    select: (data) => data?.data?.response?.[0] || {},
+    enabled: true,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+  });
+
   const generalInfo = {
     ...companySnapshot,
     ...carrierDetails,
     ...operation,
+    new_info: carrierInfoData,
   };
 
   useEffect(() => {
