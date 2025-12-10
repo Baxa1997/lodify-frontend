@@ -47,13 +47,8 @@ export const Violation = () => {
           overflow="hidden"
           display="flex"
           flexDirection="column">
-          <Box
-            overflowX="auto"
-            overflowY="auto"
-            maxH="600px"
-            position="relative"
-            flex="1">
-            <Box minW="max-content">
+          <Box overflowX="auto" overflowY="auto" maxH="600px" flex="1" minH="0">
+            <Box>
               <DataTable
                 headData={headData}
                 data={bodyData}
