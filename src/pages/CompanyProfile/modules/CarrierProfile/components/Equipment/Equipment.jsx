@@ -19,13 +19,22 @@ import {InfoCard} from "../InfoCard";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
 
 export const Equipment = () => {
-  const {headData, bodyData, page, setPage, limit, setLimit, count} =
-    useEquipmentProps();
+  const {
+    headData,
+    bodyData,
+    page,
+    setPage,
+    limit,
+    setLimit,
+    count,
+    getEquipmentData,
+    isLoading,
+  } = useEquipmentProps();
 
   return (
     <Box>
       <InfoAccordionItem>
-        <InfoAccordionButton>
+        <InfoAccordionButton onClick={getEquipmentData}>
           <Box
             display="flex"
             alignItems="center"
@@ -264,20 +273,29 @@ export const Equipment = () => {
               border="1px solid #E5E7EB"
               borderRadius="12px"
               overflow="hidden">
-              <DataTable
-                headData={headData}
-                data={bodyData}
-                pagination
-                count={count}
-                page={page}
-                limit={limit}
-                setLimit={setLimit}
-                setPage={setPage}
-                tableProps={{
-                  layout: "fixed",
-                  variant: "simple",
-                }}
-              />
+              <Box
+                overflowX="auto"
+                overflowY="auto"
+                maxH="500px"
+                flex="1"
+                minH="0">
+                <DataTable
+                  headData={headData}
+                  data={bodyData}
+                  pagination
+                  count={count}
+                  page={page}
+                  limit={limit}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  isLoading={isLoading}
+                  tableProps={{
+                    layout: "fixed",
+                    variant: "simple",
+                    minW: "max-content",
+                  }}
+                />
+              </Box>
             </Box>
           </VStack>
         </InfoAccordionPanel>

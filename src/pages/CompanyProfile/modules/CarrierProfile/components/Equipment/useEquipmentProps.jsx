@@ -1,19 +1,59 @@
-import { useGetTable } from "@services/items.service";
-import CustomBadge from "../../../../../../components/CustomBadge/CustomBadge";
-import { useSearchParams } from "react-router-dom";
-import { useState } from "react";
-import { HStack } from "@chakra-ui/react";
-import { LuChevronUp, LuChevronDown } from "react-icons/lu";
-import { Box, Text, Badge } from "@chakra-ui/react";
+import {useState, useEffect, useCallback} from "react";
+import {useSearchParams} from "react-router-dom";
+import {HStack} from "@chakra-ui/react";
+import {LuChevronUp, LuChevronDown} from "react-icons/lu";
+import {Box, Text, Badge} from "@chakra-ui/react";
+import carrierService from "@services/carrierService";
 
 export const useEquipmentProps = () => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(20);
+  const [equipmentData, setEquipmentData] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: assetsData, isSuccess: operationIsSuccess } = useGetTable("assets", {  }, { data: JSON.stringify({ companies_id, offset: (page - 1) * limit, limit }) });
+  const getEquipmentData = useCallback(async () => {
+    if (!companies_id) return;
+
+    setIsLoading(true);
+    try {
+      const offset = (page - 1) * limit;
+
+      const response = await carrierService?.getCarrierInfo({
+        data: {
+          method: "list",
+          object_data: {
+            companies_id: companies_id,
+            offset: offset,
+            limit: limit,
+          },
+          table: "equipment",
+        },
+      });
+
+      const data = response?.data?.response || [];
+      setEquipmentData(data);
+
+      if (data.length === limit) {
+        setTotalCount(page * limit + 1);
+      } else {
+        setTotalCount(offset + data.length);
+      }
+    } catch (error) {
+      console.error("Error fetching equipment data:", error);
+      setEquipmentData([]);
+      setTotalCount(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [companies_id, page, limit]);
+
+  useEffect(() => {
+    getEquipmentData();
+  }, [getEquipmentData]);
 
   const headData = [
     {
@@ -22,7 +62,11 @@ export const useEquipmentProps = () => {
           <span>TYPE</span>
           <HStack spacing={0} align="center" display="inline-flex" ml="4px">
             <LuChevronUp size={12} opacity={0.3} />
-            <LuChevronDown size={12} opacity={0.3} style={{marginTop: "-2px"}} />
+            <LuChevronDown
+              size={12}
+              opacity={0.3}
+              style={{marginTop: "-2px"}}
+            />
           </HStack>
         </HStack>
       ),
@@ -53,26 +97,18 @@ export const useEquipmentProps = () => {
         </HStack>
       ),
     },
-    {
-      label: "STATE",
-      key: "state",
-      thProps: {
-        width: "100px",
-        px: "16px",
-        py: "12px",
-      },
-      tdProps: {
-        px: "16px",
-        py: "12px",
-      },
-    },
+
     {
       label: (
         <HStack spacing={1} display="inline-flex" alignItems="center">
           <span>PLATE</span>
           <HStack spacing={0} align="center" display="inline-flex" ml="4px">
             <LuChevronUp size={12} opacity={0.3} />
-            <LuChevronDown size={12} opacity={0.3} style={{marginTop: "-2px"}} />
+            <LuChevronDown
+              size={12}
+              opacity={0.3}
+              style={{marginTop: "-2px"}}
+            />
           </HStack>
         </HStack>
       ),
@@ -114,19 +150,7 @@ export const useEquipmentProps = () => {
         py: "12px",
       },
     },
-    {
-      label: "MODEL",
-      key: "model",
-      thProps: {
-        width: "140px",
-        px: "16px",
-        py: "12px",
-      },
-      tdProps: {
-        px: "16px",
-        py: "12px",
-      },
-    },
+
     {
       label: "VIN",
       key: "vin_number",
@@ -140,47 +164,19 @@ export const useEquipmentProps = () => {
         py: "12px",
       },
     },
-    {
-      label: "LAST SEEN",
-      key: "last_seen",
-      thProps: {
-        width: "140px",
-        px: "16px",
-        py: "12px",
-      },
-      tdProps: {
-        px: "16px",
-        py: "12px",
-      },
-      render: (value, row) => (
-        <HStack spacing="8px">
-          <Text fontSize="14px" color="#374151">
-            {value || "7/09/2025"}
-          </Text>
-          <Badge
-            bg="#F3F4F6"
-            color="#374151"
-            px="8px"
-            py="2px"
-            borderRadius="16px"
-            fontSize="11px"
-            fontWeight="500">
-            Class 8
-          </Badge>
-        </HStack>
-      ),
-    },
   ];
 
-  const bodyData = assetsData?.response;
+  const bodyData = equipmentData;
 
   return {
     headData,
     bodyData,
-    page, 
+    page,
     setPage,
     limit,
     setLimit,
-    count: assetsData?.count,
+    count: totalCount || equipmentData?.length,
+    getEquipmentData,
+    isLoading,
   };
 };
