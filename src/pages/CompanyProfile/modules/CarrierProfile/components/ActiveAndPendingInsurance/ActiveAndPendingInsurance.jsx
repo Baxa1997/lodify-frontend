@@ -9,10 +9,13 @@ import {useActiveAndPendingInsuranceProps} from "./useActiveAndPendingInsuranceP
 import {format, isValid, parseISO, isAfter, isBefore} from "date-fns";
 
 export const ActiveAndPendingInsurance = () => {
-  const {pendingInsuranceData, rejectedInsuranceData, onAccordionChange} =
-    useActiveAndPendingInsuranceProps();
+  const {
+    pendingInsuranceData,
+    rejectedInsuranceData,
+    onAccordionChange,
+    getPendingInsuranceData,
+  } = useActiveAndPendingInsuranceProps();
 
-  // Combine all insurance data
   const allInsuranceData = [
     ...(pendingInsuranceData || []),
     ...(rejectedInsuranceData || []),
@@ -45,7 +48,7 @@ export const ActiveAndPendingInsurance = () => {
 
   const getStatus = (item) => {
     const now = new Date();
-    // Try different possible field names for expiration date
+
     const expirationDateStr =
       item?.expiration_date ||
       item?.exp_date ||
@@ -58,7 +61,6 @@ export const ActiveAndPendingInsurance = () => {
       ? parseISO(item.cancl_effective_date)
       : null;
 
-    // Check if expired
     if (
       expirationDate &&
       isValid(expirationDate) &&
@@ -67,12 +69,10 @@ export const ActiveAndPendingInsurance = () => {
       return "expired";
     }
 
-    // Check if pending cancellation
     if (cancelDate && isValid(cancelDate) && isAfter(cancelDate, now)) {
       return "pendingCancellation";
     }
 
-    // Check if expiring soon (within 30 days)
     if (expirationDate && isValid(expirationDate)) {
       const daysUntilExpiration = Math.ceil(
         (expirationDate - now) / (1000 * 60 * 60 * 24)
@@ -111,11 +111,11 @@ export const ActiveAndPendingInsurance = () => {
       label: "Expired",
     },
   };
-
+  console.log("allInsuranceDataallInsuranceData", allInsuranceData);
   return (
     <Box>
       <InfoAccordionItem onChange={onAccordionChange}>
-        <InfoAccordionButton>
+        <InfoAccordionButton onClick={getPendingInsuranceData}>
           <Box
             display="flex"
             alignItems="center"
@@ -148,13 +148,12 @@ export const ActiveAndPendingInsurance = () => {
                   h="100%"
                   display="flex"
                   flexDirection="column">
-                  {/* Header */}
                   <Flex
                     justifyContent="space-between"
                     alignItems="center"
                     mb="24px">
                     <Text fontSize="16px" fontWeight="600" color="#181D27">
-                      {item?.mod_col_1 || "N/A"}
+                      {"General Liability"}
                     </Text>
                     <Badge
                       px="12px"
@@ -169,9 +168,7 @@ export const ActiveAndPendingInsurance = () => {
                     </Badge>
                   </Flex>
 
-                  {/* Content */}
                   <VStack spacing="20px" align="stretch" flex="1">
-                    {/* Insurance name */}
                     <Box>
                       <Text
                         fontSize="14px"
@@ -185,7 +182,6 @@ export const ActiveAndPendingInsurance = () => {
                       </Text>
                     </Box>
 
-                    {/* Policy number */}
                     <Box>
                       <Text
                         fontSize="14px"
@@ -199,7 +195,6 @@ export const ActiveAndPendingInsurance = () => {
                       </Text>
                     </Box>
 
-                    {/* Effective date and Expiration date */}
                     <Flex gap="24px">
                       <Box flex="1">
                         <Text
@@ -232,7 +227,6 @@ export const ActiveAndPendingInsurance = () => {
                       </Box>
                     </Flex>
 
-                    {/* Cancellation date (for General Liability) */}
                     {isGeneralLiability && item?.cancl_effective_date && (
                       <Box>
                         <Text
@@ -248,7 +242,6 @@ export const ActiveAndPendingInsurance = () => {
                       </Box>
                     )}
 
-                    {/* Coverage amounts */}
                     {isGeneralLiability ? (
                       <VStack spacing="12px" align="stretch">
                         <Box>
@@ -311,7 +304,6 @@ export const ActiveAndPendingInsurance = () => {
                       </Box>
                     )}
 
-                    {/* View Certificate link */}
                     <Box mt="auto" pt="8px">
                       <Flex justifyContent="flex-end">
                         <Link
@@ -321,7 +313,6 @@ export const ActiveAndPendingInsurance = () => {
                           _hover={{textDecoration: "underline"}}
                           cursor="pointer"
                           onClick={() => {
-                            // Handle view certificate action
                             console.log("View certificate for:", item);
                           }}>
                           View Certificate
