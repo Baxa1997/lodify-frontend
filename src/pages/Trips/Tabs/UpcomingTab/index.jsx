@@ -30,7 +30,6 @@ import {formatDate} from "@utils/dateFormats";
 import TripRowDetails from "../../components/TripRowDetails";
 import AssignDriver from "./components/AssignDriver";
 import AssignCarrier from "./components/AssignCarrier";
-import {getLoadTypeColor} from "./hooks";
 import {TripProgress} from "../../components/TabsElements";
 import {TripDriverVerification} from "./components/FunctionalComponents";
 import {ReAssignCarrierButton} from "./components/FunctionalComponents";
@@ -41,10 +40,12 @@ import TractorAssignmentMenu from "./components/TractorAssignmentMenu";
 import TractorAssignmentModal from "./components/TractorAssignmentModal";
 import TrailerAssignmentMenu from "./components/TrailerAssignmentMenu";
 import TrailerAssignmentModal from "./components/TrailerAssignmentModal";
+import {useUpcomingProps} from "./components/useUpcomingProps";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {getLoadTypeColor} = useUpcomingProps();
 
   const getOrderedColumns = () => {
     const filteredElements = tableElements?.filter((element) =>

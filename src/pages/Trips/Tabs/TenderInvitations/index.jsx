@@ -2,7 +2,6 @@ import {
   Badge,
   Box,
   Button,
-  Collapse,
   Flex,
   Spinner,
   Text,
@@ -18,7 +17,7 @@ import {
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
 import React, {useState} from "react";
 import {useSelector, useDispatch} from "react-redux";
