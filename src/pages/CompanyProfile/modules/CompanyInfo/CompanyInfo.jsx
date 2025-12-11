@@ -1,7 +1,6 @@
 import styles from "./style.module.scss";
 import {Box, Button, Text, HStack, VStack, Flex} from "@chakra-ui/react";
 import StarRating from "../../../../components/Rating";
-import {FiPhone, FiMail, FiMapPin} from "react-icons/fi";
 import {FaCheck, FaTimes} from "react-icons/fa";
 import TabsSection from "./TabsSection";
 

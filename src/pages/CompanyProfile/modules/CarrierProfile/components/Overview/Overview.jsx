@@ -1,18 +1,3 @@
-// import { CompanyInformation } from "./CompanyInformation";
-// import { ValidateCarrier } from "./ValidateCarrier";
-// import { ValidateEquipment } from "./ValidateEquipment";
-// import { CaliforniaAirResources } from "./CaliforniaAirResources";
-// import { MainSection } from "../MainSection";
-// import { LaneInsights } from "../LaneInsights";
-// import { SmsResult } from "../SmsResult";
-// import { CrashIndicator } from "../CrashIndicator";
-// import { Authority } from "../Authority";
-// import { Insurance } from "../Insurance";
-// import { ActiveAndPendingInsurance } from "../ActiveAndPendingInsurance";
-// import { RejectedInsurance } from "../RejectedInsurance";
-// import { Revocation } from "../Revocation";
-// import { Safety } from "../Safety";
-// import { Operations } from "../Operations";
 import {SidebarTabs} from "../SidebarTabs";
 import {InfoAccordion} from "../../../../components/InfoAccordion";
 import {Box} from "@chakra-ui/react";
@@ -31,13 +16,7 @@ import {VictimIdentity} from "../VictimIdentity";
 import Assessments from "../Assessments";
 import Insights from "../Insights";
 
-export const Overview = ({
-  generalInfo,
-  companySnapshot,
-  carrierDetails,
-  insuranceHistory,
-  operation,
-}) => {
+export const Overview = ({companySnapshot, carrierDetails, operation}) => {
   return (
     <Box
       display="flex"
@@ -68,27 +47,6 @@ export const Overview = ({
           <MatchedData />
         </InfoAccordion>
       </Box>
-      {/* <MainSection
-      data={generalInfo}
-      companySnapshot={companySnapshot}
-    /> */}
-
-      {/* <CompanyInformation data={companySnapshot} /> */}
-      {/* <SmsResult /> */}
-      {/* <CrashIndicator /> */}
-      {/* <ValidateCarrier />
-  <ValidateEquipment /> */}
-      {/* <Authority data={carrierDetails} />
-    <Insurance
-      data={insuranceHistory}
-      carrierDetails={carrierDetails}
-    />
-    <ActiveAndPendingInsurance />
-    <RejectedInsurance />
-    <Revocation />
-    <Safety data={companySnapshot} /> */}
-      {/* <CaliforniaAirResources /> */}
-      {/* <Operations data={companySnapshot} /> */}
     </Box>
   );
 };

@@ -118,7 +118,7 @@ function ActionsNeeded() {
       <Box mt={6}>
         <CTable
           width="100%"
-          height="calc(100vh - 280px)"
+          height="calc(100vh - 330px)"
           overflow="auto"
           currentPage={currentPage}
           totalPages={totalPages}

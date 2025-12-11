@@ -205,7 +205,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
         <CTable
           scrollRef={tableScrollRef}
           width="100%"
-          height="calc(100vh - 280px)"
+          height="calc(100vh - 330px)"
           overflow="scroll"
           currentPage={currentPage}
           totalPages={totalPages}
