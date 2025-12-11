@@ -77,10 +77,10 @@ const FiltersComponent = ({
         {addButton && (
           <Button
             _hover={{
-              background: "#1570EF",
+              background: "#EF6820",
             }}
             borderRadius={"8px"}
-            bg={"#1570EF"}
+            bg={"#EF6820"}
             w={"119px"}
             h={"40px"}
             gap={"8px"}
@@ -96,7 +96,7 @@ const FiltersComponent = ({
           <Button
             borderRadius={"8px"}
             bg={"#ff5b04"}
-            w={"80px"}
+            minW={"80px"}
             h={"40px"}
             gap={"8px"}
             _hover={{
@@ -112,7 +112,7 @@ const FiltersComponent = ({
         {lastAddButton && (
           <Button
             borderRadius={"8px"}
-            bg={"#1570EF"}
+            bg={"#EF6820"}
             w={"90px"}
             h={"40px"}
             gap={"8px"}

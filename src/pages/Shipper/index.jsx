@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
   Box,
   Flex,
@@ -12,17 +12,17 @@ import {
 } from "@chakra-ui/react";
 import HeadBreadcrumb from "../../components/HeadBreadCrumb";
 import FiltersComponent from "../../components/FiltersComponent";
-import { CTable } from "@components/tableElements";
+import {CTable} from "@components/tableElements";
 import {
   CTableHead,
   CTableTh,
   CTableBody,
   CTableTd,
 } from "@components/tableElements";
-import { tableElements } from "./components/mockElements";
+import {tableElements} from "./components/mockElements";
 import CTableRow from "@components/tableElements/CTableRow";
 import clientsService from "../../services/clientsService";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import AddShipperModal from "./components/AddShipperModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 
@@ -30,7 +30,7 @@ function Shipper() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [search, setSearch] = useState("");
   const [assets, setAssets] = useState([]);
   const [isAddShipperModalOpen, setIsAddShipperModalOpen] = useState(false);
@@ -41,7 +41,7 @@ function Shipper() {
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const toast = useToast();
-  const { data: clients } = useQuery({
+  const {data: clients} = useQuery({
     queryKey: ["CLIENTS_LIST"],
     enabled: true,
     refetchOnMount: true,
@@ -85,7 +85,7 @@ function Shipper() {
   };
 
   const handleDeleteClick = (e, shipper) => {
-    e.stopPropagation(); // Prevent row click
+    e.stopPropagation();
     setShipperToDelete(shipper);
     setIsDeleteModalOpen(true);
   };
@@ -96,10 +96,10 @@ function Shipper() {
     setIsDeleting(true);
     try {
       await clientsService.deleteShipper(
-        shipperToDelete.id || shipperToDelete.guid,
+        shipperToDelete.id || shipperToDelete.guid
       );
 
-      queryClient.invalidateQueries({ queryKey: ["CLIENTS_LIST"] });
+      queryClient.invalidateQueries({queryKey: ["CLIENTS_LIST"]});
       setIsDeleteModalOpen(false);
       setShipperToDelete(null);
       setIsDeleting(false);
@@ -135,16 +135,10 @@ function Shipper() {
   };
 
   return (
-    <Flex
-      flexDir={"column"}
-      gap={"20px"}>
+    <Flex flexDir={"column"} gap={"20px"}>
       <HeadBreadcrumb />
       <Box h={"32px"}>
-        <Text
-          h={"32px"}
-          color={"#181D27"}
-          fontWeight={"600"}
-          fontSize={"24px"}>
+        <Text h={"32px"} color={"#181D27"} fontWeight={"600"} fontSize={"24px"}>
           Shipper
         </Text>
       </Box>
@@ -203,26 +197,22 @@ function Shipper() {
                     <img
                       src={asset?.logo}
                       alt=""
-                      style={{ width: "100%", height: "100%" }}
+                      style={{width: "100%", height: "100%"}}
                     />
                   </Flex>
                 </CTableTd>
                 <CTableTd w="20%">
-                  <Box
-                    w="100%"
-                    textAlign="end">
+                  <Box w="100%" textAlign="end">
                     <Menu>
                       <MenuButton
                         as={Button}
                         w="20px"
                         h="20px"
                         bg="none"
-                        _hover={{ bg: "none" }}
-                        _active={{ bg: "none" }}
-                        _focus={{ boxShadow: "none" }}>
-                        <img
-                          src="/img/threeDots.svg"
-                          alt="" />
+                        _hover={{bg: "none"}}
+                        _active={{bg: "none"}}
+                        _focus={{boxShadow: "none"}}>
+                        <img src="/img/threeDots.svg" alt="" />
                       </MenuButton>
                       <MenuList>
                         <MenuItem
@@ -231,7 +221,7 @@ function Shipper() {
                             handleDeleteClick(e, asset);
                           }}
                           color="red.500"
-                          _hover={{ bg: "red.50" }}>
+                          _hover={{bg: "red.50"}}>
                           Delete
                         </MenuItem>
                       </MenuList>

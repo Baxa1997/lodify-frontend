@@ -71,11 +71,11 @@
 }
 
 .required {
-  color: #1570ef;
+  color: #ef6820;
 }
 
 .requiredAsterisk {
-  color: #1570ef;
+  color: #ef6820;
 }
 
 .inputField {
@@ -90,8 +90,8 @@
   transition: border-color 0.2s ease;
 
   &:focus {
-    border-color: #1570ef;
-    box-shadow: 0 0 0 1px #1570ef;
+    border-color: #ef6820;
+    box-shadow: 0 0 0 1px #ef6820;
     outline: none;
   }
 
