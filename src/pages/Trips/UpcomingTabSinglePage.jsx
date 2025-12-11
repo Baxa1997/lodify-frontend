@@ -56,10 +56,6 @@ function UpcomingTabSinglePage() {
           <AddTrip tripData={tripData} />
         </TabPanel>
 
-        {/* <TabPanel>
-          <HistoryTripsTab />
-        </TabPanel> */}
-
         <TabPanel>
           <GeneralTripsTab isLoading={isLoading} />
         </TabPanel>

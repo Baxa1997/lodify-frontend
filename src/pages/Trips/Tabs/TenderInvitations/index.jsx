@@ -27,12 +27,13 @@ import {sidebarActions} from "@store/sidebar";
 import {format} from "date-fns";
 import SimpleTimer from "@components/SimpleTimer";
 import AllLoadsFiltersComponent from "./components/AllLoadsFiltersComponent";
-import {tableElements} from "./hooks";
+import {useTenderProps} from "./components/useTenderProps";
 
 function TenderInvitations({tripType = ""}) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {tableElements} = useTenderProps();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});

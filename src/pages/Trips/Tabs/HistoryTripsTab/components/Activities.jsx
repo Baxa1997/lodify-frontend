@@ -15,12 +15,9 @@ import {
 } from "@chakra-ui/react";
 import AssignedPayouts from "./AssignedPayouts";
 
-function Activities({ tripDetails = {} }) {
+function Activities({tripDetails = {}}) {
   return (
-    <Flex
-      gap="20px"
-      mt="20px"
-      w="100%">
+    <Flex gap="20px" mt="20px" w="100%">
       <Box
         w="33%"
         border="1px solid #E9EAEB"
@@ -32,10 +29,7 @@ function Activities({ tripDetails = {} }) {
           align="center"
           borderBottom="1px solid #E9EAEB"
           p={4}>
-          <Text
-            fontWeight="600"
-            color="#181D27"
-            fontSize="20px">
+          <Text fontWeight="600" color="#181D27" fontSize="20px">
             Activities
           </Text>
           <Flex gap="12px">
@@ -47,7 +41,7 @@ function Activities({ tripDetails = {} }) {
               fontWeight="500"
               bg="transparent"
               border="none"
-              _hover={{ bg: "transparent" }}>
+              _hover={{bg: "transparent"}}>
               View all
             </Button>
             <Button
@@ -57,32 +51,26 @@ function Activities({ tripDetails = {} }) {
               h="20px"
               bg="transparent"
               border="none"
-              _hover={{ bg: "transparent" }}>
-              <img
-                src="/img/threeDots.svg"
-                alt="" />
+              _hover={{bg: "transparent"}}>
+              <img src="/img/threeDots.svg" alt="" />
             </Button>
           </Flex>
         </Flex>
 
-        <Tabs
-          position="relative"
-          variant="unstyled">
-          <TabList
-            px="16px"
-            pt="12px">
+        <Tabs position="relative" variant="unstyled">
+          <TabList px="16px" pt="12px">
             <Tab
               fontSize="14px"
               fontWeight="500"
               color="gray.600"
-              _selected={{ color: "blue.600" }}>
+              _selected={{color: "blue.600"}}>
               Trip Activities
             </Tab>
             <Tab
               fontSize="14px"
               fontWeight="500"
               color="gray.600"
-              _selected={{ color: "blue.600" }}>
+              _selected={{color: "blue.600"}}>
               Driver Activities
             </Tab>
           </TabList>
@@ -93,73 +81,41 @@ function Activities({ tripDetails = {} }) {
             borderRadius="1px"
           />
 
-          <TabPanels
-            px="16px"
-            py="16px">
+          <TabPanels px="16px" py="16px">
             <TabPanel>
-              <SimpleGrid
-                columns={2}
-                spacingY="12px">
-                <Text
-                  fontSize="14px"
-                  color="gray.700">
-                  <Text
-                    fontSize="14px"
-                    fontWeight="600"
-                    mb="12px">
+              <SimpleGrid columns={2} spacingY="12px">
+                <Text fontSize="14px" color="gray.700">
+                  <Text fontSize="14px" fontWeight="600" mb="12px">
                     Current status
                   </Text>
                 </Text>
-                <Text
-                  fontSize="14px"
-                  color="gray.700">
+                <Text fontSize="14px" color="gray.700">
                   Accessorials
                 </Text>
 
-                <Text
-                  fontSize="14px"
-                  color="gray.700"></Text>
-                <Flex
-                  flexDirection="column"
-                  gap="4px">
+                <Text fontSize="14px" color="gray.700"></Text>
+                <Flex flexDirection="column" gap="4px">
                   {" "}
                   <Text>Booked by</Text>
-                  <Text
-                    color="#181D27"
-                    fontSize="14px"
-                    fontWeight="500">
+                  <Text color="#181D27" fontSize="14px" fontWeight="500">
                     {tripDetails?.booked_by?.full_name || ""}
                   </Text>
                 </Flex>
 
-                <Text
-                  fontSize="14px"
-                  color="gray.700"></Text>
-                <Flex
-                  flexDirection="column"
-                  gap="4px">
+                <Text fontSize="14px" color="gray.700"></Text>
+                <Flex flexDirection="column" gap="4px">
                   {" "}
                   <Text>Creation type</Text>
-                  <Text
-                    color="#181D27"
-                    fontSize="14px"
-                    fontWeight="500">
+                  <Text color="#181D27" fontSize="14px" fontWeight="500">
                     {tripDetails?.creation_type?.[0]}
                   </Text>
                 </Flex>
 
-                <Text
-                  fontSize="14px"
-                  color="gray.700"></Text>
-                <Flex
-                  flexDirection="column"
-                  gap="4px">
+                <Text fontSize="14px" color="gray.700"></Text>
+                <Flex flexDirection="column" gap="4px">
                   {" "}
                   <Text>Customer</Text>
-                  <Text
-                    color="#181D27"
-                    fontSize="14px"
-                    fontWeight="500">
+                  <Text color="#181D27" fontSize="14px" fontWeight="500">
                     {tripDetails?.booked_from?.legal_name || ""}
                   </Text>
                 </Flex>
@@ -167,9 +123,7 @@ function Activities({ tripDetails = {} }) {
             </TabPanel>
 
             <TabPanel>
-              <Text
-                fontSize="14px"
-                color="gray.600">
+              <Text fontSize="14px" color="gray.600">
                 No driver activities yet.
               </Text>
             </TabPanel>

@@ -1,28 +1,11 @@
 import React from "react";
-import {
-  Button,
-  Flex,
-  Text,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from "@chakra-ui/react";
+import {Button, Flex, Text} from "@chakra-ui/react";
 import Select from "@components/Select";
 import SearchInput from "@components/SearchInput";
 
 const AllLoadsFiltersComponent = ({
   filterButton = false,
-  filterByDomicile = false,
-  actionButton = false,
-  lastAddButton = false,
-  addButton = false,
-  verifySelect = false,
   onSearchChange = () => {},
-  actionButtonText = "Action",
-  onAddUserClick = () => {},
-  onActionButtonClick = () => {},
-  onLastAddButtonClick = () => {},
 }) => {
   return (
     <Flex

@@ -1,11 +1,11 @@
 import React from "react";
 import GoogleMapReact from "google-map-react";
-import { coordinates } from "../../components/mapCoordinates";
+import {coordinates} from "../../../components/mapCoordinates";
 
 function GoogleMap() {
-  const handleApiLoaded = ({ map, maps }) => {
+  const handleApiLoaded = ({map, maps}) => {
     coordinates.forEach((route) => {
-      const path = route.map(([lng, lat]) => ({ lat, lng }));
+      const path = route.map(([lng, lat]) => ({lat, lng}));
 
       const polyline = new maps.Polyline({
         path,
@@ -20,12 +20,12 @@ function GoogleMap() {
   };
 
   return (
-    <div style={{ height: "500px", width: "100%" }}>
+    <div style={{height: "500px", width: "100%"}}>
       <GoogleMapReact
         bootstrapURLKeys={{
           key: "AIzaSyAdBRYyeH13KXV-VtXpQuG36A7vbBjibMU",
         }}
-        defaultCenter={{ lat: 40.7128, lng: -74.006 }}
+        defaultCenter={{lat: 40.7128, lng: -74.006}}
         defaultZoom={15}
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={handleApiLoaded}
