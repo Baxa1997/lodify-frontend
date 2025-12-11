@@ -21,6 +21,7 @@ import Reviews from "../pages/Reviews";
 import Compliance from "../pages/Compliance";
 import CompanyProfile from "../pages/CompanyProfile";
 import ScoreCards from "../pages/ScoreCards";
+import Notifications from "../pages/Notifications";
 
 const Login = lazy(() => import("../pages/Login/Login"));
 const RoleSelection = lazy(() =>
@@ -139,6 +140,7 @@ const Router = () => {
         <Route path="reviews" element={<Reviews />} />
         <Route path="compliance" element={<Compliance />} />
         <Route path="score-cards" element={<ScoreCards />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
       <Route
