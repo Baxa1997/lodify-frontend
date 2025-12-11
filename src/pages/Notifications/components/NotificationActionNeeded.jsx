@@ -1,9 +1,11 @@
 import React from "react";
 import NotificationFilters from "./NotificationFilters";
-import {DataTable} from "@components/DataTable";
 import {Box} from "@chakra-ui/react";
+import {useNotifications} from "./useNotifications";
+import {NotificationDataTable} from "./NotificationDataTable";
 
 function NotificationActionNeeded() {
+  const {headData} = useNotifications();
   return (
     <>
       <NotificationFilters />
@@ -18,13 +20,8 @@ function NotificationActionNeeded() {
         flexDirection="column"
         maxH="500px">
         <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
-          <DataTable
-            headData={[
-              {
-                label: "Notification",
-                key: "notification",
-              },
-            ]}
+          <NotificationDataTable
+            headData={headData}
             data={[]}
             caption={""}
             limit={10}
