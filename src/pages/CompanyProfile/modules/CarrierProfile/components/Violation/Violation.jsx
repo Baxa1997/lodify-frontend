@@ -47,23 +47,24 @@ export const Violation = () => {
           overflow="hidden"
           display="flex"
           flexDirection="column">
-          <Box overflowX="auto" overflowY="auto" maxH="600px" flex="1" minH="0">
-            <Box>
+          <Box
+            bg="white"
+            border="1px solid #E5E7EB"
+            borderRadius="12px"
+            overflow="hidden"
+            display="flex"
+            flexDirection="column"
+            maxH="500px">
+            <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
               <DataTable
                 headData={headData}
                 data={bodyData}
-                border="none"
-                borderRadius="0"
-                tableProps={{
-                  layout: "fixed",
-                  minW: "max-content",
-                }}
                 page={page}
                 setPage={setPage}
                 limit={limit}
                 setLimit={setLimit}
                 count={count}
-                pagination={false}
+                pagination
                 isLoading={isLoading}
               />
             </Box>

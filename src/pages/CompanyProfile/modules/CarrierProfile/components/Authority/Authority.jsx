@@ -1,159 +1,148 @@
-import { Badge, Box, Text } from "@chakra-ui/react";
-import { InfoAccordionItem, InfoAccordionButton, InfoAccordionPanel, InfoAccordionTitle } from "../../../../components/InfoAccordion";
-import { DataTable } from "@components/DataTable";
-import { useAuthorityProps } from "./useAuthorityProps";
-import { StatusBadge } from "@components/StatusBadge";
+import {Badge, Box, Text} from "@chakra-ui/react";
+import {
+  InfoAccordionItem,
+  InfoAccordionButton,
+  InfoAccordionPanel,
+  InfoAccordionTitle,
+} from "../../../../components/InfoAccordion";
+import {DataTable} from "@components/DataTable";
+import {useAuthorityProps} from "./useAuthorityProps";
+import {StatusBadge} from "@components/StatusBadge";
 
-export const Authority = ({ carrierDetails = {}, companySnapshot = {} }) => {
+export const Authority = ({carrierDetails = {}, companySnapshot = {}}) => {
+  const {common_stat, contract_stat, broker_stat, property_chk} =
+    carrierDetails;
 
-  const {
-    common_stat,
-    contract_stat,
-    broker_stat,
-    property_chk,
-  } = carrierDetails;
+  const {headData, bodyData, companyHeadData, companyBodyData} =
+    useAuthorityProps({companySnapshot});
 
-  const {
-    headData,
-    bodyData,
-    companyHeadData,
-    companyBodyData,
-  } = useAuthorityProps({ companySnapshot });
-
-  return <Box>
-    <InfoAccordionItem>
-      <InfoAccordionButton>
-        <InfoAccordionTitle>
-          Authority
-        </InfoAccordionTitle>
-      </InfoAccordionButton>
-      <InfoAccordionPanel>
-        <Box
-          display="flex"
-          gap="20px"
-          mb="20px"
-        >
-          <Box
-            display="flex"
-            gap="20px"
-            padding="20px"
-            border="1px solid"
-            borderColor="gray.border-main"
-            borderRadius="12px"
-
-          >
-            <Box display="flex">
-              <Box
-                px="12px"
-                borderRight="1px solid"
-                borderColor="gray.border-main"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                gap="12px"
-              >
-                <Text
-                  fontWeight="600"
-                  fontSize="16px"
-                  color="primary.500"
-                >
-                Common
-                </Text>
-                <StatusBadge status={common_stat === "A" ? "active" : "inactive"}>
-                  {common_stat === "A" ? "Active" : "Inactive"}
-                </StatusBadge>
-              </Box>
-              <Box
-                px="12px"
-                borderRight="1px solid"
-                borderColor="gray.border-main"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                gap="12px"
-              >
-                <Text
-                  fontWeight="600"
-                  fontSize="16px"
-                  color="primary.500"
-                >
-                Contract
-                </Text>
-                <StatusBadge status={contract_stat === "A" ? "active" : "inactive"}>
-                  {contract_stat === "A" ? "Active" : "Inactive"}
-                </StatusBadge>
-              </Box>
-              <Box
-                px="12px"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                gap="12px"
-              >
-                <Text
-                  fontWeight="600"
-                  fontSize="16px"
-                  color="primary.500"
-                >
-                Broker
-                </Text>
-                <StatusBadge status={broker_stat === "A" ? "active" : "inactive"}>
-                  {broker_stat === "A" ? "Active" : "Inactive"}
-                </StatusBadge>
-              </Box>
-            </Box>
-
-          </Box>
-          <Box
-            flexGrow={1}
-            display="flex"
-            justifyContent="center"
-            gap="20px"
-            padding="20px"
-            border="1px solid"
-            borderColor="gray.border-main"
-            borderRadius="12px"
-          >
+  return (
+    <Box>
+      <InfoAccordionItem>
+        <InfoAccordionButton>
+          <InfoAccordionTitle>Authority</InfoAccordionTitle>
+        </InfoAccordionButton>
+        <InfoAccordionPanel>
+          <Box display="flex" gap="20px" mb="20px">
             <Box
               display="flex"
-              flexDirection="column"
-              alignItems="center"
-              gap="12px"
-            >
-              <Text
-                fontWeight="600"
-                fontSize="16px"
-                color="primary.500"
-              >
-              Licensed Capabilities
-              </Text>
-              <StatusBadge status={property_chk === "Y" ? "property" : "property"}>{"Property"}</StatusBadge>
+              gap="20px"
+              padding="20px"
+              border="1px solid"
+              borderColor="gray.border-main"
+              borderRadius="12px">
+              <Box display="flex">
+                <Box
+                  px="12px"
+                  borderRight="1px solid"
+                  borderColor="gray.border-main"
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  gap="12px">
+                  <Text fontWeight="600" fontSize="16px" color="primary.500">
+                    Common
+                  </Text>
+                  <StatusBadge
+                    status={common_stat === "A" ? "active" : "inactive"}>
+                    {common_stat === "A" ? "Active" : "Inactive"}
+                  </StatusBadge>
+                </Box>
+                <Box
+                  px="12px"
+                  borderRight="1px solid"
+                  borderColor="gray.border-main"
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  gap="12px">
+                  <Text fontWeight="600" fontSize="16px" color="primary.500">
+                    Contract
+                  </Text>
+                  <StatusBadge
+                    status={contract_stat === "A" ? "active" : "inactive"}>
+                    {contract_stat === "A" ? "Active" : "Inactive"}
+                  </StatusBadge>
+                </Box>
+                <Box
+                  px="12px"
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  gap="12px">
+                  <Text fontWeight="600" fontSize="16px" color="primary.500">
+                    Broker
+                  </Text>
+                  <StatusBadge
+                    status={broker_stat === "A" ? "active" : "inactive"}>
+                    {broker_stat === "A" ? "Active" : "Inactive"}
+                  </StatusBadge>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              flexGrow={1}
+              display="flex"
+              justifyContent="center"
+              gap="20px"
+              padding="20px"
+              border="1px solid"
+              borderColor="gray.border-main"
+              borderRadius="12px">
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                gap="12px">
+                <Text fontWeight="600" fontSize="16px" color="primary.500">
+                  Licensed Capabilities
+                </Text>
+                <StatusBadge
+                  status={property_chk === "Y" ? "property" : "property"}>
+                  {"Property"}
+                </StatusBadge>
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <Box
-          display="flex"
-          flexDirection="column"
-          gap="20px"
-        >
-          <DataTable
-            headData={headData}
-            data={bodyData}
-            pagination
-            border="1px solid"
-            borderColor="gray.border-main"
-            borderRadius="12px"
-          />
-          <DataTable
-            headData={companyHeadData}
-            data={companyBodyData}
-            border="1px solid"
-            borderColor="gray.border-main"
-            borderRadius="12px"
-          />
-        </Box>
+          <Box display="flex" flexDirection="column" gap="20px">
+            <Box
+              bg="white"
+              border="1px solid #E5E7EB"
+              borderRadius="12px"
+              overflow="hidden"
+              display="flex"
+              flexDirection="column"
+              maxH="500px">
+              <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
+                <DataTable
+                  headData={headData}
+                  data={bodyData}
+                  pagination
+                  borderRadius="12px"
+                />
+              </Box>
+            </Box>
 
-        {/* <Box
+            <Box
+              bg="white"
+              border="1px solid #E5E7EB"
+              borderRadius="12px"
+              overflow="hidden"
+              display="flex"
+              flexDirection="column"
+              maxH="500px">
+              <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
+                <DataTable
+                  headData={companyHeadData}
+                  data={companyBodyData}
+                  pagination
+                  borderRadius="12px"
+                />
+              </Box>
+            </Box>
+          </Box>
+
+          {/* <Box
           display="flex"
           flexDirection="column"
           gap="20px"
@@ -263,7 +252,8 @@ export const Authority = ({ carrierDetails = {}, companySnapshot = {} }) => {
             </CardData>
           </Box>
         </Box> */}
-      </InfoAccordionPanel>
-    </InfoAccordionItem>
-  </Box>;
+        </InfoAccordionPanel>
+      </InfoAccordionItem>
+    </Box>
+  );
 };

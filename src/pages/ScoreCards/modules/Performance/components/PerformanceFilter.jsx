@@ -25,7 +25,12 @@ function PerformanceFilter() {
       gap="12px"
       flexWrap={{base: "wrap", md: "nowrap"}}>
       <Flex w={{base: "100%", md: "30%"}} flexDirection={"column"}>
-        <Text mb="8px" h="20px" fontSize="14px" fontWeight="500" color="#181D27">
+        <Text
+          mb="8px"
+          h="20px"
+          fontSize="14px"
+          fontWeight="500"
+          color="#181D27">
           Timeframe <span style={{color: "#1570EF"}}>*</span>
         </Text>
         <Flex alignItems="center" gap="12px">
@@ -40,34 +45,35 @@ function PerformanceFilter() {
               defaultValue="last_6_active_weeks"
             />
           </Box>
-          <HStack spacing="8px">
-            <IconButton
-              icon={<LuChevronLeft size={20} />}
-              size="sm"
-              variant="ghost"
-              onClick={handlePreviousWeek}
-              aria-label="Previous week"
-              color="#6B7280"
-              _hover={{bg: "#F3F4F6", color: "#181D27"}}
-            />
-            <Text fontSize="14px" fontWeight="600" color="#181D27" minW="60px" textAlign="center">
-              Week {currentWeek}
-            </Text>
-            <IconButton
-              icon={<LuChevronRight size={20} />}
-              size="sm"
-              variant="ghost"
-              onClick={handleNextWeek}
-              aria-label="Next week"
-              color="#6B7280"
-              _hover={{bg: "#F3F4F6", color: "#181D27"}}
-            />
-          </HStack>
         </Flex>
       </Flex>
 
       <Flex w={{base: "100%", md: "25%"}} flexDirection={"column"}>
-        <Text mb="8px" h="20px" fontSize="14px" fontWeight="500" color="#181D27">
+        <Text
+          mb="8px"
+          h="20px"
+          fontSize="14px"
+          fontWeight="500"
+          color="#181D27"></Text>
+        <Select
+          placeholder="Select Week"
+          options={[
+            {label: "All", value: "all"},
+            {label: "US", value: "us"},
+            {label: "Canada", value: "canada"},
+            {label: "Mexico", value: "mexico"},
+          ]}
+          defaultValue="all"
+        />
+      </Flex>
+
+      <Flex w={{base: "100%", md: "25%"}} flexDirection={"column"}>
+        <Text
+          mb="8px"
+          h="20px"
+          fontSize="14px"
+          fontWeight="500"
+          color="#181D27">
           Load type <span style={{color: "#1570EF"}}>*</span>
         </Text>
         <Select
@@ -82,7 +88,12 @@ function PerformanceFilter() {
       </Flex>
 
       <Flex w={{base: "100%", md: "25%"}} flexDirection={"column"}>
-        <Text mb="8px" h="20px" fontSize="14px" fontWeight="500" color="#181D27">
+        <Text
+          mb="8px"
+          h="20px"
+          fontSize="14px"
+          fontWeight="500"
+          color="#181D27">
           Domicile <span style={{color: "#1570EF"}}>*</span>
         </Text>
         <Select

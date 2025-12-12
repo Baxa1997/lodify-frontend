@@ -12,23 +12,23 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
       <VStack spacing="10px" align="stretch">
         <Text
           borderBottom="1px solid #E5E7EB"
-          fontSize="14px"
-          fontWeight="700"
+          fontSize="18px"
+          fontWeight="600"
           color="#181D27"
           mb="4px"
           p="12px 20px">
           {title}
         </Text>
-        <Box mb="20px" px="20px">
-          <Text fontSize="14px" color="#181D27" fontWeight="500" mb="4px">
-            {data?.details?.subtitle}
+        <Box px="20px">
+          <Text fontSize="16px" color="#181D27" fontWeight="600">
+            {data?.subtitle}
           </Text>
-          <Text fontSize="12px" color="#6B7280" lineHeight="1.5">
-            {data?.details?.description}
+          <Text fontSize="14px" color="#6B7280" lineHeight="1.5">
+            {data?.description}
           </Text>
         </Box>
 
-        <Flex p="24px" gap="24px">
+        <Flex p="20px" gap="24px">
           <Box position="relative" width="33%" flexShrink={0}>
             <CircularProgress
               percentage={data?.percentage}
@@ -36,12 +36,21 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
             />
           </Box>
 
-          <VStack spacing="16px" width="40%" align="flex-start" pt="8px" flex="1">
+          <VStack
+            spacing="16px"
+            width="37%"
+            align="flex-start"
+            pt="8px"
+            flex="1">
             {(Array.isArray(data?.details) ? data.details : [data?.details])
               .filter(Boolean)
               .map((detail, index) => (
                 <Box key={index}>
-                  <Text fontSize="14px" fontWeight="600" color="#181D27" mb="4px">
+                  <Text
+                    fontSize="14px"
+                    fontWeight="600"
+                    color="#181D27"
+                    mb="4px">
                     {detail?.value}
                     {detail?.contribution && (
                       <Text
@@ -137,25 +146,23 @@ const CircularProgress = ({percentage, color}) => {
 
   return (
     <Box position="relative" w="100%" h="100%" overflow="hidden">
-      <Box w="100%" h="100%" position="relative">
+      <Box w="160px" h="160px" position="relative">
         <Chart
           chartType="PieChart"
           data={chartData}
           options={options}
-          width={"100%"}
-          height={"100%"}
           style={{width: "100%", height: "100%"}}
         />
       </Box>
       <Box
         position="absolute"
         top="50%"
-        left="50%"
+        left="45%"
         transform="translate(-50%, -50%)"
         textAlign="center"
         w="100%"
         pointerEvents="none">
-        <Text fontSize="28px" fontWeight="600" color="#181D27" lineHeight="1.2">
+        <Text fontSize="22px" fontWeight="600" color="#181D27" lineHeight="1.2">
           {percentage}%
         </Text>
       </Box>
