@@ -10,7 +10,19 @@ import {useDispatch, useSelector} from "react-redux";
 import {showAlert} from "../../store/alert/alert.thunk";
 import listToOptions from "../../utils/listTopOptions";
 import {loginAction} from "../../store/auth/auth.thunk";
-import {Button, Text} from "@chakra-ui/react";
+import {
+  Button,
+  Text,
+  Box,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  FormControl,
+  FormLabel,
+  Flex,
+} from "@chakra-ui/react";
+import {MdEmail} from "react-icons/md";
+import {IoArrowBackOutline} from "react-icons/io5";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -22,6 +34,7 @@ const Login = () => {
   const [companies, setCompanies] = useState([]);
   const [connectionCheck, setConnectionCheck] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const {
     register,
@@ -33,6 +46,14 @@ const Login = () => {
     defaultValues: {
       username: "",
       password: "",
+      email: "",
+    },
+    mode: "onChange",
+  });
+
+  const forgotPasswordForm = useForm({
+    defaultValues: {
+      email: "",
     },
     mode: "onChange",
   });
@@ -413,6 +434,138 @@ const Login = () => {
     }
   }, [connectionCheck, getFormValue?.tables]);
 
+  const onForgotPasswordSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      console.log("Forgot password for:", data.email);
+      dispatch(showAlert("Password reset link sent to your email", "success"));
+      setTimeout(() => {
+        setShowForgotPassword(false);
+      }, 2000);
+    } catch (error) {
+      dispatch(
+        showAlert("Failed to send reset link. Please try again.", "error")
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (showForgotPassword) {
+    return (
+      <div className={styles.authContainer}>
+        <div className={styles.authCard}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            mb="24px">
+            {/* <Box
+              w="48px"
+              h="48px"
+              borderRadius="12px"
+              bg="#FFF4ED"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              mb="16px"> */}
+            <img src="img/singleLogo.svg" alt="" />
+            {/* </Box> */}
+            <Text
+              mt="12px"
+              fontSize="24px"
+              fontWeight="700"
+              color="#181D27"
+              mb="8px">
+              Forgot Password?
+            </Text>
+          </Box>
+
+          <form
+            onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)}
+            className={styles.authForm}>
+            <FormControl
+              isInvalid={!!forgotPasswordForm.formState.errors.email}>
+              <FormLabel
+                fontSize="14px"
+                fontWeight="500"
+                color="#181D27"
+                mb="8px">
+                Email Address
+              </FormLabel>
+              <InputGroup>
+                <InputLeftElement pointerEvents="none" pl="12px">
+                  <MdEmail color="#6B7280" size={18} />
+                </InputLeftElement>
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  pl="44px"
+                  h="44px"
+                  border="1px solid #D5D7DA"
+                  borderRadius="8px"
+                  fontSize="14px"
+                  bg="#FAFAFA"
+                  _focus={{
+                    borderColor: "#1570EF",
+                    boxShadow: "0 0 0 1px #1570EF",
+                    bg: "white",
+                  }}
+                  {...forgotPasswordForm.register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address",
+                    },
+                  })}
+                />
+              </InputGroup>
+              {forgotPasswordForm.formState.errors.email && (
+                <Text color="#E53E3E" fontSize="12px" mt="4px">
+                  {forgotPasswordForm.formState.errors.email.message}
+                </Text>
+              )}
+            </FormControl>
+
+            <Button
+              type="submit"
+              w="100%"
+              h="44px"
+              bg="#ef6820"
+              color="white"
+              fontSize="16px"
+              fontWeight="600"
+              borderRadius="8px"
+              mb="20px"
+              isLoading={isLoading}
+              loadingText="Sending..."
+              _hover={{
+                bg: "#ef6820",
+              }}
+              _disabled={{
+                bg: "#9CA3AF",
+                cursor: "not-allowed",
+              }}>
+              Reset Password
+            </Button>
+
+            <Flex
+              justifyContent="center"
+              alignItems="center"
+              gap="8px"
+              onClick={() => setShowForgotPassword(false)}
+              cursor="pointer">
+              <IoArrowBackOutline size={14} color="#ef6820" />
+              <Text textAlign="center" fontSize="14px" color="#ef6820">
+                Back to Login
+              </Text>
+            </Flex>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className={styles.authContainer}>
@@ -477,9 +630,12 @@ const Login = () => {
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
 
-            <Link to="/forgot-password" className={styles.forgotLink}>
+            <Text
+              className={styles.forgotLink}
+              onClick={() => setShowForgotPassword(true)}
+              cursor="pointer">
               Forgot password?
-            </Link>
+            </Text>
           </form>
 
           <div className={styles.authFooter}>
