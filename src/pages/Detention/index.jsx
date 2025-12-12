@@ -4,6 +4,8 @@ import HeadBreadCrumb from "../../components/HeadBreadCrumb";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import styles from "../../styles/tabs.module.scss";
 import RequestsTab from "./components/RequestsTab";
+import ResolutionTab from "./components/ResolutionTab";
+import DisputesTab from "./components/DisputesTab";
 
 const Detention = () => {
   return (
@@ -29,7 +31,10 @@ const Detention = () => {
           <RequestsTab />
         </TabPanel>
         <TabPanel>
-          <Text>Closed</Text>
+          <ResolutionTab />
+        </TabPanel>
+        <TabPanel>
+          <DisputesTab />
         </TabPanel>
       </Tabs>
     </>
