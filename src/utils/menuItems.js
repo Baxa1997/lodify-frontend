@@ -22,16 +22,6 @@ export const menuItems = [
         label: "All Loads",
         path: "trips",
       },
-      // {
-      //   id: "load_details",
-      //   label: "Load Details",
-      //   path: "all-loads",
-      // },
-      // {
-      //   id: "accept-decline",
-      //   label: "Accept / Decline",
-      //   path: "accept-decline",
-      // },
 
       {
         id: "tender-invitations",
@@ -89,7 +79,7 @@ export const menuItems = [
     id: "detention",
     label: "Detention",
     icon: "/img/menuClock.svg",
-    path: "#",
+    path: "detention",
   },
   {
     id: "integrations",
@@ -152,16 +142,6 @@ export const brokerMenuItems = [
         label: "Tender Invitations",
         path: "tender-invitations",
       },
-      // {
-      //   id: "accept-decline",
-      //   label: "Accept / Decline",
-      //   path: "accept-decline",
-      // },
-      // {
-      //   id: "all-loads",
-      //   label: "All Loads",
-      //   path: "all-loads",
-      // },
     ],
   },
 
@@ -201,15 +181,8 @@ export const brokerMenuItems = [
     id: "detention",
     label: "Detention",
     icon: "/img/menuClock.svg",
-    path: "#",
+    path: "detention",
   },
-
-  // {
-  //   id: "integrations",
-  //   label: "Integrations",
-  //   icon: "/img/menuIntegrations.svg",
-  //   path: "integrations",
-  // },
 
   {
     id: "score-cards",
