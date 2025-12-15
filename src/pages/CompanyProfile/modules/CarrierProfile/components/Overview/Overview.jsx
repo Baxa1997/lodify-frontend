@@ -35,7 +35,7 @@ export const Overview = ({
       <Box flex="1" minW="0">
         <InfoAccordion>
           <Box id="connection-status">
-            <Connection />
+            <Connection new_info={new_info} />
           </Box>
           <Box id="assessment">
             <Assessments />
@@ -51,6 +51,7 @@ export const Overview = ({
           </Box>
           <Box id="authory">
             <Authority
+              new_info={new_info}
               carrierDetails={carrierDetails}
               companySnapshot={companySnapshot}
             />

@@ -4,6 +4,8 @@ import {useMainInfoProps} from "../useMainInfoProps";
 import {powerUnits} from "./MetricsData";
 
 export const PowerUnitsSection = ({generalInfo, uncategorizedCount}) => {
+  const {new_info} = generalInfo;
+
   const {getTypeImage} = useMainInfoProps();
   return (
     <Flex borderBottom="1px solid #E9EAEB" p="16px 0">
@@ -12,7 +14,7 @@ export const PowerUnitsSection = ({generalInfo, uncategorizedCount}) => {
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gap="12px"
         width="100%">
-        {powerUnits({generalInfo, uncategorizedCount}).map((unit, index) => (
+        {powerUnits({new_info, uncategorizedCount}).map((unit, index) => (
           <Flex
             key={index}
             bg="#EAF9F4"
@@ -25,7 +27,7 @@ export const PowerUnitsSection = ({generalInfo, uncategorizedCount}) => {
                 {unit.title}
               </Text>
               <Text color="#181D27" fontSize="22px" fontWeight="500">
-                {unit.count}
+                {unit.count ?? 0}
               </Text>
             </Box>
             <Box>{getTypeImage(unit.title)}</Box>

@@ -9,12 +9,22 @@ import {DataTable} from "@components/DataTable";
 import {useAuthorityProps} from "./useAuthorityProps";
 import {StatusBadge} from "@components/StatusBadge";
 
-export const Authority = ({carrierDetails = {}, companySnapshot = {}}) => {
-  const {common_stat, contract_stat, broker_stat, property_chk} =
-    carrierDetails;
-
-  const {headData, bodyData, companyHeadData, companyBodyData} =
-    useAuthorityProps({companySnapshot});
+export const Authority = ({
+  new_info,
+  carrierDetails = {},
+  companySnapshot = {},
+}) => {
+  const {common_stat, contract_stat, broker_stat, property_chk} = new_info;
+  const {
+    headData,
+    bodyData,
+    companyHeadData,
+    companyBodyData,
+    authorityHistoryData,
+  } = useAuthorityProps({
+    companySnapshot,
+    new_info,
+  });
 
   return (
     <Box>
@@ -116,7 +126,7 @@ export const Authority = ({carrierDetails = {}, companySnapshot = {}}) => {
               <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
                 <DataTable
                   headData={headData}
-                  data={bodyData}
+                  data={authorityHistoryData}
                   pagination
                   borderRadius="12px"
                 />

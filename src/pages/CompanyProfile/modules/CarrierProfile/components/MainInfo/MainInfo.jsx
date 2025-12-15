@@ -27,7 +27,7 @@ export const MainInfo = ({generalInfo}) => {
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const carrierId = searchParams.get("id");
   const {new_info} = generalInfo;
-  console.log("new_infonew_infonew_info", new_info);
+
   const {
     ownbus_16,
     owncoach,
@@ -156,8 +156,8 @@ export const MainInfo = ({generalInfo}) => {
   const formatIds = () => {
     const parts = [];
     if (new_info?.state) parts.push(new_info.state);
-    if (new_info?.us_dot_number) parts.push(`DOT ${new_info.us_dot_number}`);
-    if (new_info?.docket_number) parts.push(`${new_info.docket_number}`);
+    if (new_info?.dot_number) parts.push(`DOT ${new_info.dot_number}`);
+    if (new_info?.mc) parts.push(`MC ${new_info.mc}`);
     if (new_info?.scac_code) parts.push(`SCAC - ${new_info.scac_code}`);
     return parts.join(" / ");
   };

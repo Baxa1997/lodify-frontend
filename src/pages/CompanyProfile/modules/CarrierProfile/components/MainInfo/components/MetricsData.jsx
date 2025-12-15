@@ -22,7 +22,8 @@ export const metrics = ({generalInfo, new_info}) => {
     },
     {
       label: "Contract",
-      value: generalInfo.broker_stat === "N" ? "Inactive" : "Active",
+      value: "4 months",
+      // value: generalInfo.broker_stat === "N" ? "Inactive" : "Active",
       status: generalInfo.broker_stat === "N" ? "error" : "success",
     },
     {
@@ -32,7 +33,7 @@ export const metrics = ({generalInfo, new_info}) => {
     },
     {
       label: "Certifications",
-      value: new_info?.safety_rating,
+      value: new_info?.certifications,
       status: new_info?.safety_rating !== "None" ? "success" : "error",
     },
     {
@@ -43,39 +44,44 @@ export const metrics = ({generalInfo, new_info}) => {
   ];
 };
 
-export const powerUnits = ({generalInfo, uncategorizedCount}) => {
+export const powerUnits = ({new_info, uncategorizedCount}) => {
   return [
     {
       title: "Power Units",
-      count: generalInfo?.power_units,
+      count: new_info?.power_units,
     },
     {
       title: "Dry Van",
-      count: uncategorizedCount,
+      count: new_info?.dry_van,
     },
 
     {
       title: "Uncategorized",
-      count: uncategorizedCount,
+      count: new_info?.uncategorized,
     },
     {
       title: "Box Trucks",
-      count: generalInfo?.equipment_id_data?.truck_units,
+      count: new_info?.truck_units,
     },
 
     {
       title: "Flat Bed",
-      count: generalInfo?.equipment_id_data?.truck_units,
+      count: new_info?.flat_bed,
     },
 
     {
       title: "Heavy Haul",
-      count: generalInfo?.equipment_id_data?.truck_units,
+      count: new_info?.heavy_haul,
     },
 
     {
       title: "Low Boy",
-      count: generalInfo?.equipment_id_data?.truck_units,
+      count: new_info?.low_boy,
+    },
+
+    {
+      title: "Drivers",
+      count: new_info?.total_drivers,
     },
   ];
 };
@@ -86,12 +92,12 @@ export const verifiedCarrierResources = ({generalInfo}) => {
       title: "Power Units",
       count: generalInfo?.power_units,
     },
+    // {
+    //   title: "Solo Drivers",
+    //   count: generalInfo?.drivers,
+    // },
     {
-      title: "Solo Drivers",
-      count: generalInfo?.drivers,
-    },
-    {
-      title: "Team Drivers",
+      title: "Drivers",
       count: generalInfo?.drivers,
     },
     {

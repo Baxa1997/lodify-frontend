@@ -79,6 +79,8 @@ export const useMainInfoProps = () => {
         return <img src="/img/flatBed.svg" alt="Flat Bed" />;
       case "Team Drivers":
         return <img src="/img/team_drivers2.png" alt="Drivers" />;
+      case "Drivers":
+        return <img src="/img/team_drivers2.png" alt="Drivers" />;
       case "Solo Drivers":
         return <img src="/img/solo_driver.png" alt="Drivers" />;
       default:

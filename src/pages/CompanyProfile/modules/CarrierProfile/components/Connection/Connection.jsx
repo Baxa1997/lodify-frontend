@@ -6,8 +6,9 @@ import {
   InfoAccordionPanel,
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
+import {formatDate} from "@utils/dateFormats";
 
-export const Connection = () => {
+export const Connection = ({new_info}) => {
   return (
     <InfoAccordionItem id="Connection Status">
       <InfoAccordionButton>
@@ -19,7 +20,7 @@ export const Connection = () => {
             gap="4px">
             <InfoAccordionTitle>Connection</InfoAccordionTitle>
             <InfoAccordionDescription>
-              Completed at 2:28 PM on 26/03/2025
+              Completed {formatDate(new_info?.created_at)}
             </InfoAccordionDescription>
           </Box>
         </Flex>

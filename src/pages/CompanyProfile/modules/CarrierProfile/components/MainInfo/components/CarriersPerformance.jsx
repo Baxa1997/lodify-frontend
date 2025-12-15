@@ -94,7 +94,7 @@ export const CarriersPerformance = ({performanceData}) => {
         )}
       </Flex>
       <Text fontSize="24px" fontWeight="600" color="#181D27" mb="4px">
-        {value}
+        {value}%
       </Text>
       {change !== undefined && (
         <Text fontSize="12px" color="#6B7280" fontWeight="400">
@@ -117,7 +117,7 @@ export const CarriersPerformance = ({performanceData}) => {
       </Text>
       <Flex alignItems="center" gap="12px" mb="8px">
         <Text fontSize="24px" fontWeight="600" color="#181D27">
-          {score}
+          {score}%
         </Text>
         <Box
           w="40px"
@@ -185,13 +185,13 @@ export const CarriersPerformance = ({performanceData}) => {
           period={data.appUsage.period}
           tooltipLabel="App usage percentage"
         />
-        <MetricCard
+        {/* <MetricCard
           label="Disruption free"
           value={data.disruptionFree.percentage}
           change={data.disruptionFree.change}
           period={data.disruptionFree.period}
           tooltipLabel="Disruption free percentage"
-        />
+        /> */}
       </Flex>
 
       <Flex

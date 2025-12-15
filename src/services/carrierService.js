@@ -9,6 +9,9 @@ const carrierService = {
 
   getPerformanceData: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", data),
+
+  getAuthorityData: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", data),
 };
 
 export default carrierService;

@@ -161,8 +161,8 @@ export const DataTable = ({
                                       head,
                                       rowIndex
                                     )
-                                  : row[head.key]}
-                                {row.children && (
+                                  : row?.[head.key]}
+                                {row?.children && (
                                   <Box
                                     onClick={() => toggleRow(rowIndex)}
                                     display="flex"
