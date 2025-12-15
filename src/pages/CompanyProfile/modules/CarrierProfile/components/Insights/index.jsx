@@ -27,19 +27,58 @@ import {
 import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
 import styles from "../../../../../../styles/tabs.module.scss";
-import {MdExpandMore} from "react-icons/md";
+import {useSearchParams} from "react-router-dom";
+import {useQuery} from "@tanstack/react-query";
+import carrierService from "@services/carrierService";
+import {format} from "date-fns";
 
 function Insights() {
+  const [searchParams] = useSearchParams();
+  const companies_id = searchParams.get("id");
   const [selectedTab, setSelectedTab] = useState(0);
+
+  const {data: virtualAddressData} = useQuery({
+    queryKey: ["GET_VIRTUAL_ADDRESS_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getVirtualAddress({
+        data: {
+          method: "virtual",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "addresses",
+        },
+      }),
+    select: (res) => res?.data?.virtual_addresses ?? [],
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: equipmentData} = useQuery({
+    queryKey: ["GET_EQUIPMENT_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getEquipmentData({
+        data: {
+          method: "vin",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data?.response ?? [],
+    enabled: Boolean(companies_id),
+  });
 
   const associationInsights = [
     {
       title: "Reused Equipment Scheduled Auto",
       date: "Observed March, 2024",
+      filtered: equipmentData?.length > 0 ? false : true,
     },
     {
       title: "Flagged Factor",
       date: "Observed May, 2023",
+      filtered: true,
     },
   ];
 
@@ -65,6 +104,8 @@ function Insights() {
     },
   };
 
+  console.log("equipmentDataequipmentData", equipmentData);
+
   return (
     <InfoAccordionItem id="insights">
       <InfoAccordionButton>
@@ -79,7 +120,8 @@ function Insights() {
               borderRadius="full"
               fontSize="12px"
               fontWeight="600">
-              3 Total insights discovered
+              {virtualAddressData?.length || 0 + equipmentData?.length || 0}{" "}
+              Total insights discovered
             </Badge>
           </HStack>
         </Flex>
@@ -117,73 +159,81 @@ function Insights() {
                 flexDir="row"
                 spacing="8px"
                 align="stretch">
-                {associationInsights.map((insight, index) => (
-                  <Flex
-                    minW="300px"
-                    w={"fit-content"}
-                    bg="#FAFAFA"
-                    borderRadius="8px"
-                    p="12px 16px"
-                    gap="12px"
-                    justifyContent="space-between">
-                    <Box>
-                      <Text color="#181D27" fontSize="14px" fontWeight="500">
-                        {insight.title}
-                      </Text>
-                      <Text color="#6B7280" fontSize="14px" fontWeight="400">
-                        {insight.date}
-                      </Text>
-                    </Box>
-                    <Box>
-                      <AiOutlineExclamationCircle
-                        width="20px"
-                        height="20px"
-                        fontSize="20px"
-                        color="#EF6820"
-                      />
-                    </Box>
-                  </Flex>
-                ))}
+                {associationInsights
+                  ?.filter((insight) => !insight.filtered)
+                  .map((insight, index) => (
+                    <Flex
+                      minW="300px"
+                      w={"fit-content"}
+                      bg="#FAFAFA"
+                      borderRadius="8px"
+                      p="12px 16px"
+                      gap="12px"
+                      justifyContent="space-between">
+                      <Box>
+                        <Text color="#181D27" fontSize="14px" fontWeight="500">
+                          {insight.title}
+                        </Text>
+                        <Text color="#6B7280" fontSize="14px" fontWeight="400">
+                          {insight.date}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <AiOutlineExclamationCircle
+                          width="20px"
+                          height="20px"
+                          fontSize="20px"
+                          color="#EF6820"
+                        />
+                      </Box>
+                    </Flex>
+                  ))}
               </VStack>
             </Box>
 
-            <Box>
-              <Text fontSize="14px" fontWeight="600" color="#181D27" mb="12px">
-                Location Insights
-              </Text>
-              <VStack spacing="8px" align="stretch">
-                {locationInsights.map((insight, index) => (
-                  <Flex
-                    minW="300px"
-                    w={"fit-content"}
-                    bg="#FAFAFA"
-                    borderRadius="8px"
-                    p="12px 16px"
-                    gap="12px"
-                    justifyContent="space-between">
-                    <Box>
-                      <Text color="#181D27" fontSize="14px" fontWeight="500">
-                        {insight.title}
-                      </Text>
-                      <Text color="#6B7280" fontSize="14px" fontWeight="400">
-                        {insight.date}
-                      </Text>
-                    </Box>
-                    <Box>
-                      <AiOutlineExclamationCircle
-                        width="20px"
-                        height="20px"
-                        fontSize="20px"
-                        color="#EF6820"
-                      />
-                    </Box>
-                  </Flex>
-                ))}
-              </VStack>
-            </Box>
+            {virtualAddressData?.length > 0 && (
+              <Box>
+                <Text
+                  fontSize="14px"
+                  fontWeight="600"
+                  color="#181D27"
+                  mb="12px">
+                  Location Insights
+                </Text>
+                <VStack spacing="8px" align="stretch">
+                  {locationInsights.map((insight, index) => (
+                    <Flex
+                      minW="300px"
+                      w={"fit-content"}
+                      bg="#FAFAFA"
+                      borderRadius="8px"
+                      p="12px 16px"
+                      gap="12px"
+                      justifyContent="space-between">
+                      <Box>
+                        <Text color="#181D27" fontSize="14px" fontWeight="500">
+                          {insight.title}
+                        </Text>
+                        <Text color="#6B7280" fontSize="14px" fontWeight="400">
+                          {format(new Date(), "MMM dd, yyyy")}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <AiOutlineExclamationCircle
+                          width="20px"
+                          height="20px"
+                          fontSize="20px"
+                          color="#EF6820"
+                        />
+                      </Box>
+                    </Flex>
+                  ))}
+                </VStack>
+              </Box>
+            )}
           </VStack>
 
-          <Box borderTop="1px solid #E5E7EB" pt="24px" mt="24px">
+          <Box>
             <Accordion allowToggle defaultIndex={[]}>
               <AccordionItem
                 border="1px solid #E5E7EB"
@@ -212,7 +262,10 @@ function Insights() {
                         fontSize="12px"
                         fontWeight="600"
                         textTransform="uppercase">
-                        TOTAL INSIGHTS DISCOVERED: 3
+                        TOTAL INSIGHTS DISCOVERED:{" "}
+                        {virtualAddressData?.length ||
+                          0 + equipmentData?.length ||
+                          0}{" "}
                       </Badge>
                     </HStack>
                     <Box ml="auto">
@@ -237,7 +290,9 @@ function Insights() {
                           py="2px"
                           fontSize="11px"
                           fontWeight="600">
-                          2
+                          {virtualAddressData?.length ||
+                            0 + equipmentData?.length ||
+                            0}{" "}
                         </Badge>
                       </Tab>
                       <Tab>
@@ -251,7 +306,7 @@ function Insights() {
                           py="2px"
                           fontSize="11px"
                           fontWeight="600">
-                          1
+                          0
                         </Badge>
                       </Tab>
                       <Tab>
@@ -265,7 +320,7 @@ function Insights() {
                           py="2px"
                           fontSize="11px"
                           fontWeight="600">
-                          1
+                          0
                         </Badge>
                       </Tab>
                     </TabList>
@@ -277,19 +332,11 @@ function Insights() {
                         flexWrap={{base: "wrap", lg: "nowrap"}}>
                         <Box flex="1" minW={{base: "100%", lg: "400px"}}>
                           <VStack spacing="12px" align="stretch">
-                            {[
-                              {
-                                name: "Virtual Office Address",
-                                date: "Observed January, 2022",
-                              },
-                              {
-                                name: "Virtual Office Address",
-                                date: "Observed January, 2022",
-                              },
-                            ].map((item) => (
+                            {virtualAddressData?.map((item) => (
                               <Accordion key={item} allowToggle>
                                 <AccordionItem
-                                  border="1px solid #E5E7EB"
+                                  overflow="hidden"
+                                  border="1px solid #EF6820"
                                   borderRadius="8px"
                                   bg="white">
                                   <AccordionButton
@@ -312,14 +359,17 @@ function Insights() {
                                           fontSize="14px"
                                           fontWeight="500"
                                           textAlign="left">
-                                          {item.name}
+                                          {item.address}
                                         </Text>
                                         <Text
                                           color="#6B7280"
                                           fontSize="14px"
                                           fontWeight="400"
                                           textAlign="left">
-                                          {item.date}
+                                          {item?.address_type ===
+                                          "physical_address"
+                                            ? "Physical Address"
+                                            : "Mailing Address"}
                                         </Text>
                                       </Box>
                                       <HStack spacing="8px" flexShrink={0}>
@@ -338,15 +388,15 @@ function Insights() {
                                       </HStack>
                                     </Flex>
                                   </AccordionButton>
-                                  <AccordionPanel pb="16px" px="16px">
-                                    <Text
+                                  <AccordionPanel>
+                                    {/* <Text
                                       fontSize="14px"
                                       color="#6B7280"
                                       lineHeight="1.6">
                                       Another carrier has used a power unit with
                                       a VIN matching a vehicle on the scheduled
                                       auto policy of this carrier.
-                                    </Text>
+                                    </Text> */}
                                   </AccordionPanel>
                                 </AccordionItem>
                               </Accordion>
@@ -354,7 +404,6 @@ function Insights() {
                           </VStack>
                         </Box>
 
-                        {/* Right Panel - Associated Carrier Details */}
                         <Box flex="1" minW={{base: "100%", lg: "400px"}}>
                           <Text
                             fontSize="14px"
@@ -364,11 +413,11 @@ function Insights() {
                             Reused Equipment on a Scheduled Auto: 1
                           </Text>
                           <VStack spacing="16px" align="stretch">
-                            {[1, 2].map((item) => (
+                            {equipmentData?.map((item) => (
                               <Box
                                 key={item}
                                 bg="white"
-                                border="1px solid #E5E7EB"
+                                border="1px solid #EF6820"
                                 borderRadius="8px"
                                 p="20px">
                                 <Flex
@@ -392,7 +441,7 @@ function Insights() {
                                         fontSize="16px"
                                         fontWeight="600"
                                         color="#EF6820">
-                                        {associatedCarrierData.name}
+                                        {item?.legal_name}
                                       </Text>
                                       <Badge
                                         bg="#DEFFEE"
@@ -406,14 +455,25 @@ function Insights() {
                                       </Badge>
                                     </HStack>
                                   </VStack>
-                                  <Box
-                                    as="img"
-                                    src="/img/truck.svg"
-                                    alt="truck"
-                                    w="32px"
-                                    h="32px"
-                                    color="#EF6820"
-                                  />
+                                  {item?.type?.[0] === "Tractor" ? (
+                                    <Box
+                                      as="img"
+                                      src="/img/equipmentTruck.svg"
+                                      alt="truck"
+                                      w="50px"
+                                      h="50px"
+                                      color="#EF6820"
+                                    />
+                                  ) : (
+                                    <Box
+                                      as="img"
+                                      src="/img/equipmentTrailer.svg"
+                                      alt="trailer"
+                                      w="50px"
+                                      h="50px"
+                                      color="#EF6820"
+                                    />
+                                  )}
                                 </Flex>
                                 <Box borderTop="1px solid #E5E7EB" pt="16px">
                                   <Table variant="simple" size="sm">
@@ -436,7 +496,7 @@ function Insights() {
                                           color="#181D27"
                                           fontWeight="400"
                                           border="none">
-                                          {associatedCarrierData.vehicle.make}
+                                          {item?.make}
                                         </Td>
                                       </Tr>
                                       <Tr>
@@ -456,7 +516,7 @@ function Insights() {
                                           color="#181D27"
                                           fontWeight="400"
                                           border="none">
-                                          {associatedCarrierData.vehicle.model}
+                                          {item?.vehicle_number || "-"}
                                         </Td>
                                       </Tr>
                                       <Tr>
@@ -476,10 +536,10 @@ function Insights() {
                                           color="#181D27"
                                           fontWeight="400"
                                           border="none">
-                                          {associatedCarrierData.vehicle.year}
+                                          {item?.year || "-"}
                                         </Td>
                                       </Tr>
-                                      <Tr>
+                                      {/* <Tr>
                                         <Td
                                           px="0"
                                           py="6px"
@@ -496,13 +556,10 @@ function Insights() {
                                           color="#181D27"
                                           fontWeight="400"
                                           border="none">
-                                          {
-                                            associatedCarrierData.vehicle
-                                              .international
-                                          }
+                                          {item?.international || "-"}
                                         </Td>
-                                      </Tr>
-                                      <Tr>
+                                      </Tr> */}
+                                      {/* <Tr>
                                         <Td
                                           px="0"
                                           py="6px"
@@ -524,7 +581,7 @@ function Insights() {
                                               .regState
                                           }
                                         </Td>
-                                      </Tr>
+                                      </Tr> */}
                                       <Tr>
                                         <Td
                                           px="0"
@@ -542,13 +599,10 @@ function Insights() {
                                           color="#181D27"
                                           fontWeight="400"
                                           border="none">
-                                          {
-                                            associatedCarrierData.vehicle
-                                              .plateNumber
-                                          }
+                                          {item?.licence_plate || "-"}
                                         </Td>
                                       </Tr>
-                                      <Tr>
+                                      {/* <Tr>
                                         <Td
                                           px="0"
                                           py="6px"
@@ -565,10 +619,10 @@ function Insights() {
                                           color="#181D27"
                                           fontWeight="400"
                                           border="none">
-                                          {associatedCarrierData.vehicle.class}
+                                          {item?.cdl_class || "-"}
                                         </Td>
-                                      </Tr>
-                                      <Tr>
+                                      </Tr> */}
+                                      {/* <Tr>
                                         <Td
                                           px="0"
                                           py="6px"
@@ -585,9 +639,9 @@ function Insights() {
                                           color="#181D27"
                                           fontWeight="400"
                                           border="none">
-                                          {associatedCarrierData.vehicle.nonies}
+                                          {item?.nonies || "-"}
                                         </Td>
-                                      </Tr>
+                                      </Tr> */}
                                     </Tbody>
                                   </Table>
                                 </Box>

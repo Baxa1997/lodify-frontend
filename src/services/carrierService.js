@@ -12,6 +12,12 @@ const carrierService = {
 
   getAuthorityData: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", data),
+
+  getVirtualAddress: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", data),
+
+  getEquipmentData: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", data),
 };
 
 export default carrierService;
