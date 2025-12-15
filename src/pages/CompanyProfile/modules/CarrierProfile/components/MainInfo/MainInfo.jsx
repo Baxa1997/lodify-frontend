@@ -27,7 +27,7 @@ export const MainInfo = ({generalInfo}) => {
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const carrierId = searchParams.get("id");
   const {new_info} = generalInfo;
-
+  console.log("new_infonew_infonew_info", new_info);
   const {
     ownbus_16,
     owncoach,

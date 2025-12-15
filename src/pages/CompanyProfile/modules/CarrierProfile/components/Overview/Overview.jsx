@@ -16,7 +16,13 @@ import {VictimIdentity} from "../VictimIdentity";
 import Assessments from "../Assessments";
 import Insights from "../Insights";
 
-export const Overview = ({companySnapshot, carrierDetails, operation}) => {
+export const Overview = ({
+  companySnapshot,
+  carrierDetails,
+  operation,
+  generalInfo,
+}) => {
+  const {new_info} = generalInfo;
   return (
     <Box
       display="flex"
@@ -50,7 +56,7 @@ export const Overview = ({companySnapshot, carrierDetails, operation}) => {
             />
           </Box>
           <Box id="insurance">
-            <ActiveAndPendingInsurance />
+            <ActiveAndPendingInsurance new_info={new_info} />
           </Box>
           <Box id="safety">
             <Safety data={companySnapshot} />
@@ -68,7 +74,7 @@ export const Overview = ({companySnapshot, carrierDetails, operation}) => {
             />
           </Box>
           <Box id="certifications">
-            <Violation />
+            <Violation new_info={new_info} />
           </Box>
           <Box id="bluewire">
             <Performance />

@@ -9,11 +9,11 @@ export const useInspectionsProps = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const {data: inspectionData} = useGetTable(
-    "inspections",
-    {},
-    {data: JSON.stringify({companies_id, offset: (page - 1) * limit, limit})}
-  );
+  // const {data: inspectionData} = useGetTable(
+  //   "inspections",
+  //   {},
+  //   {data: JSON.stringify({companies_id, offset: (page - 1) * limit, limit})}
+  // );
 
   const headData = [
     {
@@ -49,12 +49,11 @@ export const useInspectionsProps = () => {
 
   return {
     headData,
-    bodyData: inspectionData?.response || [],
+    bodyData: [],
     page,
     setPage,
     limit,
     setLimit,
-    count: inspectionData?.count || 0,
+    count: 0,
   };
 };
-

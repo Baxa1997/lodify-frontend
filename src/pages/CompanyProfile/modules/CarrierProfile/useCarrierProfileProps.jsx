@@ -48,7 +48,7 @@ export const useCarrierProfileProps = () => {
           table: "carrier_info",
         },
       }),
-    select: (data) => data?.data?.response?.[0] || {},
+    select: (data) => data?.data?.response || {},
     enabled: true,
     refetchOnMount: true,
     refetchOnWindowFocus: false,

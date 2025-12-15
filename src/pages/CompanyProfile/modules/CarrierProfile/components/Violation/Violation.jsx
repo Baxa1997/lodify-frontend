@@ -9,7 +9,7 @@ import {DataTable} from "@components/DataTable";
 import SimplePagination from "@components/SimplePagination";
 import {useViolationProps} from "./useViolationProps";
 
-export const Violation = () => {
+export const Violation = ({new_info}) => {
   const {
     headData,
     bodyData,
@@ -20,7 +20,7 @@ export const Violation = () => {
     count,
     getViolationData,
     isLoading,
-  } = useViolationProps();
+  } = useViolationProps(new_info);
 
   return (
     <InfoAccordionItem>

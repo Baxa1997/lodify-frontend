@@ -8,13 +8,13 @@ import {
 import {useActiveAndPendingInsuranceProps} from "./useActiveAndPendingInsuranceProps";
 import {format, isValid, parseISO, isAfter, isBefore} from "date-fns";
 
-export const ActiveAndPendingInsurance = () => {
+export const ActiveAndPendingInsurance = ({new_info}) => {
   const {
     pendingInsuranceData,
     rejectedInsuranceData,
     onAccordionChange,
     getPendingInsuranceData,
-  } = useActiveAndPendingInsuranceProps();
+  } = useActiveAndPendingInsuranceProps(new_info);
 
   const allInsuranceData = [
     ...(pendingInsuranceData || []),

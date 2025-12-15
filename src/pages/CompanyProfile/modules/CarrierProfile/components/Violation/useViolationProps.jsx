@@ -3,7 +3,7 @@ import {useGetSmsResult} from "../../../../services/companyInfo.service";
 import carrierService from "@services/carrierService";
 import {useSearchParams} from "react-router-dom";
 
-export const useViolationProps = () => {
+export const useViolationProps = (new_info) => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
   const [page, setPage] = useState(1);
@@ -14,19 +14,16 @@ export const useViolationProps = () => {
 
   const getViolationData = async () => {
     if (!companies_id) return;
-    
+
     setIsLoading(true);
     try {
-      // Calculate offset based on page and limit
-      // Page 1: offset = 0, limit = 10
-      // Page 2: offset = 10, limit = 10
-      // Page 3: offset = 20, limit = 10
       const offset = (page - 1) * limit;
-      
+
       const response = await carrierService?.getCarrierInfo({
         data: {
           method: "list",
           object_data: {
+            dot_number: new_info?.dot_number,
             companies_id: companies_id,
             offset: offset,
             limit: limit,
@@ -37,15 +34,10 @@ export const useViolationProps = () => {
 
       const data = response?.data?.response || [];
       setViolationData(data);
-      
-      // Update total count based on response
-      // If we get a full page, there might be more data
+
       if (data.length === limit) {
-        // If we got a full page, estimate there's at least one more page
-        // This will be updated when we reach the last page
-        setTotalCount((page * limit) + 1);
+        setTotalCount(page * limit + 1);
       } else {
-        // If we got less than limit, this is the last page
         setTotalCount(offset + data.length);
       }
     } catch (error) {
@@ -57,7 +49,6 @@ export const useViolationProps = () => {
     }
   };
 
-  // Fetch data when page or limit changes
   useEffect(() => {
     getViolationData();
   }, [page, limit, companies_id]);

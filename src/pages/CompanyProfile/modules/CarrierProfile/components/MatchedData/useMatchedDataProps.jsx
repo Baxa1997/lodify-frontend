@@ -24,44 +24,44 @@ export const useMatchedDataProps = () => {
     emailAddress: "eagleeyetrucking2920@yahoo.com",
   };
 
-  const {data: addressMatchesData} = useGetTable(
-    "matched_data",
-    {},
-    {
-      data: JSON.stringify({
-        companies_id,
-        type: "address",
-        offset: (addressMatchesPage - 1) * addressMatchesLimit,
-        limit: addressMatchesLimit,
-      }),
-    }
-  );
+  // const {data: addressMatchesData} = useGetTable(
+  //   "matched_data",
+  //   {},
+  //   {
+  //     data: JSON.stringify({
+  //       companies_id,
+  //       type: "address",
+  //       offset: (addressMatchesPage - 1) * addressMatchesLimit,
+  //       limit: addressMatchesLimit,
+  //     }),
+  //   }
+  // );
 
-  const {data: vinMatchesData} = useGetTable(
-    "matched_data",
-    {},
-    {
-      data: JSON.stringify({
-        companies_id,
-        type: "vin",
-        offset: (addressMatchesPage - 1) * addressMatchesLimit,
-        limit: addressMatchesLimit,
-      }),
-    }
-  );
+  // const {data: vinMatchesData} = useGetTable(
+  //   "matched_data",
+  //   {},
+  //   {
+  //     data: JSON.stringify({
+  //       companies_id,
+  //       type: "vin",
+  //       offset: (addressMatchesPage - 1) * addressMatchesLimit,
+  //       limit: addressMatchesLimit,
+  //     }),
+  //   }
+  // );
 
-  const {data: ipMatchesData} = useGetTable(
-    "matched_data",
-    {},
-    {
-      data: JSON.stringify({
-        companies_id,
-        type: "ip",
-        offset: (addressMatchesPage - 1) * addressMatchesLimit,
-        limit: addressMatchesLimit,
-      }),
-    }
-  );
+  // const {data: ipMatchesData} = useGetTable(
+  //   "matched_data",
+  //   {},
+  //   {
+  //     data: JSON.stringify({
+  //       companies_id,
+  //       type: "ip",
+  //       offset: (addressMatchesPage - 1) * addressMatchesLimit,
+  //       limit: addressMatchesLimit,
+  //     }),
+  //   }
+  // );
 
   const addressMatchesHeadData = [
     {
@@ -195,17 +195,17 @@ export const useMatchedDataProps = () => {
   return {
     mcRecordData,
     dotRecordData,
-    addressMatchesData,
-    vinMatchesData,
-    ipMatchesData,
+    // addressMatchesData,
+    // vinMatchesData,
+    // ipMatchesData,
     addressMatchesHeadData,
-    addressMatchesBodyData: addressMatchesData?.response || defaultBodyData,
-    addressMatchesCount: addressMatchesData?.count || defaultBodyData.length,
+    addressMatchesBodyData: defaultBodyData,
+    addressMatchesCount: defaultBodyData.length,
     addressMatchesPage,
     setAddressMatchesPage,
     addressMatchesLimit,
     setAddressMatchesLimit,
-    vinMatchesData: vinMatchesData?.response || defaultBodyData,
-    ipMatchesData: ipMatchesData?.response || defaultBodyData,
+    vinMatchesData: defaultBodyData,
+    ipMatchesData: defaultBodyData,
   };
 };
