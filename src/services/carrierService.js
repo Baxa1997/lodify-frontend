@@ -6,6 +6,9 @@ const carrierService = {
   },
   getCarrierInfo: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", data),
+
+  getPerformanceData: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", data),
 };
 
 export default carrierService;

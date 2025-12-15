@@ -9,6 +9,8 @@ import {
   Tooltip,
   Link,
 } from "@chakra-ui/react";
+import carrierService from "@services/carrierService";
+import {useQuery} from "@tanstack/react-query";
 
 export const CarriersPerformance = ({performanceData}) => {
   const defaultData = {
@@ -40,6 +42,23 @@ export const CarriersPerformance = ({performanceData}) => {
   };
 
   const data = performanceData || defaultData;
+
+  const {data: performanceDatas} = useQuery({
+    queryKey: ["GET_PERFORMANCE_DATA"],
+    queryFn: () =>
+      carrierService.getPerformanceData({
+        data: {
+          method: "grade",
+          object_data: {
+            companies_id: "70a8f730-92c0-4fff-90f8-39c059b8d3aa",
+          },
+          table: "calculate",
+        },
+      }),
+    select: (res) => res?.data,
+  });
+
+  console.log("performanceDatasperformanceDatas", performanceDatas);
 
   const MetricCard = ({label, value, change, period, tooltipLabel}) => (
     <Box
@@ -140,27 +159,27 @@ export const CarriersPerformance = ({performanceData}) => {
       </Text>
       <Flex gap="16px" mb="24px" flexWrap="wrap">
         <OverallCard
-          score={data.overall.score}
+          score={performanceDatas?.overall}
           grade={data.overall.grade}
           gradeColor={data.overall.gradeColor}
         />
         <MetricCard
           label="On time"
-          value={data.onTime.percentage}
+          value={performanceDatas?.on_time}
           change={data.onTime.change}
           period={data.onTime.period}
           tooltipLabel="On time delivery percentage"
         />
         <MetricCard
           label="Acceptance"
-          value={data.acceptance.percentage}
+          value={performanceDatas?.acceptance}
           change={data.acceptance.change}
           period={data.acceptance.period}
           tooltipLabel="Acceptance rate"
         />
         <MetricCard
           label="App usage"
-          value={data.appUsage.percentage}
+          value={performanceDatas?.app_usage}
           change={data.appUsage.change}
           period={data.appUsage.period}
           tooltipLabel="App usage percentage"
