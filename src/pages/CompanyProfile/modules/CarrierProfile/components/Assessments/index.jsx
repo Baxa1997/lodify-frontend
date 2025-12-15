@@ -66,7 +66,7 @@ function Assessments() {
   ];
 
   return (
-    <InfoAccordionItem>
+    <InfoAccordionItem id="assessments">
       <InfoAccordionButton>
         <Flex justify="space-between" align="center" width="100%">
           <Box

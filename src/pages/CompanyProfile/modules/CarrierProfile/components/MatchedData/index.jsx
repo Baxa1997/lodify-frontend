@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Text,
-  Flex,
-  VStack,
-  HStack,
-  Link,
-} from "@chakra-ui/react";
+import {Box, Text, Flex, VStack, HStack, Link} from "@chakra-ui/react";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
@@ -32,10 +25,8 @@ export const MatchedData = () => {
     setAddressMatchesLimit,
   } = useMatchedDataProps();
 
-  // Matched Date Section - Two Cards
   const MatchedDateSection = () => (
     <Flex gap="24px" flexWrap={{base: "wrap", md: "nowrap"}}>
-      {/* Carrier MC Record Card */}
       <Box
         flex="1"
         bg="white"
@@ -82,7 +73,6 @@ export const MatchedData = () => {
         </VStack>
       </Box>
 
-      {/* Carrier DOT Record Card */}
       <Box
         flex="1"
         bg="white"
@@ -171,14 +161,28 @@ export const MatchedData = () => {
     </Flex>
   );
 
-  // Matches Section Component
-  const MatchesSection = ({title, address, matchedCount, headData, bodyData, count, page, setPage, limit, setLimit}) => (
+  const MatchesSection = ({
+    title,
+    address,
+    matchedCount,
+    headData,
+    bodyData,
+    count,
+    page,
+    setPage,
+    limit,
+    setLimit,
+  }) => (
     <Box>
       <Text fontSize="16px" fontWeight="600" color="#181D27" mb="12px">
         {title}
       </Text>
       <Text fontSize="14px" color="#6B7280" mb="20px">
-        Adress: <Text as="span" fontWeight="600" color="#175CD3">{address}</Text> matched by {matchedCount} Carriers
+        Adress:{" "}
+        <Text as="span" fontWeight="600" color="#175CD3">
+          {address}
+        </Text>{" "}
+        matched by {matchedCount} Carriers
       </Text>
       <Box
         bg="white"
@@ -212,10 +216,8 @@ export const MatchedData = () => {
         </InfoAccordionButton>
         <InfoAccordionPanel>
           <VStack spacing="32px" align="stretch">
-            {/* Matched Date Section */}
             <MatchedDateSection />
 
-            {/* Address Matches Section */}
             <MatchesSection
               title="Address Matches"
               address="606 Hillrose ave, Dayton, OH 45404"
@@ -229,7 +231,6 @@ export const MatchedData = () => {
               setLimit={setAddressMatchesLimit}
             />
 
-            {/* VIN Matches Section */}
             <MatchesSection
               title="VIN Matches"
               address="606 Hillrose ave, Dayton, OH 45404"
@@ -243,7 +244,6 @@ export const MatchedData = () => {
               setLimit={setAddressMatchesLimit}
             />
 
-            {/* IP Address Matches Section */}
             <MatchesSection
               title="IP Address Matches"
               address="606 Hillrose ave, Dayton, OH 45404"
@@ -262,4 +262,3 @@ export const MatchedData = () => {
     </Box>
   );
 };
-

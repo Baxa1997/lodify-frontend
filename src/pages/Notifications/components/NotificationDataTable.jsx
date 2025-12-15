@@ -44,8 +44,8 @@ export const NotificationDataTable = ({
   };
 
   return (
-    <Box borderRadius="12px" display="flex" flexDirection="column" {...props}>
-      <Box flex="1" overflow="auto">
+    <Box display="flex" flexDirection="column" h="100%" {...props}>
+      <Box flex="1" overflowX="auto" overflowY="auto" minH="0">
         <Table variant="simple" {...tableProps}>
           {caption && <TableCaption>{caption}</TableCaption>}
           <Thead
@@ -206,9 +206,7 @@ export const NotificationDataTable = ({
           borderTop="1px solid"
           borderColor="#E5E7EB"
           bg="white"
-          position="sticky"
-          bottom="0"
-          zIndex="10">
+          flexShrink={0}>
           <Box padding="12px 24px" width="100%">
             <SimplePagination
               limit={limit}

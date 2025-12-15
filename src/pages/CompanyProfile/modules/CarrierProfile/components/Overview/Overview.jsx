@@ -28,23 +28,57 @@ export const Overview = ({companySnapshot, carrierDetails, operation}) => {
       <SidebarTabs />
       <Box flex="1" minW="0">
         <InfoAccordion>
-          <Connection />
-          <VictimIdentity />
-          <Assessments />
-          <Insights />
-          <State />
-          <Equipment />
-          <Authority
-            carrierDetails={carrierDetails}
-            companySnapshot={companySnapshot}
-          />
-          <ActiveAndPendingInsurance />
-          <Safety data={companySnapshot} />
-          <Inspections />
-          <Operations companySnapshot={companySnapshot} operation={operation} />
-          <Violation />
-          <Performance />
-          <MatchedData />
+          <Box id="connection-status">
+            <Connection />
+          </Box>
+          <Box id="assessment">
+            <Assessments />
+          </Box>
+          <Box id="insights">
+            <Insights />
+          </Box>
+          <Box id="document">
+            <VictimIdentity />
+          </Box>
+          <Box id="lane-preferences">
+            <State />
+          </Box>
+          <Box id="authory">
+            <Authority
+              carrierDetails={carrierDetails}
+              companySnapshot={companySnapshot}
+            />
+          </Box>
+          <Box id="insurance">
+            <ActiveAndPendingInsurance />
+          </Box>
+          <Box id="safety">
+            <Safety data={companySnapshot} />
+          </Box>
+          <Box id="inspections">
+            <Inspections />
+          </Box>
+          <Box id="crashes">
+            <Equipment />
+          </Box>
+          <Box id="operations">
+            <Operations
+              companySnapshot={companySnapshot}
+              operation={operation}
+            />
+          </Box>
+          <Box id="certifications">
+            <Violation />
+          </Box>
+          <Box id="bluewire">
+            <Performance />
+          </Box>
+          <Box id="performane">
+            <Performance />
+          </Box>
+          <Box id="matched-data">
+            <MatchedData />
+          </Box>
         </InfoAccordion>
       </Box>
     </Box>

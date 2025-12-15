@@ -5,7 +5,7 @@ import {useNotifications} from "./useNotifications";
 import {NotificationDataTable} from "./NotificationDataTable";
 
 function NotificationTab() {
-  const {headData} = useNotifications();
+  const {headData, data} = useNotifications();
   return (
     <>
       <NotificationFilters />
@@ -18,23 +18,22 @@ function NotificationTab() {
         overflow="hidden"
         display="flex"
         flexDirection="column"
-        maxH="500px">
-        <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
-          <NotificationDataTable
-            headData={headData}
-            data={[]}
-            caption={""}
-            limit={10}
-            setLimit={() => {}}
-            page={1}
-            setPage={() => {}}
-            tableProps={{
-              width: "100%",
-              height: "calc(100vh - 290px)",
-              overflow: "auto",
-            }}
-          />
-        </Box>
+        h="calc(100vh - 290px)"
+        minH="400px">
+        <NotificationDataTable
+          headData={headData}
+          data={data}
+          caption={""}
+          limit={10}
+          setLimit={() => {}}
+          page={1}
+          setPage={() => {}}
+          pagination
+          count={0}
+          tableProps={{
+            width: "100%",
+          }}
+        />
       </Box>
     </>
   );

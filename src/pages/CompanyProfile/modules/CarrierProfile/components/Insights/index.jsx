@@ -66,7 +66,7 @@ function Insights() {
   };
 
   return (
-    <InfoAccordionItem>
+    <InfoAccordionItem id="insights">
       <InfoAccordionButton>
         <Flex justify="space-between" align="center" width="100%">
           <HStack spacing="8px">

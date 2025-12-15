@@ -11,13 +11,11 @@ export const useMatchedDataProps = () => {
   const [addressMatchesPage, setAddressMatchesPage] = useState(1);
   const [addressMatchesLimit, setAddressMatchesLimit] = useState(10);
 
-  // Mock data for MC Record
   const mcRecordData = {
     businessAddress: "606 HILLROSE AVE UNIT B DAYTON, OH 45404",
     businessPhone: "(937) 301-3516",
   };
 
-  // Mock data for DOT Record
   const dotRecordData = {
     physicalAddress: "606 HILLROSE AVE UNIT B DAYTON, OH 45404",
     mailingAddress: "606 HILLROSE AVE UNIT B DAYTON, OH 45404",
@@ -26,7 +24,6 @@ export const useMatchedDataProps = () => {
     emailAddress: "eagleeyetrucking2920@yahoo.com",
   };
 
-  // Fetch address matches data
   const {data: addressMatchesData} = useGetTable(
     "matched_data",
     {},
@@ -40,7 +37,6 @@ export const useMatchedDataProps = () => {
     }
   );
 
-  // Fetch VIN matches data
   const {data: vinMatchesData} = useGetTable(
     "matched_data",
     {},
@@ -54,7 +50,6 @@ export const useMatchedDataProps = () => {
     }
   );
 
-  // Fetch IP matches data
   const {data: ipMatchesData} = useGetTable(
     "matched_data",
     {},
@@ -68,10 +63,9 @@ export const useMatchedDataProps = () => {
     }
   );
 
-  // Table head data
   const addressMatchesHeadData = [
     {
-      label: "DOT/DOCET",
+      label: "Dot/Docet",
       key: "dot_docet",
       thProps: {
         width: "140px",
@@ -86,10 +80,14 @@ export const useMatchedDataProps = () => {
     {
       label: (
         <HStack spacing={1} display="inline-flex" alignItems="center">
-          <span>COMPANY NAME</span>
+          <span>Company Name</span>
           <HStack spacing={0} align="center" display="inline-flex" ml="4px">
             <LuChevronUp size={12} opacity={0.3} />
-            <LuChevronDown size={12} opacity={0.3} style={{marginTop: "-2px"}} />
+            <LuChevronDown
+              size={12}
+              opacity={0.3}
+              style={{marginTop: "-2px"}}
+            />
           </HStack>
         </HStack>
       ),
@@ -106,7 +104,7 @@ export const useMatchedDataProps = () => {
       },
     },
     {
-      label: "DOT STATUS",
+      label: "Dot Status",
       key: "dot_status",
       thProps: {
         width: "120px",
@@ -119,7 +117,7 @@ export const useMatchedDataProps = () => {
       },
     },
     {
-      label: "CARRIERS MC RECORD (L&I)",
+      label: "Carriers Mc Record (L&I)",
       key: "mc_record",
       thProps: {
         width: "220px",
@@ -132,7 +130,7 @@ export const useMatchedDataProps = () => {
       },
     },
     {
-      label: "CARRIERS DOT RECORD (SAFER)",
+      label: "Carriers Dot Record (Safer)",
       key: "dot_record",
       thProps: {
         width: "240px",
@@ -170,7 +168,6 @@ export const useMatchedDataProps = () => {
     },
   ];
 
-  // Mock body data if API doesn't return data
   const defaultBodyData = [
     {
       dot_docet: "26/09/2025",
@@ -202,8 +199,7 @@ export const useMatchedDataProps = () => {
     vinMatchesData,
     ipMatchesData,
     addressMatchesHeadData,
-    addressMatchesBodyData:
-      addressMatchesData?.response || defaultBodyData,
+    addressMatchesBodyData: addressMatchesData?.response || defaultBodyData,
     addressMatchesCount: addressMatchesData?.count || defaultBodyData.length,
     addressMatchesPage,
     setAddressMatchesPage,
@@ -213,4 +209,3 @@ export const useMatchedDataProps = () => {
     ipMatchesData: ipMatchesData?.response || defaultBodyData,
   };
 };
-
