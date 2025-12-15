@@ -5,7 +5,9 @@ import HeadBreadCrumb from "../../components/HeadBreadCrumb";
 import styles from "../../styles/tabs.module.scss";
 import {useState} from "react";
 import Heading from "./components/Heading";
-import BrokerTab from "./modules/BrokerTab";
+import BrokerTab from "./components/BrokerTab";
+import FacilityTab from "./components/FacilityTab";
+import ReviewDriverTab from "./components/ReviewDriverTab";
 
 const Reviews = () => {
   const clientType = useSelector((state) => state.auth.clientType);
@@ -29,18 +31,13 @@ const Reviews = () => {
             <BrokerTab tripType={tripType} />
           </TabPanel>
 
-          {/* <TabPanel>
-            <ActionsNeeded />
-          </TabPanel>
           <TabPanel>
-            <UpcomingTab tripType={tripType} />
+            <FacilityTab tripType={tripType} />
           </TabPanel>
+
           <TabPanel>
-            <TransitTab tripType={tripType} />
+            <ReviewDriverTab tripType={tripType} />
           </TabPanel>
-          <TabPanel>
-            <HistoryTab tripType={tripType} />
-          </TabPanel> */}
         </Tabs>
       </Flex>
     </>
