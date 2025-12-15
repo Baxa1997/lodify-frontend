@@ -168,7 +168,17 @@ const MyCarriers = () => {
         h="calc(100vh - 220px)"
         overflowY="auto"
         style={{scrollbarWidth: "none"}}>
-        {filteredCarriers.length > 0 ? (
+        {isLoading ? (
+          <Flex justify="center" align="center" h="400px">
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="#fff"
+              color="#EF6820"
+              size="lg"
+            />
+          </Flex>
+        ) : filteredCarriers.length > 0 ? (
           <Box
             display="grid"
             gridTemplateColumns="repeat(3, 1fr)"
