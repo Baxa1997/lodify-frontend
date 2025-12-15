@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import carrierService from "@services/carrierService";
 import {useQuery} from "@tanstack/react-query";
+import {useSearchParams} from "react-router-dom";
 
 export const CarriersPerformance = ({performanceData}) => {
   const defaultData = {
@@ -42,7 +43,8 @@ export const CarriersPerformance = ({performanceData}) => {
   };
 
   const data = performanceData || defaultData;
-
+  const [searchParams] = useSearchParams();
+  const companies_id = searchParams.get("id");
   const {data: performanceDatas} = useQuery({
     queryKey: ["GET_PERFORMANCE_DATA"],
     queryFn: () =>
@@ -50,15 +52,14 @@ export const CarriersPerformance = ({performanceData}) => {
         data: {
           method: "grade",
           object_data: {
-            companies_id: "70a8f730-92c0-4fff-90f8-39c059b8d3aa",
+            companies_id: companies_id,
           },
           table: "calculate",
         },
       }),
     select: (res) => res?.data,
+    enabled: Boolean(companies_id),
   });
-
-  console.log("performanceDatasperformanceDatas", performanceDatas);
 
   const MetricCard = ({label, value, change, period, tooltipLabel}) => (
     <Box
