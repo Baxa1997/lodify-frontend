@@ -1,6 +1,8 @@
 import {useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {useGetTable} from "@services/items.service";
+import {useQuery} from "@tanstack/react-query";
+import carrierService from "@services/carrierService";
 
 export const useInspectionsProps = () => {
   const [searchParams] = useSearchParams();
@@ -9,11 +11,23 @@ export const useInspectionsProps = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  // const {data: inspectionData} = useGetTable(
-  //   "inspections",
-  //   {},
-  //   {data: JSON.stringify({companies_id, offset: (page - 1) * limit, limit})}
-  // );
+  const {data: inspectionsData} = useQuery({
+    queryKey: ["GET_INSPECTIONS_DATA", companies_id, page],
+    queryFn: () =>
+      carrierService.getInspectionsData({
+        data: {
+          method: "list",
+          object_data: {
+            companies_id: companies_id,
+            page: page,
+            limit: limit,
+          },
+          table: "inspection_history",
+        },
+      }),
+    select: (res) => res?.data || {},
+    enabled: Boolean(companies_id),
+  });
 
   const headData = [
     {
@@ -49,7 +63,7 @@ export const useInspectionsProps = () => {
 
   return {
     headData,
-    bodyData: [],
+    inspectionsData,
     page,
     setPage,
     limit,

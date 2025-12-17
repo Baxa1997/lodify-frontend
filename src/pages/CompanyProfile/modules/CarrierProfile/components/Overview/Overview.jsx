@@ -63,7 +63,7 @@ export const Overview = ({
             <Safety data={companySnapshot} />
           </Box>
           <Box id="inspections">
-            <Inspections />
+            <Inspections new_info={new_info} />
           </Box>
           <Box id="crashes">
             <Equipment />

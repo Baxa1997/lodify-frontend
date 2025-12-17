@@ -18,7 +18,7 @@ import {DataTable} from "@components/DataTable";
 import {useInspectionsProps} from "./useInspectionsProps";
 
 export const Inspections = () => {
-  const {headData, bodyData, page, setPage, limit, setLimit, count} =
+  const {headData, inspectionsData, page, setPage, limit, setLimit, count} =
     useInspectionsProps();
 
   return (
@@ -29,7 +29,6 @@ export const Inspections = () => {
         </InfoAccordionButton>
         <InfoAccordionPanel>
           <VStack spacing="24px" align="stretch">
-            {/* Inspection Insights Card */}
             <Box
               bg="white"
               border="1px solid #F38744"
@@ -73,9 +72,7 @@ export const Inspections = () => {
               </Text>
             </Box>
 
-            {/* Metric Cards */}
             <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
-              {/* Card 1: Observed vs Reported */}
               <Box
                 flex="1"
                 bg="#F9FAFB"
@@ -91,7 +88,6 @@ export const Inspections = () => {
                 </Text>
               </Box>
 
-              {/* Card 2: Percentile Ranking */}
               <Box
                 flex="1"
                 bg="#F9FAFB"
@@ -130,7 +126,6 @@ export const Inspections = () => {
                 </Text>
               </Box>
 
-              {/* Card 3: Length of Authority */}
               <Box
                 flex="1"
                 bg="#F9FAFB"
@@ -147,27 +142,29 @@ export const Inspections = () => {
               </Box>
             </Flex>
 
-            {/* Inspection History Section */}
             <Box>
               <Text fontSize="16px" fontWeight="600" color="#181D27" mb="16px">
                 Inspection History
               </Text>
-              <DataTable
-                headData={headData}
-                data={bodyData}
-                pagination
-                border="1px solid"
-                borderColor="gray.border-main"
+              <Box
+                border="1px solid #E5E7EB"
                 borderRadius="12px"
-                count={count}
-                page={page}
-                limit={limit}
-                setLimit={setLimit}
-                setPage={setPage}
-                tableProps={{
-                  layout: "fixed",
-                }}
-              />
+                overflow="hidden">
+                <DataTable
+                  headData={headData}
+                  data={inspectionsData?.response || []}
+                  pagination
+                  count={inspectionsData?.total_count || 0}
+                  page={page}
+                  limit={limit}
+                  height="500px"
+                  setLimit={setLimit}
+                  setPage={setPage}
+                  tableProps={{
+                    layout: "fixed",
+                  }}
+                />
+              </Box>
             </Box>
           </VStack>
         </InfoAccordionPanel>
