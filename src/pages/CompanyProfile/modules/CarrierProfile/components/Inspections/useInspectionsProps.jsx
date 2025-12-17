@@ -1,6 +1,5 @@
 import {useState} from "react";
 import {useSearchParams} from "react-router-dom";
-import {useGetTable} from "@services/items.service";
 import {useQuery} from "@tanstack/react-query";
 import carrierService from "@services/carrierService";
 

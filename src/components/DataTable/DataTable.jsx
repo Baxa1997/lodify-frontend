@@ -111,9 +111,9 @@ export const DataTable = ({
                             color="#374151"
                             borderBottom="1px solid #F3F4F6"
                             bg="white"
-                            px={head.tdProps?.px || "16px"}
-                            py={head.tdProps?.py || "12px"}
-                            {...head.tdProps}>
+                            px={head?.tdProps?.px || "16px"}
+                            py={head?.tdProps?.py || "12px"}
+                            {...head?.tdProps}>
                             {head?.key === "status" ? (
                               <Box display="flex" alignItems="center" gap="6px">
                                 <Button
@@ -155,13 +155,13 @@ export const DataTable = ({
                             ) : (
                               <Box display="flex" alignItems="center" gap="6px">
                                 {head?.render
-                                  ? head.render(
-                                      row[head.key],
+                                  ? head?.render(
+                                      row?.[head?.key],
                                       row,
                                       head,
                                       rowIndex
                                     )
-                                  : row?.[head.key]}
+                                  : row?.[head?.key]}
                                 {row?.children && (
                                   <Box
                                     onClick={() => toggleRow(rowIndex)}

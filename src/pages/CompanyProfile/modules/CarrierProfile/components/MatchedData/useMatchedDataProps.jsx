@@ -2,7 +2,8 @@ import {useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {Link, HStack} from "@chakra-ui/react";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
-import {useGetTable} from "@services/items.service";
+import {useQuery} from "@tanstack/react-query";
+import carrierService from "@services/carrierService";
 
 export const useMatchedDataProps = () => {
   const [searchParams] = useSearchParams();
@@ -24,49 +25,69 @@ export const useMatchedDataProps = () => {
     emailAddress: "eagleeyetrucking2920@yahoo.com",
   };
 
-  // const {data: addressMatchesData} = useGetTable(
-  //   "matched_data",
-  //   {},
-  //   {
-  //     data: JSON.stringify({
-  //       companies_id,
-  //       type: "address",
-  //       offset: (addressMatchesPage - 1) * addressMatchesLimit,
-  //       limit: addressMatchesLimit,
-  //     }),
-  //   }
-  // );
+  const {data: vinMatchesData} = useQuery({
+    queryKey: ["GET_MATCHED_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "vin",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(companies_id),
+  });
 
-  // const {data: vinMatchesData} = useGetTable(
-  //   "matched_data",
-  //   {},
-  //   {
-  //     data: JSON.stringify({
-  //       companies_id,
-  //       type: "vin",
-  //       offset: (addressMatchesPage - 1) * addressMatchesLimit,
-  //       limit: addressMatchesLimit,
-  //     }),
-  //   }
-  // );
+  const {data: addressMatchesBodyData} = useQuery({
+    queryKey: ["GET_ADDRESS_MATCHES_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "addresses",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => {
+      const result = [
+        ...res?.data?.mailing_address,
+        ...res?.data?.physical_address,
+      ];
+      return result;
+    },
+    enabled: Boolean(companies_id),
+  });
 
-  // const {data: ipMatchesData} = useGetTable(
-  //   "matched_data",
-  //   {},
-  //   {
-  //     data: JSON.stringify({
-  //       companies_id,
-  //       type: "ip",
-  //       offset: (addressMatchesPage - 1) * addressMatchesLimit,
-  //       limit: addressMatchesLimit,
-  //     }),
-  //   }
-  // );
+  const {data: addressMatchesContacts} = useQuery({
+    queryKey: ["GET_ADDRESS_MATCHES_COUNT", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "contact",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => console.log("resssss====>", res),
+    enabled: Boolean(companies_id),
+  });
+
+  console.log(
+    "addressMatchesContactsaddressMatchesContacts",
+    addressMatchesContacts
+  );
 
   const addressMatchesHeadData = [
     {
       label: "Dot/Docet",
-      key: "dot_docet",
+      key: "us_dot_number",
       thProps: {
         width: "140px",
         px: "16px",
@@ -91,7 +112,7 @@ export const useMatchedDataProps = () => {
           </HStack>
         </HStack>
       ),
-      key: "company_name",
+      key: "legal_name",
       sortable: true,
       thProps: {
         width: "180px",
@@ -105,7 +126,7 @@ export const useMatchedDataProps = () => {
     },
     {
       label: "Dot Status",
-      key: "dot_status",
+      key: "us_dot_status",
       thProps: {
         width: "120px",
         px: "16px",
@@ -118,7 +139,7 @@ export const useMatchedDataProps = () => {
     },
     {
       label: "Carriers Mc Record (L&I)",
-      key: "mc_record",
+      key: "docket_number",
       thProps: {
         width: "220px",
         px: "16px",
@@ -129,19 +150,19 @@ export const useMatchedDataProps = () => {
         py: "12px",
       },
     },
-    {
-      label: "Carriers Dot Record (Safer)",
-      key: "dot_record",
-      thProps: {
-        width: "240px",
-        px: "16px",
-        py: "12px",
-      },
-      tdProps: {
-        px: "16px",
-        py: "12px",
-      },
-    },
+    // {
+    //   label: "Carriers Dot Record (Safer)",
+    //   key: "dot_record",
+    //   thProps: {
+    //     width: "240px",
+    //     px: "16px",
+    //     py: "12px",
+    //   },
+    //   tdProps: {
+    //     px: "16px",
+    //     py: "12px",
+    //   },
+    // },
     {
       label: "ACTION",
       key: "action",
@@ -195,17 +216,15 @@ export const useMatchedDataProps = () => {
   return {
     mcRecordData,
     dotRecordData,
-    // addressMatchesData,
-    // vinMatchesData,
+    vinMatchesData,
     // ipMatchesData,
     addressMatchesHeadData,
-    addressMatchesBodyData: defaultBodyData,
+    addressMatchesBodyData,
     addressMatchesCount: defaultBodyData.length,
     addressMatchesPage,
     setAddressMatchesPage,
     addressMatchesLimit,
     setAddressMatchesLimit,
-    vinMatchesData: defaultBodyData,
     ipMatchesData: defaultBodyData,
   };
 };

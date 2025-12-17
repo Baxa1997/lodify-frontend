@@ -13,7 +13,6 @@ export const MatchedData = () => {
   const {
     mcRecordData,
     dotRecordData,
-    addressMatchesData,
     vinMatchesData,
     ipMatchesData,
     addressMatchesHeadData,
@@ -24,7 +23,10 @@ export const MatchedData = () => {
     addressMatchesLimit,
     setAddressMatchesLimit,
   } = useMatchedDataProps();
-
+  console.log(
+    "addressMatchesBodyDataaddressMatchesBodyDataaddressMatchesBodyData",
+    addressMatchesBodyData
+  );
   const MatchedDateSection = () => (
     <Flex gap="24px" flexWrap={{base: "wrap", md: "nowrap"}}>
       <Box
@@ -59,7 +61,7 @@ export const MatchedData = () => {
               Business Phone
             </Text>
             <Text fontSize="14px" color="#181D27" mb="4px">
-              {mcRecordData.businessPhone}
+              {mcRecordData?.businessPhone}
             </Text>
             <Link
               href="#"
@@ -177,13 +179,15 @@ export const MatchedData = () => {
       <Text fontSize="16px" fontWeight="600" color="#181D27" mb="12px">
         {title}
       </Text>
-      <Text fontSize="14px" color="#6B7280" mb="20px">
-        Adress:{" "}
-        <Text as="span" fontWeight="600" color="#175CD3">
-          {address}
-        </Text>{" "}
-        matched by {matchedCount} Carriers
-      </Text>
+      {address && (
+        <Text fontSize="14px" color="#6B7280" mb="20px">
+          Adress:{" "}
+          <Text as="span" fontWeight="600" color="#175CD3">
+            {address}
+          </Text>{" "}
+          matched by {matchedCount} Carriers
+        </Text>
+      )}
       <Box
         bg="white"
         border="1px solid #E5E7EB"
@@ -192,12 +196,12 @@ export const MatchedData = () => {
         <DataTable
           headData={headData}
           data={bodyData}
-          pagination
           count={count}
           page={page}
           limit={limit}
           setLimit={setLimit}
           setPage={setPage}
+          pagination={false}
           tableProps={{
             layout: "fixed",
             variant: "simple",
@@ -220,7 +224,7 @@ export const MatchedData = () => {
 
             <MatchesSection
               title="Address Matches"
-              address="606 Hillrose ave, Dayton, OH 45404"
+              // address="606 Hillrose ave, Dayton, OH 45404"
               matchedCount={13}
               headData={addressMatchesHeadData}
               bodyData={addressMatchesBodyData}
@@ -233,7 +237,7 @@ export const MatchedData = () => {
 
             <MatchesSection
               title="VIN Matches"
-              address="606 Hillrose ave, Dayton, OH 45404"
+              // address="606 Hillrose ave, Dayton, OH 45404"
               matchedCount={13}
               headData={addressMatchesHeadData}
               bodyData={vinMatchesData}
