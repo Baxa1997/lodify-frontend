@@ -49,8 +49,6 @@ export const Violation = ({new_info}) => {
           flexDirection="column">
           <Box
             bg="white"
-            border="1px solid #E5E7EB"
-            borderRadius="12px"
             overflow="hidden"
             display="flex"
             flexDirection="column"
@@ -64,8 +62,10 @@ export const Violation = ({new_info}) => {
                 limit={limit}
                 setLimit={setLimit}
                 count={count}
-                pagination
                 isLoading={isLoading}
+                tableProps={{
+                  overflow: "auto",
+                }}
               />
             </Box>
           </Box>

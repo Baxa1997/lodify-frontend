@@ -104,8 +104,6 @@ function Insights() {
     },
   };
 
-  console.log("equipmentDataequipmentData", equipmentData);
-
   return (
     <InfoAccordionItem id="insights">
       <InfoAccordionButton>

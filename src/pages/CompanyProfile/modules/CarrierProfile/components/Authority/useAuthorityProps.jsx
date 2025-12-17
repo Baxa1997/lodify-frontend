@@ -7,6 +7,7 @@ import carrierService from "@services/carrierService";
 export const useAuthorityProps = ({companySnapshot, new_info}) => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
+  const [page, setPage] = useState(1);
 
   const [enabled, setEnabled] = useState(true);
 
@@ -17,39 +18,37 @@ export const useAuthorityProps = ({companySnapshot, new_info}) => {
   );
 
   const {data: authorityHistoryData} = useQuery({
-    queryKey: ["GET_AUTHORITY_DATA", companies_id],
+    queryKey: ["GET_AUTHORITY_DATA", companies_id, page],
     queryFn: () =>
       carrierService.getAuthorityData({
         data: {
           method: "list",
           object_data: {
             dot_number: new_info?.dot_number,
-            page: 1,
-            limit: 28,
+            page: page,
+            limit: 10,
           },
           table: "authority_history",
         },
       }),
-    select: (res) => res.data?.response || [],
+    select: (res) => res?.data || {},
     enabled: Boolean(companies_id),
   });
 
-  console.log("authorityHistoryDataauthorityHistoryData", authorityHistoryData);
-
-  const {
-    us_driver_out_of_service,
-    us_hazmat_out_of_service,
-    us_vehicle_out_of_service,
-    us_driver_inspections,
-    us_driver_out_of_service_pct,
-    us_driver_national_average,
-    us_hazmat_inspections,
-    us_hazmat_out_of_service_pct,
-    us_hazmat_national_average,
-    us_vehicle_inspections,
-    us_vehicle_out_of_service_pct,
-    us_vehicle_national_average,
-  } = companySnapshot;
+  // const {
+  //   us_driver_out_of_service,
+  //   us_hazmat_out_of_service,
+  //   us_vehicle_out_of_service,
+  //   us_driver_inspections,
+  //   us_driver_out_of_service_pct,
+  //   us_driver_national_average,
+  //   us_hazmat_inspections,
+  //   us_hazmat_out_of_service_pct,
+  //   us_hazmat_national_average,
+  //   us_vehicle_inspections,
+  //   us_vehicle_out_of_service_pct,
+  //   us_vehicle_national_average,
+  // } = companySnapshot;
 
   const headData = [
     {
@@ -150,5 +149,7 @@ export const useAuthorityProps = ({companySnapshot, new_info}) => {
     companyHeadData,
     companyBodyData,
     authorityHistoryData,
+    setPage,
+    page,
   };
 };
