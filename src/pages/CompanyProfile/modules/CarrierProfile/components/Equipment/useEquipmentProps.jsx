@@ -2,7 +2,7 @@ import {useState, useEffect, useCallback} from "react";
 import {useSearchParams} from "react-router-dom";
 import {HStack} from "@chakra-ui/react";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
-import {Box, Text, Badge} from "@chakra-ui/react";
+import {Box, Text} from "@chakra-ui/react";
 import carrierService from "@services/carrierService";
 
 export const useEquipmentProps = () => {
@@ -21,8 +21,6 @@ export const useEquipmentProps = () => {
 
     setIsLoading(true);
     try {
-      const offset = (page - 1) * limit;
-
       const response = await carrierService?.getCarrierInfo({
         data: {
           method: "list",
@@ -59,9 +57,9 @@ export const useEquipmentProps = () => {
     }
   }, [companies_id, page, limit]);
 
-  useEffect(() => {
-    getEquipmentData();
-  }, [getEquipmentData]);
+  // useEffect(() => {
+  //   getEquipmentData();
+  // }, [getEquipmentData]);
 
   const headData = [
     {

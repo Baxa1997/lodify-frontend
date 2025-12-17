@@ -18,6 +18,7 @@ export const Authority = ({new_info, companySnapshot = {}}) => {
     authorityHistoryData,
     page,
     setPage,
+    refetch,
     isLoading,
   } = useAuthorityProps({
     companySnapshot,
@@ -27,7 +28,7 @@ export const Authority = ({new_info, companySnapshot = {}}) => {
   return (
     <Box>
       <InfoAccordionItem>
-        <InfoAccordionButton>
+        <InfoAccordionButton onClick={refetch}>
           <InfoAccordionTitle>Authority</InfoAccordionTitle>
         </InfoAccordionButton>
         <InfoAccordionPanel>

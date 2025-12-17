@@ -11,13 +11,17 @@ export const useAuthorityProps = ({companySnapshot, new_info}) => {
 
   const [enabled, setEnabled] = useState(true);
 
-  const {data} = useGetTable(
-    "revocation",
-    {enabled},
-    {data: JSON.stringify({companies_id})}
-  );
+  // const {data} = useGetTable(
+  //   "revocation",
+  //   {enabled},
+  //   {data: JSON.stringify({companies_id})}
+  // );
 
-  const {data: authorityHistoryData, isLoading} = useQuery({
+  const {
+    data: authorityHistoryData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["GET_AUTHORITY_DATA", companies_id, page],
     queryFn: () =>
       carrierService.getAuthorityData({
@@ -32,7 +36,7 @@ export const useAuthorityProps = ({companySnapshot, new_info}) => {
         },
       }),
     select: (res) => res?.data || {},
-    enabled: Boolean(companies_id),
+    enabled: false,
   });
 
   // const {
@@ -145,12 +149,13 @@ export const useAuthorityProps = ({companySnapshot, new_info}) => {
 
   return {
     headData,
-    bodyData: data?.response,
+    // bodyData: data?.response,
     companyHeadData,
     companyBodyData,
     authorityHistoryData,
     setPage,
     page,
     isLoading,
+    refetch,
   };
 };

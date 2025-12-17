@@ -27,7 +27,7 @@ export const Violation = ({new_info}) => {
       <InfoAccordionButton onClick={getViolationData}>
         <Box display="flex" alignItems="center" gap="8px">
           <InfoAccordionTitle>Violation</InfoAccordionTitle>
-          <Badge
+          {/* <Badge
             px={3}
             py={1}
             borderRadius="full"
@@ -36,7 +36,7 @@ export const Violation = ({new_info}) => {
             bgColor="orange.50"
             color="orange.400">
             Unsafe Driving: {count}
-          </Badge>
+          </Badge> */}
         </Box>
       </InfoAccordionButton>
       <InfoAccordionPanel>

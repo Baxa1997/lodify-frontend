@@ -1,31 +1,21 @@
 import {useSearchParams} from "react-router-dom";
-import {useGetTable} from "@services/items.service";
 import {useState} from "react";
 import carrierService from "@services/carrierService";
 
 export const useActiveAndPendingInsuranceProps = (new_info) => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
+  const [isLoading, setIsLoading] = useState(false);
   const [pendingInsuranceData, setPendingInsuranceData] = useState([]);
-  console.log("new_infonew_infonew_info", new_info);
-  const [enabled, setEnabled] = useState(true);
 
-  // const {data: pendingInsuranceData} = useGetTable(
-  //   "pending_insurance",
-  //   {enabled},
-  //   {data: JSON.stringify({companies_id})}
-  // );
-  // const {data: rejectedInsuranceData} = useGetTable(
-  //   "rejected_insurance",
-  //   {enabled},
-  //   {data: JSON.stringify({companies_id})}
-  // );
+  const [enabled, setEnabled] = useState(true);
 
   const onAccordionChange = () => {
     setEnabled(true);
   };
 
   const getPendingInsuranceData = async () => {
+    setIsLoading(true);
     const response = await carrierService.getCarrierInfo({
       data: {
         method: "list",
@@ -37,9 +27,11 @@ export const useActiveAndPendingInsuranceProps = (new_info) => {
       },
     });
     setPendingInsuranceData(response?.data?.response);
+    setIsLoading(false);
   };
 
   return {
+    isLoading,
     onAccordionChange,
     pendingInsuranceData: pendingInsuranceData,
     rejectedInsuranceData: [],

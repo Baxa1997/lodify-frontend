@@ -11,7 +11,12 @@ export const useInspectionsProps = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const {data: inspectionsData, isLoading} = useQuery({
+  const {
+    data: inspectionsData,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ["GET_INSPECTIONS_DATA", companies_id, page],
     queryFn: () =>
       carrierService.getInspectionsData({
@@ -26,7 +31,7 @@ export const useInspectionsProps = () => {
         },
       }),
     select: (res) => res?.data || {},
-    enabled: Boolean(companies_id),
+    enabled: false,
   });
 
   const headData = [
@@ -70,5 +75,7 @@ export const useInspectionsProps = () => {
     setLimit,
     count: 0,
     isLoading,
+    isFetching,
+    refetch,
   };
 };

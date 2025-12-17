@@ -10,6 +10,7 @@ import {format, isValid, parseISO, isAfter, isBefore} from "date-fns";
 
 export const ActiveAndPendingInsurance = ({new_info}) => {
   const {
+    isLoading,
     pendingInsuranceData,
     rejectedInsuranceData,
     onAccordionChange,
@@ -111,11 +112,13 @@ export const ActiveAndPendingInsurance = ({new_info}) => {
       label: "Expired",
     },
   };
-  console.log("allInsuranceDataallInsuranceData", allInsuranceData);
+
   return (
     <Box>
       <InfoAccordionItem onChange={onAccordionChange}>
-        <InfoAccordionButton onClick={getPendingInsuranceData}>
+        <InfoAccordionButton
+          onClick={getPendingInsuranceData}
+          isLoading={isLoading}>
           <Box
             display="flex"
             alignItems="center"

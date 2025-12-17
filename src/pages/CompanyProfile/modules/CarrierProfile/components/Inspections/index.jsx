@@ -27,12 +27,14 @@ export const Inspections = () => {
     setLimit,
     count,
     isLoading,
+    isFetching,
+    refetch,
   } = useInspectionsProps();
 
   return (
     <Box>
       <InfoAccordionItem>
-        <InfoAccordionButton>
+        <InfoAccordionButton onClick={refetch} isLoading={isFetching}>
           <InfoAccordionTitle>Inspections</InfoAccordionTitle>
         </InfoAccordionButton>
         <InfoAccordionPanel>

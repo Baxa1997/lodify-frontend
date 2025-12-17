@@ -49,9 +49,9 @@ export const useViolationProps = (new_info) => {
     }
   };
 
-  useEffect(() => {
-    getViolationData();
-  }, [page, limit, companies_id]);
+  // useEffect(() => {
+  //   getViolationData();
+  // }, [page, limit, companies_id]);
 
   const headData = [
     {

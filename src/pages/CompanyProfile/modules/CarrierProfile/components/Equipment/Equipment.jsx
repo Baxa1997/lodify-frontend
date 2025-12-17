@@ -47,7 +47,7 @@ export const Equipment = () => {
             <Flex gap="20px" flexWrap={{base: "wrap", md: "nowrap"}}>
               <Box
                 flex="1"
-                bg="#F9FAFB"
+                bg="#fff"
                 border="1px solid #E5E7EB"
                 borderRadius="12px"
                 p="20px">
@@ -59,9 +59,11 @@ export const Equipment = () => {
                   Preferred Areas
                 </Text>
                 <Badge
-                  bg="#F3F4F6"
+                  bg="#fff"
                   color="#374151"
+                  border="1px solid #535862"
                   px="12px"
+                  textTransform="capitalize"
                   py="4px"
                   borderRadius="16px"
                   fontSize="12px"
@@ -71,7 +73,7 @@ export const Equipment = () => {
               </Box>
               <Box
                 flex="1"
-                bg="#F9FAFB"
+                bg="#fff"
                 border="1px solid #E5E7EB"
                 borderRadius="12px"
                 p="20px">
@@ -83,10 +85,12 @@ export const Equipment = () => {
                   Cross Border
                 </Text>
                 <Badge
-                  bg="#F3F4F6"
+                  bg="#fff"
                   color="#374151"
-                  px="12px"
+                  border="1px solid #E5E7EB"
                   py="4px"
+                  px="12px"
+                  textTransform="capitalize"
                   borderRadius="16px"
                   fontSize="12px"
                   fontWeight="500">
@@ -106,52 +110,38 @@ export const Equipment = () => {
               <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
                 <Box
                   flex="1"
-                  bg="#F9FAFB"
+                  bg="#fff"
                   border="1px solid #E5E7EB"
                   borderRadius="12px"
                   p="20px"
                   minW={{base: "100%", md: "200px"}}>
                   <Box
                     as="img"
-                    src="/img/truck.svg"
+                    src="/img/equipmentTruck.svg"
                     alt="truck"
-                    w="24px"
-                    h="24px"
-                    filter="brightness(0) saturate(100%) invert(60%) sepia(95%) saturate(2000%) hue-rotate(0deg) brightness(100%) contrast(100%)"
+                    w="40px"
+                    h="40px"
                   />
                   <HStack spacing="12px" mb="12px">
-                    <Text fontSize="18px" fontWeight="600" color="#181D27">
+                    <Text fontSize="14px" fontWeight="600" color="#181D27">
                       2 years old
                     </Text>
                   </HStack>
                   <HStack spacing="8px" mb="8px">
+                    <Text fontSize="18px" color="#181D27" fontWeight="600">
+                      Top
+                    </Text>
                     <Badge
                       bg="#DEFFEE"
                       color="#16B364"
+                      border="1px solid #abefc6"
                       px="8px"
                       py="2px"
                       borderRadius="4px"
-                      fontSize="11px"
+                      fontSize="14px"
                       fontWeight="600">
                       {fleetStatsData?.pct_2_4 ?? 0}%
                     </Badge>
-                    <Tooltip
-                      label="Percentile Ranking Compared to Peers"
-                      placement="top"
-                      bg="#1a365d"
-                      color="white"
-                      borderRadius="md"
-                      p="6px 10px"
-                      fontSize="12px">
-                      <Box
-                        as="img"
-                        src="/img/questionRound.svg"
-                        alt="info"
-                        w="14px"
-                        h="14px"
-                        cursor="pointer"
-                      />
-                    </Tooltip>
                   </HStack>
                   <Text fontSize="12px" color="#6B7280" fontWeight="400">
                     Percentile Ranking Compared to Peers
@@ -160,18 +150,17 @@ export const Equipment = () => {
 
                 <Box
                   flex="1"
-                  bg="#F9FAFB"
+                  bg="#fff"
                   border="1px solid #E5E7EB"
                   borderRadius="12px"
                   p="20px"
                   minW={{base: "100%", md: "200px"}}>
                   <Box
                     as="img"
-                    src="/img/truck.svg"
+                    src="/img/equipmentTrailer.svg"
                     alt="truck"
-                    w="24px"
-                    h="24px"
-                    filter="brightness(0) saturate(100%) invert(60%) sepia(95%) saturate(2000%) hue-rotate(0deg) brightness(100%) contrast(100%)"
+                    w="40px"
+                    h="40px"
                   />
                   <HStack spacing="12px" mb="12px">
                     <Text fontSize="18px" fontWeight="600" color="#181D27">
@@ -179,33 +168,20 @@ export const Equipment = () => {
                     </Text>
                   </HStack>
                   <HStack spacing="8px" mb="8px">
+                    <Text fontSize="18px" color="#181D27" fontWeight="600">
+                      Top
+                    </Text>
                     <Badge
                       bg="#DEFFEE"
                       color="#16B364"
+                      border="1px solid #abefc6"
                       px="8px"
                       py="2px"
                       borderRadius="4px"
-                      fontSize="11px"
+                      fontSize="14px"
                       fontWeight="600">
                       {fleetStatsData?.pct_4_plus ?? 0}%
                     </Badge>
-                    <Tooltip
-                      label="Percentile Ranking Compared to Peers"
-                      placement="top"
-                      bg="#1a365d"
-                      color="white"
-                      borderRadius="md"
-                      p="6px 10px"
-                      fontSize="12px">
-                      <Box
-                        as="img"
-                        src="/img/questionRound.svg"
-                        alt="info"
-                        w="14px"
-                        h="14px"
-                        cursor="pointer"
-                      />
-                    </Tooltip>
                   </HStack>
                   <Text fontSize="12px" color="#6B7280" fontWeight="400">
                     Percentile Ranking Compared to Peers
@@ -214,18 +190,17 @@ export const Equipment = () => {
 
                 <Box
                   flex="1"
-                  bg="#F9FAFB"
+                  bg="#fff"
                   border="1px solid #E5E7EB"
                   borderRadius="12px"
                   p="20px"
                   minW={{base: "100%", md: "200px"}}>
                   <Box
                     as="img"
-                    src="/img/truck.svg"
+                    src="/img/equipmentTrailer.svg"
                     alt="truck"
-                    w="24px"
-                    h="24px"
-                    filter="brightness(0) saturate(100%) invert(60%) sepia(95%) saturate(2000%) hue-rotate(0deg) brightness(100%) contrast(100%)"
+                    w="40px"
+                    h="40px"
                   />
                   <HStack spacing="12px" mb="12px">
                     <Text fontSize="18px" fontWeight="600" color="#181D27">
@@ -233,33 +208,20 @@ export const Equipment = () => {
                     </Text>
                   </HStack>
                   <HStack spacing="8px" mb="8px">
+                    <Text fontSize="18px" color="#181D27" fontWeight="600">
+                      Top
+                    </Text>
                     <Badge
                       bg="#DEFFEE"
                       color="#16B364"
+                      border="1px solid #abefc6"
                       px="8px"
                       py="2px"
                       borderRadius="4px"
-                      fontSize="11px"
+                      fontSize="14px"
                       fontWeight="600">
                       {fleetStatsData?.pct_0_2 ?? 0}%
                     </Badge>
-                    <Tooltip
-                      label="Percentile Ranking Compared to Peers"
-                      placement="top"
-                      bg="#1a365d"
-                      color="white"
-                      borderRadius="md"
-                      p="6px 10px"
-                      fontSize="12px">
-                      <Box
-                        as="img"
-                        src="/img/questionRound.svg"
-                        alt="info"
-                        w="14px"
-                        h="14px"
-                        cursor="pointer"
-                      />
-                    </Tooltip>
                   </HStack>
                   <Text fontSize="12px" color="#6B7280" fontWeight="400">
                     Percentile Ranking Compared to Peers
