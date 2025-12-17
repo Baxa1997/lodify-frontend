@@ -1,19 +1,7 @@
 import React from "react";
-import {
-  Box,
-  Text,
-  Flex,
-  HStack,
-  VStack,
-  Button,
-  Tooltip,
-  Link,
-} from "@chakra-ui/react";
-import carrierService from "@services/carrierService";
-import {useQuery} from "@tanstack/react-query";
-import {useSearchParams} from "react-router-dom";
+import {Box, Text, Flex, HStack, Button, Tooltip, Link} from "@chakra-ui/react";
 
-export const CarriersPerformance = ({performanceData}) => {
+export const CarriersPerformance = ({performanceData, performanceDatas}) => {
   const defaultData = {
     overall: {
       score: "99%",
@@ -43,23 +31,6 @@ export const CarriersPerformance = ({performanceData}) => {
   };
 
   const data = performanceData || defaultData;
-  const [searchParams] = useSearchParams();
-  const companies_id = searchParams.get("id");
-  const {data: performanceDatas} = useQuery({
-    queryKey: ["GET_PERFORMANCE_DATA"],
-    queryFn: () =>
-      carrierService.getPerformanceData({
-        data: {
-          method: "grade",
-          object_data: {
-            companies_id: companies_id,
-          },
-          table: "calculate",
-        },
-      }),
-    select: (res) => res?.data,
-    enabled: Boolean(companies_id),
-  });
 
   const MetricCard = ({label, value, change, period, tooltipLabel}) => (
     <Box

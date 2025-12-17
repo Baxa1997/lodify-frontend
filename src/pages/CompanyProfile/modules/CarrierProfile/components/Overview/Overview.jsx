@@ -22,7 +22,8 @@ export const Overview = ({
   operation,
   generalInfo,
 }) => {
-  const {new_info} = generalInfo;
+  const {new_info, performance} = generalInfo;
+
   return (
     <Box
       display="flex"
@@ -78,7 +79,7 @@ export const Overview = ({
             <Violation new_info={new_info} />
           </Box>
           <Box id="performane">
-            <Performance />
+            <Performance performanceData={performance} />
           </Box>
           <Box id="matched-data">
             <MatchedData />

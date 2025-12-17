@@ -55,11 +55,28 @@ export const useCarrierProfileProps = () => {
     staleTime: 0,
   });
 
+  const {data: performanceDatas} = useQuery({
+    queryKey: ["GET_PERFORMANCE_DATA"],
+    queryFn: () =>
+      carrierService.getPerformanceData({
+        data: {
+          method: "grade",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "calculate",
+        },
+      }),
+    select: (res) => res?.data,
+    enabled: Boolean(companies_id),
+  });
+
   const generalInfo = {
     ...companySnapshot,
     ...carrierDetails,
     ...operation,
     new_info: carrierInfoData,
+    performance: performanceDatas,
   };
 
   useEffect(() => {

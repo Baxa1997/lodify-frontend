@@ -9,30 +9,30 @@ import {
 import Chart from "react-google-charts";
 import {MdKeyboardArrowRight} from "react-icons/md";
 
-export const Performance = () => {
+export const Performance = ({performanceData}) => {
   const summaryData = {
     overall: {
-      score: "99%",
+      score: `${performanceData?.overall || 0}%`,
       grade: "A",
       gradeColor: "#10B981",
     },
     onTime: {
-      percentage: "100.0%",
+      percentage: `${performanceData?.on_time || 0}%`,
       change: "0.0%",
       period: "1 week",
     },
     acceptance: {
-      percentage: "100.0%",
+      percentage: `${performanceData?.acceptance || 0}%`,
       change: "0.0%",
       period: "1 week",
     },
     appUsage: {
-      percentage: "99.8%",
+      percentage: `${performanceData?.app_usage || 0}%`,
       change: "0.0%",
       period: "1 week",
     },
     disruptionFree: {
-      percentage: "100.0%",
+      percentage: `${performanceData?.disruption_free || 0}%`,
       change: "0.0%",
       period: "1 week",
     },
@@ -40,37 +40,52 @@ export const Performance = () => {
 
   const detailedData = {
     onTime: {
-      percentage: 100,
+      percentage: performanceData?.on_time || 0,
       color: "#1570EF",
       subtitle: "Legs with no carrier controlled delays",
       description:
         "Tracks how often loads are picked up and delivered as scheduled.",
       details: [
         {
-          label: "On time to origin",
-          value: "100.0%",
-          contribution: "37.5% of score",
+          label: "On time to pickup",
+          value: `${performanceData?.on_time_data?.on_time_to_pickup || 0}%`,
+          // contribution: "37.5% of score",
         },
         {
-          label: "On time to destination",
-          value: "100.0%",
-          contribution: "62.5% of score",
+          label: "On time to Delivery",
+          value: `${performanceData?.on_time_data?.on_time_delivery || 0}%`,
+          // contribution: "62.5% of score",
+        },
+
+        {
+          label: "On time to Delivery and Pickup",
+          value: `${
+            performanceData?.on_time_data?.on_time_deliver_and_pickup || 0
+          }%`,
+          // contribution: "62.5% of score",
         },
       ],
     },
     acceptance: {
-      percentage: 100,
+      percentage: performanceData?.acceptance || 0,
       color: "#9333EA",
       subtitle: "Accepted work",
       description:
         "Measures the percentage of loads and blocks accepted without rejecti...",
       details: [
-        {label: "Rejected blocks", value: "0"},
-        {label: "Rejected loads", value: "0", contribution: "62.5% of score"},
+        {
+          label: "Accepted trips",
+          value: performanceData?.acceptance_data?.accepted_trips || 0,
+        },
+        {
+          label: "Rejected trips",
+          value: performanceData?.acceptance_data?.rejected_trips || 0,
+          // contribution: "62.5% of score",
+        },
       ],
     },
     appUsage: {
-      percentage: 99.8,
+      percentage: performanceData?.app_usage || 0,
       color: "#EC4899",
       subtitle: "App Usage",
       description:
@@ -89,7 +104,7 @@ export const Performance = () => {
       ],
     },
     disruptionFree: {
-      percentage: 100,
+      percentage: performanceData?.disruption_free || 0,
       color: "#1E40AF",
       subtitle: "Loads with no disruption",
       description:
@@ -417,7 +432,7 @@ export const Performance = () => {
                       </Text>
                     )}
                   </Text>
-                  <Text fontSize="13px" color="#6B7280" fontWeight="400">
+                  <Text fontSize="11px" color="#6B7280" fontWeight="400">
                     {detail.label}
                   </Text>
                 </Box>
@@ -522,21 +537,18 @@ export const Performance = () => {
               display="grid"
               gridTemplateColumns={{base: "1fr", lg: "1fr 1fr"}}
               gap="24px">
+              <DetailedMetricCard title="On Time" data={detailedData.onTime} />
               <DetailedMetricCard
-                title="App usage"
-                data={detailedData.appUsage}
-              />
-              <DetailedMetricCard
-                title="Disruption-free"
-                data={detailedData.disruptionFree}
+                title="Acceptance"
+                data={detailedData.acceptance}
               />
 
               <DetailedMetricCard
-                title="App usage"
+                title="App Usage"
                 data={detailedData.appUsage}
               />
               <DetailedMetricCard
-                title="Disruption-free"
+                title="Disruption Free"
                 data={detailedData.disruptionFree}
               />
             </Box>

@@ -270,7 +270,10 @@ export const MainInfo = ({generalInfo}) => {
           </Text>
           <VerifiedCarrierResourcesSection generalInfo={generalInfo} />
         </Box>
-        <CarriersPerformance performanceData={generalInfo?.performance_data} />
+        <CarriersPerformance
+          performanceData={generalInfo?.performance_data}
+          performanceDatas={generalInfo?.performance}
+        />
       </Box>
     </Box>
   );
