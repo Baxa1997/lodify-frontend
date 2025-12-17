@@ -27,6 +27,9 @@ const carrierService = {
 
   assessmentData: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", data),
+
+  getSafetyData: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", data),
 };
 
 export default carrierService;
