@@ -92,7 +92,7 @@ export const DataTable = ({
               <Tr>
                 <Td colSpan={headData.length}>
                   <Center h="calc(100vh - 420px)" py={8}>
-                    <Spinner size="lg" color="blue.500" />
+                    <Spinner size="lg" color="#EF6820" />
                   </Center>
                 </Td>
               </Tr>

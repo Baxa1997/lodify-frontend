@@ -18,6 +18,7 @@ export const Authority = ({new_info, companySnapshot = {}}) => {
     authorityHistoryData,
     page,
     setPage,
+    isLoading,
   } = useAuthorityProps({
     companySnapshot,
     new_info,
@@ -129,6 +130,7 @@ export const Authority = ({new_info, companySnapshot = {}}) => {
                   headData={headData}
                   data={authorityHistoryData?.response || []}
                   pagination
+                  isLoading={isLoading}
                   borderRadius="12px"
                 />
               </Box>

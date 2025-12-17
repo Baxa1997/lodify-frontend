@@ -10,7 +10,7 @@ export const useEquipmentProps = () => {
   const companies_id = searchParams.get("id");
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(10);
   const [equipmentData, setEquipmentData] = useState([]);
   const [fleetStatsData, setFleetStatsData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -28,7 +28,7 @@ export const useEquipmentProps = () => {
           method: "list",
           object_data: {
             companies_id: companies_id,
-            offset: offset,
+            offset: page,
             limit: limit,
           },
           table: "equipment",
@@ -44,21 +44,16 @@ export const useEquipmentProps = () => {
           table: "fleet_stats",
         },
       });
-      console.log("response2response2", response2);
+
       const data = response?.data?.response || [];
       const fleetStats = response2?.data || {};
       setEquipmentData(data);
       setFleetStatsData(fleetStats);
 
-      if (data.length === limit) {
-        setTotalCount(page * limit + 1);
-      } else {
-        setTotalCount(offset + data.length);
-      }
+      setTotalCount(response?.data?.total_count || 0);
     } catch (error) {
       console.error("Error fetching equipment data:", error);
       setEquipmentData([]);
-      setTotalCount(0);
     } finally {
       setIsLoading(false);
     }

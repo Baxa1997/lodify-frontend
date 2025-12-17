@@ -18,8 +18,16 @@ import {DataTable} from "@components/DataTable";
 import {useInspectionsProps} from "./useInspectionsProps";
 
 export const Inspections = () => {
-  const {headData, inspectionsData, page, setPage, limit, setLimit, count} =
-    useInspectionsProps();
+  const {
+    headData,
+    inspectionsData,
+    page,
+    setPage,
+    limit,
+    setLimit,
+    count,
+    isLoading,
+  } = useInspectionsProps();
 
   return (
     <Box>
@@ -33,11 +41,15 @@ export const Inspections = () => {
               bg="white"
               border="1px solid #F38744"
               borderRadius="12px"
-              p="20px">
-              <HStack spacing="12px" align="flex-start" mb="16px">
+              p="16px">
+              <HStack
+                spacing="12px"
+                align="flex-start"
+                alignItems="center"
+                mb="8px">
                 <Box
-                  w="24px"
-                  h="24px"
+                  w="38px"
+                  h="38px"
                   borderRadius="50%"
                   bg="#FEF6EE"
                   display="flex"
@@ -46,18 +58,19 @@ export const Inspections = () => {
                   flexShrink={0}>
                   <Box
                     as="img"
-                    src="/img/info.svg"
+                    src="/img/inspectionsIcon.svg"
                     alt="info"
-                    w="16px"
-                    h="16px"
+                    w="38px"
+                    h="38px"
                   />
                 </Box>
                 <Badge
-                  bg="#DEFFEE"
-                  color="#16B364"
+                  bg="#17B26A"
+                  color="#fff"
                   px="8px"
                   py="4px"
-                  borderRadius="6px"
+                  textTransform="capitalize"
+                  borderRadius="24px"
                   fontSize="12px"
                   fontWeight="600">
                   Good Inspection-to-Fleet Ratio
@@ -75,32 +88,38 @@ export const Inspections = () => {
             <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
               <Box
                 flex="1"
-                bg="#F9FAFB"
+                bg="#fff"
                 border="1px solid #E5E7EB"
                 borderRadius="12px"
-                p="20px"
+                p="14px"
                 minW="0">
-                <Text fontSize="24px" fontWeight="600" color="#16B364" mb="8px">
+                <Text
+                  fontSize="24px"
+                  h="32px"
+                  fontWeight="600"
+                  color="#079455"
+                  mb="8px">
                   782/586
                 </Text>
-                <Text fontSize="14px" color="#6B7280" lineHeight="1.5">
+                <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
                   Observed vs Reported Power Units in Fleet
                 </Text>
               </Box>
 
               <Box
                 flex="1"
-                bg="#F9FAFB"
+                bg="#fff"
                 border="1px solid #E5E7EB"
                 borderRadius="12px"
-                p="20px"
+                p="14px"
                 minW="0">
                 <HStack spacing="8px" align="center" mb="8px">
                   <Text
                     fontSize="24px"
                     fontWeight="600"
-                    color="#16B364"
-                    lineHeight="1">
+                    color="#079455"
+                    lineHeight="1"
+                    h="32px">
                     Top 30%
                   </Text>
                   <Tooltip
@@ -121,22 +140,27 @@ export const Inspections = () => {
                     />
                   </Tooltip>
                 </HStack>
-                <Text fontSize="14px" color="#6B7280" lineHeight="1.5">
+                <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
                   Percentile Ranking Compared to Peers
                 </Text>
               </Box>
 
               <Box
                 flex="1"
-                bg="#F9FAFB"
+                bg="#fff"
                 border="1px solid #E5E7EB"
                 borderRadius="12px"
-                p="20px"
+                p="14px"
                 minW="0">
-                <Text fontSize="24px" fontWeight="600" color="#16B364" mb="8px">
+                <Text
+                  h="32px"
+                  fontSize="24px"
+                  fontWeight="600"
+                  color="#079455"
+                  mb="8px">
                   24+ months
                 </Text>
-                <Text fontSize="14px" color="#6B7280" lineHeight="1.5">
+                <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
                   Length of Authority
                 </Text>
               </Box>
@@ -160,6 +184,7 @@ export const Inspections = () => {
                   height="500px"
                   setLimit={setLimit}
                   setPage={setPage}
+                  isLoading={isLoading}
                   tableProps={{
                     layout: "fixed",
                   }}

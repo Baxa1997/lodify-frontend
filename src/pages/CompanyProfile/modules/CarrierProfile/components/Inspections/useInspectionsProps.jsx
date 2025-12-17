@@ -11,7 +11,7 @@ export const useInspectionsProps = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const {data: inspectionsData} = useQuery({
+  const {data: inspectionsData, isLoading} = useQuery({
     queryKey: ["GET_INSPECTIONS_DATA", companies_id, page],
     queryFn: () =>
       carrierService.getInspectionsData({
@@ -69,5 +69,6 @@ export const useInspectionsProps = () => {
     limit,
     setLimit,
     count: 0,
+    isLoading,
   };
 };

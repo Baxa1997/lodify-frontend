@@ -17,7 +17,7 @@ export const useAuthorityProps = ({companySnapshot, new_info}) => {
     {data: JSON.stringify({companies_id})}
   );
 
-  const {data: authorityHistoryData} = useQuery({
+  const {data: authorityHistoryData, isLoading} = useQuery({
     queryKey: ["GET_AUTHORITY_DATA", companies_id, page],
     queryFn: () =>
       carrierService.getAuthorityData({
@@ -151,5 +151,6 @@ export const useAuthorityProps = ({companySnapshot, new_info}) => {
     authorityHistoryData,
     setPage,
     page,
+    isLoading,
   };
 };

@@ -77,9 +77,6 @@ export const Overview = ({
           <Box id="certifications">
             <Violation new_info={new_info} />
           </Box>
-          <Box id="bluewire">
-            <Performance />
-          </Box>
           <Box id="performane">
             <Performance />
           </Box>
