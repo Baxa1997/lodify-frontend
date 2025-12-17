@@ -7,8 +7,31 @@ import {
 } from "../../../../components/InfoAccordion";
 import {Flex, Box, Text, Badge, HStack} from "@chakra-ui/react";
 import Chart from "react-google-charts";
+import {useQuery} from "@tanstack/react-query";
+import carrierService from "@services/carrierService";
+import {useSearchParams} from "react-router-dom";
+import {FcCancel} from "react-icons/fc";
 
 function Assessments() {
+  const [searchParams] = useSearchParams();
+  const companies_id = searchParams.get("id");
+
+  const {data: baseAssessmentData} = useQuery({
+    queryKey: ["GET_ASSESSMENT_DATA", companies_id],
+    queryFn: () =>
+      carrierService.assessmentData({
+        data: {
+          method: "base",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "risk_assessment",
+        },
+      }),
+    select: (res) => res?.data?.response || {},
+    enabled: Boolean(companies_id),
+  });
+
   const loadLimitData = [
     ["Month", "Load Limit"],
     ["Jan", 20],
@@ -60,9 +83,15 @@ function Assessments() {
   };
 
   const assessmentItems = [
-    "Base Risk Assessment",
-    "High Value",
-    "Temperature Controlled",
+    {
+      label: "Base Risk Assessment",
+      value: baseAssessmentData?.base_risk_assessment === "PASS",
+    },
+    {label: "High Value", value: baseAssessmentData?.high_value === "PASS"},
+    {
+      label: "Temperature Controlled",
+      value: baseAssessmentData?.temperature_controlled === "PASS",
+    },
   ];
 
   return (
@@ -93,14 +122,18 @@ function Assessments() {
                 Assessment
               </Text>
               <Badge
-                bg="#17B26A"
+                bg={
+                  assessmentItems?.every((item) => item.value)
+                    ? "#17B26A"
+                    : "#D92D20"
+                }
                 color="white"
                 px="12px"
                 py="4px"
                 borderRadius="12px"
                 fontSize="12px"
                 fontWeight="600">
-                Pass
+                {assessmentItems?.every((item) => item.value) ? "Pass" : "Fail"}
               </Badge>
             </Flex>
             <Flex direction="column" gap="8px">
@@ -112,21 +145,26 @@ function Assessments() {
                   bg="#fff"
                   borderRadius="16px"
                   border="1px solid #079455"
+                  borderColor={item.value ? "#079455" : "#D92D20"}
                   w="fit-content">
-                  <Box
-                    as="img"
-                    src="/img/check-circle.svg"
-                    alt="check"
-                    w="16px"
-                    h="16px"
-                    flexShrink={0}
-                  />
+                  {item?.value ? (
+                    <Box
+                      as="img"
+                      src="/img/check-circle.svg"
+                      alt="check"
+                      w="16px"
+                      h="16px"
+                      flexShrink={0}
+                    />
+                  ) : (
+                    <FcCancel />
+                  )}
                   <Text
                     fontSize="14px"
                     fontWeight="500"
                     color="#181D27"
                     whiteSpace="nowrap">
-                    {item}
+                    {item.label}
                   </Text>
                 </HStack>
               ))}

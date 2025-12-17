@@ -79,11 +79,6 @@ export const useMatchedDataProps = () => {
     enabled: Boolean(companies_id),
   });
 
-  console.log(
-    "addressMatchesContactsaddressMatchesContacts",
-    addressMatchesContacts
-  );
-
   const addressMatchesHeadData = [
     {
       label: "Dot/Docet",

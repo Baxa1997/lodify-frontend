@@ -24,6 +24,9 @@ const carrierService = {
 
   getMatchedData: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", data),
+
+  assessmentData: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", data),
 };
 
 export default carrierService;
