@@ -1,7 +1,12 @@
 import styles from "./style.module.scss";
 
-const SimplePagination = ({ limit, setLimit = () => {}, page = 1, setPage = () => {}, pageCount = 1 }) => {
-
+const SimplePagination = ({
+  limit,
+  setLimit = () => {},
+  page = 1,
+  setPage = () => {},
+  pageCount = 1,
+}) => {
   const handlePrev = () => {
     setPage((prev) => Math.max(prev - 1, 1));
   };
@@ -21,8 +26,7 @@ const SimplePagination = ({ limit, setLimit = () => {}, page = 1, setPage = () =
         <select
           className={styles.select}
           value={limit}
-          onChange={handleLimitChange}
-        >
+          onChange={handleLimitChange}>
           <option value={5}>5</option>
           <option value={10}>10</option>
           <option value={20}>20</option>
@@ -36,15 +40,13 @@ const SimplePagination = ({ limit, setLimit = () => {}, page = 1, setPage = () =
         <button
           className={styles.actionBtn}
           onClick={handlePrev}
-          disabled={page === 1}
-        >
+          disabled={page === 1}>
           Prev
         </button>
         <button
           className={styles.actionBtn}
           onClick={handleNext}
-          disabled={page === pageCount}
-        >
+          disabled={page === pageCount}>
           Next
         </button>
       </div>

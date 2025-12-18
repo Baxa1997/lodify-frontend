@@ -15,6 +15,7 @@ import {
 import {useState} from "react";
 import SimplePagination from "@components/SimplePagination";
 import {ChevronRightIcon, ChevronDownIcon} from "@chakra-ui/icons";
+import {format, parseISO, isValid} from "date-fns";
 
 export const DataTable = ({
   headData = [],
@@ -42,10 +43,25 @@ export const DataTable = ({
     setExpandedRows(newExpandedRows);
   };
 
+  const formatDateValue = (value, head) => {
+    if (!head?.format || !value) return value;
+
+    try {
+      const date =
+        typeof value === "string" ? parseISO(value) : new Date(value);
+      if (isValid(date)) {
+        return format(date, "MMMM d, yyyy");
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+    return value;
+  };
+
   return (
     <Box borderRadius="12px" display="flex" flexDirection="column" {...props}>
       <Box flex="1" overflow="auto">
-        <Table variant="simple" {...tableProps}>
+        <Table variant="simple" tableLayout="auto" {...tableProps}>
           {caption && <TableCaption>{caption}</TableCaption>}
           <Thead
             bgColor="#F9FAFB"
@@ -59,15 +75,24 @@ export const DataTable = ({
                 <Th
                   key={index}
                   isNumeric={head.isNumeric}
-                  width={head.thProps?.width || "130px"}
+                  minW={head.thProps?.minW || "130px"}
+                  maxW={head.thProps?.maxW || "250px"}
+                  w={head.thProps?.width || "auto"}
                   color="#374151"
                   fontWeight={"600"}
                   fontSize={"12px"}
                   textTransform="capitalize"
                   letterSpacing="0.5px"
                   borderBottom="1px solid #E5E7EB"
+                  verticalAlign="middle"
+                  px={head?.thProps?.px || "20px"}
+                  py={head?.thProps?.py || "12px"}
                   {...head.thProps}>
-                  <Box display="flex" alignItems="center" gap="6px">
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    gap="8px"
+                    whiteSpace="nowrap">
                     {head.label}
                     {head?.infoText && (
                       <Tooltip
@@ -105,17 +130,20 @@ export const DataTable = ({
                         return (
                           <Td
                             key={colIndex}
-                            width={head.tdProps?.width || "180px"}
+                            minW={head.tdProps?.minW || "130px"}
+                            maxW={head.tdProps?.maxW || "250px"}
+                            w={head.tdProps?.width || "auto"}
                             fontWeight={"400"}
                             fontSize={"14px"}
                             color="#374151"
                             borderBottom="1px solid #F3F4F6"
                             bg="white"
-                            px={head?.tdProps?.px || "16px"}
+                            px={head?.tdProps?.px || "20px"}
                             py={head?.tdProps?.py || "12px"}
+                            verticalAlign="middle"
                             {...head?.tdProps}>
                             {head?.key === "status" ? (
-                              <Box display="flex" alignItems="center" gap="6px">
+                              <Box display="flex" alignItems="center" gap="8px">
                                 <Button
                                   fontWeight="500"
                                   variant="outline"
@@ -153,7 +181,11 @@ export const DataTable = ({
                                 </Button>
                               </Box>
                             ) : (
-                              <Box display="flex" alignItems="center" gap="6px">
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap="8px"
+                                whiteSpace="nowrap">
                                 {head?.render
                                   ? head?.render(
                                       row?.[head?.key],
@@ -161,7 +193,7 @@ export const DataTable = ({
                                       head,
                                       rowIndex
                                     )
-                                  : row?.[head?.key]}
+                                  : formatDateValue(row?.[head?.key], head)}
                                 {row?.children && (
                                   <Box
                                     onClick={() => toggleRow(rowIndex)}
@@ -193,25 +225,30 @@ export const DataTable = ({
                         <Td
                           key={colIndex}
                           isNumeric={head.isNumeric}
-                          width={head.tdProps?.width || "180px"}
+                          minW={head.tdProps?.minW || "130px"}
+                          maxW={head.tdProps?.maxW || "250px"}
+                          w={head.tdProps?.width || "auto"}
                           fontWeight={"400"}
                           fontSize={"14px"}
                           color="#374151"
                           borderBottom="1px solid #F3F4F6"
                           bg="white"
-                          px={head.tdProps?.px || "16px"}
+                          px={head.tdProps?.px || "20px"}
                           py={head.tdProps?.py || "12px"}
+                          verticalAlign="middle"
                           {...head.tdProps}>
-                          {head?.render
-                            ? head.render(
-                                row[head.key],
-                                row,
-                                head,
-                                rowIndex,
-                                false,
-                                null
-                              )
-                            : row[head.key]}
+                          <Box whiteSpace="nowrap">
+                            {head?.render
+                              ? head.render(
+                                  row[head.key],
+                                  row,
+                                  head,
+                                  rowIndex,
+                                  false,
+                                  null
+                                )
+                              : formatDateValue(row[head.key], head)}
+                          </Box>
                         </Td>
                       );
                     })}
@@ -222,17 +259,21 @@ export const DataTable = ({
                       <Tr key={`${rowIndex}-child-${childIndex}`}>
                         {headData?.map((head, colIndex) => (
                           <Td
-                            padding="8px 6px"
+                            padding="8px 16px"
                             key={colIndex}
                             isNumeric={head.isNumeric}
-                            width={"180px"}
+                            minW={head.tdProps?.minW || "130px"}
+                            maxW={head.tdProps?.maxW || "250px"}
+                            w={head.tdProps?.width || "auto"}
                             fontWeight={"400"}
                             fontSize={"14px"}
+                            verticalAlign="middle"
                             {...head.tdProps}>
                             <Box
                               paddingLeft={colIndex === 0 ? "32px" : "0"}
                               display="flex"
-                              alignItems="center">
+                              alignItems="center"
+                              whiteSpace="nowrap">
                               {head?.render
                                 ? head.render(
                                     child[head.key],
@@ -242,7 +283,7 @@ export const DataTable = ({
                                     true,
                                     rowIndex
                                   )
-                                : child[head.key]}
+                                : formatDateValue(child[head.key], head)}
                             </Box>
                           </Td>
                         ))}

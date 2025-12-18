@@ -20,7 +20,7 @@ import carrierService from "@services/carrierService";
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 
-export const Safety = ({data = {}}) => {
+export const Safety = () => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
   const [selectedTab, setSelectedTab] = useState(0);

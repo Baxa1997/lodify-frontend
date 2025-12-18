@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Text, VStack} from "@chakra-ui/react";
+import {Box, VStack} from "@chakra-ui/react";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
@@ -20,10 +20,7 @@ export const MatchedData = () => {
     setAddressMatchesLimit,
     addressMatchesContacts,
   } = useMatchedDataProps();
-  console.log(
-    "addressMatchesContactsaddressMatchesContacts",
-    addressMatchesContacts
-  );
+
   return (
     <Box>
       <InfoAccordionItem>

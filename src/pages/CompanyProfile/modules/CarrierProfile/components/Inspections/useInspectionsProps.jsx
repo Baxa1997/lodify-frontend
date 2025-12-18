@@ -24,28 +24,44 @@ export const useInspectionsProps = () => {
           object_data: {
             companies_id: companies_id,
             page: page,
-            limit: limit,
+            limit: 10,
           },
           table: "inspection_history",
         },
       }),
     select: (res) => res?.data || {},
-    enabled: false,
+  });
+
+  const {
+    data: inspectionsCountData,
+    isLoading: isInspectionsCountLoading,
+    refetch: refetchInspectionsCount,
+    isFetching: isInspectionsCountFetching,
+  } = useQuery({
+    queryKey: ["GET_INSPECTIONS_COUNT_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getInspectionsData({
+        data: {
+          method: "get",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "inspection_stat",
+        },
+      }),
+    select: (res) => res?.data?.response || {},
   });
 
   const headData = [
     {
       label: "Date",
       key: "insp_date",
+      format: "date",
     },
     {
       label: "Report Number",
       key: "report_number",
       sortable: true,
-    },
-    {
-      label: "State",
-      key: "report_state",
     },
     {
       label: "Flat Number",
@@ -61,7 +77,7 @@ export const useInspectionsProps = () => {
     },
     {
       label: "OSS Violations",
-      key: "oos_violations",
+      key: "oos_total",
     },
   ];
 
@@ -75,6 +91,8 @@ export const useInspectionsProps = () => {
     count: 0,
     isLoading,
     isFetching,
+    inspectionsCountData,
     refetch,
+    refetchInspectionsCount,
   };
 };

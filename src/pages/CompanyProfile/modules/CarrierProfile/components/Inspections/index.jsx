@@ -17,7 +17,7 @@ import {
 import {DataTable} from "@components/DataTable";
 import {useInspectionsProps} from "./useInspectionsProps";
 
-export const Inspections = () => {
+export const Inspections = ({new_info}) => {
   const {
     headData,
     inspectionsData,
@@ -28,13 +28,21 @@ export const Inspections = () => {
     count,
     isLoading,
     isFetching,
+    inspectionsCountData,
     refetch,
+    refetchInspectionsCount,
   } = useInspectionsProps();
-
+  console.log(
+    "inspectionsCountDatainspectionsCountData",
+    inspectionsCountData,
+    new_info
+  );
   return (
     <Box>
       <InfoAccordionItem>
-        <InfoAccordionButton onClick={refetch} isLoading={isFetching}>
+        <InfoAccordionButton
+          onClick={refetchInspectionsCount}
+          isLoading={isFetching}>
           <InfoAccordionTitle>Inspections</InfoAccordionTitle>
         </InfoAccordionButton>
         <InfoAccordionPanel>
@@ -101,7 +109,8 @@ export const Inspections = () => {
                   fontWeight="600"
                   color="#079455"
                   mb="8px">
-                  782/586
+                  {inspectionsCountData?.inspection_count}/
+                  {new_info?.power_units}
                 </Text>
                 <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
                   Observed vs Reported Power Units in Fleet
@@ -122,7 +131,7 @@ export const Inspections = () => {
                     color="#079455"
                     lineHeight="1"
                     h="32px">
-                    Top 30%
+                    Top {inspectionsCountData?.top_percent?.toFixed(0) || 0}%
                   </Text>
                   <Tooltip
                     label="Percentile Ranking Compared to Peers"
@@ -146,7 +155,7 @@ export const Inspections = () => {
                   Percentile Ranking Compared to Peers
                 </Text>
               </Box>
-
+              {/* 
               <Box
                 flex="1"
                 bg="#fff"
@@ -165,7 +174,7 @@ export const Inspections = () => {
                 <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
                   Length of Authority
                 </Text>
-              </Box>
+              </Box> */}
             </Flex>
 
             <Box>
@@ -186,6 +195,7 @@ export const Inspections = () => {
                   height="500px"
                   setLimit={setLimit}
                   setPage={setPage}
+                  refetch={refetch}
                   isLoading={isLoading}
                   tableProps={{
                     layout: "fixed",
