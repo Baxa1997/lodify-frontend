@@ -28,7 +28,7 @@ export const useOperationsProps = ({dot_number}) => {
       }),
     select: (data) => data?.data || {},
   });
-  console.log("operationsDataoperationsData", operationsData);
+
   return {
     extraData,
     operationsData,
