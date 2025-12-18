@@ -43,8 +43,6 @@ export const Safety = ({data = {}}) => {
     enabled: Boolean(companies_id),
   });
 
-  console.log("safetyDatasafetyData", safetyData);
-
   const nationalAverageKeyMap = {
     unsafe_driving: "driver",
     hours_of_service: "driver",
@@ -86,41 +84,62 @@ export const Safety = ({data = {}}) => {
     return [["Month", "Carrier actual safety rate", "Nat'l Average"], ...rows];
   }, [safetyData, selectedCategory, nationalAverageKey]);
 
+  const values = chartData
+    .slice(1)
+    .flatMap((row) => [row[1], row[2]])
+    .filter((v) => typeof v === "number");
+
+  const maxValue = Math.max(...values);
+
+  const paddedMax = Math.min(maxValue * 2.35, 100);
+  const paddedMin = -5;
+
   const chartOptions = {
-    chart: {
-      title: "",
-    },
-    hAxis: {
-      textStyle: {color: "#6B7280", fontSize: 11},
-      gridlines: {color: "#F3F4F6"},
-      baselineColor: "#E5E7EB",
-    },
+    backgroundColor: "transparent",
+    curveType: "function",
+    focusTarget: "category",
+
     vAxis: {
-      textStyle: {color: "transparent"},
-      gridlines: {color: "#F3F4F6"},
-      baselineColor: "#E5E7EB",
       minValue: 0,
-      maxValue: 100,
-      format: "",
+      viewWindow: {
+        min: paddedMin,
+        max: paddedMax,
+      },
+      textStyle: {color: "#000", fontSize: 11},
+      gridlines: {color: "#F3F4F6", count: 4},
+      baselineColor: "#E5E7EB",
+      format: "#'%'",
     },
-    legend: {
-      position: "none",
+
+    hAxis: {
+      textStyle: {color: "#000", fontSize: 11},
+      gridlines: {color: "transparent"},
     },
-    colors: ["#EF6820", "#000000"],
-    lineWidth: 3,
-    pointSize: 0,
+
+    series: {
+      0: {
+        color: "#EF6820",
+        lineWidth: 3,
+        areaOpacity: 0.12,
+      },
+      1: {
+        color: "#111827",
+        lineWidth: 2,
+        areaOpacity: 0,
+        background: "red",
+      },
+    },
+
     chartArea: {
-      left: 50,
+      left: 40,
       top: 20,
       right: 20,
-      bottom: 50,
-      width: "85%",
-      height: "75%",
+      bottom: 30,
+      height: "70%",
     },
-    backgroundColor: "transparent",
-    series: {
-      0: {lineWidth: 3, pointSize: 0},
-      1: {lineWidth: 2, pointSize: 0, type: "line"},
+
+    legend: {
+      position: "none",
     },
   };
 
