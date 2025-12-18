@@ -4,7 +4,7 @@ import {useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import carrierService from "@services/carrierService";
 
-export const useAuthorityProps = ({companySnapshot, new_info}) => {
+export const useAuthorityProps = ({new_info}) => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
   const [page, setPage] = useState(1);

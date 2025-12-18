@@ -16,12 +16,7 @@ import {VictimIdentity} from "../VictimIdentity";
 import Assessments from "../Assessments";
 import Insights from "../Insights";
 
-export const Overview = ({
-  companySnapshot,
-  carrierDetails,
-  operation,
-  generalInfo,
-}) => {
+export const Overview = ({carrierDetails, generalInfo}) => {
   const {new_info, performance} = generalInfo;
 
   return (
@@ -51,17 +46,13 @@ export const Overview = ({
             <State />
           </Box>
           <Box id="authory">
-            <Authority
-              new_info={new_info}
-              carrierDetails={carrierDetails}
-              companySnapshot={companySnapshot}
-            />
+            <Authority new_info={new_info} carrierDetails={carrierDetails} />
           </Box>
           <Box id="insurance">
             <ActiveAndPendingInsurance new_info={new_info} />
           </Box>
           <Box id="safety">
-            <Safety data={companySnapshot} />
+            <Safety />
           </Box>
           <Box id="inspections">
             <Inspections new_info={new_info} />
@@ -70,10 +61,7 @@ export const Overview = ({
             <Equipment />
           </Box>
           <Box id="operations">
-            <Operations
-              companySnapshot={companySnapshot}
-              operation={operation}
-            />
+            <Operations new_info={new_info} />
           </Box>
           <Box id="certifications">
             <Violation new_info={new_info} />

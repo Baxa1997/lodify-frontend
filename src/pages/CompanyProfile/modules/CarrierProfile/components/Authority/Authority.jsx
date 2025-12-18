@@ -9,7 +9,7 @@ import {DataTable} from "@components/DataTable";
 import {useAuthorityProps} from "./useAuthorityProps";
 import {StatusBadge} from "@components/StatusBadge";
 
-export const Authority = ({new_info, companySnapshot = {}}) => {
+export const Authority = ({new_info}) => {
   const {common_stat, contract_stat, broker_stat, property_chk} = new_info;
   const {
     headData,
@@ -21,7 +21,6 @@ export const Authority = ({new_info, companySnapshot = {}}) => {
     refetch,
     isLoading,
   } = useAuthorityProps({
-    companySnapshot,
     new_info,
   });
 

@@ -32,11 +32,7 @@ export const Inspections = ({new_info}) => {
     refetch,
     refetchInspectionsCount,
   } = useInspectionsProps();
-  console.log(
-    "inspectionsCountDatainspectionsCountData",
-    inspectionsCountData,
-    new_info
-  );
+
   return (
     <Box>
       <InfoAccordionItem>
