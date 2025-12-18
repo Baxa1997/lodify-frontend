@@ -53,13 +53,7 @@ export const useMatchedDataProps = () => {
           table: "matches",
         },
       }),
-    select: (res) => {
-      const result = [
-        ...res?.data?.mailing_address,
-        ...res?.data?.physical_address,
-      ];
-      return result;
-    },
+    select: (res) => res?.data || {},
     enabled: Boolean(companies_id),
   });
 
@@ -75,7 +69,7 @@ export const useMatchedDataProps = () => {
           table: "matches",
         },
       }),
-    select: (res) => console.log("resssss====>", res),
+    select: (res) => res?.data || {},
     enabled: Boolean(companies_id),
   });
 
@@ -145,19 +139,6 @@ export const useMatchedDataProps = () => {
         py: "12px",
       },
     },
-    // {
-    //   label: "Carriers Dot Record (Safer)",
-    //   key: "dot_record",
-    //   thProps: {
-    //     width: "240px",
-    //     px: "16px",
-    //     py: "12px",
-    //   },
-    //   tdProps: {
-    //     px: "16px",
-    //     py: "12px",
-    //   },
-    // },
     {
       label: "ACTION",
       key: "action",
@@ -184,42 +165,16 @@ export const useMatchedDataProps = () => {
     },
   ];
 
-  const defaultBodyData = [
-    {
-      dot_docet: "26/09/2025",
-      company_name: "4004520441",
-      dot_status: "IL",
-      mc_record: "P1039337",
-      dot_record: "Power Unit",
-    },
-    {
-      dot_docet: "26/09/2025",
-      company_name: "0",
-      dot_status: "IL",
-      mc_record: "P1039337",
-      dot_record: "Power Unit",
-    },
-    {
-      dot_docet: "26/09/2025",
-      company_name: "35",
-      dot_status: "IL",
-      mc_record: "P1039337",
-      dot_record: "Power Unit",
-    },
-  ];
-
   return {
     mcRecordData,
     dotRecordData,
     vinMatchesData,
-    // ipMatchesData,
     addressMatchesHeadData,
     addressMatchesBodyData,
-    addressMatchesCount: defaultBodyData.length,
     addressMatchesPage,
     setAddressMatchesPage,
     addressMatchesLimit,
     setAddressMatchesLimit,
-    ipMatchesData: defaultBodyData,
+    addressMatchesContacts,
   };
 };
