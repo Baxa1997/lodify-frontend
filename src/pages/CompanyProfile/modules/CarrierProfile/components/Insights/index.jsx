@@ -27,7 +27,7 @@ import {AssosiationReport} from "./AssosiationReport";
 import {useMemo} from "react";
 import {EquipmentMatch} from "./EquipmentMatch";
 
-function Insights({vinMatchesData, addressMatchesBodyData}) {
+function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
   const {
     virtualAddressData,
     equipmentData,
@@ -38,6 +38,8 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
     setSelectedTab,
     carrierAuditData,
   } = useInsightsProps();
+
+  console.log("new_infonew_info", new_info);
 
   const matchedAddressesData = addressMatchesBodyData?.physical_address?.concat(
     addressMatchesBodyData?.mailing_address
@@ -73,10 +75,9 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
 
     return fields
       .filter((field) => {
-        // Check if the old field is not empty, which means the field was changed
         const oldValue = carrierAuditData[field.oldKey];
         const newValue = carrierAuditData[field.key];
-        // Field is considered changed if old value exists and is not empty
+
         return oldValue !== null && oldValue !== undefined && oldValue !== "";
       })
       .map((field) => ({
@@ -92,7 +93,8 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
       (equipmentData?.length || 0) +
       (addressMatchesBodyData?.physical_address?.length || 0) +
       (addressMatchesBodyData?.mailing_address?.length || 0) +
-      (changedFields?.length || 0)
+      (changedFields?.length || 0) +
+      (new_info?.broker_stat === "A" ? 1 : 0)
     );
   }, [
     virtualAddressData,
@@ -155,6 +157,12 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
                 flexWrap="wrap"
                 gap="8px"
                 align="stretch">
+                {new_info?.broker_stat === "A" && (
+                  <AssosiationReport
+                    label="Broker is Active"
+                    insight={{date: "Observed March, 2024"}}
+                  />
+                )}
                 {associationInsights
                   ?.filter((insight) => !insight.filtered)
                   .map((insight, index) => (

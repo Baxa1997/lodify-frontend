@@ -23,11 +23,13 @@ import {
 } from "@chakra-ui/react";
 import {MdEmail} from "react-icons/md";
 import {IoArrowBackOutline} from "react-icons/io5";
+import IPAddressFinder from "@utils/getIpAddress";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const {ip} = IPAddressFinder();
   const isAuth = useSelector((state) => state?.auth?.isAuth);
   const [isLoading, setIsLoading] = useState(false);
   const [isUserId, setIsUserId] = useState();
@@ -365,6 +367,7 @@ const Login = () => {
     dispatch(
       loginAction({
         ...data,
+        ip_address: ip,
         environment_ids: computedProject,
       })
     );

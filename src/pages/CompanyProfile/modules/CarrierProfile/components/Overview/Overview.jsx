@@ -75,6 +75,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
           </Box>
           <Box id="insights">
             <Insights
+              new_info={new_info}
               vinMatchesData={vinMatchesData}
               addressMatchesBodyData={addressMatchesBodyData}
             />

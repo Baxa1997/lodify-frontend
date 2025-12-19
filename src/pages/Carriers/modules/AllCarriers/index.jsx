@@ -41,57 +41,54 @@ const AllCarriers = () => {
     refetch,
   } = useInfiniteQuery({
     queryKey: ["ALL_CARRIERS", brokersId, envId, searchQuery],
-    queryFn: ({pageParam = 0}) =>
-      tripsService.getList({
+    queryFn: ({pageParam = 0}) => {
+      const objectData = {
+        broker_id: brokersId,
+        own_carriers: false,
+        limit: 20,
+        offset: Boolean(searchQuery?.trim()) ? 0 : pageParam,
+      };
+
+      if (searchQuery?.trim()) {
+        objectData.search = searchQuery.trim();
+      }
+
+      return tripsService.getList({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
         environment_id: envId,
         method: "list",
-        object_data: {
-          broker_id: brokersId,
-          own_carriers: false,
-          limit: 20,
-          offset: Boolean(searchQuery) ? 0 : pageParam,
-          search: searchQuery,
-        },
+        object_data: objectData,
         table: "carriers",
-      }),
+      });
+    },
     getNextPageParam: (lastPage, allPages) => {
-      const loadedItems = allPages.reduce(
-        (sum, page) => sum + (page?.data?.response?.length || 0),
-        0
-      );
-      const hasMore =
-        lastPage?.data?.response && lastPage.data.response.length === 20;
-      return hasMore ? loadedItems : undefined;
+      if (Boolean(searchQuery?.trim())) {
+        return undefined;
+      } else {
+        const loadedItems = allPages.reduce(
+          (sum, page) => sum + (page?.data?.response?.length || 0),
+          0
+        );
+        const hasMore =
+          lastPage?.data?.response && lastPage.data.response.length === 20;
+        return hasMore ? loadedItems : undefined;
+      }
     },
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
 
+  console.log("datadata", data);
+
   const carriersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
 
+  // When searchQuery exists, use API results directly (already filtered by API)
+  // When no searchQuery, use all carriers
   const filteredCarriers = useMemo(() => {
-    if (!searchQuery.trim()) return carriersData;
-
-    const query = searchQuery.toLowerCase();
-    return carriersData.filter((carrier) => {
-      const companyName = (
-        carrier.company_name ||
-        carrier.legal_name ||
-        ""
-      ).toLowerCase();
-      const email = (carrier.email || "").toLowerCase();
-      const phone = (carrier.phone || "").toLowerCase();
-
-      return (
-        companyName.includes(query) ||
-        email.includes(query) ||
-        phone.includes(query)
-      );
-    });
-  }, [carriersData, searchQuery]);
+    return carriersData;
+  }, [carriersData]);
 
   const handleAddCarrier = (carrier) => {
     setSelectedCarrier(carrier);

@@ -59,10 +59,6 @@ export const useViolationProps = (new_info) => {
       key: "insp_date",
     },
     {
-      label: "Report Number",
-      key: "report_number",
-    },
-    {
       label: "Type",
       key: "group_desc",
     },
@@ -84,6 +80,10 @@ export const useViolationProps = (new_info) => {
     {
       label: "Violation Value",
       key: "viol_unit",
+    },
+    {
+      label: "Report Number",
+      key: "report_number",
     },
   ];
 
