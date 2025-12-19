@@ -16,18 +16,18 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-  Table,
-  Tbody,
-  Tr,
-  Td,
 } from "@chakra-ui/react";
 import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
 import styles from "../../../../../../styles/tabs.module.scss";
 import {format} from "date-fns";
 import {useInsightsProps} from "./useInsightsProps";
+import {InsightAddress} from "./InsightAddress";
+import {AssosiationReport} from "./AssosiationReport";
+import {useMemo} from "react";
+import {EquipmentMatch} from "./EquipmentMatch";
 
-function Insights() {
+function Insights({vinMatchesData, addressMatchesBodyData}) {
   const {
     virtualAddressData,
     equipmentData,
@@ -37,6 +37,24 @@ function Insights() {
     selectedTab,
     setSelectedTab,
   } = useInsightsProps();
+
+  const matchedAddressesData = addressMatchesBodyData?.physical_address?.concat(
+    addressMatchesBodyData?.mailing_address
+  );
+
+  const totalInsights = useMemo(() => {
+    return (
+      (virtualAddressData?.length || 0) +
+      (equipmentData?.length || 0) +
+      (addressMatchesBodyData?.physical_address?.length || 0) +
+      (addressMatchesBodyData?.mailing_address?.length || 0)
+    );
+  }, [
+    virtualAddressData,
+    equipmentData,
+    matchedAddressesData,
+    addressMatchesBodyData,
+  ]);
 
   return (
     <InfoAccordionItem id="insights">
@@ -52,7 +70,7 @@ function Insights() {
               borderRadius="full"
               fontSize="12px"
               fontWeight="600">
-              {virtualAddressData?.length || 0 + equipmentData?.length || 0}{" "}
+              {totalInsights}
               Total insights discovered
             </Badge>
           </HStack>
@@ -94,35 +112,16 @@ function Insights() {
                 {associationInsights
                   ?.filter((insight) => !insight.filtered)
                   .map((insight, index) => (
-                    <Flex
-                      minW="300px"
-                      w={"fit-content"}
-                      bg="#FAFAFA"
-                      borderRadius="8px"
-                      p="12px 16px"
-                      gap="12px"
-                      justifyContent="space-between">
-                      <Box>
-                        <Text color="#181D27" fontSize="14px" fontWeight="500">
-                          {insight.title}
-                        </Text>
-                        <Text color="#6B7280" fontSize="14px" fontWeight="400">
-                          {insight.date}
-                        </Text>
-                      </Box>
-                      <Box>
-                        <AiOutlineExclamationCircle
-                          width="20px"
-                          height="20px"
-                          fontSize="20px"
-                          color="#EF6820"
-                        />
-                      </Box>
-                    </Flex>
+                    <AssosiationReport key={index} insight={insight} />
                   ))}
+                {addressMatchesBodyData?.physical_address?.length && (
+                  <AssosiationReport
+                    label="Physical Address"
+                    insight={{date: "Observed March, 2024"}}
+                  />
+                )}
               </VStack>
             </Box>
-
             {virtualAddressData?.length > 0 && (
               <Box>
                 <Text
@@ -194,10 +193,7 @@ function Insights() {
                         fontSize="12px"
                         fontWeight="600"
                         textTransform="uppercase">
-                        TOTAL INSIGHTS DISCOVERED:{" "}
-                        {virtualAddressData?.length ||
-                          0 + equipmentData?.length ||
-                          0}{" "}
+                        TOTAL INSIGHTS DISCOVERED: {totalInsights}{" "}
                       </Badge>
                     </HStack>
                     <Box ml="auto">
@@ -222,9 +218,7 @@ function Insights() {
                           py="2px"
                           fontSize="11px"
                           fontWeight="600">
-                          {virtualAddressData?.length ||
-                            0 + equipmentData?.length ||
-                            0}{" "}
+                          {totalInsights}
                         </Badge>
                       </Tab>
                       <Tab>
@@ -238,7 +232,7 @@ function Insights() {
                           py="2px"
                           fontSize="11px"
                           fontWeight="600">
-                          0
+                          {vinMatchesData?.length}
                         </Badge>
                       </Tab>
                       <Tab>
@@ -252,7 +246,7 @@ function Insights() {
                           py="2px"
                           fontSize="11px"
                           fontWeight="600">
-                          0
+                          {matchedAddressesData?.length || 0}
                         </Badge>
                       </Tab>
                     </TabList>
@@ -265,74 +259,34 @@ function Insights() {
                         <Box flex="1" minW={{base: "100%", lg: "400px"}}>
                           <VStack spacing="12px" align="stretch">
                             {virtualAddressData?.map((item) => (
-                              <Accordion key={item} allowToggle>
-                                <AccordionItem
-                                  overflow="hidden"
-                                  border="1px solid #EF6820"
-                                  borderRadius="8px"
-                                  bg="white">
-                                  <AccordionButton
-                                    p="16px"
-                                    _hover={{bg: "#fff"}}
-                                    _expanded={{bg: "#fff"}}
-                                    textAlign="left">
-                                    <Flex
-                                      minW="300px"
-                                      w={"100%"}
-                                      bg="#FAFAFA"
-                                      borderRadius="8px"
-                                      p="12px 16px"
-                                      gap="12px"
-                                      justifyContent="space-between"
-                                      alignItems="center">
-                                      <Box flex="1" textAlign="left">
-                                        <Text
-                                          color="#181D27"
-                                          fontSize="14px"
-                                          fontWeight="500"
-                                          textAlign="left">
-                                          {item.address}
-                                        </Text>
-                                        <Text
-                                          color="#6B7280"
-                                          fontSize="14px"
-                                          fontWeight="400"
-                                          textAlign="left">
-                                          {item?.address_type ===
-                                          "physical_address"
-                                            ? "Physical Address"
-                                            : "Mailing Address"}
-                                        </Text>
-                                      </Box>
-                                      <HStack spacing="8px" flexShrink={0}>
-                                        <Box>
-                                          <AiOutlineExclamationCircle
-                                            width="20px"
-                                            height="20px"
-                                            fontSize="20px"
-                                            color="#EF6820"
-                                          />
-                                        </Box>
-                                        <AccordionIcon
-                                          color="#181D27"
-                                          fontSize="16px"
-                                        />
-                                      </HStack>
-                                    </Flex>
-                                  </AccordionButton>
-                                  <AccordionPanel>
-                                    {/* <Text
-                                      fontSize="14px"
-                                      color="#6B7280"
-                                      lineHeight="1.6">
-                                      Another carrier has used a power unit with
-                                      a VIN matching a vehicle on the scheduled
-                                      auto policy of this carrier.
-                                    </Text> */}
-                                  </AccordionPanel>
-                                </AccordionItem>
-                              </Accordion>
+                              <InsightAddress
+                                key={item.id}
+                                item={item}
+                                virtualAddress={true}
+                              />
                             ))}
+
+                            {addressMatchesBodyData?.physical_address?.map(
+                              (item) => (
+                                <InsightAddress
+                                  key={item.id}
+                                  item={item}
+                                  allowToggle={true}
+                                  physicalAddress={true}
+                                />
+                              )
+                            )}
+
+                            {addressMatchesBodyData?.mailing_address?.map(
+                              (item) => (
+                                <InsightAddress
+                                  key={item.id}
+                                  item={item}
+                                  allowToggle={true}
+                                  mailingAddress={true}
+                                />
+                              )
+                            )}
                           </VStack>
                         </Box>
 
@@ -346,156 +300,11 @@ function Insights() {
                           </Text>
                           <VStack spacing="16px" align="stretch">
                             {equipmentData?.map((item) => (
-                              <Box
-                                key={item}
-                                bg="white"
-                                border="1px solid #EF6820"
-                                borderRadius="8px"
-                                p="20px">
-                                <Flex
-                                  justify="space-between"
-                                  align="flex-start"
-                                  mb="16px">
-                                  <VStack
-                                    align="flex-start"
-                                    spacing="8px"
-                                    flex="1">
-                                    <Text
-                                      fontSize="12px"
-                                      fontWeight="600"
-                                      color="#6B7280"
-                                      textTransform="uppercase"
-                                      letterSpacing="0.5px">
-                                      Associated Carrier
-                                    </Text>
-                                    <HStack spacing="8px">
-                                      <Text
-                                        fontSize="16px"
-                                        fontWeight="600"
-                                        color="#EF6820">
-                                        {item?.legal_name}
-                                      </Text>
-                                      <Badge
-                                        bg="#DEFFEE"
-                                        color="#16B364"
-                                        px="8px"
-                                        py="2px"
-                                        borderRadius="4px"
-                                        fontSize="11px"
-                                        fontWeight="600">
-                                        {associatedCarrierData.status}
-                                      </Badge>
-                                    </HStack>
-                                  </VStack>
-                                  {item?.type?.[0] === "Tractor" ? (
-                                    <Box
-                                      as="img"
-                                      src="/img/equipmentTruck.svg"
-                                      alt="truck"
-                                      w="50px"
-                                      h="50px"
-                                      color="#EF6820"
-                                    />
-                                  ) : (
-                                    <Box
-                                      as="img"
-                                      src="/img/equipmentTrailer.svg"
-                                      alt="trailer"
-                                      w="50px"
-                                      h="50px"
-                                      color="#EF6820"
-                                    />
-                                  )}
-                                </Flex>
-                                <Box borderTop="1px solid #E5E7EB" pt="16px">
-                                  <Table variant="simple" size="sm">
-                                    <Tbody>
-                                      <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none"
-                                          width="40%">
-                                          Make:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {item?.make}
-                                        </Td>
-                                      </Tr>
-                                      <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none">
-                                          Model:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {item?.vehicle_number || "-"}
-                                        </Td>
-                                      </Tr>
-                                      <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none">
-                                          Year:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {item?.year || "-"}
-                                        </Td>
-                                      </Tr>
-
-                                      <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none">
-                                          Plate #:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {item?.licence_plate || "-"}
-                                        </Td>
-                                      </Tr>
-                                    </Tbody>
-                                  </Table>
-                                </Box>
-                              </Box>
+                              <EquipmentMatch
+                                key={item?.id}
+                                item={item}
+                                associatedCarrierData={associatedCarrierData}
+                              />
                             ))}
                           </VStack>
                         </Box>
@@ -504,17 +313,85 @@ function Insights() {
 
                     <TabPanel>
                       <Box mt="20px">
-                        <Text color="#6B7280">
-                          VIN Match content coming soon...
-                        </Text>
+                        {vinMatchesData &&
+                          vinMatchesData.map((item) => (
+                            <Flex
+                              border="1px solid #EF6820"
+                              borderRadius="12px"
+                              p="16px"
+                              gap="12px"
+                              alignItems="center">
+                              <Text
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#181D27">
+                                {item?.legal_name}
+                              </Text>
+                              -
+                              <Text
+                                fontSize="14px"
+                                fontWeight="600"
+                                color="#181D27">
+                                {item?.vin_number}
+                              </Text>
+                            </Flex>
+                          ))}
                       </Box>
                     </TabPanel>
 
                     <TabPanel>
                       <Box mt="20px">
-                        <Text color="#6B7280">
-                          Location content coming soon...
-                        </Text>
+                        {addressMatchesBodyData?.physical_address?.map(
+                          (item) => (
+                            <Flex
+                              mt="10px"
+                              border="1px solid #EF6820"
+                              borderRadius="12px"
+                              p="16px"
+                              gap="12px"
+                              alignItems="center">
+                              <Text
+                                fontSize="14px"
+                                fontWeight="600"
+                                color="#181D27">
+                                Matched Physical Address:
+                              </Text>
+                              -
+                              <Text
+                                fontSize="14px"
+                                fontWeight="400"
+                                color="#181D27">
+                                {item?.physical_address}
+                              </Text>
+                            </Flex>
+                          )
+                        )}
+
+                        {addressMatchesBodyData?.mailing_address?.map(
+                          (item) => (
+                            <Flex
+                              mt="10px"
+                              border="1px solid #EF6820"
+                              borderRadius="12px"
+                              p="16px"
+                              gap="12px"
+                              alignItems="center">
+                              <Text
+                                fontSize="14px"
+                                fontWeight="600"
+                                color="#181D27">
+                                Matched Mailing Address:
+                              </Text>
+                              -
+                              <Text
+                                fontSize="14px"
+                                fontWeight="400"
+                                color="#181D27">
+                                {item?.mailing_address}
+                              </Text>
+                            </Flex>
+                          )
+                        )}
                       </Box>
                     </TabPanel>
                   </Tabs>

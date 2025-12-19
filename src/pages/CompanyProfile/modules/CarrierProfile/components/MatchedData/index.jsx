@@ -9,17 +9,9 @@ import {
 import {useMatchedDataProps} from "./useMatchedDataProps";
 import {MatchesSection} from "./components/MatchedSection";
 
-export const MatchedData = () => {
-  const {
-    addressMatchesHeadData,
-    addressMatchesBodyData,
-    addressMatchesCount,
-    addressMatchesPage,
-    setAddressMatchesPage,
-    addressMatchesLimit,
-    setAddressMatchesLimit,
-    addressMatchesContacts,
-  } = useMatchedDataProps();
+export const MatchedData = ({vinMatchesData, addressMatchesBodyData}) => {
+  const {addressMatchesHeadData, addressMatchesContacts} =
+    useMatchedDataProps();
 
   return (
     <Box>
@@ -29,8 +21,6 @@ export const MatchedData = () => {
         </InfoAccordionButton>
         <InfoAccordionPanel>
           <VStack spacing="32px" align="stretch">
-            {/* <MatchedDateSection /> */}
-
             <MatchesSection
               title="Physical Address Matches"
               address={
@@ -40,11 +30,6 @@ export const MatchedData = () => {
               matchedCount={addressMatchesBodyData?.physical_address?.length}
               headData={addressMatchesHeadData}
               bodyData={addressMatchesBodyData?.physical_address}
-              count={addressMatchesCount}
-              page={addressMatchesPage}
-              setPage={setAddressMatchesPage}
-              limit={addressMatchesLimit}
-              setLimit={setAddressMatchesLimit}
             />
 
             <MatchesSection
@@ -56,11 +41,6 @@ export const MatchedData = () => {
               }
               headData={addressMatchesHeadData}
               bodyData={addressMatchesBodyData?.mailing_address}
-              count={addressMatchesCount}
-              page={addressMatchesPage}
-              setPage={setAddressMatchesPage}
-              limit={addressMatchesLimit}
-              setLimit={setAddressMatchesLimit}
             />
 
             <MatchesSection
@@ -70,10 +50,15 @@ export const MatchedData = () => {
               address={addressMatchesContacts?.email?.[0]?.email}
               headData={addressMatchesHeadData}
               bodyData={addressMatchesContacts?.email}
-              count={addressMatchesCount}
-              page={addressMatchesPage}
-              limit={addressMatchesLimit}
-              setLimit={setAddressMatchesLimit}
+            />
+
+            <MatchesSection
+              title="VIN Matches"
+              matchedCount={vinMatchesData?.length}
+              matchedByLabel="VIN"
+              address={vinMatchesData?.[0]?.vin}
+              headData={addressMatchesHeadData}
+              bodyData={vinMatchesData}
             />
 
             <MatchesSection
@@ -83,10 +68,6 @@ export const MatchedData = () => {
               address={addressMatchesContacts?.phone?.[0]?.phone}
               headData={addressMatchesHeadData}
               bodyData={addressMatchesContacts?.phone}
-              count={addressMatchesCount}
-              page={addressMatchesPage}
-              limit={addressMatchesLimit}
-              setLimit={setAddressMatchesLimit}
             />
           </VStack>
         </InfoAccordionPanel>

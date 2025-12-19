@@ -15,9 +15,46 @@ import {Connection} from "../Connection";
 import {VictimIdentity} from "../VictimIdentity";
 import Assessments from "../Assessments";
 import Insights from "../Insights";
+import {useQuery} from "@tanstack/react-query";
+import {useSearchParams} from "react-router-dom";
+import carrierService from "@services/carrierService";
 
 export const Overview = ({carrierDetails, generalInfo}) => {
+  const [searchParams] = useSearchParams();
   const {new_info, performance} = generalInfo;
+  const companies_id = searchParams.get("id");
+
+  const {data: vinMatchesData} = useQuery({
+    queryKey: ["GET_VIN_MATCHES_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "vin",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: addressMatchesBodyData} = useQuery({
+    queryKey: ["GET_ADDRESS_MATCHES_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "addresses",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data || {},
+    enabled: Boolean(companies_id),
+  });
 
   return (
     <Box
@@ -37,7 +74,10 @@ export const Overview = ({carrierDetails, generalInfo}) => {
             <Assessments />
           </Box>
           <Box id="insights">
-            <Insights />
+            <Insights
+              vinMatchesData={vinMatchesData}
+              addressMatchesBodyData={addressMatchesBodyData}
+            />
           </Box>
           <Box id="document">
             <VictimIdentity />
@@ -70,7 +110,10 @@ export const Overview = ({carrierDetails, generalInfo}) => {
             <Performance performanceData={performance} />
           </Box>
           <Box id="matched-data">
-            <MatchedData />
+            <MatchedData
+              vinMatchesData={vinMatchesData}
+              addressMatchesBodyData={addressMatchesBodyData}
+            />
           </Box>
         </InfoAccordion>
       </Box>

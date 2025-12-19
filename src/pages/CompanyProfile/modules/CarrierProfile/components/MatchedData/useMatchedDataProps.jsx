@@ -1,4 +1,3 @@
-import {useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {Link, HStack} from "@chakra-ui/react";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
@@ -8,9 +7,6 @@ import carrierService from "@services/carrierService";
 export const useMatchedDataProps = () => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
-
-  const [addressMatchesPage, setAddressMatchesPage] = useState(1);
-  const [addressMatchesLimit, setAddressMatchesLimit] = useState(10);
 
   const mcRecordData = {
     businessAddress: "606 HILLROSE AVE UNIT B DAYTON, OH 45404",
@@ -26,7 +22,7 @@ export const useMatchedDataProps = () => {
   };
 
   const {data: vinMatchesData} = useQuery({
-    queryKey: ["GET_MATCHED_DATA", companies_id],
+    queryKey: ["GET_VIN_MATCHES_DATA", companies_id],
     queryFn: () =>
       carrierService.getMatchedData({
         data: {
@@ -171,10 +167,6 @@ export const useMatchedDataProps = () => {
     vinMatchesData,
     addressMatchesHeadData,
     addressMatchesBodyData,
-    addressMatchesPage,
-    setAddressMatchesPage,
-    addressMatchesLimit,
-    setAddressMatchesLimit,
     addressMatchesContacts,
   };
 };
