@@ -537,49 +537,7 @@ function Insights() {
                                           {item?.year || "-"}
                                         </Td>
                                       </Tr>
-                                      {/* <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none">
-                                          International:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {item?.international || "-"}
-                                        </Td>
-                                      </Tr> */}
-                                      {/* <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none">
-                                          Reg, State:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {
-                                            associatedCarrierData.vehicle
-                                              .regState
-                                          }
-                                        </Td>
-                                      </Tr> */}
+
                                       <Tr>
                                         <Td
                                           px="0"
@@ -600,46 +558,6 @@ function Insights() {
                                           {item?.licence_plate || "-"}
                                         </Td>
                                       </Tr>
-                                      {/* <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none">
-                                          Class:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {item?.cdl_class || "-"}
-                                        </Td>
-                                      </Tr> */}
-                                      {/* <Tr>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#6B7280"
-                                          fontWeight="500"
-                                          border="none">
-                                          Nonies:
-                                        </Td>
-                                        <Td
-                                          px="0"
-                                          py="6px"
-                                          fontSize="13px"
-                                          color="#181D27"
-                                          fontWeight="400"
-                                          border="none">
-                                          {item?.nonies || "-"}
-                                        </Td>
-                                      </Tr> */}
                                     </Tbody>
                                   </Table>
                                 </Box>

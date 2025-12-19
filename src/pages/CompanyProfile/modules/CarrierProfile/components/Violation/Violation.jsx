@@ -6,7 +6,6 @@ import {
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
 import {DataTable} from "@components/DataTable";
-import SimplePagination from "@components/SimplePagination";
 import {useViolationProps} from "./useViolationProps";
 
 export const Violation = ({new_info}) => {
@@ -44,46 +43,19 @@ export const Violation = ({new_info}) => {
           border="1px solid"
           borderColor="gray.border-main"
           borderRadius="12px"
-          overflow="hidden"
-          display="flex"
-          flexDirection="column">
-          <Box
-            bg="white"
-            overflow="hidden"
-            display="flex"
-            flexDirection="column"
-            maxH="500px">
-            <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
-              <DataTable
-                headData={headData}
-                data={bodyData}
-                page={page}
-                setPage={setPage}
-                limit={limit}
-                setLimit={setLimit}
-                count={count}
-                isLoading={isLoading}
-                tableProps={{
-                  overflow: "auto",
-                }}
-              />
-            </Box>
-          </Box>
-          {count > 0 && (
-            <Box
-              borderTop="1px solid"
-              borderColor="gray.border-main"
-              bg="white"
-              p="12px 24px">
-              <SimplePagination
-                limit={limit}
-                setLimit={setLimit}
-                page={page}
-                setPage={setPage}
-                pageCount={Math.ceil(count / limit)}
-              />
-            </Box>
-          )}
+          overflow="hidden">
+          <DataTable
+            headData={headData}
+            data={bodyData}
+            page={page}
+            setPage={setPage}
+            limit={limit}
+            setLimit={setLimit}
+            count={count}
+            pagination
+            isLoading={isLoading}
+            maxH="500px"
+          />
         </Box>
       </InfoAccordionPanel>
     </InfoAccordionItem>

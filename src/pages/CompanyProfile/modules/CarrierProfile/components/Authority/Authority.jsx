@@ -117,41 +117,31 @@ export const Authority = ({new_info}) => {
               bg="white"
               border="1px solid #E5E7EB"
               borderRadius="12px"
-              overflow="hidden"
-              display="flex"
-              flexDirection="column"
-              maxH="500px">
-              <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
-                <DataTable
-                  count={authorityHistoryData?.total_count || 0}
-                  limit={10}
-                  page={page}
-                  setPage={setPage}
-                  headData={headData}
-                  data={authorityHistoryData?.response || []}
-                  pagination
-                  isLoading={isLoading}
-                  borderRadius="12px"
-                />
-              </Box>
+              overflow="hidden">
+              <DataTable
+                count={authorityHistoryData?.total_count || 0}
+                limit={10}
+                page={page}
+                setPage={setPage}
+                headData={headData}
+                data={authorityHistoryData?.response || []}
+                pagination
+                isLoading={isLoading}
+                height="500px"
+              />
             </Box>
 
             <Box
               bg="white"
               border="1px solid #E5E7EB"
               borderRadius="12px"
-              overflow="hidden"
-              display="flex"
-              flexDirection="column"
-              maxH="500px">
-              <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
-                <DataTable
-                  headData={companyHeadData}
-                  data={companyBodyData}
-                  pagination={false}
-                  borderRadius="12px"
-                />
-              </Box>
+              overflow="hidden">
+              <DataTable
+                headData={companyHeadData}
+                data={companyBodyData}
+                pagination={false}
+                height="180px"
+              />
             </Box>
           </Box>
 

@@ -26,6 +26,7 @@ export const useOperationsProps = ({dot_number}) => {
           table: "operations",
         },
       }),
+    enabled: Boolean(dot_number && companies_id),
     select: (data) => data?.data || {},
   });
 

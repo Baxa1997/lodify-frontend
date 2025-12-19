@@ -1,15 +1,6 @@
-import {
-  Box,
-  Flex,
-  Text,
-  HStack,
-  VStack,
-  Badge,
-  Tooltip,
-} from "@chakra-ui/react";
+import {Box, Flex, Text, HStack, VStack, Badge} from "@chakra-ui/react";
 import {useEquipmentProps} from "./useEquipmentProps";
 import {DataTable} from "@components/DataTable";
-import SimplePagination from "@components/SimplePagination";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
@@ -234,46 +225,24 @@ export const Equipment = () => {
               bg="white"
               border="1px solid #E5E7EB"
               borderRadius="12px"
-              overflow="hidden"
-              display="flex"
-              flexDirection="column"
-              maxH="500px">
-              <Box overflowX="auto" overflowY="auto" flex="1" minH="0">
-                <DataTable
-                  headData={headData}
-                  data={bodyData}
-                  pagination={false}
-                  count={count}
-                  page={page}
-                  limit={limit}
-                  setLimit={setLimit}
-                  setPage={setPage}
-                  isLoading={isLoading}
-                  tableProps={{
-                    layout: "fixed",
-                    variant: "simple",
-                    minW: "max-content",
-                  }}
-                />
-              </Box>
-              {count > 0 && (
-                <Box
-                  borderTop="1px solid #E5E7EB"
-                  bg="white"
-                  p="12px 24px"
-                  flexShrink={0}
-                  position="sticky"
-                  bottom="0"
-                  zIndex="10">
-                  <SimplePagination
-                    limit={limit}
-                    setLimit={setLimit}
-                    page={page}
-                    setPage={setPage}
-                    pageCount={Math.ceil(count / limit)}
-                  />
-                </Box>
-              )}
+              overflow="hidden">
+              <DataTable
+                headData={headData}
+                data={bodyData}
+                count={count}
+                page={page}
+                limit={limit}
+                pagination
+                height="500px"
+                setLimit={setLimit}
+                setPage={setPage}
+                isLoading={isLoading}
+                tableProps={{
+                  layout: "fixed",
+                  variant: "simple",
+                  minW: "max-content",
+                }}
+              />
             </Box>
           </VStack>
         </InfoAccordionPanel>

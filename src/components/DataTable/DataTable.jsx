@@ -12,7 +12,7 @@ import {
   Center,
   Button,
 } from "@chakra-ui/react";
-import {useState} from "react";
+import {useState, useRef, useEffect} from "react";
 import SimplePagination from "@components/SimplePagination";
 import {ChevronRightIcon, ChevronDownIcon} from "@chakra-ui/icons";
 import {format, parseISO, isValid} from "date-fns";
@@ -29,6 +29,7 @@ export const DataTable = ({
   isLoading = false,
   tableProps = {},
   count = 0,
+  maxH,
   ...props
 }) => {
   const [expandedRows, setExpandedRows] = useState(new Set());
@@ -58,9 +59,69 @@ export const DataTable = ({
     return value;
   };
 
+  const TruncatedText = ({children}) => {
+    const textRef = useRef(null);
+    const [isTruncated, setIsTruncated] = useState(false);
+    const [tooltipText, setTooltipText] = useState("");
+
+    useEffect(() => {
+      const checkTruncation = () => {
+        if (textRef.current) {
+          const element = textRef.current;
+          const isOverflowing = element.scrollWidth > element.clientWidth;
+          setIsTruncated(isOverflowing);
+
+          // Extract text content from the element
+          if (isOverflowing) {
+            const text = element.textContent || element.innerText || "";
+            setTooltipText(text.trim());
+          } else {
+            setTooltipText("");
+          }
+        }
+      };
+
+      // Check after initial render
+      const timeoutId = setTimeout(checkTruncation, 0);
+
+      // Observe for size changes
+      const resizeObserver = new ResizeObserver(checkTruncation);
+      if (textRef.current) {
+        resizeObserver.observe(textRef.current);
+      }
+
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+      };
+    }, [children]);
+
+    const content = (
+      <Box
+        ref={textRef}
+        overflow="hidden"
+        textOverflow="ellipsis"
+        whiteSpace="nowrap"
+        width="100%"
+        minW="0">
+        {children}
+      </Box>
+    );
+
+    if (isTruncated && tooltipText) {
+      return (
+        <Tooltip label={tooltipText} placement="top" hasArrow>
+          {content}
+        </Tooltip>
+      );
+    }
+
+    return content;
+  };
+
   return (
     <Box borderRadius="12px" display="flex" flexDirection="column" {...props}>
-      <Box flex="1" overflow="auto">
+      <Box flex="1" overflow="auto" maxH={maxH}>
         <Table variant="simple" tableLayout="auto" {...tableProps}>
           {caption && <TableCaption>{caption}</TableCaption>}
           <Thead
@@ -75,7 +136,7 @@ export const DataTable = ({
                 <Th
                   key={index}
                   isNumeric={head.isNumeric}
-                  minW={head.thProps?.minW || "130px"}
+                  minW={head.thProps?.minW || "160px"}
                   maxW={head.thProps?.maxW || "250px"}
                   w={head.thProps?.width || "auto"}
                   color="#374151"
@@ -130,7 +191,7 @@ export const DataTable = ({
                         return (
                           <Td
                             key={colIndex}
-                            minW={head.tdProps?.minW || "130px"}
+                            minW={head.tdProps?.minW || "160px"}
                             maxW={head.tdProps?.maxW || "250px"}
                             w={head.tdProps?.width || "auto"}
                             fontWeight={"400"}
@@ -186,14 +247,16 @@ export const DataTable = ({
                                 alignItems="center"
                                 gap="8px"
                                 whiteSpace="nowrap">
-                                {head?.render
-                                  ? head?.render(
-                                      row?.[head?.key],
-                                      row,
-                                      head,
-                                      rowIndex
-                                    )
-                                  : formatDateValue(row?.[head?.key], head)}
+                                <TruncatedText>
+                                  {head?.render
+                                    ? head?.render(
+                                        row?.[head?.key],
+                                        row,
+                                        head,
+                                        rowIndex
+                                      )
+                                    : formatDateValue(row?.[head?.key], head)}
+                                </TruncatedText>
                                 {row?.children && (
                                   <Box
                                     onClick={() => toggleRow(rowIndex)}
@@ -201,7 +264,8 @@ export const DataTable = ({
                                     alignItems="center"
                                     justifyContent="center"
                                     width="20px"
-                                    height="20px">
+                                    height="20px"
+                                    flexShrink="0">
                                     {expandedRows.has(rowIndex) ? (
                                       <ChevronDownIcon
                                         width="20px"
@@ -237,7 +301,7 @@ export const DataTable = ({
                           py={head.tdProps?.py || "12px"}
                           verticalAlign="middle"
                           {...head.tdProps}>
-                          <Box whiteSpace="nowrap">
+                          <TruncatedText>
                             {head?.render
                               ? head.render(
                                   row[head.key],
@@ -248,7 +312,7 @@ export const DataTable = ({
                                   null
                                 )
                               : formatDateValue(row[head.key], head)}
-                          </Box>
+                          </TruncatedText>
                         </Td>
                       );
                     })}
@@ -262,7 +326,7 @@ export const DataTable = ({
                             padding="8px 16px"
                             key={colIndex}
                             isNumeric={head.isNumeric}
-                            minW={head.tdProps?.minW || "130px"}
+                            minW={head.tdProps?.minW || "160px"}
                             maxW={head.tdProps?.maxW || "250px"}
                             w={head.tdProps?.width || "auto"}
                             fontWeight={"400"}
@@ -272,18 +336,19 @@ export const DataTable = ({
                             <Box
                               paddingLeft={colIndex === 0 ? "32px" : "0"}
                               display="flex"
-                              alignItems="center"
-                              whiteSpace="nowrap">
-                              {head?.render
-                                ? head.render(
-                                    child[head.key],
-                                    child,
-                                    head,
-                                    childIndex,
-                                    true,
-                                    rowIndex
-                                  )
-                                : formatDateValue(child[head.key], head)}
+                              alignItems="center">
+                              <TruncatedText>
+                                {head?.render
+                                  ? head.render(
+                                      child[head.key],
+                                      child,
+                                      head,
+                                      childIndex,
+                                      true,
+                                      rowIndex
+                                    )
+                                  : formatDateValue(child[head.key], head)}
+                              </TruncatedText>
                             </Box>
                           </Td>
                         ))}
