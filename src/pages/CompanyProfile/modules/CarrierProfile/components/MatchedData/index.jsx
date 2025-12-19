@@ -9,7 +9,11 @@ import {
 import {useMatchedDataProps} from "./useMatchedDataProps";
 import {MatchesSection} from "./components/MatchedSection";
 
-export const MatchedData = ({vinMatchesData, addressMatchesBodyData}) => {
+export const MatchedData = ({
+  vinMatchesData,
+  addressMatchesBodyData,
+  ipMatchesData,
+}) => {
   const {addressMatchesHeadData, addressMatchesContacts} =
     useMatchedDataProps();
 
@@ -68,6 +72,15 @@ export const MatchedData = ({vinMatchesData, addressMatchesBodyData}) => {
               address={addressMatchesContacts?.phone?.[0]?.phone}
               headData={addressMatchesHeadData}
               bodyData={addressMatchesContacts?.phone}
+            />
+
+            <MatchesSection
+              title="IP Address Matches"
+              matchedByLabel="IP Address"
+              matchedCount={ipMatchesData?.length}
+              address={ipMatchesData?.[0]?.ip_address}
+              headData={addressMatchesHeadData}
+              bodyData={ipMatchesData}
             />
           </VStack>
         </InfoAccordionPanel>

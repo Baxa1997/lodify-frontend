@@ -55,7 +55,10 @@ export const Overview = ({carrierDetails, generalInfo}) => {
     select: (res) => res?.data || {},
     enabled: Boolean(companies_id),
   });
-
+  console.log(
+    "addressMatchesBodyDataaddressMatchesBodyData",
+    addressMatchesBodyData
+  );
   return (
     <Box
       display="flex"
@@ -112,6 +115,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
           </Box>
           <Box id="matched-data">
             <MatchedData
+              ipMatchesData={addressMatchesBodyData?.ip_address}
               vinMatchesData={vinMatchesData}
               addressMatchesBodyData={addressMatchesBodyData}
             />
