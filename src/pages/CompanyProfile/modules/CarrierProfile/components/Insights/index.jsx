@@ -120,6 +120,13 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
                     insight={{date: "Observed March, 2024"}}
                   />
                 )}
+
+                {vinMatchesData?.length > 0 && (
+                  <AssosiationReport
+                    label="VIN Match"
+                    insight={{date: "Observed March, 2024"}}
+                  />
+                )}
               </VStack>
             </Box>
             {virtualAddressData?.length > 0 && (
