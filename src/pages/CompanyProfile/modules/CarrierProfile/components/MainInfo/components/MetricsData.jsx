@@ -87,10 +87,11 @@ export const powerUnits = ({new_info, uncategorizedCount}) => {
 };
 
 export const verifiedCarrierResources = ({generalInfo}) => {
+  const {new_info} = generalInfo;
   return [
     {
       title: "Power Units",
-      count: generalInfo?.power_units,
+      count: new_info?.verified_power_units || 0,
     },
     // {
     //   title: "Solo Drivers",
@@ -98,15 +99,15 @@ export const verifiedCarrierResources = ({generalInfo}) => {
     // },
     {
       title: "Drivers",
-      count: generalInfo?.drivers,
+      count: new_info?.verified_drivers || 0,
     },
     {
       title: "Trailers",
-      count: generalInfo?.equipment_id_data?.owntrail,
+      count: new_info?.verified_trailers || 0,
     },
     {
       title: "Box Trucks",
-      count: generalInfo?.equipment_id_data?.truck_units,
+      count: new_info?.verified_box_trucks || 0,
     },
   ];
 };

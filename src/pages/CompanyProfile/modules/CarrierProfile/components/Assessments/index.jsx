@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
@@ -32,21 +32,83 @@ function Assessments() {
     enabled: Boolean(companies_id),
   });
 
-  const loadLimitData = [
-    ["Month", "Load Limit"],
-    ["Jan", 20],
-    ["Feb", 25],
-    ["Mar", 34],
-    ["Apr", 35],
-    ["May", 30],
-    ["Jun", 45],
-    ["Jul", 55],
-    ["Aug", 65],
-    ["Sep", 45],
-    ["Oct", 55],
-    ["Nov", 32],
-    ["Dec", 43],
-  ];
+  const {data: carrierAssessmentData} = useQuery({
+    queryKey: ["GET_CARRIER_ASSESSMENT_DATA", companies_id],
+    queryFn: () =>
+      carrierService.assessmentData({
+        data: {
+          method: "get",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "load_limit",
+        },
+      }),
+    select: (res) => res?.data?.response || {},
+    enabled: Boolean(companies_id),
+  });
+
+  const monthMap = {
+    january: "Jan",
+    february: "Feb",
+    march: "Mar",
+    april: "Apr",
+    may: "May",
+    june: "Jun",
+    july: "Jul",
+    august: "Aug",
+    september: "Sep",
+    october: "Oct",
+    november: "Nov",
+    december: "Dec",
+  };
+
+  const loadLimitData = useMemo(() => {
+    if (
+      !carrierAssessmentData ||
+      Object.keys(carrierAssessmentData).length === 0
+    ) {
+      return [
+        ["Month", "Load Limit"],
+        ["Jan", 0],
+        ["Feb", 0],
+        ["Mar", 0],
+        ["Apr", 0],
+        ["May", 0],
+        ["Jun", 0],
+        ["Jul", 0],
+        ["Aug", 0],
+        ["Sep", 0],
+        ["Oct", 0],
+        ["Nov", 0],
+        ["Dec", 0],
+      ];
+    }
+
+    const chartData = [["Month", "Load Limit"]];
+    const monthOrder = [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+    ];
+
+    monthOrder.forEach((month) => {
+      const monthData = carrierAssessmentData[month];
+      const score = monthData?.score || 0;
+      chartData.push([monthMap[month], score]);
+    });
+
+    return chartData;
+  }, [carrierAssessmentData]);
 
   const loadLimitOptions = {
     chart: {
