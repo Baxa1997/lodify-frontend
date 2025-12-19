@@ -16,6 +16,7 @@ export const InsightAddress = ({
   item,
   physicalAddress = false,
   mailingAddress = false,
+  isAuditChange = false,
 }) => {
   return (
     <Accordion key={item} allowToggle>
@@ -44,19 +45,29 @@ export const InsightAddress = ({
                 fontSize="14px"
                 fontWeight="500"
                 textAlign="left">
-                {item.address}
+                {isAuditChange
+                  ? item?.fieldLabel === "Phone"
+                    ? "Phone Changed"
+                    : item?.fieldLabel === "Physical Address"
+                    ? "Physical Address Changed"
+                    : item?.fieldLabel === "Mailing Address"
+                    ? "Mailing Address Changed"
+                    : item?.fieldLabel
+                  : item.address}
               </Text>
-              <Text
-                color="#000"
-                fontSize="14px"
-                fontWeight="400"
-                textAlign="left">
-                {physicalAddress
-                  ? "Physical Address"
-                  : mailingAddress
-                  ? "Mailing Address"
-                  : "Virtual Address"}
-              </Text>
+              {!isAuditChange && (
+                <Text
+                  color="#000"
+                  fontSize="14px"
+                  fontWeight="400"
+                  textAlign="left">
+                  {physicalAddress
+                    ? "Physical Address"
+                    : mailingAddress
+                    ? "Mailing Address"
+                    : "Virtual Address"}
+                </Text>
+              )}
             </Box>
             <HStack spacing="8px" flexShrink={0}>
               <Box>
@@ -72,13 +83,46 @@ export const InsightAddress = ({
           </Flex>
         </AccordionButton>
         <AccordionPanel>
-          <Text fontSize="14px" color="#000" pl="10px" lineHeight="1.6">
-            {physicalAddress
-              ? item?.physical_address
-              : mailingAddress
-              ? item?.mailing_address
-              : item?.virtual_address}
-          </Text>
+          {isAuditChange ? (
+            <Box pl="10px" lineHeight="1.6">
+              <Box mb="12px">
+                <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                  {item?.fieldLabel === "Phone"
+                    ? "Old Phone:"
+                    : item?.fieldLabel === "Physical Address"
+                    ? "Old Physical Address:"
+                    : item?.fieldLabel === "Mailing Address"
+                    ? "Old Mailing Address:"
+                    : `Old ${item?.fieldLabel}:`}
+                </Text>
+                <Text fontSize="14px" color="#000">
+                  {item?.oldValue || "N/A"}
+                </Text>
+              </Box>
+              <Box>
+                <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                  {item?.fieldLabel === "Phone"
+                    ? "New Phone:"
+                    : item?.fieldLabel === "Physical Address"
+                    ? "New Physical Address:"
+                    : item?.fieldLabel === "Mailing Address"
+                    ? "New Mailing Address:"
+                    : `New ${item?.fieldLabel}:`}
+                </Text>
+                <Text fontSize="14px" color="#000">
+                  {item?.address || "N/A"}
+                </Text>
+              </Box>
+            </Box>
+          ) : (
+            <Text fontSize="14px" color="#000" pl="10px" lineHeight="1.6">
+              {physicalAddress
+                ? item?.physical_address
+                : mailingAddress
+                ? item?.mailing_address
+                : item?.virtual_address}
+            </Text>
+          )}
         </AccordionPanel>
       </AccordionItem>
     </Accordion>

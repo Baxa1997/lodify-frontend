@@ -43,18 +43,63 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
     addressMatchesBodyData?.mailing_address
   );
 
+  const changedFields = useMemo(() => {
+    if (!carrierAuditData) return [];
+
+    const fields = [
+      {key: "email", label: "Email", oldKey: "old_email"},
+      {
+        key: "mailing_address",
+        label: "Mailing Address",
+        oldKey: "old_mailing_address",
+      },
+      {
+        key: "physical_address",
+        label: "Physical Address",
+        oldKey: "old_physical_address",
+      },
+      {key: "phone", label: "Phone", oldKey: "old_phone"},
+      {
+        key: "company_officer_1",
+        label: "Company Officer 1",
+        oldKey: "old_company_officer_1",
+      },
+      {
+        key: "company_officer_2",
+        label: "Company Officer 2",
+        oldKey: "old_company_officer_2",
+      },
+    ];
+
+    return fields
+      .filter((field) => {
+        // Check if the old field is not empty, which means the field was changed
+        const oldValue = carrierAuditData[field.oldKey];
+        const newValue = carrierAuditData[field.key];
+        // Field is considered changed if old value exists and is not empty
+        return oldValue !== null && oldValue !== undefined && oldValue !== "";
+      })
+      .map((field) => ({
+        ...field,
+        oldValue: carrierAuditData[field.oldKey],
+        newValue: carrierAuditData[field.key],
+      }));
+  }, [carrierAuditData]);
+
   const totalInsights = useMemo(() => {
     return (
       (virtualAddressData?.length || 0) +
       (equipmentData?.length || 0) +
       (addressMatchesBodyData?.physical_address?.length || 0) +
-      (addressMatchesBodyData?.mailing_address?.length || 0)
+      (addressMatchesBodyData?.mailing_address?.length || 0) +
+      (changedFields?.length || 0)
     );
   }, [
     virtualAddressData,
     equipmentData,
     matchedAddressesData,
     addressMatchesBodyData,
+    changedFields,
   ]);
 
   return (
@@ -135,6 +180,14 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
                     insight={{date: "Observed March, 2024"}}
                   />
                 )}
+
+                {changedFields?.map((field, index) => (
+                  <AssosiationReport
+                    key={`changed-${field.key}-${index}`}
+                    label={field.label}
+                    insight={{date: "Changed"}}
+                  />
+                ))}
               </VStack>
             </Box>
             {virtualAddressData?.length > 0 && (
@@ -302,6 +355,18 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
                                 />
                               )
                             )}
+
+                            {changedFields?.map((field, index) => (
+                              <InsightAddress
+                                key={`audit-${field.key}-${index}`}
+                                item={{
+                                  address: field.newValue,
+                                  oldValue: field.oldValue,
+                                  fieldLabel: field.label,
+                                }}
+                                isAuditChange={true}
+                              />
+                            ))}
                           </VStack>
                         </Box>
 
