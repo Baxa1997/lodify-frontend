@@ -24,8 +24,7 @@ export const Operations = ({new_info}) => {
     operating_status,
     out_of_service_date,
   } = new_info;
-  console.log("classification", classification);
-  console.log("operation", operation);
+
   // const {
   //   add_date,
   //   carrier_operation,

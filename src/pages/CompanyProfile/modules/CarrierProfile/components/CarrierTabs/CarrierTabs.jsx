@@ -8,13 +8,7 @@ import {Classifications} from "../Classifications";
 import {InfoAccordion} from "../../../../components/InfoAccordion";
 import {Agreements} from "../Agreements";
 
-export const CarrierTabs = ({
-  carrierDetails,
-  companySnapshot,
-  generalInfo,
-  insuranceHistory,
-  operation,
-}) => {
+export const CarrierTabs = ({generalInfo, operation}) => {
   return (
     <Tabs className={styles.tabsContainer}>
       <TabList>
@@ -26,35 +20,17 @@ export const CarrierTabs = ({
         <Tab>Agreements</Tab>
       </TabList>
       <TabPanel>
-        <Overview
-          carrierDetails={carrierDetails}
-          companySnapshot={companySnapshot}
-          generalInfo={generalInfo}
-          insuranceHistory={insuranceHistory}
-          operation={operation}
-        />
+        <Overview generalInfo={generalInfo} operation={operation} />
       </TabPanel>
       <TabPanel>
-        <Users
-          carrierDetails={carrierDetails}
-          companySnapshot={companySnapshot}
-          generalInfo={generalInfo}
-          insuranceHistory={insuranceHistory}
-          operation={operation}
-        />
+        <Users generalInfo={generalInfo} operation={operation} />
       </TabPanel>
       <TabPanel>
         <Box className={tabStyles.classificationsTabPanel}>
           <InfoAccordion
             className={tabStyles.classificationsAccordion}
             defaultIndex={[0]}>
-            <Classifications
-              carrierDetails={carrierDetails}
-              companySnapshot={companySnapshot}
-              generalInfo={generalInfo}
-              insuranceHistory={insuranceHistory}
-              operation={operation}
-            />
+            <Classifications generalInfo={generalInfo} operation={operation} />
           </InfoAccordion>
         </Box>
       </TabPanel>
