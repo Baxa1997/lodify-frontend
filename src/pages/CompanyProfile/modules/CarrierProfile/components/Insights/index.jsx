@@ -36,6 +36,7 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
     associatedCarrierData,
     selectedTab,
     setSelectedTab,
+    carrierAuditData,
   } = useInsightsProps();
 
   const matchedAddressesData = addressMatchesBodyData?.physical_address?.concat(
@@ -70,8 +71,7 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
               borderRadius="full"
               fontSize="12px"
               fontWeight="600">
-              {totalInsights}
-              Total insights discovered
+              {totalInsights} Total insights discovered
             </Badge>
           </HStack>
         </Flex>
@@ -107,7 +107,8 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
               <VStack
                 display="flex"
                 flexDir="row"
-                spacing="8px"
+                flexWrap="wrap"
+                gap="8px"
                 align="stretch">
                 {associationInsights
                   ?.filter((insight) => !insight.filtered)
@@ -117,6 +118,13 @@ function Insights({vinMatchesData, addressMatchesBodyData}) {
                 {addressMatchesBodyData?.physical_address?.length && (
                   <AssosiationReport
                     label="Physical Address"
+                    insight={{date: "Observed March, 2024"}}
+                  />
+                )}
+
+                {addressMatchesBodyData?.mailing_address?.length && (
+                  <AssosiationReport
+                    label="Mailing Address"
                     insight={{date: "Observed March, 2024"}}
                   />
                 )}

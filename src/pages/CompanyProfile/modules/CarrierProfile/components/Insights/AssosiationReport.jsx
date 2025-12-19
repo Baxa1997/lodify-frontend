@@ -5,7 +5,7 @@ import {AiOutlineExclamationCircle} from "react-icons/ai";
 export const AssosiationReport = ({insight, label = ""}) => {
   return (
     <Flex
-      minW="300px"
+      minW="280px"
       w={"fit-content"}
       bg="#FAFAFA"
       borderRadius="8px"

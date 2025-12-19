@@ -30,6 +30,13 @@ const carrierService = {
 
   getSafetyData: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", data),
+
+  getCarrierAudit: (params = {}) => {
+    const dataParam = JSON.stringify(params);
+    return httpRequest.get(
+      `v2/items/companies_audit?data=${encodeURIComponent(dataParam)}`
+    );
+  },
 };
 
 export default carrierService;
