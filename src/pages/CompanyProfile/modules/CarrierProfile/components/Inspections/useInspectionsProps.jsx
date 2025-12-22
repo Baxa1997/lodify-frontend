@@ -31,6 +31,7 @@ export const useInspectionsProps = ({new_info}) => {
         },
       }),
     select: (res) => res?.data || {},
+    enabled: Boolean(companies_id),
   });
 
   const {
@@ -51,6 +52,7 @@ export const useInspectionsProps = ({new_info}) => {
         },
       }),
     select: (res) => res?.data?.response || {},
+    enabled: Boolean(companies_id),
   });
 
   const headData = [

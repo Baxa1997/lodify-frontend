@@ -10,7 +10,12 @@ export const useMatchedDataProps = () => {
   const navigate = useNavigate();
 
   const carrierProfileAction = (guid) => {
-    navigate(`/admin/company?id=${guid}`);
+    navigate(`/admin/company?id=${guid}`, {replace: false});
+    window.scrollTo({top: 0, behavior: "smooth"});
+
+    setTimeout(() => {
+      window.scrollTo({top: 0, behavior: "smooth"});
+    }, 100);
   };
 
   const mcRecordData = {
@@ -155,7 +160,7 @@ export const useMatchedDataProps = () => {
       render: (value, row) => (
         <Box
           cursor="pointer"
-          onClick={() => carrierProfileAction(row?.guid)}
+          onClick={() => carrierProfileAction(row?.guid || row?.companies_id)}
           fontSize="14px"
           color="#175CD3"
           fontWeight="500">

@@ -14,7 +14,7 @@ export const useOperationsProps = ({dot_number}) => {
   });
 
   const {data: operationsData} = useQuery({
-    queryKey: ["GET_OPERATIONS_DATA", dot_number],
+    queryKey: ["GET_OPERATIONS_DATA", companies_id, dot_number],
     queryFn: () =>
       carrierService.getCarrierInfo({
         data: {
@@ -26,7 +26,7 @@ export const useOperationsProps = ({dot_number}) => {
           table: "operations",
         },
       }),
-    enabled: Boolean(dot_number && companies_id),
+    enabled: Boolean(companies_id && dot_number),
     select: (data) => data?.data || {},
   });
 

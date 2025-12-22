@@ -31,7 +31,7 @@ export const Safety = () => {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["GET_SAFETY_DATA", selectedCategory],
+    queryKey: ["GET_SAFETY_DATA", companies_id, selectedCategory],
     queryFn: () =>
       carrierService?.getSafetyData({
         data: {
