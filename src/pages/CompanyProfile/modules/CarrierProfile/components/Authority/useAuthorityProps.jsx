@@ -36,7 +36,7 @@ export const useAuthorityProps = ({new_info}) => {
         },
       }),
     select: (res) => res?.data || {},
-    enabled: Boolean(companies_id),
+    enabled: Boolean(companies_id) && Boolean(new_info?.dot_number),
   });
 
   // const {

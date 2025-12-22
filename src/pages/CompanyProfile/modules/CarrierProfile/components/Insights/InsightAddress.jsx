@@ -18,7 +18,6 @@ export const InsightAddress = ({
   mailingAddress = false,
   isAuditChange = false,
 }) => {
-  console.log("itemmmmmmmmm", item);
   return (
     <Accordion key={item} allowToggle>
       <AccordionItem
