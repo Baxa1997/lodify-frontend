@@ -1,4 +1,13 @@
-import {Box, Text, Badge, Link, Flex, VStack, HStack} from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Badge,
+  Link,
+  Flex,
+  VStack,
+  HStack,
+  Spinner,
+} from "@chakra-ui/react";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
@@ -127,152 +136,190 @@ export const ActiveAndPendingInsurance = ({new_info}) => {
           </Box>
         </InfoAccordionButton>
         <InfoAccordionPanel>
-          <Box
-            display="grid"
-            gridTemplateColumns={{
-              base: "1fr",
-              md: "repeat(2, 1fr)",
-            }}
-            gap="20px">
-            {allInsuranceData?.map((item) => {
-              const status = getStatus(item);
-              const currentStatus = statusConfig[status] || statusConfig.active;
-              const isGeneralLiability =
-                item?.mod_col_1?.toLowerCase().includes("general liability") ||
-                item?.mod_col_1?.toLowerCase().includes("liability");
+          {isLoading ? (
+            <Flex h="200px" justifyContent="center" alignItems="center">
+              <Spinner size="lg" color="#FF5B04" thickness="4px" />
+            </Flex>
+          ) : (
+            <Box
+              display="grid"
+              gridTemplateColumns={{
+                base: "1fr",
+                md: "repeat(2, 1fr)",
+              }}
+              gap="20px">
+              {allInsuranceData?.map((item) => {
+                const status = getStatus(item);
+                const currentStatus =
+                  statusConfig[status] || statusConfig.active;
+                const isGeneralLiability =
+                  item?.mod_col_1
+                    ?.toLowerCase()
+                    .includes("general liability") ||
+                  item?.mod_col_1?.toLowerCase().includes("liability");
 
-              return (
-                <Box
-                  key={item?.guid}
-                  p="24px"
-                  border="1px solid #E5E7EB"
-                  borderRadius="12px"
-                  bg="white"
-                  h="100%"
-                  display="flex"
-                  flexDirection="column">
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb="24px">
-                    <Text fontSize="16px" fontWeight="600" color="#181D27">
-                      {"General Liability"}
-                    </Text>
-                    <Badge
-                      px="12px"
-                      py="4px"
-                      borderRadius="16px"
-                      fontSize="12px"
-                      fontWeight="500"
-                      bg={currentStatus.bg}
-                      color={currentStatus.color}
-                      border={`1px solid ${currentStatus.border}`}>
-                      {currentStatus.label}
-                    </Badge>
-                  </Flex>
-
-                  <VStack spacing="20px" align="stretch" flex="1">
-                    <Box>
-                      <Text
-                        fontSize="14px"
-                        fontWeight="400"
-                        color="#6B7280"
-                        mb="4px">
-                        Insurance name
+                return (
+                  <Box
+                    key={item?.guid}
+                    p="24px"
+                    border="1px solid #E5E7EB"
+                    borderRadius="12px"
+                    bg="white"
+                    h="100%"
+                    display="flex"
+                    flexDirection="column">
+                    <Flex
+                      justifyContent="space-between"
+                      alignItems="center"
+                      mb="24px">
+                      <Text fontSize="16px" fontWeight="600" color="#181D27">
+                        {"General Liability"}
                       </Text>
-                      <Text fontSize="16px" fontWeight="500" color="#181D27">
-                        {item?.name_company || "N/A"}
-                      </Text>
-                    </Box>
-
-                    <Box>
-                      <Text
-                        fontSize="14px"
-                        fontWeight="400"
-                        color="#6B7280"
-                        mb="4px">
-                        Policy number
-                      </Text>
-                      <Text fontSize="16px" fontWeight="500" color="#181D27">
-                        {item?.policy_no || "N/A"}
-                      </Text>
-                    </Box>
-
-                    <Flex gap="24px">
-                      <Box flex="1">
-                        <Text
-                          fontSize="14px"
-                          fontWeight="400"
-                          color="#6B7280"
-                          mb="4px">
-                          Effective date
-                        </Text>
-                        <Text fontSize="16px" fontWeight="500" color="#181D27">
-                          {formatDate(item?.effective_date)}
-                        </Text>
-                      </Box>
-                      <Box flex="1">
-                        <Text
-                          fontSize="14px"
-                          fontWeight="400"
-                          color="#6B7280"
-                          mb="4px">
-                          Expiration date
-                        </Text>
-                        <Text fontSize="16px" fontWeight="500" color="#181D27">
-                          {formatDate(
-                            item?.expiration_date ||
-                              item?.exp_date ||
-                              item?.expirationDate ||
-                              item?.expiration
-                          )}
-                        </Text>
-                      </Box>
+                      <Badge
+                        px="12px"
+                        py="4px"
+                        borderRadius="16px"
+                        fontSize="12px"
+                        fontWeight="500"
+                        bg={currentStatus.bg}
+                        color={currentStatus.color}
+                        border={`1px solid ${currentStatus.border}`}>
+                        {currentStatus.label}
+                      </Badge>
                     </Flex>
 
-                    {isGeneralLiability && item?.cancl_effective_date && (
+                    <VStack spacing="20px" align="stretch" flex="1">
                       <Box>
                         <Text
                           fontSize="14px"
                           fontWeight="400"
                           color="#6B7280"
                           mb="4px">
-                          Cancellation date
+                          Insurance name
                         </Text>
                         <Text fontSize="16px" fontWeight="500" color="#181D27">
-                          {formatDate(item?.cancl_effective_date)}
+                          {item?.name_company || "N/A"}
                         </Text>
                       </Box>
-                    )}
 
-                    {isGeneralLiability ? (
-                      <VStack spacing="12px" align="stretch">
-                        <Box>
+                      <Box>
+                        <Text
+                          fontSize="14px"
+                          fontWeight="400"
+                          color="#6B7280"
+                          mb="4px">
+                          Policy number
+                        </Text>
+                        <Text fontSize="16px" fontWeight="500" color="#181D27">
+                          {item?.policy_no || "N/A"}
+                        </Text>
+                      </Box>
+
+                      <Flex gap="24px">
+                        <Box flex="1">
                           <Text
                             fontSize="14px"
                             fontWeight="400"
                             color="#6B7280"
                             mb="4px">
-                            Each Occurrence
+                            Effective date
                           </Text>
                           <Text
                             fontSize="16px"
                             fontWeight="500"
                             color="#181D27">
-                            {formatCurrency(
-                              item?.underl_lim_amount
-                                ? item.underl_lim_amount * 1000
-                                : item?.underl_lim_amount
+                            {formatDate(item?.effective_date)}
+                          </Text>
+                        </Box>
+                        <Box flex="1">
+                          <Text
+                            fontSize="14px"
+                            fontWeight="400"
+                            color="#6B7280"
+                            mb="4px">
+                            Expiration date
+                          </Text>
+                          <Text
+                            fontSize="16px"
+                            fontWeight="500"
+                            color="#181D27">
+                            {formatDate(
+                              item?.expiration_date ||
+                                item?.exp_date ||
+                                item?.expirationDate ||
+                                item?.expiration
                             )}
                           </Text>
                         </Box>
+                      </Flex>
+
+                      {isGeneralLiability && item?.cancl_effective_date && (
                         <Box>
                           <Text
                             fontSize="14px"
                             fontWeight="400"
                             color="#6B7280"
                             mb="4px">
-                            General Aggregate
+                            Cancellation date
+                          </Text>
+                          <Text
+                            fontSize="16px"
+                            fontWeight="500"
+                            color="#181D27">
+                            {formatDate(item?.cancl_effective_date)}
+                          </Text>
+                        </Box>
+                      )}
+
+                      {isGeneralLiability ? (
+                        <VStack spacing="12px" align="stretch">
+                          <Box>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="400"
+                              color="#6B7280"
+                              mb="4px">
+                              Each Occurrence
+                            </Text>
+                            <Text
+                              fontSize="16px"
+                              fontWeight="500"
+                              color="#181D27">
+                              {formatCurrency(
+                                item?.underl_lim_amount
+                                  ? item.underl_lim_amount * 1000
+                                  : item?.underl_lim_amount
+                              )}
+                            </Text>
+                          </Box>
+                          <Box>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="400"
+                              color="#6B7280"
+                              mb="4px">
+                              General Aggregate
+                            </Text>
+                            <Text
+                              fontSize="16px"
+                              fontWeight="500"
+                              color="#181D27">
+                              {formatCurrency(
+                                item?.max_cov_amount
+                                  ? item.max_cov_amount * 1000
+                                  : item?.max_cov_amount
+                              )}
+                            </Text>
+                          </Box>
+                        </VStack>
+                      ) : (
+                        <Box>
+                          <Text
+                            fontSize="14px"
+                            fontWeight="400"
+                            color="#6B7280"
+                            mb="4px">
+                            Limit
                           </Text>
                           <Text
                             fontSize="16px"
@@ -281,52 +328,35 @@ export const ActiveAndPendingInsurance = ({new_info}) => {
                             {formatCurrency(
                               item?.max_cov_amount
                                 ? item.max_cov_amount * 1000
-                                : item?.max_cov_amount
+                                : item?.min_cov_amount
+                                ? item.min_cov_amount * 1000
+                                : item?.max_cov_amount || item?.min_cov_amount
                             )}
                           </Text>
                         </Box>
-                      </VStack>
-                    ) : (
-                      <Box>
-                        <Text
-                          fontSize="14px"
-                          fontWeight="400"
-                          color="#6B7280"
-                          mb="4px">
-                          Limit
-                        </Text>
-                        <Text fontSize="16px" fontWeight="500" color="#181D27">
-                          {formatCurrency(
-                            item?.max_cov_amount
-                              ? item.max_cov_amount * 1000
-                              : item?.min_cov_amount
-                              ? item.min_cov_amount * 1000
-                              : item?.max_cov_amount || item?.min_cov_amount
-                          )}
-                        </Text>
-                      </Box>
-                    )}
+                      )}
 
-                    <Box mt="auto" pt="8px">
-                      <Flex justifyContent="flex-end">
-                        <Link
-                          fontSize="14px"
-                          fontWeight="500"
-                          color="#EF6820"
-                          _hover={{textDecoration: "underline"}}
-                          cursor="pointer"
-                          onClick={() => {
-                            console.log("View certificate for:", item);
-                          }}>
-                          View Certificate
-                        </Link>
-                      </Flex>
-                    </Box>
-                  </VStack>
-                </Box>
-              );
-            })}
-          </Box>
+                      <Box mt="auto" pt="8px">
+                        <Flex justifyContent="flex-end">
+                          <Link
+                            fontSize="14px"
+                            fontWeight="500"
+                            color="#EF6820"
+                            _hover={{textDecoration: "underline"}}
+                            cursor="pointer"
+                            onClick={() => {
+                              console.log("View certificate for:", item);
+                            }}>
+                            View Certificate
+                          </Link>
+                        </Flex>
+                      </Box>
+                    </VStack>
+                  </Box>
+                );
+              })}
+            </Box>
+          )}
         </InfoAccordionPanel>
       </InfoAccordionItem>
     </Box>

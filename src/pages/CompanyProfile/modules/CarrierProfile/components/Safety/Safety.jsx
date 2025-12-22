@@ -26,7 +26,11 @@ export const Safety = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("unsafe_driving");
 
-  const {data: safetyData, isFetching} = useQuery({
+  const {
+    data: safetyData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["GET_SAFETY_DATA", selectedCategory],
     queryFn: () =>
       carrierService?.getSafetyData({
@@ -146,7 +150,7 @@ export const Safety = () => {
   return (
     <Box>
       <InfoAccordionItem>
-        <InfoAccordionButton>
+        <InfoAccordionButton onClick={refetch}>
           <InfoAccordionTitle>Safety</InfoAccordionTitle>
         </InfoAccordionButton>
         <InfoAccordionPanel>
@@ -216,7 +220,7 @@ export const Safety = () => {
                         </Center>
                       }
                     />
-                    {isFetching && (
+                    {isLoading && (
                       <Center
                         position="absolute"
                         inset="0"
