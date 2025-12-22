@@ -24,14 +24,14 @@ export const useCarrierProfileProps = () => {
         },
       }),
     select: (data) => data?.data?.response || {},
-    enabled: true,
+    enabled: Boolean(companies_id),
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
 
   const {data: performanceDatas} = useQuery({
-    queryKey: ["GET_PERFORMANCE_DATA"],
+    queryKey: ["GET_PERFORMANCE_DATA", companies_id],
     queryFn: () =>
       carrierService.getPerformanceData({
         data: {
@@ -53,5 +53,7 @@ export const useCarrierProfileProps = () => {
 
   return {
     generalInfo,
+    isLoading,
+    isFetching,
   };
 };

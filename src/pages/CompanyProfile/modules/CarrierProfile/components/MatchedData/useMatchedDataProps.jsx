@@ -10,12 +10,13 @@ export const useMatchedDataProps = () => {
   const navigate = useNavigate();
 
   const carrierProfileAction = (guid) => {
-    navigate(`/admin/company?id=${guid}`, {replace: false});
-    window.scrollTo({top: 0, behavior: "smooth"});
+    navigate(`/admin/company?id=${guid}`, {
+      replace: false,
+    });
 
-    setTimeout(() => {
-      window.scrollTo({top: 0, behavior: "smooth"});
-    }, 100);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
   };
 
   const mcRecordData = {
