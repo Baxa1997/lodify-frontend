@@ -28,14 +28,13 @@ export const InsightAddress = ({
   const isVirtualMailing =
     virtualAddress && item?.address_type === "mailing_address";
   const isMatchedAddress = physicalAddress || mailingAddress;
-  
-  // Check if it's a change (has old and new values) vs a match
+
   const isChanged =
     isAuditChange &&
     item?.oldValue &&
     item?.oldValue !== "" &&
-    (item?.address || item?.newValue) &&
-    item?.oldValue !== (item?.address || item?.newValue);
+    item?.address &&
+    item?.oldValue !== item?.address;
   const isMatchedAudit = isAuditChange && !isChanged;
   return (
     <Accordion key={item} allowToggle>
@@ -85,7 +84,9 @@ export const InsightAddress = ({
                     ? "Your mailing address is matched to a different company's address"
                     : `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
                   : isMatchedAddress
-                  ? `Your ${physicalAddress ? "physical" : "mailing"} address is matched to a different company's address`
+                  ? `Your ${
+                      physicalAddress ? "physical" : "mailing"
+                    } address is matched to a different company's address`
                   : isVirtualPhysical
                   ? "Your physical address is virtual"
                   : isVirtualMailing
@@ -106,7 +107,9 @@ export const InsightAddress = ({
                       ? item?.physical_address || "Address not available"
                       : item?.mailing_address || "Address not available"
                     : isVirtualPhysical || isVirtualMailing
-                    ? item?.virtual_address || item?.address || "Address not available"
+                    ? item?.virtual_address ||
+                      item?.address ||
+                      "Address not available"
                     : physicalAddress
                     ? "Physical Address"
                     : mailingAddress
@@ -122,14 +125,18 @@ export const InsightAddress = ({
                   textAlign="left"
                   mt="4px">
                   {item?.fieldLabel === "Phone"
-                    ? `New Phone: ${item?.address || item?.newValue || "Not available"}`
+                    ? `New Phone: ${item?.address || "Not available"}`
                     : item?.fieldLabel === "Email"
-                    ? `New Email: ${item?.address || item?.newValue || "Not available"}`
+                    ? `New Email: ${item?.address || "Not available"}`
                     : item?.fieldLabel === "Physical Address"
-                    ? `New Physical Address: ${item?.address || item?.newValue || "Not available"}`
+                    ? `New Physical Address: ${
+                        item?.address || "Not available"
+                      }`
                     : item?.fieldLabel === "Mailing Address"
-                    ? `New Mailing Address: ${item?.address || item?.newValue || "Not available"}`
-                    : `New ${item?.fieldLabel}: ${item?.address || item?.newValue || "Not available"}`}
+                    ? `New Mailing Address: ${item?.address || "Not available"}`
+                    : `New ${item?.fieldLabel}: ${
+                        item?.address || "Not available"
+                      }`}
                 </Text>
               )}
               {isMatchedAudit && (
@@ -139,7 +146,7 @@ export const InsightAddress = ({
                   fontWeight="400"
                   textAlign="left"
                   mt="4px">
-                  {item?.address || item?.newValue || "Value not available"}
+                  {item?.address || "Value not available"}
                 </Text>
               )}
             </Box>
@@ -157,7 +164,7 @@ export const InsightAddress = ({
           </Flex>
         </AccordionButton>
         <AccordionPanel>
-          {item?.legal_name && (
+          {/* {item?.legal_name && (
             <Text
               pl="10px"
               fontSize="12px"
@@ -169,7 +176,7 @@ export const InsightAddress = ({
                 {item?.legal_name}
               </span>
             </Text>
-          )}
+          )} */}
           {isMatchedAddress && (
             <Box
               pl="10px"
@@ -262,7 +269,7 @@ export const InsightAddress = ({
                   Current {item?.fieldLabel?.toLowerCase()}:
                 </Text>
                 <Text fontSize="14px" color="#000" fontWeight="400">
-                  {item?.address || item?.newValue || "Not available"}
+                  {item?.address || "Not available"}
                 </Text>
               </Box>
             </VStack>
@@ -272,7 +279,7 @@ export const InsightAddress = ({
                 {item?.fieldLabel}:
               </Text>
               <Text fontSize="14px" color="#000" lineHeight="1.6">
-                {item?.address || item?.newValue || "Not available"}
+                {item?.address || "Not available"}
               </Text>
             </Box>
           ) : (
@@ -285,7 +292,7 @@ export const InsightAddress = ({
                   ? item?.physical_address || "Not available"
                   : mailingAddress
                   ? item?.mailing_address || "Not available"
-                  : item?.virtual_address || "Not available"}
+                  : item?.virtual_address || item?.address || "Not available"}
               </Text>
             </Box>
           )}

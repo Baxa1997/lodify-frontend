@@ -101,6 +101,8 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     changedFields,
   ]);
 
+  console.log({virtualAddressData});
+
   return (
     <InfoAccordionItem id="insights">
       <InfoAccordionButton>
