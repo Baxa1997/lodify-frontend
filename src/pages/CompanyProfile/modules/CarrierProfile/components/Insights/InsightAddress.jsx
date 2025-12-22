@@ -9,15 +9,34 @@ import {
   Flex,
   HStack,
   AccordionIcon,
+  Badge,
+  VStack,
 } from "@chakra-ui/react";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
+import {MdLocationOff} from "react-icons/md";
+import {HiOutlineCheckCircle} from "react-icons/hi";
 
 export const InsightAddress = ({
   item,
   physicalAddress = false,
   mailingAddress = false,
   isAuditChange = false,
+  virtualAddress = false,
 }) => {
+  const isVirtualPhysical =
+    virtualAddress && item?.address_type === "physical_address";
+  const isVirtualMailing =
+    virtualAddress && item?.address_type === "mailing_address";
+  const isMatchedAddress = physicalAddress || mailingAddress;
+  
+  // Check if it's a change (has old and new values) vs a match
+  const isChanged =
+    isAuditChange &&
+    item?.oldValue &&
+    item?.oldValue !== "" &&
+    (item?.address || item?.newValue) &&
+    item?.oldValue !== (item?.address || item?.newValue);
+  const isMatchedAudit = isAuditChange && !isChanged;
   return (
     <Accordion key={item} allowToggle>
       <AccordionItem
@@ -45,27 +64,82 @@ export const InsightAddress = ({
                 fontSize="14px"
                 fontWeight="500"
                 textAlign="left">
-                {isAuditChange
+                {isChanged
                   ? item?.fieldLabel === "Phone"
                     ? "Phone Changed"
+                    : item?.fieldLabel === "Email"
+                    ? "Email Changed"
                     : item?.fieldLabel === "Physical Address"
                     ? "Physical Address Changed"
                     : item?.fieldLabel === "Mailing Address"
                     ? "Mailing Address Changed"
-                    : item?.fieldLabel
+                    : `${item?.fieldLabel} Changed`
+                  : isMatchedAudit
+                  ? item?.fieldLabel === "Phone"
+                    ? "Your phone is matched to a different company's phone"
+                    : item?.fieldLabel === "Email"
+                    ? "Your email is matched to a different company's email"
+                    : item?.fieldLabel === "Physical Address"
+                    ? "Your physical address is matched to a different company's address"
+                    : item?.fieldLabel === "Mailing Address"
+                    ? "Your mailing address is matched to a different company's address"
+                    : `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
+                  : isMatchedAddress
+                  ? `Your ${physicalAddress ? "physical" : "mailing"} address is matched to a different company's address`
+                  : isVirtualPhysical
+                  ? "Your physical address is virtual"
+                  : isVirtualMailing
+                  ? "Your mailing address is virtual"
                   : item.address}
               </Text>
               {!isAuditChange && (
                 <Text
-                  color="#000"
-                  fontSize="14px"
+                  color="#6B7280"
+                  fontSize="13px"
                   fontWeight="400"
-                  textAlign="left">
-                  {physicalAddress
+                  textAlign="left"
+                  mt="4px">
+                  {isMatchedAddress
+                    ? item?.legal_name
+                      ? `Matched with: ${item.legal_name}`
+                      : physicalAddress
+                      ? item?.physical_address || "Address not available"
+                      : item?.mailing_address || "Address not available"
+                    : isVirtualPhysical || isVirtualMailing
+                    ? item?.virtual_address || item?.address || "Address not available"
+                    : physicalAddress
                     ? "Physical Address"
                     : mailingAddress
                     ? "Mailing Address"
                     : "Virtual Address"}
+                </Text>
+              )}
+              {isChanged && (
+                <Text
+                  color="#6B7280"
+                  fontSize="13px"
+                  fontWeight="400"
+                  textAlign="left"
+                  mt="4px">
+                  {item?.fieldLabel === "Phone"
+                    ? `New Phone: ${item?.address || item?.newValue || "Not available"}`
+                    : item?.fieldLabel === "Email"
+                    ? `New Email: ${item?.address || item?.newValue || "Not available"}`
+                    : item?.fieldLabel === "Physical Address"
+                    ? `New Physical Address: ${item?.address || item?.newValue || "Not available"}`
+                    : item?.fieldLabel === "Mailing Address"
+                    ? `New Mailing Address: ${item?.address || item?.newValue || "Not available"}`
+                    : `New ${item?.fieldLabel}: ${item?.address || item?.newValue || "Not available"}`}
+                </Text>
+              )}
+              {isMatchedAudit && (
+                <Text
+                  color="#6B7280"
+                  fontSize="13px"
+                  fontWeight="400"
+                  textAlign="left"
+                  mt="4px">
+                  {item?.address || item?.newValue || "Value not available"}
                 </Text>
               )}
             </Box>
@@ -96,45 +170,124 @@ export const InsightAddress = ({
               </span>
             </Text>
           )}
-          {isAuditChange ? (
-            <Box pl="10px" lineHeight="1.6">
-              <Box mb="12px">
-                <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
-                  {item?.fieldLabel === "Phone"
-                    ? "Old Phone:"
-                    : item?.fieldLabel === "Physical Address"
-                    ? "Old Physical Address:"
-                    : item?.fieldLabel === "Mailing Address"
-                    ? "Old Mailing Address:"
-                    : `Old ${item?.fieldLabel}:`}
+          {isMatchedAddress && (
+            <Box
+              pl="10px"
+              mb="16px"
+              p="12px"
+              bg="#EFF6FF"
+              borderRadius="8px"
+              border="1px solid #3B82F6">
+              <Flex align="center" gap="8px" mb="8px">
+                <HiOutlineCheckCircle color="#3B82F6" size="20px" />
+                <Text fontSize="14px" color="#3B82F6" fontWeight="600">
+                  This {physicalAddress ? "physical" : "mailing"} address is
+                  matched to a different company
                 </Text>
-                <Text fontSize="14px" color="#000">
-                  {item?.oldValue || "N/A"}
+              </Flex>
+              {item?.legal_name && (
+                <VStack align="start" spacing="4px" pl="28px">
+                  <Text fontSize="13px" color="#1E40AF" fontWeight="600">
+                    Matched Company:
+                  </Text>
+                  <Text fontSize="13px" color="#1E40AF" fontWeight="500">
+                    {item.legal_name}
+                  </Text>
+                </VStack>
+              )}
+            </Box>
+          )}
+          {isMatchedAudit && (
+            <Box
+              pl="10px"
+              mb="16px"
+              p="12px"
+              bg="#EFF6FF"
+              borderRadius="8px"
+              border="1px solid #3B82F6">
+              <Flex align="center" gap="8px" mb="8px">
+                <HiOutlineCheckCircle color="#3B82F6" size="20px" />
+                <Text fontSize="14px" color="#3B82F6" fontWeight="600">
+                  This {item?.fieldLabel?.toLowerCase()} is matched to a
+                  different company's {item?.fieldLabel?.toLowerCase()}
+                </Text>
+              </Flex>
+            </Box>
+          )}
+          {isChanged && (
+            <Box
+              pl="10px"
+              mb="16px"
+              p="12px"
+              bg="#FEF3C7"
+              borderRadius="8px"
+              border="1px solid #F59E0B">
+              <Flex align="center" gap="8px">
+                <AiOutlineExclamationCircle color="#F59E0B" size="20px" />
+                <Text fontSize="14px" color="#F59E0B" fontWeight="600">
+                  This {item?.fieldLabel?.toLowerCase()} has been changed
+                </Text>
+              </Flex>
+            </Box>
+          )}
+          {(isVirtualPhysical || isVirtualMailing) && (
+            <Box
+              pl="10px"
+              mb="16px"
+              p="12px"
+              bg="#FEF6EE"
+              borderRadius="8px"
+              border="1px solid #F38744">
+              <Flex align="center" gap="8px">
+                <MdLocationOff color="#F38744" size="20px" />
+                <Text fontSize="14px" color="#F38744" fontWeight="600">
+                  Your {isVirtualPhysical ? "physical" : "mailing"} address is
+                  virtual
+                </Text>
+              </Flex>
+            </Box>
+          )}
+          {isChanged ? (
+            <VStack align="start" spacing="12px" pl="10px">
+              <Box>
+                <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                  Previous {item?.fieldLabel?.toLowerCase()}:
+                </Text>
+                <Text fontSize="14px" color="#000" fontWeight="400">
+                  {item?.oldValue || "Not available"}
                 </Text>
               </Box>
               <Box>
                 <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
-                  {item?.fieldLabel === "Phone"
-                    ? "New Phone:"
-                    : item?.fieldLabel === "Physical Address"
-                    ? "New Physical Address:"
-                    : item?.fieldLabel === "Mailing Address"
-                    ? "New Mailing Address:"
-                    : `New ${item?.fieldLabel}:`}
+                  Current {item?.fieldLabel?.toLowerCase()}:
                 </Text>
-                <Text fontSize="14px" color="#000">
-                  {item?.address || "N/A"}
+                <Text fontSize="14px" color="#000" fontWeight="400">
+                  {item?.address || item?.newValue || "Not available"}
                 </Text>
               </Box>
+            </VStack>
+          ) : isMatchedAudit ? (
+            <Box pl="10px">
+              <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                {item?.fieldLabel}:
+              </Text>
+              <Text fontSize="14px" color="#000" lineHeight="1.6">
+                {item?.address || item?.newValue || "Not available"}
+              </Text>
             </Box>
           ) : (
-            <Text fontSize="14px" color="#000" pl="10px" lineHeight="1.6">
-              {physicalAddress
-                ? item?.physical_address
-                : mailingAddress
-                ? item?.mailing_address
-                : item?.virtual_address}
-            </Text>
+            <Box pl="10px">
+              <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                Address:
+              </Text>
+              <Text fontSize="14px" color="#000" lineHeight="1.6">
+                {physicalAddress
+                  ? item?.physical_address || "Not available"
+                  : mailingAddress
+                  ? item?.mailing_address || "Not available"
+                  : item?.virtual_address || "Not available"}
+              </Text>
+            </Box>
           )}
         </AccordionPanel>
       </AccordionItem>
