@@ -71,7 +71,6 @@ export const DataTable = ({
           const isOverflowing = element.scrollWidth > element.clientWidth;
           setIsTruncated(isOverflowing);
 
-          // Extract text content from the element
           if (isOverflowing) {
             const text = element.textContent || element.innerText || "";
             setTooltipText(text.trim());
@@ -81,10 +80,8 @@ export const DataTable = ({
         }
       };
 
-      // Check after initial render
       const timeoutId = setTimeout(checkTruncation, 0);
 
-      // Observe for size changes
       const resizeObserver = new ResizeObserver(checkTruncation);
       if (textRef.current) {
         resizeObserver.observe(textRef.current);

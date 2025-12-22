@@ -39,8 +39,6 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     carrierAuditData,
   } = useInsightsProps();
 
-  console.log("new_infonew_info", new_info);
-
   const matchedAddressesData = addressMatchesBodyData?.physical_address?.concat(
     addressMatchesBodyData?.mailing_address
   );
@@ -76,7 +74,6 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     return fields
       .filter((field) => {
         const oldValue = carrierAuditData[field.oldKey];
-        const newValue = carrierAuditData[field.key];
 
         return oldValue !== null && oldValue !== undefined && oldValue !== "";
       })

@@ -57,10 +57,6 @@ export const useEquipmentProps = () => {
     }
   }, [companies_id, page, limit]);
 
-  // useEffect(() => {
-  //   getEquipmentData();
-  // }, [getEquipmentData]);
-
   const headData = [
     {
       label: (
@@ -172,6 +168,24 @@ export const useEquipmentProps = () => {
     },
   ];
 
+  const ageCards = [
+    {
+      title: "Less than 1 years old",
+      value: fleetStatsData?.pct_0_2 ?? 0,
+      percentile: "Percentile Ranking Compared to Peers",
+    },
+    {
+      title: "2 years old",
+      value: fleetStatsData?.pct_1_2 ?? 0,
+      percentile: "Percentile Ranking Compared to Peers",
+    },
+    {
+      title: "4 years old",
+      value: fleetStatsData?.pct_2_4 ?? 0,
+      percentile: "Percentile Ranking Compared to Peers",
+    },
+  ];
+
   const bodyData = equipmentData;
 
   return {
@@ -185,5 +199,6 @@ export const useEquipmentProps = () => {
     count: totalCount || equipmentData?.length,
     getEquipmentData,
     isLoading,
+    ageCards,
   };
 };

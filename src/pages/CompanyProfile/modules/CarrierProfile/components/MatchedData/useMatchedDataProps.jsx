@@ -1,5 +1,5 @@
-import {useSearchParams} from "react-router-dom";
-import {Link, HStack} from "@chakra-ui/react";
+import {useNavigate, useSearchParams} from "react-router-dom";
+import {Box, HStack} from "@chakra-ui/react";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
 import {useQuery} from "@tanstack/react-query";
 import carrierService from "@services/carrierService";
@@ -7,6 +7,11 @@ import carrierService from "@services/carrierService";
 export const useMatchedDataProps = () => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
+  const navigate = useNavigate();
+
+  const carrierProfileAction = (guid) => {
+    navigate(`/admin/company?id=${guid}`);
+  };
 
   const mcRecordData = {
     businessAddress: "606 HILLROSE AVE UNIT B DAYTON, OH 45404",
@@ -148,15 +153,14 @@ export const useMatchedDataProps = () => {
         py: "12px",
       },
       render: (value, row) => (
-        <Link
-          href={`/company-profile?id=${row.companies_id || row.id || row.guid}`}
+        <Box
+          cursor="pointer"
+          onClick={() => carrierProfileAction(row?.guid)}
           fontSize="14px"
           color="#175CD3"
-          fontWeight="500"
-          textDecoration="underline"
-          _hover={{textDecoration: "underline", opacity: 0.8}}>
+          fontWeight="500">
           Carrier Profile
-        </Link>
+        </Box>
       ),
     },
   ];

@@ -18,6 +18,7 @@ export const InsightAddress = ({
   mailingAddress = false,
   isAuditChange = false,
 }) => {
+  console.log("itemmmmmmmmm", item);
   return (
     <Accordion key={item} allowToggle>
       <AccordionItem
@@ -83,6 +84,19 @@ export const InsightAddress = ({
           </Flex>
         </AccordionButton>
         <AccordionPanel>
+          {item?.legal_name && (
+            <Text
+              pl="10px"
+              fontSize="12px"
+              color="#6B7280"
+              fontWeight="600"
+              mb="4px">
+              Company:{" "}
+              <span style={{fontWeight: "bold", color: "#000"}}>
+                {item?.legal_name}
+              </span>
+            </Text>
+          )}
           {isAuditChange ? (
             <Box pl="10px" lineHeight="1.6">
               <Box mb="12px">

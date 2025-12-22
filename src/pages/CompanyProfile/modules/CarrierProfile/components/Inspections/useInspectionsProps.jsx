@@ -2,8 +2,9 @@ import {useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import carrierService from "@services/carrierService";
+import {calculateMonthsFromDate} from "@utils/calculateRegisterTime";
 
-export const useInspectionsProps = () => {
+export const useInspectionsProps = ({new_info}) => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
 
@@ -81,6 +82,23 @@ export const useInspectionsProps = () => {
     },
   ];
 
+  const inspectionsCardsData = [
+    {
+      title: "Observed vs Reported Power Units in Fleet",
+      count: inspectionsCountData?.inspection_count,
+      total: `/${new_info?.power_units ?? 0}`,
+    },
+    {
+      title: "Percentile Ranking Compared to Peers",
+      count: `Top ${inspectionsCountData?.top_percent?.toFixed(0) || 0}%`,
+    },
+    {
+      title: "Length of Authority",
+      count: calculateMonthsFromDate(new_info?.register_time ?? 0),
+      total: "+ months",
+    },
+  ];
+
   return {
     headData,
     inspectionsData,
@@ -94,5 +112,6 @@ export const useInspectionsProps = () => {
     inspectionsCountData,
     refetch,
     refetchInspectionsCount,
+    inspectionsCardsData,
   };
 };

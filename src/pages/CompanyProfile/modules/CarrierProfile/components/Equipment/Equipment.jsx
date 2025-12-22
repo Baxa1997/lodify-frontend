@@ -20,6 +20,7 @@ export const Equipment = () => {
     count,
     getEquipmentData,
     isLoading,
+    ageCards,
   } = useEquipmentProps();
 
   return (
@@ -99,125 +100,9 @@ export const Equipment = () => {
                 Average Fleet Age
               </Text>
               <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
-                <Box
-                  flex="1"
-                  bg="#fff"
-                  border="1px solid #E5E7EB"
-                  borderRadius="12px"
-                  p="20px"
-                  minW={{base: "100%", md: "200px"}}>
-                  <Box
-                    as="img"
-                    src="/img/equipmentTruck.svg"
-                    alt="truck"
-                    w="40px"
-                    h="40px"
-                  />
-                  <HStack spacing="12px" mb="12px">
-                    <Text fontSize="14px" fontWeight="600" color="#181D27">
-                      2 years old
-                    </Text>
-                  </HStack>
-                  <HStack spacing="8px" mb="8px">
-                    <Text fontSize="18px" color="#181D27" fontWeight="600">
-                      Top
-                    </Text>
-                    <Badge
-                      bg="#DEFFEE"
-                      color="#16B364"
-                      border="1px solid #abefc6"
-                      px="8px"
-                      py="2px"
-                      borderRadius="4px"
-                      fontSize="14px"
-                      fontWeight="600">
-                      {fleetStatsData?.pct_2_4 ?? 0}%
-                    </Badge>
-                  </HStack>
-                  <Text fontSize="12px" color="#6B7280" fontWeight="400">
-                    Percentile Ranking Compared to Peers
-                  </Text>
-                </Box>
-
-                <Box
-                  flex="1"
-                  bg="#fff"
-                  border="1px solid #E5E7EB"
-                  borderRadius="12px"
-                  p="20px"
-                  minW={{base: "100%", md: "200px"}}>
-                  <Box
-                    as="img"
-                    src="/img/equipmentTrailer.svg"
-                    alt="truck"
-                    w="40px"
-                    h="40px"
-                  />
-                  <HStack spacing="12px" mb="12px">
-                    <Text fontSize="18px" fontWeight="600" color="#181D27">
-                      4 years old
-                    </Text>
-                  </HStack>
-                  <HStack spacing="8px" mb="8px">
-                    <Text fontSize="18px" color="#181D27" fontWeight="600">
-                      Top
-                    </Text>
-                    <Badge
-                      bg="#DEFFEE"
-                      color="#16B364"
-                      border="1px solid #abefc6"
-                      px="8px"
-                      py="2px"
-                      borderRadius="4px"
-                      fontSize="14px"
-                      fontWeight="600">
-                      {fleetStatsData?.pct_4_plus ?? 0}%
-                    </Badge>
-                  </HStack>
-                  <Text fontSize="12px" color="#6B7280" fontWeight="400">
-                    Percentile Ranking Compared to Peers
-                  </Text>
-                </Box>
-
-                <Box
-                  flex="1"
-                  bg="#fff"
-                  border="1px solid #E5E7EB"
-                  borderRadius="12px"
-                  p="20px"
-                  minW={{base: "100%", md: "200px"}}>
-                  <Box
-                    as="img"
-                    src="/img/equipmentTrailer.svg"
-                    alt="truck"
-                    w="40px"
-                    h="40px"
-                  />
-                  <HStack spacing="12px" mb="12px">
-                    <Text fontSize="18px" fontWeight="600" color="#181D27">
-                      Less than 1 years old
-                    </Text>
-                  </HStack>
-                  <HStack spacing="8px" mb="8px">
-                    <Text fontSize="18px" color="#181D27" fontWeight="600">
-                      Top
-                    </Text>
-                    <Badge
-                      bg="#DEFFEE"
-                      color="#16B364"
-                      border="1px solid #abefc6"
-                      px="8px"
-                      py="2px"
-                      borderRadius="4px"
-                      fontSize="14px"
-                      fontWeight="600">
-                      {fleetStatsData?.pct_0_2 ?? 0}%
-                    </Badge>
-                  </HStack>
-                  <Text fontSize="12px" color="#6B7280" fontWeight="400">
-                    Percentile Ranking Compared to Peers
-                  </Text>
-                </Box>
+                {ageCards.map((card, index) => (
+                  <AgeCard key={index} {...card} />
+                ))}
               </Flex>
             </Box>
 
@@ -247,6 +132,50 @@ export const Equipment = () => {
           </VStack>
         </InfoAccordionPanel>
       </InfoAccordionItem>
+    </Box>
+  );
+};
+
+const AgeCard = ({title, value, percentile}) => {
+  return (
+    <Box
+      flex="1"
+      bg="#fff"
+      border="1px solid #E5E7EB"
+      borderRadius="12px"
+      p="20px"
+      minW={{base: "100%", md: "200px"}}>
+      <Box
+        as="img"
+        src="/img/equipmentTrailer.svg"
+        alt="truck"
+        w="40px"
+        h="40px"
+      />
+      <HStack spacing="12px" mb="12px">
+        <Text fontSize="18px" fontWeight="600" color="#181D27">
+          {title}
+        </Text>
+      </HStack>
+      <HStack spacing="8px" mb="8px">
+        <Text fontSize="18px" color="#181D27" fontWeight="600">
+          Top
+        </Text>
+        <Badge
+          bg="#DEFFEE"
+          color="#16B364"
+          border="1px solid #abefc6"
+          px="8px"
+          py="2px"
+          borderRadius="4px"
+          fontSize="14px"
+          fontWeight="600">
+          {value}%
+        </Badge>
+      </HStack>
+      <Text fontSize="12px" color="#6B7280" fontWeight="400">
+        {percentile}
+      </Text>
     </Box>
   );
 };

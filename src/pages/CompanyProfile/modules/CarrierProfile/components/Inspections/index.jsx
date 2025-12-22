@@ -16,6 +16,7 @@ import {
 } from "../../../../components/InfoAccordion";
 import {DataTable} from "@components/DataTable";
 import {useInspectionsProps} from "./useInspectionsProps";
+import {calculateMonthsFromDate} from "@utils/calculateRegisterTime";
 
 export const Inspections = ({new_info}) => {
   const {
@@ -30,8 +31,9 @@ export const Inspections = ({new_info}) => {
     isFetching,
     inspectionsCountData,
     refetch,
+    inspectionsCardsData,
     refetchInspectionsCount,
-  } = useInspectionsProps();
+  } = useInspectionsProps({new_info});
 
   return (
     <Box>
@@ -92,85 +94,28 @@ export const Inspections = ({new_info}) => {
             </Box>
 
             <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
-              <Box
-                flex="1"
-                bg="#fff"
-                border="1px solid #E5E7EB"
-                borderRadius="12px"
-                p="14px"
-                minW="0">
-                <Text
-                  fontSize="24px"
-                  h="32px"
-                  fontWeight="600"
-                  color="#079455"
-                  mb="8px">
-                  {inspectionsCountData?.inspection_count}/
-                  {new_info?.power_units}
-                </Text>
-                <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
-                  Observed vs Reported Power Units in Fleet
-                </Text>
-              </Box>
-
-              <Box
-                flex="1"
-                bg="#fff"
-                border="1px solid #E5E7EB"
-                borderRadius="12px"
-                p="14px"
-                minW="0">
-                <HStack spacing="8px" align="center" mb="8px">
+              {inspectionsCardsData?.map((item, index) => (
+                <Box
+                  flex="1"
+                  bg="#fff"
+                  border="1px solid #E5E7EB"
+                  borderRadius="12px"
+                  p="14px"
+                  minW="0">
                   <Text
                     fontSize="24px"
+                    h="32px"
                     fontWeight="600"
                     color="#079455"
-                    lineHeight="1"
-                    h="32px">
-                    Top {inspectionsCountData?.top_percent?.toFixed(0) || 0}%
+                    mb="8px">
+                    {item?.count}
+                    {item?.total}
                   </Text>
-                  <Tooltip
-                    label="Percentile Ranking Compared to Peers"
-                    placement="top"
-                    bg="#1a365d"
-                    color="white"
-                    borderRadius="md"
-                    p="6px 10px"
-                    fontSize="12px">
-                    <Box
-                      as="img"
-                      src="/img/questionRound.svg"
-                      alt="info"
-                      w="14px"
-                      h="14px"
-                      cursor="pointer"
-                    />
-                  </Tooltip>
-                </HStack>
-                <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
-                  Percentile Ranking Compared to Peers
-                </Text>
-              </Box>
-              {/* 
-              <Box
-                flex="1"
-                bg="#fff"
-                border="1px solid #E5E7EB"
-                borderRadius="12px"
-                p="14px"
-                minW="0">
-                <Text
-                  h="32px"
-                  fontSize="24px"
-                  fontWeight="600"
-                  color="#079455"
-                  mb="8px">
-                  24+ months
-                </Text>
-                <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
-                  Length of Authority
-                </Text>
-              </Box> */}
+                  <Text fontSize="13px" color="#6B7280" lineHeight="1.5">
+                    {item?.title}
+                  </Text>
+                </Box>
+              ))}
             </Flex>
 
             <Box>
