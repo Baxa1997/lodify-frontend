@@ -29,6 +29,7 @@ export const Safety = () => {
   const {
     data: safetyData,
     isLoading,
+    isFetching,
     refetch,
   } = useQuery({
     queryKey: ["GET_SAFETY_DATA", companies_id, selectedCategory],
@@ -136,10 +137,9 @@ export const Safety = () => {
 
     chartArea: {
       left: 40,
-      top: 20,
+      top: 10,
       right: 20,
       bottom: 30,
-      height: "70%",
     },
 
     legend: {
@@ -148,68 +148,91 @@ export const Safety = () => {
   };
 
   return (
-    <Box>
-      <InfoAccordionItem>
-        <InfoAccordionButton onClick={refetch}>
-          <InfoAccordionTitle>Safety</InfoAccordionTitle>
-        </InfoAccordionButton>
-        <InfoAccordionPanel>
-          <VStack spacing="20px" align="stretch">
-            <Box>
-              <Flex gap="8px" flexWrap="wrap">
-                {safetyCategories.map((category, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => {
-                      setSelectedTab(index);
-                      setSelectedCategory(category?.value);
-                    }}
-                    variant="ghost"
-                    fontSize="14px"
-                    fontWeight={selectedTab === index ? "600" : "500"}
-                    color={selectedTab === index ? "#EF6820" : "#6B7280"}
-                    borderBottom={
-                      selectedTab === index
-                        ? "2px solid #EF6820"
-                        : "2px solid transparent"
-                    }
-                    borderRadius="0"
-                    px="12px"
-                    py="8px"
-                    h="auto"
-                    _hover={{
-                      color: "#EF6820",
-                      bg: "transparent",
-                    }}
-                    _active={{
-                      bg: "transparent",
-                    }}>
-                    {category?.label}
-                  </Button>
-                ))}
-              </Flex>
-            </Box>
+    <>
+      <Box>
+        <InfoAccordionItem>
+          <InfoAccordionButton onClick={refetch}>
+            <InfoAccordionTitle>Safety</InfoAccordionTitle>
+          </InfoAccordionButton>
+          <InfoAccordionPanel>
+            <VStack spacing="20px" align="stretch">
+              <Box>
+                <Flex gap="8px" flexWrap="wrap">
+                  {safetyCategories.map((category, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => {
+                        setSelectedTab(index);
+                        setSelectedCategory(category?.value);
+                      }}
+                      variant="ghost"
+                      fontSize="14px"
+                      fontWeight={selectedTab === index ? "600" : "500"}
+                      color={selectedTab === index ? "#EF6820" : "#6B7280"}
+                      borderBottom={
+                        selectedTab === index
+                          ? "2px solid #EF6820"
+                          : "2px solid transparent"
+                      }
+                      borderRadius="0"
+                      px="12px"
+                      py="8px"
+                      h="auto"
+                      _hover={{
+                        color: "#EF6820",
+                        bg: "transparent",
+                      }}
+                      _active={{
+                        bg: "transparent",
+                      }}>
+                      {category?.label}
+                    </Button>
+                  ))}
+                </Flex>
+              </Box>
 
-            {selectedTab !== null && (
-              <VStack spacing="20px" align="stretch" mt="20px">
-                <Text fontSize="16px" fontWeight="600" color="#181D27" mb="8px">
-                  {safetyCategories[selectedTab]?.label}
-                </Text>
+              {selectedTab !== null && (
+                <VStack spacing="20px" align="stretch" mt="20px">
+                  <Text
+                    fontSize="16px"
+                    fontWeight="600"
+                    color="#181D27"
+                    mb="8px">
+                    {safetyCategories[selectedTab]?.label}
+                  </Text>
 
-                <Box
-                  bg="white"
-                  border="1px solid #E5E7EB"
-                  borderRadius="12px"
-                  p="24px">
-                  <Box w="100%" h="300px" position="relative">
-                    <Chart
-                      chartType="LineChart"
-                      data={chartData}
-                      options={chartOptions}
-                      width="100%"
-                      height="300px"
-                      loader={
-                        <Center h="300px">
+                  <Box
+                    bg="white"
+                    border="1px solid #E5E7EB"
+                    borderRadius="12px"
+                    p="24px"
+                    pt="0">
+                    <Box w="100%" h="300px" position="relative">
+                      <Chart
+                        chartType="LineChart"
+                        data={chartData}
+                        options={chartOptions}
+                        width="100%"
+                        height="300px"
+                        fit={true}
+                        loader={
+                          <Center h="300px">
+                            <Spinner
+                              thickness="4px"
+                              speed="0.65s"
+                              emptyColor="#f3f4f6"
+                              color="#EF6820"
+                              size="lg"
+                            />
+                          </Center>
+                        }
+                      />
+                      {isFetching && (
+                        <Center
+                          position="absolute"
+                          inset="0"
+                          bg="whiteAlpha.70"
+                          borderRadius="12px">
                           <Spinner
                             thickness="4px"
                             speed="0.65s"
@@ -218,61 +241,46 @@ export const Safety = () => {
                             size="lg"
                           />
                         </Center>
-                      }
-                    />
-                    {isLoading && (
-                      <Center
-                        position="absolute"
-                        inset="0"
-                        bg="whiteAlpha.70"
-                        borderRadius="12px">
-                        <Spinner
-                          thickness="4px"
-                          speed="0.65s"
-                          emptyColor="#f3f4f6"
-                          color="#EF6820"
-                          size="lg"
-                        />
-                      </Center>
-                    )}
-                  </Box>
+                      )}
+                    </Box>
 
-                  <HStack
-                    spacing="24px"
-                    mt="16px"
-                    pt="16px"
-                    borderTop="1px solid #E5E7EB">
-                    <HStack spacing="8px" align="center">
-                      <Box
-                        w="12px"
-                        h="12px"
-                        borderRadius="50%"
-                        bg="#EF6820"
-                        flexShrink={0}
-                      />
-                      <Text fontSize="12px" color="#6B7280" fontWeight="400">
-                        Carrier actual safety rate
-                      </Text>
+                    <HStack
+                      spacing="24px"
+                      mt="16px"
+                      pt="16px"
+                      borderTop="1px solid #E5E7EB">
+                      <HStack spacing="8px" align="center">
+                        <Box
+                          w="12px"
+                          h="12px"
+                          borderRadius="50%"
+                          bg="#EF6820"
+                          flexShrink={0}
+                        />
+                        <Text fontSize="12px" color="#6B7280" fontWeight="400">
+                          Carrier actual safety rate
+                        </Text>
+                      </HStack>
+                      <HStack spacing="8px" align="center">
+                        <Box
+                          w="12px"
+                          h="12px"
+                          borderRadius="50%"
+                          bg="#000000"
+                          flexShrink={0}
+                        />
+                        <Text fontSize="12px" color="#6B7280" fontWeight="400">
+                          Nat'l Average % as of DATE 08/29/2025*
+                        </Text>
+                      </HStack>
                     </HStack>
-                    <HStack spacing="8px" align="center">
-                      <Box
-                        w="12px"
-                        h="12px"
-                        borderRadius="50%"
-                        bg="#000000"
-                        flexShrink={0}
-                      />
-                      <Text fontSize="12px" color="#6B7280" fontWeight="400">
-                        Nat'l Average % as of DATE 08/29/2025*
-                      </Text>
-                    </HStack>
-                  </HStack>
-                </Box>
-              </VStack>
-            )}
-          </VStack>
-        </InfoAccordionPanel>
-      </InfoAccordionItem>
-    </Box>
+                  </Box>
+                </VStack>
+              )}
+            </VStack>
+          </InfoAccordionPanel>
+        </InfoAccordionItem>
+      </Box>
+    </>
   );
 };
