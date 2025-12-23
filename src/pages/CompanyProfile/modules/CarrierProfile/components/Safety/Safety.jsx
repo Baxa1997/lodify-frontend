@@ -111,7 +111,6 @@ export const Safety = () => {
 
   const maxValue = values.length ? Math.max(...values) : 0;
 
-  // 🔑 REQUIRED RULES
   const paddedMin = -5;
   const paddedMax = maxValue < 20 ? 20 : Math.min(maxValue + 2, 100);
 
@@ -191,6 +190,7 @@ export const Safety = () => {
                   }}
                   variant="ghost"
                   fontSize="13px"
+                  borderRadius="8px"
                   fontWeight={selectedTab === index ? "600" : "500"}
                   color={selectedTab === index ? "#EF6820" : "#6B7280"}
                   borderBottom={
@@ -198,7 +198,7 @@ export const Safety = () => {
                       ? "2px solid #EF6820"
                       : "2px solid transparent"
                   }
-                  borderRadius="0">
+                  borderBottomRadius={0}>
                   {category.label}
                 </Button>
               ))}
@@ -237,7 +237,6 @@ export const Safety = () => {
                 )}
               </Box>
 
-              {/* Legend */}
               <HStack
                 spacing="24px"
                 mt="16px"
