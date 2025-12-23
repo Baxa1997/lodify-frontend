@@ -49,12 +49,10 @@ export const Performance = ({performanceData}) => {
         {
           label: "On time to pickup",
           value: `${performanceData?.on_time_data?.on_time_to_pickup || 0}%`,
-          // contribution: "37.5% of score",
         },
         {
           label: "On time to Delivery",
           value: `${performanceData?.on_time_data?.on_time_delivery || 0}%`,
-          // contribution: "62.5% of score",
         },
 
         {
@@ -62,7 +60,6 @@ export const Performance = ({performanceData}) => {
           value: `${
             performanceData?.on_time_data?.on_time_deliver_and_pickup || 0
           }%`,
-          // contribution: "62.5% of score",
         },
       ],
     },
@@ -80,7 +77,6 @@ export const Performance = ({performanceData}) => {
         {
           label: "Rejected trips",
           value: performanceData?.acceptance_data?.rejected_trips || 0,
-          // contribution: "62.5% of score",
         },
       ],
     },

@@ -80,13 +80,13 @@ export const Overview = ({carrierDetails, generalInfo}) => {
               addressMatchesBodyData={addressMatchesBodyData}
             />
           </Box>
-          <Box id="document">
+          <Box id="victim-identity">
             <VictimIdentity />
           </Box>
-          <Box id="lane-preferences">
+          <Box id="state">
             <State />
           </Box>
-          <Box id="authory">
+          <Box id="authority">
             <Authority new_info={new_info} carrierDetails={carrierDetails} />
           </Box>
           <Box id="insurance">
@@ -98,7 +98,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
           <Box id="inspections">
             <Inspections new_info={new_info} />
           </Box>
-          <Box id="crashes">
+          <Box id="equipment">
             <Equipment />
           </Box>
           <Box id="operations">
