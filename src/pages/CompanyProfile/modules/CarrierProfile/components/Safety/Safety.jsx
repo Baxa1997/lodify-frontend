@@ -23,30 +23,40 @@ import {useQuery} from "@tanstack/react-query";
 export const Safety = () => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
+
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("unsafe_driving");
 
   const {
     data: safetyData,
-    isLoading,
     isFetching,
     refetch,
   } = useQuery({
     queryKey: ["GET_SAFETY_DATA", companies_id, selectedCategory],
     queryFn: () =>
-      carrierService?.getSafetyData({
+      carrierService.getSafetyData({
         data: {
           method: "get",
           object_data: {
-            companies_id: companies_id,
+            companies_id,
             dashboard_type: selectedCategory,
           },
           table: "safety",
         },
       }),
-    select: (res) => res?.data || [],
+    select: (res) => res?.data || {},
     enabled: Boolean(companies_id),
   });
+
+  /* ------------------ CONFIG ------------------ */
+
+  const safetyCategories = [
+    {label: "Unsafe Driving", value: "unsafe_driving"},
+    {label: "Hours of Service Compliance", value: "hours_of_service"},
+    {label: "Vehicle Maintenance", value: "vehicle_maintenance"},
+    {label: "Controlled Substances & Alcohol", value: "alcohol_score"},
+    {label: "Driver Fitness", value: "fitness_score"},
+  ];
 
   const nationalAverageKeyMap = {
     unsafe_driving: "driver",
@@ -59,66 +69,82 @@ export const Safety = () => {
   const nationalAverageKey =
     nationalAverageKeyMap[selectedCategory] || selectedCategory;
 
-  const safetyCategories = [
-    {label: "Unsafe Driving", value: "unsafe_driving"},
-    {label: "Hours of Service Compliance", value: "hours_of_service"},
-    {label: "Vehicle Maintenance", value: "vehicle_maintenance"},
-    {label: "Controlled Substances & Alcohol", value: "alcohol_score"},
-    {label: "Driver Fitness", value: "fitness_score"},
-  ];
+  /* ------------------ CHART DATA ------------------ */
 
   const chartData = useMemo(() => {
-    const nationalAverageValue =
-      safetyData?.national_average?.[nationalAverageKey] ??
-      safetyData?.national_average?.[`${nationalAverageKey}_score`] ??
-      safetyData?.national_average?.[selectedCategory] ??
-      safetyData?.national_average?.[`${selectedCategory}_score`] ??
-      0;
+    const nationalAverage =
+      Number(
+        safetyData?.national_average?.[nationalAverageKey] ??
+          safetyData?.national_average?.[`${nationalAverageKey}_score`] ??
+          0
+      ) || 0;
 
     const rows =
-      safetyData?.safety_data?.map((item) => {
-        const score = item?.["score"] ?? item?.[`score`] ?? 0;
+      safetyData?.safety_data
+        ?.map((item) => {
+          const score = Number(item?.score);
+          if (Number.isNaN(score)) return null;
 
-        return [
-          item?.month_name || item?.month || "",
-          Number(score),
-          Number(nationalAverageValue),
-        ];
-      }) || [];
+          return [
+            item?.month_name || item?.month || "N/A",
+            score,
+            nationalAverage,
+          ];
+        })
+        ?.filter(Boolean) || [];
 
     return [["Month", "Carrier actual safety rate", "Nat'l Average"], ...rows];
-  }, [safetyData, selectedCategory, nationalAverageKey]);
+  }, [safetyData, nationalAverageKey]);
+
+  /* ------------------ DATA VALIDATION ------------------ */
+
+  const hasValidData =
+    chartData.length > 1 &&
+    chartData.slice(1).some((row) => typeof row[1] === "number");
+
+  /* ------------------ AXIS LOGIC ------------------ */
 
   const values = chartData
     .slice(1)
     .flatMap((row) => [row[1], row[2]])
-    .filter((v) => typeof v === "number");
+    .filter((v) => typeof v === "number" && !Number.isNaN(v));
 
-  const maxValue = Math.max(...values);
+  const maxValue = values.length ? Math.max(...values) : 0;
 
-  const paddedMax = Math.min(maxValue * 2.35, 100);
+  // 🔑 REQUIRED RULES
   const paddedMin = -5;
+  const paddedMax = maxValue < 20 ? 20 : Math.min(maxValue + 2, 100);
+
+  /* ------------------ CHART OPTIONS ------------------ */
 
   const chartOptions = {
     backgroundColor: "transparent",
     curveType: "function",
     focusTarget: "category",
 
+    hAxis: {
+      type: "category",
+      textStyle: {color: "#000", fontSize: 11},
+      gridlines: {color: "transparent"},
+    },
+
     vAxis: {
-      minValue: 0,
       viewWindow: {
         min: paddedMin,
         max: paddedMax,
       },
-      textStyle: {color: "#000", fontSize: 11},
-      gridlines: {color: "#F3F4F6", count: 4},
-      baselineColor: "#E5E7EB",
+      ticks: [
+        paddedMin,
+        0,
+        Math.round(paddedMax / 4),
+        Math.round(paddedMax / 2),
+        Math.round((paddedMax * 3) / 4),
+        paddedMax,
+      ],
       format: "#'%'",
-    },
-
-    hAxis: {
       textStyle: {color: "#000", fontSize: 11},
-      gridlines: {color: "transparent"},
+      gridlines: {color: "#F3F4F6"},
+      baselineColor: "#E5E7EB",
     },
 
     series: {
@@ -130,157 +156,111 @@ export const Safety = () => {
       1: {
         color: "#111827",
         lineWidth: 2,
-        areaOpacity: 0,
-        background: "red",
       },
     },
 
     chartArea: {
-      left: 40,
+      left: 45,
       top: 10,
       right: 20,
       bottom: 30,
     },
 
-    legend: {
-      position: "none",
-    },
+    legend: {position: "none"},
   };
 
+  /* ------------------ RENDER ------------------ */
+
   return (
-    <>
-      <Box>
-        <InfoAccordionItem>
-          <InfoAccordionButton onClick={refetch}>
-            <InfoAccordionTitle>Safety</InfoAccordionTitle>
-          </InfoAccordionButton>
-          <InfoAccordionPanel>
-            <VStack spacing="20px" align="stretch">
-              <Box>
-                <Flex gap="8px" flexWrap="wrap">
-                  {safetyCategories.map((category, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => {
-                        setSelectedTab(index);
-                        setSelectedCategory(category?.value);
-                      }}
-                      variant="ghost"
-                      fontSize="14px"
-                      fontWeight={selectedTab === index ? "600" : "500"}
-                      color={selectedTab === index ? "#EF6820" : "#6B7280"}
-                      borderBottom={
-                        selectedTab === index
-                          ? "2px solid #EF6820"
-                          : "2px solid transparent"
-                      }
-                      borderRadius="0"
-                      px="12px"
-                      py="8px"
-                      h="auto"
-                      _hover={{
-                        color: "#EF6820",
-                        bg: "transparent",
-                      }}
-                      _active={{
-                        bg: "transparent",
-                      }}>
-                      {category?.label}
-                    </Button>
-                  ))}
-                </Flex>
+    <Box>
+      <InfoAccordionItem>
+        <InfoAccordionButton onClick={refetch}>
+          <InfoAccordionTitle>Safety</InfoAccordionTitle>
+        </InfoAccordionButton>
+
+        <InfoAccordionPanel>
+          <VStack spacing="16px" align="stretch">
+            <Flex gap="8px" flexWrap="wrap">
+              {safetyCategories.map((category, index) => (
+                <Button
+                  px="6px"
+                  key={category.value}
+                  onClick={() => {
+                    setSelectedTab(index);
+                    setSelectedCategory(category.value);
+                  }}
+                  variant="ghost"
+                  fontSize="13px"
+                  fontWeight={selectedTab === index ? "600" : "500"}
+                  color={selectedTab === index ? "#EF6820" : "#6B7280"}
+                  borderBottom={
+                    selectedTab === index
+                      ? "2px solid #EF6820"
+                      : "2px solid transparent"
+                  }
+                  borderRadius="0">
+                  {category.label}
+                </Button>
+              ))}
+            </Flex>
+
+            <Box
+              bg="white"
+              border="1px solid #E5E7EB"
+              borderRadius="12px"
+              p="24px">
+              <Box h="300px" position="relative">
+                {hasValidData ? (
+                  <Chart
+                    chartType="LineChart"
+                    data={chartData}
+                    options={chartOptions}
+                    width="100%"
+                    height="300px"
+                  />
+                ) : (
+                  <Center h="300px">
+                    <Text fontSize="14px" color="#6B7280">
+                      Loading data...
+                    </Text>
+                  </Center>
+                )}
+
+                {isFetching && (
+                  <Center
+                    position="absolute"
+                    inset="0"
+                    bg="whiteAlpha.70"
+                    borderRadius="12px">
+                    <Spinner color="#EF6820" />
+                  </Center>
+                )}
               </Box>
 
-              {selectedTab !== null && (
-                <VStack spacing="20px" align="stretch" mt="20px">
-                  <Text
-                    fontSize="16px"
-                    fontWeight="600"
-                    color="#181D27"
-                    mb="8px">
-                    {safetyCategories[selectedTab]?.label}
+              {/* Legend */}
+              <HStack
+                spacing="24px"
+                mt="16px"
+                pt="16px"
+                borderTop="1px solid #E5E7EB">
+                <HStack spacing="8px">
+                  <Box w="12px" h="12px" borderRadius="50%" bg="#EF6820" />
+                  <Text fontSize="12px" color="#6B7280">
+                    Carrier actual safety rate
                   </Text>
+                </HStack>
 
-                  <Box
-                    bg="white"
-                    border="1px solid #E5E7EB"
-                    borderRadius="12px"
-                    p="24px"
-                    pt="0">
-                    <Box w="100%" h="300px" position="relative">
-                      <Chart
-                        chartType="LineChart"
-                        data={chartData}
-                        options={chartOptions}
-                        width="100%"
-                        height="300px"
-                        fit={true}
-                        loader={
-                          <Center h="300px">
-                            <Spinner
-                              thickness="4px"
-                              speed="0.65s"
-                              emptyColor="#f3f4f6"
-                              color="#EF6820"
-                              size="lg"
-                            />
-                          </Center>
-                        }
-                      />
-                      {isFetching && (
-                        <Center
-                          position="absolute"
-                          inset="0"
-                          bg="whiteAlpha.70"
-                          borderRadius="12px">
-                          <Spinner
-                            thickness="4px"
-                            speed="0.65s"
-                            emptyColor="#f3f4f6"
-                            color="#EF6820"
-                            size="lg"
-                          />
-                        </Center>
-                      )}
-                    </Box>
-
-                    <HStack
-                      spacing="24px"
-                      mt="16px"
-                      pt="16px"
-                      borderTop="1px solid #E5E7EB">
-                      <HStack spacing="8px" align="center">
-                        <Box
-                          w="12px"
-                          h="12px"
-                          borderRadius="50%"
-                          bg="#EF6820"
-                          flexShrink={0}
-                        />
-                        <Text fontSize="12px" color="#6B7280" fontWeight="400">
-                          Carrier actual safety rate
-                        </Text>
-                      </HStack>
-                      <HStack spacing="8px" align="center">
-                        <Box
-                          w="12px"
-                          h="12px"
-                          borderRadius="50%"
-                          bg="#000000"
-                          flexShrink={0}
-                        />
-                        <Text fontSize="12px" color="#6B7280" fontWeight="400">
-                          Nat'l Average % as of DATE 08/29/2025*
-                        </Text>
-                      </HStack>
-                    </HStack>
-                  </Box>
-                </VStack>
-              )}
-            </VStack>
-          </InfoAccordionPanel>
-        </InfoAccordionItem>
-      </Box>
-    </>
+                <HStack spacing="8px">
+                  <Box w="12px" h="12px" borderRadius="50%" bg="#111827" />
+                  <Text fontSize="12px" color="#6B7280">
+                    Nat&apos;l Average % as of DATE 08/29/2025*
+                  </Text>
+                </HStack>
+              </HStack>
+            </Box>
+          </VStack>
+        </InfoAccordionPanel>
+      </InfoAccordionItem>
+    </Box>
   );
 };
