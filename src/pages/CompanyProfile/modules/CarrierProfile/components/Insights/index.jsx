@@ -330,62 +330,70 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                           {totalInsights}
                         </Badge>
                       </Tab>
-                      <Tab>
-                        VIN Match
-                        <Badge
-                          ml="8px"
-                          bg="#F3F4F6"
-                          color="#6B7280"
-                          borderRadius="full"
-                          px="8px"
-                          py="2px"
-                          fontSize="11px"
-                          fontWeight="600">
-                          {vinMatchesData?.length}
-                        </Badge>
-                      </Tab>
-                      <Tab>
-                        Matched
-                        <Badge
-                          ml="8px"
-                          bg="#F3F4F6"
-                          color="#6B7280"
-                          borderRadius="full"
-                          px="8px"
-                          py="2px"
-                          fontSize="11px"
-                          fontWeight="600">
-                          {matchedAddressesCount}
-                        </Badge>
-                      </Tab>
-                      <Tab>
-                        Location
-                        <Badge
-                          ml="8px"
-                          bg="#F3F4F6"
-                          color="#6B7280"
-                          borderRadius="full"
-                          px="8px"
-                          py="2px"
-                          fontSize="11px"
-                          fontWeight="600">
-                          {locationCount}
-                        </Badge>
-                      </Tab>
-                      <Tab>
-                        Changed
-                        <Badge
-                          ml="8px"
-                          bg="#F3F4F6"
-                          color="#6B7280"
-                          borderRadius="full"
-                          px="8px"
-                          py="2px"
-                          fontSize="11px"
-                          fontWeight="600">
-                          {changedFieldsCount}
-                        </Badge>
-                      </Tab>
+                      {vinMatchesData?.length > 0 && (
+                        <Tab>
+                          VIN Match
+                          <Badge
+                            ml="8px"
+                            bg="#F3F4F6"
+                            color="#6B7280"
+                            borderRadius="full"
+                            px="8px"
+                            py="2px"
+                            fontSize="11px"
+                            fontWeight="600">
+                            {vinMatchesData?.length}
+                          </Badge>
+                        </Tab>
+                      )}
+                      {matchedAddressesCount > 0 && (
+                        <Tab>
+                          Matched
+                          <Badge
+                            ml="8px"
+                            bg="#F3F4F6"
+                            color="#6B7280"
+                            borderRadius="full"
+                            px="8px"
+                            py="2px"
+                            fontSize="11px"
+                            fontWeight="600">
+                            {matchedAddressesCount}
+                          </Badge>
+                        </Tab>
+                      )}
+                      {locationCount > 0 && (
+                        <Tab>
+                          Location
+                          <Badge
+                            ml="8px"
+                            bg="#F3F4F6"
+                            color="#6B7280"
+                            borderRadius="full"
+                            px="8px"
+                            py="2px"
+                            fontSize="11px"
+                            fontWeight="600">
+                            {locationCount}
+                          </Badge>
+                        </Tab>
+                      )}
+                      {changedFieldsCount > 0 && (
+                        <Tab>
+                          Changed
+                          <Badge
+                            ml="8px"
+                            bg="#F3F4F6"
+                            color="#6B7280"
+                            borderRadius="full"
+                            px="8px"
+                            py="2px"
+                            fontSize="11px"
+                            fontWeight="600">
+                            {changedFieldsCount}
+                          </Badge>
+                        </Tab>
+                      )}
                     </TabList>
 
                     <TabPanel>
@@ -460,10 +468,10 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                       </Flex>
                     </TabPanel>
 
-                    <TabPanel>
-                      <VStack spacing="12px" align="stretch" mt="20px">
-                        {vinMatchesData && vinMatchesData.length > 0 ? (
-                          vinMatchesData.map((item, index) => (
+                    {vinMatchesData?.length > 0 && (
+                      <TabPanel>
+                        <VStack spacing="12px" align="stretch" mt="20px">
+                          {vinMatchesData.map((item, index) => (
                             <Box
                               key={index}
                               border="1px solid #EF6820"
@@ -514,398 +522,350 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                 </Box>
                               </VStack>
                             </Box>
-                          ))
-                        ) : (
-                          <Box
-                            border="1px solid #E5E7EB"
-                            borderRadius="12px"
-                            p="16px"
-                            bg="#F9FAFB"
-                            textAlign="center">
-                            <Text fontSize="14px" color="#6B7280">
-                              No VIN matches found
-                            </Text>
-                          </Box>
-                        )}
-                      </VStack>
-                    </TabPanel>
+                          ))}
+                        </VStack>
+                      </TabPanel>
+                    )}
 
-                    <TabPanel>
-                      <VStack spacing="12px" align="stretch" mt="20px">
-                        {addressMatchesBodyData?.physical_address?.map(
-                          (item, index) => (
-                            <Box
-                              key={`matched-physical-${index}`}
-                              border="1px solid #EF6820"
-                              borderRadius="12px"
-                              p="16px"
-                              bg="white">
-                              <VStack align="start" spacing="8px">
-                                <Text
-                                  fontSize="12px"
-                                  fontWeight="600"
-                                  color="#6B7280"
-                                  textTransform="capitalize">
-                                  Physical Address{" "}
-                                  <Text as="span" fontWeight="700" color="#000">
-                                    Matched
+                    {matchedAddressesCount > 0 && (
+                      <TabPanel>
+                        <VStack spacing="12px" align="stretch" mt="20px">
+                          {addressMatchesBodyData?.physical_address?.map(
+                            (item, index) => (
+                              <Box
+                                key={`matched-physical-${index}`}
+                                border="1px solid #EF6820"
+                                borderRadius="12px"
+                                p="16px"
+                                bg="white">
+                                <VStack align="start" spacing="8px">
+                                  <Text
+                                    fontSize="12px"
+                                    fontWeight="600"
+                                    color="#6B7280"
+                                    textTransform="capitalize">
+                                    Physical Address{" "}
+                                    <Text
+                                      as="span"
+                                      fontWeight="700"
+                                      color="#000">
+                                      Matched
+                                    </Text>
                                   </Text>
-                                </Text>
-                                {item?.legal_name && (
+                                  {item?.legal_name && (
+                                    <Box>
+                                      <Text
+                                        fontSize="12px"
+                                        fontWeight="600"
+                                        color="#6B7280"
+                                        mb="4px">
+                                        Matched Company:
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="600"
+                                        color="#181D27">
+                                        {item.legal_name}
+                                      </Text>
+                                    </Box>
+                                  )}
                                   <Box>
                                     <Text
                                       fontSize="12px"
                                       fontWeight="600"
                                       color="#6B7280"
                                       mb="4px">
-                                      Matched Company:
+                                      Physical Address:
                                     </Text>
                                     <Text
                                       fontSize="14px"
-                                      fontWeight="600"
-                                      color="#181D27">
-                                      {item.legal_name}
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {item?.physical_address ||
+                                        "Not available"}
                                     </Text>
                                   </Box>
-                                )}
-                                <Box>
+                                </VStack>
+                              </Box>
+                            )
+                          )}
+
+                          {addressMatchesBodyData?.mailing_address?.map(
+                            (item, index) => (
+                              <Box
+                                key={`matched-mailing-${index}`}
+                                border="1px solid #EF6820"
+                                borderRadius="12px"
+                                p="16px"
+                                bg="white">
+                                <VStack align="start" spacing="8px">
                                   <Text
                                     fontSize="12px"
                                     fontWeight="600"
                                     color="#6B7280"
-                                    mb="4px">
-                                    Physical Address:
+                                    textTransform="capitalize">
+                                    Mailing Address{" "}
+                                    <Text
+                                      as="span"
+                                      fontWeight="700"
+                                      color="#000">
+                                      Matched
+                                    </Text>
                                   </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {item?.physical_address || "Not available"}
-                                  </Text>
-                                </Box>
-                              </VStack>
-                            </Box>
-                          )
-                        )}
-
-                        {addressMatchesBodyData?.mailing_address?.map(
-                          (item, index) => (
-                            <Box
-                              key={`matched-mailing-${index}`}
-                              border="1px solid #EF6820"
-                              borderRadius="12px"
-                              p="16px"
-                              bg="white">
-                              <VStack align="start" spacing="8px">
-                                <Text
-                                  fontSize="12px"
-                                  fontWeight="600"
-                                  color="#6B7280"
-                                  textTransform="capitalize">
-                                  Mailing Address{" "}
-                                  <Text as="span" fontWeight="700" color="#000">
-                                    Matched
-                                  </Text>
-                                </Text>
-                                {item?.legal_name && (
+                                  {item?.legal_name && (
+                                    <Box>
+                                      <Text
+                                        fontSize="12px"
+                                        fontWeight="600"
+                                        color="#6B7280"
+                                        mb="4px">
+                                        Matched Company:
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="600"
+                                        color="#181D27">
+                                        {item.legal_name}
+                                      </Text>
+                                    </Box>
+                                  )}
                                   <Box>
                                     <Text
                                       fontSize="12px"
                                       fontWeight="600"
                                       color="#6B7280"
                                       mb="4px">
-                                      Matched Company:
+                                      Mailing Address:
                                     </Text>
                                     <Text
                                       fontSize="14px"
-                                      fontWeight="600"
-                                      color="#181D27">
-                                      {item.legal_name}
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {item?.mailing_address || "Not available"}
                                     </Text>
                                   </Box>
-                                )}
-                                <Box>
-                                  <Text
-                                    fontSize="12px"
-                                    fontWeight="600"
-                                    color="#6B7280"
-                                    mb="4px">
-                                    Mailing Address:
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {item?.mailing_address || "Not available"}
-                                  </Text>
-                                </Box>
-                              </VStack>
-                            </Box>
-                          )
-                        )}
+                                </VStack>
+                              </Box>
+                            )
+                          )}
+                        </VStack>
+                      </TabPanel>
+                    )}
 
-                        {matchedAddressesCount === 0 && (
-                          <Box
-                            border="1px solid #E5E7EB"
-                            borderRadius="12px"
-                            p="16px"
-                            bg="#F9FAFB"
-                            textAlign="center">
-                            <Text fontSize="14px" color="#6B7280">
-                              No matched addresses found
-                            </Text>
-                          </Box>
-                        )}
-                      </VStack>
-                    </TabPanel>
+                    {locationCount > 0 && (
+                      <TabPanel>
+                        <VStack spacing="12px" align="stretch" mt="20px">
+                          {changedFields
+                            ?.filter(
+                              (field) =>
+                                field.key === "physical_address" &&
+                                field.oldValue &&
+                                field.oldValue !== "" &&
+                                field.newValue &&
+                                field.oldValue !== field.newValue
+                            )
+                            .map((field, index) => (
+                              <Box
+                                key={`changed-physical-${index}`}
+                                border="1px solid #F59E0B"
+                                borderRadius="12px"
+                                p="16px"
+                                bg="white">
+                                <VStack align="start" spacing="8px">
+                                  <Text
+                                    fontSize="12px"
+                                    fontWeight="600"
+                                    color="#6B7280"
+                                    textTransform="capitalize">
+                                    Physical Address{" "}
+                                    <Text
+                                      as="span"
+                                      fontWeight="700"
+                                      color="#000">
+                                      Changed
+                                    </Text>
+                                  </Text>
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Previous Physical Address:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {field.oldValue || "Not available"}
+                                    </Text>
+                                  </Box>
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Current Physical Address:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {field.newValue || "Not available"}
+                                    </Text>
+                                  </Box>
+                                </VStack>
+                              </Box>
+                            ))}
 
-                    <TabPanel>
-                      <VStack spacing="12px" align="stretch" mt="20px">
-                        {changedFields
-                          ?.filter(
-                            (field) =>
-                              field.key === "physical_address" &&
-                              field.oldValue &&
-                              field.oldValue !== "" &&
-                              field.newValue &&
-                              field.oldValue !== field.newValue
-                          )
-                          .map((field, index) => (
-                            <Box
-                              key={`changed-physical-${index}`}
-                              border="1px solid #F59E0B"
-                              borderRadius="12px"
-                              p="16px"
-                              bg="white">
-                              <VStack align="start" spacing="8px">
-                                <Text
-                                  fontSize="12px"
-                                  fontWeight="600"
-                                  color="#6B7280"
-                                  textTransform="capitalize">
-                                  Physical Address{" "}
-                                  <Text as="span" fontWeight="700" color="#000">
-                                    Changed
-                                  </Text>
-                                </Text>
-                                <Box>
+                          {changedFields
+                            ?.filter(
+                              (field) =>
+                                field.key === "mailing_address" &&
+                                field.oldValue &&
+                                field.oldValue !== "" &&
+                                field.newValue &&
+                                field.oldValue !== field.newValue
+                            )
+                            .map((field, index) => (
+                              <Box
+                                key={`changed-mailing-${index}`}
+                                border="1px solid #F59E0B"
+                                borderRadius="12px"
+                                p="16px"
+                                bg="white">
+                                <VStack align="start" spacing="8px">
                                   <Text
                                     fontSize="12px"
                                     fontWeight="600"
                                     color="#6B7280"
-                                    mb="4px">
-                                    Previous Physical Address:
+                                    textTransform="capitalize">
+                                    Mailing Address{" "}
+                                    <Text
+                                      as="span"
+                                      fontWeight="700"
+                                      color="#000">
+                                      Changed
+                                    </Text>
                                   </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {field.oldValue || "Not available"}
-                                  </Text>
-                                </Box>
-                                <Box>
-                                  <Text
-                                    fontSize="12px"
-                                    fontWeight="600"
-                                    color="#6B7280"
-                                    mb="4px">
-                                    Current Physical Address:
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {field.newValue || "Not available"}
-                                  </Text>
-                                </Box>
-                              </VStack>
-                            </Box>
-                          ))}
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Previous Mailing Address:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {field.oldValue || "Not available"}
+                                    </Text>
+                                  </Box>
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Current Mailing Address:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {field.newValue || "Not available"}
+                                    </Text>
+                                  </Box>
+                                </VStack>
+                              </Box>
+                            ))}
+                        </VStack>
+                      </TabPanel>
+                    )}
 
-                        {changedFields
-                          ?.filter(
-                            (field) =>
-                              field.key === "mailing_address" &&
-                              field.oldValue &&
-                              field.oldValue !== "" &&
-                              field.newValue &&
-                              field.oldValue !== field.newValue
-                          )
-                          .map((field, index) => (
-                            <Box
-                              key={`changed-mailing-${index}`}
-                              border="1px solid #F59E0B"
-                              borderRadius="12px"
-                              p="16px"
-                              bg="white">
-                              <VStack align="start" spacing="8px">
-                                <Text
-                                  fontSize="12px"
-                                  fontWeight="600"
-                                  color="#6B7280"
-                                  textTransform="capitalize">
-                                  Mailing Address{" "}
-                                  <Text as="span" fontWeight="700" color="#000">
-                                    Changed
-                                  </Text>
-                                </Text>
-                                <Box>
+                    {changedFieldsCount > 0 && (
+                      <TabPanel>
+                        <VStack spacing="12px" align="stretch" mt="20px">
+                          {changedFields
+                            ?.filter(
+                              (field) =>
+                                field.oldValue &&
+                                field.oldValue !== "" &&
+                                field.newValue &&
+                                field.oldValue !== field.newValue &&
+                                (field.key === "email" ||
+                                  field.key === "phone" ||
+                                  field.key === "physical_address" ||
+                                  field.key === "mailing_address")
+                            )
+                            .map((field, index) => (
+                              <Box
+                                key={`changed-${field.key}-${index}`}
+                                border="1px solid #F59E0B"
+                                borderRadius="12px"
+                                p="16px"
+                                bg="white">
+                                <VStack align="start" spacing="8px">
                                   <Text
                                     fontSize="12px"
                                     fontWeight="600"
                                     color="#6B7280"
-                                    mb="4px">
-                                    Previous Mailing Address:
+                                    textTransform="capitalize">
+                                    {field.label}{" "}
+                                    <Text
+                                      as="span"
+                                      fontWeight="700"
+                                      color="#000">
+                                      Changed
+                                    </Text>
                                   </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {field.oldValue || "Not available"}
-                                  </Text>
-                                </Box>
-                                <Box>
-                                  <Text
-                                    fontSize="12px"
-                                    fontWeight="600"
-                                    color="#6B7280"
-                                    mb="4px">
-                                    Current Mailing Address:
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {field.newValue || "Not available"}
-                                  </Text>
-                                </Box>
-                              </VStack>
-                            </Box>
-                          ))}
-
-                        {!changedFields?.some(
-                          (field) =>
-                            (field.key === "physical_address" ||
-                              field.key === "mailing_address") &&
-                            field.oldValue &&
-                            field.oldValue !== "" &&
-                            field.newValue &&
-                            field.oldValue !== field.newValue
-                        ) && (
-                          <Box
-                            border="1px solid #E5E7EB"
-                            borderRadius="12px"
-                            p="16px"
-                            bg="#F9FAFB"
-                            textAlign="center">
-                            <Text fontSize="14px" color="#6B7280">
-                              No address changes found
-                            </Text>
-                          </Box>
-                        )}
-                      </VStack>
-                    </TabPanel>
-
-                    <TabPanel>
-                      <VStack spacing="12px" align="stretch" mt="20px">
-                        {changedFields
-                          ?.filter(
-                            (field) =>
-                              field.oldValue &&
-                              field.oldValue !== "" &&
-                              field.newValue &&
-                              field.oldValue !== field.newValue &&
-                              (field.key === "email" ||
-                                field.key === "phone" ||
-                                field.key === "physical_address" ||
-                                field.key === "mailing_address")
-                          )
-                          .map((field, index) => (
-                            <Box
-                              key={`changed-${field.key}-${index}`}
-                              border="1px solid #F59E0B"
-                              borderRadius="12px"
-                              p="16px"
-                              bg="white">
-                              <VStack align="start" spacing="8px">
-                                <Text
-                                  fontSize="12px"
-                                  fontWeight="600"
-                                  color="#6B7280"
-                                  textTransform="capitalize">
-                                  {field.label}{" "}
-                                  <Text as="span" fontWeight="700" color="#000">
-                                    Changed
-                                  </Text>
-                                </Text>
-                                <Box>
-                                  <Text
-                                    fontSize="12px"
-                                    fontWeight="600"
-                                    color="#6B7280"
-                                    mb="4px">
-                                    Previous {field.label}:
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {field.oldValue || "Not available"}
-                                  </Text>
-                                </Box>
-                                <Box>
-                                  <Text
-                                    fontSize="12px"
-                                    fontWeight="600"
-                                    color="#6B7280"
-                                    mb="4px">
-                                    Current {field.label}:
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="400"
-                                    color="#181D27"
-                                    lineHeight="1.6">
-                                    {field.newValue || "Not available"}
-                                  </Text>
-                                </Box>
-                              </VStack>
-                            </Box>
-                          ))}
-
-                        {(!changedFields ||
-                          changedFields.length === 0 ||
-                          !changedFields.some(
-                            (field) =>
-                              field.oldValue &&
-                              field.oldValue !== "" &&
-                              field.newValue &&
-                              field.oldValue !== field.newValue &&
-                              (field.key === "email" ||
-                                field.key === "phone" ||
-                                field.key === "physical_address" ||
-                                field.key === "mailing_address")
-                          )) && (
-                          <Box
-                            border="1px solid #E5E7EB"
-                            borderRadius="12px"
-                            p="16px"
-                            bg="#F9FAFB"
-                            textAlign="center">
-                            <Text fontSize="14px" color="#6B7280">
-                              No changes found
-                            </Text>
-                          </Box>
-                        )}
-                      </VStack>
-                    </TabPanel>
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Previous {field.label}:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {field.oldValue || "Not available"}
+                                    </Text>
+                                  </Box>
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Current {field.label}:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="400"
+                                      color="#181D27"
+                                      lineHeight="1.6">
+                                      {field.newValue || "Not available"}
+                                    </Text>
+                                  </Box>
+                                </VStack>
+                              </Box>
+                            ))}
+                        </VStack>
+                      </TabPanel>
+                    )}
                   </Tabs>
                 </AccordionPanel>
               </AccordionItem>

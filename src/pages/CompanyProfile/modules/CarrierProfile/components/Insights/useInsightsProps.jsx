@@ -44,9 +44,7 @@ export const useInsightsProps = () => {
     queryKey: ["GET_CARRIER_AUDIT_DATA", companies_id],
     queryFn: () =>
       carrierService.getCarrierAudit({
-        data: {
-          companies_id: companies_id,
-        },
+        companies_id: companies_id,
       }),
     select: (res) => res?.data?.response?.[0] ?? {},
     enabled: Boolean(companies_id),
