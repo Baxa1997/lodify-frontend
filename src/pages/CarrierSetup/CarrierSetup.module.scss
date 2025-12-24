@@ -180,6 +180,7 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .formContainer {
+  width: 100%;
 }
 
 .stepContent {
@@ -254,8 +255,7 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentInsurance {
-  margin-top: 50px;
-  margin-bottom: 30px;
+  margin: 50px auto 0;
   width: 440px;
   height: 200px;
   padding: 20px;
@@ -265,6 +265,39 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
   flex-direction: column;
   box-shadow: #dcdbdb 0px 1px 3px 3px;
   border: 1px solid rgba(213, 215, 218, 1);
+}
+
+.stepContentInsuranceWorkersComp {
+  margin: 50px auto 0;
+  width: 440px;
+  max-height: calc(100vh - 200px);
+  padding: 20px;
+  background: $white;
+  border-radius: $border-radius-lg;
+  display: flex;
+  flex-direction: column;
+  box-shadow: #dcdbdb 0px 1px 3px 3px;
+  border: 1px solid rgba(213, 215, 218, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #94a3b8;
+    }
+  }
 }
 
 .regionTabs {

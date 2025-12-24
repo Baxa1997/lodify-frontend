@@ -14,6 +14,7 @@ const StepRenderer = ({
   onNext = () => {},
   onBack = () => {},
   identitySubView = 1,
+  insuranceSubView = 1,
 }) => {
   switch (currentStep) {
     case 1:
@@ -39,7 +40,12 @@ const StepRenderer = ({
       );
     case 5:
       return (
-        <InsuranceStep control={control} onNext={onNext} onBack={onBack} />
+        <InsuranceStep
+          control={control}
+          onNext={onNext}
+          onBack={onBack}
+          subView={insuranceSubView}
+        />
       );
     case 6:
       return <PaymentStep control={control} onNext={onNext} onBack={onBack} />;
