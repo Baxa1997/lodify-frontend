@@ -716,11 +716,11 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         <Text fontSize="14px" color="#6B7280" fontWeight="400">
           Skip phone verification
         </Text>
-        <Switch
+        {/* <Switch
           colorScheme="orange"
           isChecked={skipPhoneVerification}
           onChange={(e) => setSkipPhoneVerification(e.target.checked)}
-        />
+        /> */}
       </Flex>
 
       <Button
