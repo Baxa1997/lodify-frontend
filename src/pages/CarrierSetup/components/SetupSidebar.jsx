@@ -1,12 +1,9 @@
 import React from "react";
 import {Box} from "@chakra-ui/react";
-import {useNavigate} from "react-router-dom";
 import StepIndicator from "./navigation/StepIndicator";
 import styles from "../CarrierSetup.module.scss";
 
 const SetupSidebar = ({steps, currentStep, handleStepChange = () => {}}) => {
-  const navigate = useNavigate();
-
   return (
     <Box className={styles.sidebar}>
       <StepIndicator

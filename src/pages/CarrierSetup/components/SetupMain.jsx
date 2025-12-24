@@ -14,7 +14,7 @@ const SetupMain = ({
       <Flex
         width="100%"
         bg="#FAFAFA"
-        p="12px 24px"
+        p="6px 24px"
         gap="16px"
         borderBottom={"1px solid #d6d7da"}>
         <Flex
@@ -51,7 +51,7 @@ const SetupMain = ({
           left={"0"}
           right={"0"}
           bg={"#fff"}
-          p={"6px 12px"}
+          p={"4px 12px"}
           borderTop={"1px solid #d6d7da"}
           justifyContent="space-between"
           alignItems="center">
@@ -79,7 +79,7 @@ const SetupMain = ({
               fontSize="14px"
               fontWeight="500"
               px="20px"
-              py="10px"
+              py="6px"
               borderRadius="8px"
               _hover={{bg: "#F9FAFB"}}>
               No, Edit
@@ -90,7 +90,7 @@ const SetupMain = ({
               fontSize="14px"
               fontWeight="600"
               px="20px"
-              py="10px"
+              py="6px"
               borderRadius="8px"
               _hover={{bg: "#DC5A1A"}}
               onClick={onNext}>
