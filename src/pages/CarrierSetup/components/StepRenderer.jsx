@@ -13,10 +13,18 @@ const StepRenderer = ({
   control,
   onNext = () => {},
   onBack = () => {},
+  identitySubView = 1,
 }) => {
   switch (currentStep) {
     case 1:
-      return <IdentityStep control={control} onNext={onNext} onBack={onBack} />;
+      return (
+        <IdentityStep
+          control={control}
+          onNext={onNext}
+          onBack={onBack}
+          subView={identitySubView}
+        />
+      );
     case 2:
       return (
         <OperationsStep control={control} onNext={onNext} onBack={onBack} />

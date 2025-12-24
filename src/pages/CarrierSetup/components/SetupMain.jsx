@@ -8,6 +8,7 @@ const SetupMain = ({
   control,
   onNext = () => {},
   onBack = () => {},
+  identitySubView = 1,
 }) => {
   return (
     <Box className={styles.mainContent} position={"relative"}>
@@ -43,6 +44,7 @@ const SetupMain = ({
           control={control}
           onNext={onNext}
           onBack={onBack}
+          identitySubView={identitySubView}
         />
 
         <Flex

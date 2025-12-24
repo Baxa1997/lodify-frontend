@@ -16,6 +16,7 @@ const CarrierSetup = () => {
   } = useForm();
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState(new Set());
+  const [identitySubView, setIdentitySubView] = useState(1);
 
   const steps = [
     {
@@ -69,6 +70,18 @@ const CarrierSetup = () => {
   ];
 
   const handleNext = () => {
+    if (currentStep === 1 && identitySubView === 1) {
+      setIdentitySubView(2);
+      return;
+    }
+
+    if (currentStep === 1 && identitySubView === 2) {
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
+      setCurrentStep(2);
+      setIdentitySubView(1);
+      return;
+    }
+
     if (currentStep < steps.length) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(currentStep + 1);
@@ -76,8 +89,17 @@ const CarrierSetup = () => {
   };
 
   const handleBack = () => {
+    if (currentStep === 1 && identitySubView === 2) {
+      setIdentitySubView(1);
+      return;
+    }
+
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+
+      if (currentStep === 2) {
+        setIdentitySubView(1);
+      }
     }
   };
 
@@ -102,6 +124,7 @@ const CarrierSetup = () => {
         currentStep={currentStep}
         onNext={handleNext}
         onBack={handleBack}
+        identitySubView={identitySubView}
       />
     </Flex>
   );
