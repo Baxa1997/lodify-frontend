@@ -184,20 +184,6 @@ const AllCarriers = () => {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <Flex justify="center" align="center" h="400px">
-  //       <Spinner
-  //         thickness="4px"
-  //         speed="0.65s"
-  //         emptyColor="#fff"
-  //         color="#EF6820"
-  //         size="lg"
-  //       />
-  //     </Flex>
-  //   );
-  // }
-
   return (
     <Box>
       <Box mt="20px" mb="16px">
@@ -330,7 +316,7 @@ const AllCarriers = () => {
                       fontSize="14px"
                       _hover={{bg: "#FEF3EE"}}
                       onClick={() =>
-                        navigate(`/admin/company?id=${carrier.guid}`)
+                        navigate(`/carrier-setup?id=${carrier.guid}`)
                       }>
                       Set up
                     </Button>

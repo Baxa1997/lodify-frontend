@@ -1,0 +1,198 @@
+$primary-color: #3b82f6;
+$primary-hover: #2563eb;
+$success-color: #10b981;
+$text-primary: #1e293b;
+$text-secondary: #414651;
+$text-muted: #64748b;
+$background-light: #f8fafc;
+$white: white;
+$border-color: #d5d7da;
+$disabled-bg: #e2e8f0;
+$disabled-text: #9ca3af;
+$sidebar-bg: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+$sidebar-text: #cbd5e1;
+$sidebar-text-muted: #94a3b8;
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$shadow-light: 0 4px 20px rgba(0, 0, 0, 0.1);
+$shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+.multiStepContainer {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 300px;
+  background: linear-gradient(to bottom, #0b2432, #015261);
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 30px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0px 0;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 40px;
+    width: 2px;
+    height: 20px;
+    background: #ff5b04;
+    z-index: 1;
+    transition: background 0.3s ease;
+  }
+
+  &.pending:not(:last-child)::after {
+    background: #9ca3af;
+  }
+
+  .stepIndicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    border: 2px solid #ff5b04;
+  }
+
+  .checkmark {
+    color: $white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .activeDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $white;
+  }
+
+  .pendingDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #9ca3af;
+  }
+
+  .stepTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    transition: color 0.3s ease;
+  }
+
+  &.active {
+    .stepIndicator {
+      background: #ff5b04;
+      border: 2px solid #ff5b04;
+      outline: 2px solid #ff944d;
+      outline-offset: 2px;
+    }
+
+    .stepTitle {
+      color: $white;
+    }
+  }
+
+  &.completed {
+    .stepIndicator {
+      background: #ff5b04;
+      border: 2px solid #ff5b04;
+    }
+
+    .stepTitle {
+      color: $white;
+    }
+  }
+
+  &.pending {
+    .stepIndicator {
+      background: transparent;
+      border: 2px solid #d5d7da;
+    }
+
+    .stepTitle {
+      color: #fff;
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 1;
+
+    .stepTitle {
+      color: #fff;
+    }
+  }
+}
+
+.sidebarFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: $sidebar-text-muted;
+  margin-top: 40px;
+}
+
+.footerLeft,
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: #fff;
+  position: relative;
+  background-image: url("/img/registerBg.png");
+  background-size: contain;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  padding-bottom: 24px;
+}
+
+.formContainer {
+  margin-top: 20px;
+  min-width: 600px;
+  min-height: 320px;
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: #dcdbdb 0px 1px 6px 6px;
+  border: 1px solid rgba(213, 215, 218, 1);
+}
+
+.stepContent {
+  width: 100%;
+  text-align: justify;
+}

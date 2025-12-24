@@ -9,7 +9,7 @@ import {
   FormControl,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { Controller } from "react-hook-form";
+import {Controller} from "react-hook-form";
 
 const HFTextField = ({
   control,
@@ -23,6 +23,7 @@ const HFTextField = ({
   leftElement,
   rightElement,
   rules,
+  labelStyle,
   ...props
 }) => {
   return (
@@ -30,7 +31,7 @@ const HFTextField = ({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, fieldState: { error } }) => (
+      render={({field, fieldState: {error}}) => (
         <FormControl isInvalid={!!error} width="100%">
           {label && (
             <Box
@@ -39,12 +40,11 @@ const HFTextField = ({
               fontWeight={500}
               mb="6px"
               display="block"
-              htmlFor={name}>
+              htmlFor={name}
+              {...labelStyle}>
               {label}
               {required && (
-                <Box
-                  as="span"
-                  color="blue.500">
+                <Box as="span" color="blue.500">
                   *
                 </Box>
               )}

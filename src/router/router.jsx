@@ -23,6 +23,7 @@ import CompanyProfile from "../pages/CompanyProfile";
 import ScoreCards from "../pages/ScoreCards";
 import Notifications from "../pages/Notifications";
 import Detention from "../pages/Detention";
+import CarrierSetup from "../pages/CarrierSetup";
 
 const Login = lazy(() => import("../pages/Login/Login"));
 const RoleSelection = lazy(() =>
@@ -144,6 +145,15 @@ const Router = () => {
         <Route path="notifications" element={<Notifications />} />
         <Route path="detention" element={<Detention />} />
       </Route>
+
+      <Route
+        path="/carrier-setup"
+        element={
+          <ProtectedRoute>
+            <CarrierSetup />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/"
