@@ -36,7 +36,6 @@ const CertificationsStep = ({control}) => {
         </Box>
       </Box>
 
-      {/* Certificate Upload Section */}
       <Flex
         border="1px solid #D5D7DA"
         borderRadius="8px"
@@ -75,7 +74,6 @@ const CertificationsStep = ({control}) => {
         </Box>
       </Flex>
 
-      {/* Agent Contact Details Section */}
       <Box>
         <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="10px">
           Enter your agent&apos;s contact details. An email will be sent from

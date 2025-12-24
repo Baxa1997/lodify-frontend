@@ -1,43 +1,37 @@
 import React from "react";
-import {Box, Text, Flex, Button} from "@chakra-ui/react";
+import {Box, Text} from "@chakra-ui/react";
 import styles from "../../CarrierSetup.module.scss";
+import HFMultiSelect from "@components/HFMultiSelect";
 
-const InsuranceStep = ({onNext = () => {}, onBack = () => {}}) => {
+const InsuranceStep = ({control}) => {
+  const commodityTypes = [
+    {label: "Agriculture", value: "agriculture"},
+    {label: "Alcohol", value: "alcohol"},
+    {label: "Automotive", value: "automotive"},
+    {label: "Chemicals", value: "chemicals"},
+    {label: "Electronics", value: "electronics"},
+    {label: "Food", value: "food"},
+  ];
   return (
-    <Box className={styles.stepContent}>
-      {/* Your content will go here */}
+    <Box className={styles.stepContentInsurance}>
+      <Text fontSize="24px" fontWeight="bold" color="#1e293b" mb="8px">
+        Cargo Insurance
+      </Text>
+      <Text fontSize="14px" color="#414651" mb="12px">
+        Please confirm your policy exclusions below{" "}
+      </Text>
 
-      <Flex
-        justifyContent="space-between"
-        alignItems="center"
-        mt="40px"
-        pt="24px"
-        borderTop="1px solid #E5E7EB">
-        <Flex
-          alignItems="center"
-          gap="8px"
-          cursor="pointer"
-          onClick={onBack}
-          color="#535862">
-          <img src="/img/backArrow.svg" alt="arrow-left" />
-          <Text fontSize="14px" fontWeight="400">
-            Back
-          </Text>
-        </Flex>
-
-        <Button
-          bg="#EF6820"
-          color="white"
-          fontSize="14px"
-          fontWeight="600"
-          px="20px"
-          py="10px"
-          borderRadius="8px"
-          _hover={{bg: "#DC5A1A"}}
-          onClick={onNext}>
-          Continue
-        </Button>
-      </Flex>
+      <Box>
+        <Text fontSize="14px" fontWeight="600" color="#414651" mb="8px">
+          Commodity type
+        </Text>
+        <HFMultiSelect
+          options={commodityTypes}
+          control={control}
+          name="commodity_types"
+          label="Commodity type"
+        />
+      </Box>
     </Box>
   );
 };

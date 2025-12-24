@@ -253,6 +253,20 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
   border: 1px solid rgba(213, 215, 218, 1);
 }
 
+.stepContentInsurance {
+  margin-top: 50px;
+  margin-bottom: 30px;
+  width: 440px;
+  height: 200px;
+  padding: 20px;
+  background: $white;
+  border-radius: $border-radius-lg;
+  display: flex;
+  flex-direction: column;
+  box-shadow: #dcdbdb 0px 1px 3px 3px;
+  border: 1px solid rgba(213, 215, 218, 1);
+}
+
 .regionTabs {
   display: flex;
   border-bottom: 1px solid #e2e8f0;
@@ -338,7 +352,7 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
   background-color: #fff;
   border-radius: $border-radius;
   padding: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #d5d7da;
 }
 
 .infoIcon {
