@@ -276,9 +276,23 @@ const Register = () => {
         number_type: localStorage.getItem("number_type"),
       };
 
-      const response = await authService.register(apiData);
-
-      setRegisterSuccess(true);
+      await authService
+        .register(apiData)
+        .then((res) => {
+          setRegisterSuccess(true);
+        })
+        .catch((err) => {
+          toast({
+            title: "Registration Failed",
+            description:
+              err?.data?.data || "Failed to create account. Please try again.",
+            status: "error",
+            duration: 7000,
+            isClosable: true,
+            position: "top-right",
+          });
+          console.log("errerr", err);
+        });
     } catch (error) {
       console.error("Registration failed:", error);
 

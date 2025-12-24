@@ -9,6 +9,7 @@ import {
   Input,
   HStack,
   useToast,
+  Switch,
 } from "@chakra-ui/react";
 import OtpInput from "react-otp-input";
 import HFTextField from "../../../../components/HFTextField";
@@ -24,6 +25,7 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
   const [isResending, setIsResending] = useState(false);
   const [emailSmsId, setEmailSmsId] = useState(null);
   const [confirmationResult, setConfirmationResult] = useState(null);
+  const [skipPhoneVerification, setSkipPhoneVerification] = useState(false);
 
   const [sessionInfo, setSessionInfo] = useState(null);
   const toast = useToast();
@@ -256,7 +258,13 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
   };
 
   const handleConfirmAndContinue = () => {
-    setCurrentSubStep("phone");
+    if (skipPhoneVerification) {
+      setValue("phoneVerified", true);
+      setValue("phoneVerificationId", "skipped");
+      setCurrentSubStep("email");
+    } else {
+      setCurrentSubStep("phone");
+    }
   };
 
   if (currentSubStep === "phone") {
@@ -701,6 +709,17 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
           label="Phone number"
           placeholder="Phone number"
           disabled
+        />
+      </Flex>
+
+      <Flex alignItems="center" justifyContent="space-between" mt={4} mb={2}>
+        <Text fontSize="14px" color="#6B7280" fontWeight="400">
+          Skip phone verification
+        </Text>
+        <Switch
+          colorScheme="orange"
+          isChecked={skipPhoneVerification}
+          onChange={(e) => setSkipPhoneVerification(e.target.checked)}
         />
       </Flex>
 
