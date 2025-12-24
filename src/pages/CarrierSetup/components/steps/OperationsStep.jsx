@@ -16,7 +16,7 @@ const OperationsStep = ({control}) => {
   ];
 
   return (
-    <Box w="420px" className={styles.stepContent}>
+    <Box className={styles.stepContentOperation}>
       <Text fontSize="14x" fontWeight="600" color="#181D27">
         Confirm these details about your operations
       </Text>

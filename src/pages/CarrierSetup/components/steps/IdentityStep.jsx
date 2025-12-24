@@ -6,7 +6,7 @@ import HFTextField from "@components/HFTextField";
 const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
   if (subView === 2) {
     return (
-      <Box w="620px" className={styles.stepContent}>
+      <Box className={styles.stepContentIdentityContact}>
         <Text fontSize="14x" fontWeight="600" color="#181D27">
           Confirm your contact information.
         </Text>
@@ -25,7 +25,7 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
   }
 
   return (
-    <Box className={styles.stepContent}>
+    <Box className={styles.stepContentIdentity}>
       <Text fontSize="14x" fontWeight="600" color="#181D27">
         Let&apos;s start with the basics.
       </Text>
