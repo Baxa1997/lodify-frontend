@@ -4,7 +4,7 @@ import styles from "../../CarrierSetup.module.scss";
 
 const OperationsStep = () => {
   return (
-    <Box className={styles.stepContent}>
+    <Box w="620px" className={styles.stepContent}>
       <Text fontSize="14x" fontWeight="600" color="#181D27">
         Confirm your contact information.
       </Text>

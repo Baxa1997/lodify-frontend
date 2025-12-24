@@ -16,7 +16,7 @@ const StepIndicator = ({steps, currentStep, handleStepChange = () => {}}) => {
   return (
     <Box className={styles.steps}>
       <Box
-        mb="40px"
+        mb="30px"
         cursor="pointer"
         onClick={() => navigate("/admin/dashboard")}>
         <img src="/img/logoLodify.svg" alt="Lodify Logo" />

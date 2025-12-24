@@ -181,11 +181,11 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 
 .formContainer {
   margin: auto;
-  min-width: 600px;
+  width: fit-content;
   min-height: 320px;
   background: $white;
   border-radius: $border-radius-lg;
-  padding: 12px 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   box-shadow: #dcdbdb 0px 1px 6px 6px;

@@ -45,7 +45,7 @@ const IdentityStep = ({control}) => {
         />
       </Box>
 
-      <Box mt="20px">
+      <Box mt="14px">
         <Text fontSize="14px" fontWeight="600" color="#181D27" mb="12px">
           Physical Address
         </Text>
@@ -158,12 +158,12 @@ const IdentityStep = ({control}) => {
         </Box>
       </Box>
 
-      <Box mt="20px">
+      <Box mt="14px">
         <Text fontSize="14px" fontWeight="600" color="#181D27" mb="6px">
           Physical Address
         </Text>
 
-        <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
+        <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="12px">
           <HFTextField
             label="Identifires"
             control={control}
