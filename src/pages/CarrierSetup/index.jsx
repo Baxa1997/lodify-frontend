@@ -34,7 +34,7 @@ const CarrierSetup = () => {
   const [paymentSubView, setPaymentSubView] = useState(1);
   const [contractSubView, setContractSubView] = useState(1);
   const [isInsuranceLoading, setIsInsuranceLoading] = useState(false);
-
+  console.log("watchwatch", watch());
   const steps = [
     {
       id: 1,

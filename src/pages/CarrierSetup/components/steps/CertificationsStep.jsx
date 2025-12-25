@@ -1,17 +1,11 @@
-import React, {useRef} from "react";
+import React from "react";
 import {Box, Text, Flex, Button} from "@chakra-ui/react";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import HFPhoneInput from "@components/HFPhoneInput";
+import HFCustomFilesUpload from "@components/HFCustomFilesUpload";
 
 const CertificationsStep = ({control}) => {
-  const fileInputRef = useRef(null);
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-    // certificate
-  };
-
   return (
     <Box className={styles.stepContentIdentityCertifications}>
       <Box mb="20px">
@@ -52,16 +46,14 @@ const CertificationsStep = ({control}) => {
             Upload your Certificate of Liability Insurance
           </Text>
         </Box>
-        <Box>
-          <input
-            ref={fileInputRef}
-            type="file"
-            style={{display: "none"}}
-            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-          />
+        <HFCustomFilesUpload
+          control={control}
+          name="insurance.certificate"
+          rules={{
+            required: "Certificate is required",
+          }}>
           <Button
             className={styles.uploadButton}
-            onClick={handleUploadClick}
             leftIcon={
               <img
                 src="/img/upload.svg"
@@ -72,7 +64,7 @@ const CertificationsStep = ({control}) => {
             }>
             Upload
           </Button>
-        </Box>
+        </HFCustomFilesUpload>
       </Flex>
 
       <Box>
