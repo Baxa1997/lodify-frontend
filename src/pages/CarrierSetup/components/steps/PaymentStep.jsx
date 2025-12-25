@@ -32,13 +32,13 @@ const PaymentStep = ({control, subView = 1}) => {
       case 4:
         return (
           <Box className={styles.stepContentPayment}>
-            <OtpPhoneConfirm />
+            <OtpPhoneConfirm control={control} />
           </Box>
         );
       case 5:
         return (
           <Box className={styles.stepContentPayment}>
-            <EnterCompanyFactoring />
+            <EnterCompanyFactoring control={control} />
           </Box>
         );
       case 6:
