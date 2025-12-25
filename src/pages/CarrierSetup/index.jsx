@@ -19,8 +19,6 @@ const CarrierSetup = () => {
     select: (res) => res.data?.response || {},
   });
 
-  console.log("carrierDatacarrierData", carrierData);
-
   const {
     control,
     handleSubmit,

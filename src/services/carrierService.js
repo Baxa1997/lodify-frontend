@@ -43,7 +43,8 @@ const carrierService = {
   getCarrierSetupData: (id) =>
     httpRequest.get(`v1/object-slim/companies/${id}`),
 
-  addAgent: (data) => httpRequest.post("v1/object-slim/companies", data),
+  addCompensationInsurance: (data) =>
+    httpRequest.post("v2/items/insurance_agent", data),
 };
 
 export default carrierService;

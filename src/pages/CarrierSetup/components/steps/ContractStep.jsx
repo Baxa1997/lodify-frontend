@@ -1,15 +1,9 @@
 import React from "react";
-import {Box, Text, Input, Flex, Button} from "@chakra-ui/react";
-import {Controller} from "react-hook-form";
+import {Box, Text, Flex} from "@chakra-ui/react";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 
 const ContractStep = ({control, subView = 1}) => {
-  const defaultValues = {
-    tin: "852577829 (EIN)",
-    federal_tax_classification: "Individual/Sale proprietor",
-  };
-
   if (subView === 2) {
     return (
       <Box className={styles.stepContentContract}>
