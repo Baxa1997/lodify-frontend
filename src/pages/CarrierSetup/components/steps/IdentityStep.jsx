@@ -2,8 +2,11 @@ import React from "react";
 import {Box, Text, Flex, Button} from "@chakra-ui/react";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
+import {useWatch} from "react-hook-form";
 
 const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
+  const values = useWatch({control});
+
   if (subView === 2) {
     return (
       <Box className={styles.stepContentIdentityContact}>
@@ -15,10 +18,18 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
         </Text>
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
-          <ContactsInfo src="/img/afterHours.svg" />
-          <ContactsInfo src="/img/billing.svg" />
-          <ContactsInfo src="/img/claims.svg" />
-          <ContactsInfo src="/img/dispatch.svg" />
+          {values?.company_officer_1 && (
+            <ContactsInfo
+              name={values?.company_officer_1}
+              src="/img/afterHours.svg"
+            />
+          )}
+          {values?.company_officer_2 && (
+            <ContactsInfo
+              name={values?.company_officer_2}
+              src="/img/billing.svg"
+            />
+          )}
         </Box>
       </Box>
     );
@@ -35,9 +46,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
 
       <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
         <HFTextField
+          disabled
           label="Legal name"
           control={control}
-          name="carrier_name"
+          name="legal_name"
           placeholder="Enter carrier name"
           style={{
             border: "1px solid #D5D7DA",
@@ -50,9 +62,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
         />
 
         <HFTextField
+          disabled
           label="Identifires"
           control={control}
-          name="carrier_name"
+          name="us_dot_number"
           placeholder="Enter carrier name"
           style={{
             border: "1px solid #D5D7DA",
@@ -72,10 +85,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
           <HFTextField
-            label="Identifires"
+            disabled
+            label="Address Line 1"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="phy_street"
+            placeholder="Address Line 1"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -87,10 +101,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            label="Identifires"
+            disabled
+            label="Address Line 2"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name=""
+            placeholder="Address Line 2"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -102,10 +117,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            label="Identifires"
+            disabled
+            label="City"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="phy_city"
+            placeholder="City"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -117,10 +133,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            label="Identifires"
+            disabled
+            label="State"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="phy_state"
+            placeholder="State"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -132,10 +149,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            label="Identifires"
+            disabled
+            label="ZIP"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="phy_zip"
+            placeholder="ZIP"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -147,10 +165,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            label="Identifires"
+            disabled
+            label="Country"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="phy_country"
+            placeholder="Country"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -162,10 +181,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            label="Identifires"
+            disabled
+            label="Phone(s)"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="telephone"
+            placeholder="Phones"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -185,10 +205,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="12px">
           <HFTextField
-            label="Identifires"
+            disabled
+            label="Email address"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="email"
+            placeholder="Email address"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -200,10 +221,11 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            label="Identifires"
+            disabled
+            label="Phone number"
             control={control}
-            name="carrier_name"
-            placeholder="Enter carrier name"
+            name="telephone"
+            placeholder="Phone number"
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -222,9 +244,9 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
 const ContactsInfo = ({
   src = "/img/phone.svg",
   contactLabel = "Dispatch",
-  name = "Steven Hart",
-  phone = "+1 380 444-6066",
-  email = "stevenjobs@gmail.com",
+  name = "",
+  phone = "",
+  email = "",
 }) => {
   return (
     <Box>

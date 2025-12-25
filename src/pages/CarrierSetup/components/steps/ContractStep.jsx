@@ -2,6 +2,7 @@ import React from "react";
 import {Box, Text, Input, Flex, Button} from "@chakra-ui/react";
 import {Controller} from "react-hook-form";
 import styles from "../../CarrierSetup.module.scss";
+import HFTextField from "@components/HFTextField";
 
 const ContractStep = ({control, subView = 1}) => {
   const defaultValues = {
@@ -194,25 +195,11 @@ const ContractStep = ({control, subView = 1}) => {
               display="block">
               TIN
             </Text>
-            <Controller
+            <HFTextField
+              placeholder="Enter TIN"
+              borderColor="#d5d7da"
               control={control}
-              name="contract_tin"
-              defaultValue={defaultValues.tin}
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={field.value || defaultValues.tin}
-                  isReadOnly
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  cursor="not-allowed"
-                />
-              )}
+              name="tin"
             />
           </Box>
 
@@ -226,27 +213,11 @@ const ContractStep = ({control, subView = 1}) => {
               display="block">
               Federal Tax Classification
             </Text>
-            <Controller
+            <HFTextField
+              placeholder="Enter Federal Tax Classification"
+              borderColor="#d5d7da"
               control={control}
-              name="contract_federal_tax_classification"
-              defaultValue={defaultValues.federal_tax_classification}
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={
-                    field.value || defaultValues.federal_tax_classification
-                  }
-                  isReadOnly
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  cursor="not-allowed"
-                />
-              )}
+              name="federal_tax_classification"
             />
           </Box>
         </Box>

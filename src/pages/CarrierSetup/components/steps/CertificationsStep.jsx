@@ -9,6 +9,7 @@ const CertificationsStep = ({control}) => {
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+    // certificate
   };
 
   return (
@@ -87,7 +88,7 @@ const CertificationsStep = ({control}) => {
           <HFTextField
             label="First Name"
             control={control}
-            name="agent_first_name"
+            name="insurance.first_name"
             placeholder="First Name"
             style={{
               border: "1px solid #D5D7DA",
@@ -102,7 +103,7 @@ const CertificationsStep = ({control}) => {
           <HFTextField
             label="Last Name"
             control={control}
-            name="agent_last_name"
+            name="insurance.last_name"
             placeholder="Last Name"
             style={{
               border: "1px solid #D5D7DA",
@@ -117,7 +118,7 @@ const CertificationsStep = ({control}) => {
           <HFTextField
             label="Email"
             control={control}
-            name="agent_email"
+            name="insurance.email"
             placeholder="Email"
             type="email"
             style={{
@@ -135,7 +136,7 @@ const CertificationsStep = ({control}) => {
               Phone Number
             </Text>
             <Box className={styles.phoneInputWrapper}>
-              <HFPhoneInput control={control} name="agent_phone" />
+              <HFPhoneInput control={control} name="insurance.phone" />
             </Box>
           </Box>
         </Box>

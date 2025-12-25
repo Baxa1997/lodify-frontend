@@ -1,11 +1,26 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Flex} from "@chakra-ui/react";
 import SetupSidebar from "./components/SetupSidebar";
 import SetupMain from "./components/SetupMain";
 import styles from "./CarrierSetup.module.scss";
 import {useForm} from "react-hook-form";
+import {useQuery} from "@tanstack/react-query";
+import carrierService from "@services/carrierService";
+import {useSearchParams} from "react-router-dom";
 
 const CarrierSetup = () => {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+
+  const {data: carrierData} = useQuery({
+    queryKey: ["carrier", id],
+    queryFn: () => carrierService.getCarrierSetupData(id),
+    enabled: Boolean(id),
+    select: (res) => res.data?.response || {},
+  });
+
+  console.log("carrierDatacarrierData", carrierData);
+
   const {
     control,
     handleSubmit,
@@ -173,6 +188,12 @@ const CarrierSetup = () => {
       setCurrentStep(step);
     }
   };
+
+  useEffect(() => {
+    if (Boolean(carrierData?.guid)) {
+      reset(carrierData);
+    }
+  }, [carrierData]);
 
   return (
     <Flex className={styles.multiStepContainer} minHeight="100vh">

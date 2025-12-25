@@ -10,12 +10,12 @@ import {Controller} from "react-hook-form";
 
 const InsuranceStep = ({control, subView = 1}) => {
   const commodityTypes = [
-    {label: "Agriculture", value: "agriculture"},
-    {label: "Alcohol", value: "alcohol"},
-    {label: "Automotive", value: "automotive"},
-    {label: "Chemicals", value: "chemicals"},
-    {label: "Electronics", value: "electronics"},
-    {label: "Food", value: "food"},
+    {label: "Agriculture", value: "Agriculture"},
+    {label: "Alcohol", value: "Alcohol"},
+    {label: "Automotive", value: "Automotive"},
+    {label: "Chemicals", value: "Chemicals"},
+    {label: "Electronics", value: "Electronics"},
+    {label: "Food", value: "Food"},
   ];
 
   if (subView === 2) {
@@ -36,7 +36,7 @@ const InsuranceStep = ({control, subView = 1}) => {
 
         <Controller
           control={control}
-          name="workers_comp_required"
+          name="insurance.worker_compensation"
           defaultValue="yes"
           render={({field}) => (
             <RadioGroup {...field} mb="24px">
@@ -77,7 +77,7 @@ const InsuranceStep = ({control, subView = 1}) => {
           <Flex>
             <HFFileUpload
               control={control}
-              name="workers_comp_document"
+              name="insurance.compensation_insurance"
               label=""
             />
           </Flex>
@@ -86,7 +86,7 @@ const InsuranceStep = ({control, subView = 1}) => {
         <Box display="flex" flexDirection="column" gap="16px">
           <HFTextField
             control={control}
-            name="workers_comp_policy_number"
+            name="insurance.policy_number"
             label="Policy number"
             placeholder="Enter policy number"
             required
@@ -122,10 +122,7 @@ const InsuranceStep = ({control, subView = 1}) => {
                   fontSize: "14px",
                 },
               }}>
-              <HFDatePicker
-                control={control}
-                name="workers_comp_effective_date"
-              />
+              <HFDatePicker control={control} name="insurance.effective_date" />
             </Box>
           </Box>
 
@@ -153,14 +150,14 @@ const InsuranceStep = ({control, subView = 1}) => {
               }}>
               <HFDatePicker
                 control={control}
-                name="workers_comp_cancellation_date"
+                name="insurance.cancellation_date"
               />
             </Box>
           </Box>
 
           <HFTextField
             control={control}
-            name="workers_comp_issued_by"
+            name="insurance.issued_by"
             label="Issued by"
             placeholder="Enter issuer name"
             required
@@ -176,7 +173,7 @@ const InsuranceStep = ({control, subView = 1}) => {
 
           <HFTextField
             control={control}
-            name="workers_comp_full_name"
+            name="insurance.full_name"
             label="Full name"
             placeholder="Enter full name"
             required
@@ -203,12 +200,12 @@ const InsuranceStep = ({control, subView = 1}) => {
                 *
               </Box>
             </Text>
-            <HFPhoneInput control={control} name="workers_comp_phone" />
+            <HFPhoneInput control={control} name="insurance.phone_number" />
           </Box>
 
           <HFTextField
             control={control}
-            name="workers_comp_email"
+            name="insurance.worker_email"
             label="Email"
             placeholder="Enter email address"
             type="email"
@@ -243,7 +240,7 @@ const InsuranceStep = ({control, subView = 1}) => {
         <HFMultiSelect
           options={commodityTypes}
           control={control}
-          name="commodity_types"
+          name="insurance.commodity_type"
           label="Commodity type"
         />
       </Box>

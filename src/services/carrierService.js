@@ -37,6 +37,13 @@ const carrierService = {
       `v2/items/companies_audit?data=${encodeURIComponent(dataParam)}`
     );
   },
+
+  // Carrier Setup
+
+  getCarrierSetupData: (id) =>
+    httpRequest.get(`v1/object-slim/companies/${id}`),
+
+  addAgent: (data) => httpRequest.post("v1/object-slim/companies", data),
 };
 
 export default carrierService;

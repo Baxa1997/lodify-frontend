@@ -26,9 +26,10 @@ const OperationsStep = ({control}) => {
 
       <Box display="grid" gridTemplateColumns="repeat(1, 1fr)" gap="16px">
         <HFTextField
+          disabled
           label="Total power unites "
           control={control}
-          name="total_power_units"
+          name="power_units"
           placeholder="Enter total power units"
           style={{
             border: "1px solid #D5D7DA",
@@ -41,9 +42,10 @@ const OperationsStep = ({control}) => {
         />
 
         <HFTextField
+          disabled
           label="Total drives  "
           control={control}
-          name="total_drives"
+          name="total_drivers"
           placeholder="Enter total drives"
           style={{
             border: "1px solid #D5D7DA",
@@ -75,6 +77,7 @@ const OperationsStep = ({control}) => {
             Models
           </Text>
           <HFSelect
+            disabled
             options={[]}
             control={control}
             name="models"
@@ -86,6 +89,7 @@ const OperationsStep = ({control}) => {
         </Box>
 
         <HFTextField
+          disabled
           label="Trailer count"
           control={control}
           name="trailer_count"
@@ -101,6 +105,7 @@ const OperationsStep = ({control}) => {
         />
 
         <HFTextField
+          disabled
           label="Specialization"
           control={control}
           name="specialization"
