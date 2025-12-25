@@ -1,11 +1,65 @@
-import React from "react";
-import {Box, Text, Flex, Button} from "@chakra-ui/react";
+import React, {useState, useMemo} from "react";
+import {
+  Box,
+  Text,
+  Flex,
+  Button,
+  Badge,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  VStack,
+  HStack,
+  IconButton,
+} from "@chakra-ui/react";
+import {useWatch, useController} from "react-hook-form";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import HFPhoneInput from "@components/HFPhoneInput";
 import HFCustomFilesUpload from "@components/HFCustomFilesUpload";
+import {getShortFileName} from "@utils/getFileName";
+import FilesReader from "@components/FileViewer/FilesReader";
 
 const CertificationsStep = ({control}) => {
+  const certificateFiles = useWatch({control, name: "insurance.certificate"});
+  const {field} = useController({
+    control,
+    name: "insurance.certificate",
+    defaultValue: [],
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isFileReaderOpen, setIsFileReaderOpen] = useState(false);
+
+  const safeFiles = useMemo(() => {
+    if (!certificateFiles) return [];
+    if (Array.isArray(certificateFiles)) {
+      return certificateFiles.filter(
+        (f) => f && typeof f === "string" && f.trim() !== ""
+      );
+    }
+    if (
+      typeof certificateFiles === "string" &&
+      certificateFiles.trim() !== ""
+    ) {
+      return [certificateFiles];
+    }
+    return [];
+  }, [certificateFiles]);
+
+  const handleRemoveFile = (fileUrl) => {
+    const updatedFiles = safeFiles.filter((f) => f !== fileUrl);
+    field.onChange(updatedFiles);
+  };
+
+  const handleFileClick = (fileUrl) => {
+    setSelectedFile(fileUrl);
+    setIsFileReaderOpen(true);
+  };
   return (
     <Box className={styles.stepContentIdentityCertifications}>
       <Box mb="20px">
@@ -42,9 +96,28 @@ const CertificationsStep = ({control}) => {
           <Text fontSize="18px" fontWeight="600" color="#1e293b" mb="4px">
             Certificate
           </Text>
-          <Text fontSize="14px" color="#414651" mb="12px">
+          <Text fontSize="14px" color="#414651" mb="8px">
             Upload your Certificate of Liability Insurance
           </Text>
+          {safeFiles.length > 0 && (
+            <Badge
+              cursor="pointer"
+              bg="#EF6820"
+              color="white"
+              px="12px"
+              py="4px"
+              borderRadius="16px"
+              fontSize="12px"
+              fontWeight="500"
+              _hover={{bg: "#d95a1a"}}
+              onClick={() => setIsModalOpen(true)}
+              display="inline-flex"
+              alignItems="center"
+              gap="6px">
+              {safeFiles.length} file{safeFiles.length !== 1 ? "s" : ""}{" "}
+              uploaded
+            </Badge>
+          )}
         </Box>
         <HFCustomFilesUpload
           control={control}
@@ -132,15 +205,117 @@ const CertificationsStep = ({control}) => {
             </Box>
           </Box>
         </Box>
-        <Button
+        {/* <Button
           className={styles.addAgentButton}
           bg="#EF6820"
           color="white"
           _hover={{bg: "#d95a1a"}}
           fontWeight="500">
           Add Agent
-        </Button>
+        </Button> */}
       </Box>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="md"
+        isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Uploaded Certificates</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {safeFiles.length > 0 ? (
+              <VStack align="stretch" spacing={2}>
+                {safeFiles.map((fileUrl, idx) => (
+                  <HStack
+                    key={idx}
+                    px="3"
+                    py="3"
+                    border="1px solid"
+                    borderColor="gray.200"
+                    borderRadius="md"
+                    justify="space-between"
+                    cursor="pointer"
+                    _hover={{bg: "gray.50", borderColor: "gray.300"}}
+                    transition="all 0.2s"
+                    onClick={() => handleFileClick(fileUrl)}>
+                    <Flex align="center" gap="2" flex="1" minW="0">
+                      <Box
+                        w="32px"
+                        h="32px"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        bg="gray.100"
+                        borderRadius="md"
+                        flexShrink={0}>
+                        <img
+                          src="/img/filePhoto.svg"
+                          alt="file"
+                          width="20px"
+                          height="20px"
+                        />
+                      </Box>
+                      <Text
+                        fontSize="14px"
+                        fontWeight="500"
+                        flex="1"
+                        minW="0"
+                        isTruncated
+                        title={
+                          getShortFileName(fileUrl, 100).fullName || fileUrl
+                        }>
+                        {getShortFileName(fileUrl, 100).fullName ||
+                          getShortFileName(fileUrl, 30).shortName ||
+                          fileUrl ||
+                          "Unknown file"}
+                      </Text>
+                    </Flex>
+                    <IconButton
+                      bg="none"
+                      _hover={{bg: "red.50"}}
+                      size="sm"
+                      colorScheme="red"
+                      aria-label="remove"
+                      icon={
+                        <img
+                          src="/img/cancelIcon.svg"
+                          width={"12px"}
+                          height={"12px"}
+                          alt="close"
+                        />
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveFile(fileUrl);
+                      }}
+                    />
+                  </HStack>
+                ))}
+              </VStack>
+            ) : (
+              <Text fontSize="14px" color="gray.500" textAlign="center" py="4">
+                No certificates uploaded
+              </Text>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={() => setIsModalOpen(false)}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <FilesReader
+        isOpen={isFileReaderOpen}
+        onClose={() => {
+          setIsFileReaderOpen(false);
+          setSelectedFile(null);
+        }}
+        file={selectedFile || ""}
+      />
     </Box>
   );
 };

@@ -1,6 +1,5 @@
 import React, {useRef, useState, useMemo} from "react";
 import {
-  FormControl,
   FormErrorMessage,
   Input,
   Modal,
@@ -67,9 +66,9 @@ function FileUploadButton({
     data.append("file", file);
 
     fileService
-      .upload(data, {folder_name: "trips"})
+      .folderUpload(data, {folder_name: "media"})
       .then((res) => {
-        onChange([...safeValue, `${"https://cdn.u-code.io"}/${res?.filename}`]);
+        onChange([...safeValue, `${"https://cdn.u-code.io"}/${res?.link}`]);
       })
       .finally(() => {
         setLoading(false);
