@@ -11,6 +11,7 @@ const SetupMain = ({
   identitySubView = 1,
   insuranceSubView = 1,
   paymentSubView = 1,
+  contractSubView = 1,
 }) => {
   return (
     <Box className={styles.mainContent} position={"relative"}>
@@ -49,6 +50,7 @@ const SetupMain = ({
           identitySubView={identitySubView}
           insuranceSubView={insuranceSubView}
           paymentSubView={paymentSubView}
+          contractSubView={contractSubView}
         />
 
         <Flex

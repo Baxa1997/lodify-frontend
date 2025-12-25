@@ -6,61 +6,33 @@ import CertificationsStep from "./steps/CertificationsStep";
 import InsuranceStep from "./steps/InsuranceStep";
 import PaymentStep from "./steps/PaymentStep";
 import QuestionnaireStep from "./steps/QuestionnaireStep";
-// import ContractStep from "./steps/ContractStep";
+import ContractStep from "./steps/ContractStep";
 
 const StepRenderer = ({
   currentStep,
   control,
-  onNext = () => {},
-  onBack = () => {},
   identitySubView = 1,
   insuranceSubView = 1,
   paymentSubView = 1,
+  contractSubView = 1,
 }) => {
   switch (currentStep) {
     case 1:
-      return (
-        <IdentityStep
-          control={control}
-          onNext={onNext}
-          onBack={onBack}
-          subView={identitySubView}
-        />
-      );
+      return <IdentityStep control={control} subView={identitySubView} />;
     case 2:
-      return (
-        <OperationsStep control={control} onNext={onNext} onBack={onBack} />
-      );
+      return <OperationsStep control={control} />;
     case 3:
-      return (
-        <CoverageMapStep control={control} onNext={onNext} onBack={onBack} />
-      );
+      return <CoverageMapStep control={control} />;
     case 4:
-      return (
-        <CertificationsStep control={control} onNext={onNext} onBack={onBack} />
-      );
+      return <CertificationsStep control={control} />;
     case 5:
-      return (
-        <InsuranceStep
-          control={control}
-          onNext={onNext}
-          onBack={onBack}
-          subView={insuranceSubView}
-        />
-      );
+      return <InsuranceStep control={control} subView={insuranceSubView} />;
     case 6:
-      return (
-        <PaymentStep
-          control={control}
-          onNext={onNext}
-          onBack={onBack}
-          subView={paymentSubView}
-        />
-      );
+      return <PaymentStep control={control} subView={paymentSubView} />;
     case 7:
       return <QuestionnaireStep control={control} />;
-    // case 8:
-    // return <ContractStep onNext={onNext} onBack={onBack} />;
+    case 8:
+      return <ContractStep control={control} subView={contractSubView} />;
     default:
       return null;
   }
