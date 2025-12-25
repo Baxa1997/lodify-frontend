@@ -33,6 +33,7 @@ const CarrierSetup = () => {
   const [insuranceSubView, setInsuranceSubView] = useState(1);
   const [paymentSubView, setPaymentSubView] = useState(1);
   const [contractSubView, setContractSubView] = useState(1);
+  const [isInsuranceLoading, setIsInsuranceLoading] = useState(false);
 
   const steps = [
     {
@@ -104,9 +105,54 @@ const CarrierSetup = () => {
     }
 
     if (currentStep === 5 && insuranceSubView === 2) {
-      setCompletedSteps((prev) => new Set([...prev, currentStep]));
-      setCurrentStep(6);
-      setInsuranceSubView(1);
+      setIsInsuranceLoading(true);
+      const formData = watch();
+      const insuranceData = formData.insurance || {};
+
+      const formatDate = (dateString) => {
+        if (!dateString) return "";
+
+        if (dateString.includes("T")) return dateString;
+
+        return dateString ? `${dateString}T00:00:00.000Z` : "";
+      };
+
+      const payload = {
+        first_name: insuranceData.first_name || "",
+        last_name: insuranceData.last_name || "",
+        email: insuranceData.email || "",
+        phone: insuranceData.phone || "",
+        certificate: insuranceData.certificate
+          ? Array.isArray(insuranceData.certificate)
+            ? insuranceData.certificate
+            : [insuranceData.certificate]
+          : [],
+        commodity_type: insuranceData.commodity_type || [],
+        worker_compensation:
+          insuranceData.worker_compensation === "yes" ? true : false,
+        compensation_insurance: insuranceData.compensation_insurance || "",
+        policy_number: insuranceData.policy_number || "",
+        effective_date: formatDate(insuranceData.effective_date),
+        cancellation_date: formatDate(insuranceData.cancellation_date),
+        issued_by: insuranceData.issued_by || "",
+        full_name: insuranceData.full_name || "",
+        phone_number: insuranceData.phone_number || "",
+        worker_email: insuranceData.worker_email || "",
+        companies_id: carrierData?.guid || id || "",
+      };
+
+      carrierService
+        .addInsuranceAgents(payload)
+        .then(() => {
+          setIsInsuranceLoading(false);
+          setCompletedSteps((prev) => new Set([...prev, currentStep]));
+          setCurrentStep(6);
+          setInsuranceSubView(1);
+        })
+        .catch((error) => {
+          setIsInsuranceLoading(false);
+          console.error("Insurance API error:", error);
+        });
       return;
     }
 
@@ -209,6 +255,7 @@ const CarrierSetup = () => {
         insuranceSubView={insuranceSubView}
         paymentSubView={paymentSubView}
         contractSubView={contractSubView}
+        isInsuranceLoading={isInsuranceLoading}
       />
     </Flex>
   );

@@ -45,6 +45,9 @@ const carrierService = {
 
   addCompensationInsurance: (data) =>
     httpRequest.post("v2/items/insurance_agent", data),
+
+  addInsuranceAgents: (data) =>
+    httpRequest.post("v2/items/insurance_agents", {data}),
 };
 
 export default carrierService;

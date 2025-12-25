@@ -12,6 +12,7 @@ const SetupMain = ({
   insuranceSubView = 1,
   paymentSubView = 1,
   contractSubView = 1,
+  isInsuranceLoading = false,
 }) => {
   return (
     <Box className={styles.mainContent} position={"relative"}>
@@ -101,7 +102,10 @@ const SetupMain = ({
               py="6px"
               borderRadius="8px"
               _hover={{bg: "#DC5A1A"}}
-              onClick={onNext}>
+              onClick={onNext}
+              isLoading={isInsuranceLoading}
+              loadingText="Loading..."
+              isDisabled={isInsuranceLoading}>
               Yes, continue
             </Button>
           </Flex>
