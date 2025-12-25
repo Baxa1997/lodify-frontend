@@ -1,5 +1,6 @@
 import React, {useRef, useState, useMemo} from "react";
 import {
+  FormControl,
   FormErrorMessage,
   Input,
   Modal,
@@ -30,6 +31,7 @@ function FileUploadButton({
   disabled,
   children,
   setUploadLoading = () => {},
+  multiple = true,
 }) {
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -38,19 +40,30 @@ function FileUploadButton({
   const [isFileReaderOpen, setIsFileReaderOpen] = useState(false);
 
   const safeValue = useMemo(() => {
-    if (!value) return [];
+    if (!value) return multiple ? [] : "";
     if (Array.isArray(value)) {
       const filtered = value.filter(
         (v) => v && typeof v === "string" && v.trim() !== ""
       );
-      return filtered;
+      return multiple ? filtered : filtered[0] || "";
     }
 
     if (typeof value === "string" && value.trim() !== "") {
-      return [value];
+      return multiple ? [value] : value;
     }
-    return [];
-  }, [value]);
+    return multiple ? [] : "";
+  }, [value, multiple]);
+
+  const safeValueArray = useMemo(() => {
+    if (multiple) {
+      return Array.isArray(safeValue)
+        ? safeValue
+        : safeValue
+        ? [safeValue]
+        : [];
+    }
+    return safeValue ? [safeValue] : [];
+  }, [safeValue, multiple]);
 
   const handleFileChange = (e) => {
     setLoading(true);
@@ -68,7 +81,12 @@ function FileUploadButton({
     fileService
       .folderUpload(data, {folder_name: "media"})
       .then((res) => {
-        onChange([...safeValue, `${"https://cdn.u-code.io"}/${res?.link}`]);
+        const fileUrl = `${"https://cdn.u-code.io"}/${res?.link}`;
+        if (multiple) {
+          onChange([...safeValueArray, fileUrl]);
+        } else {
+          onChange(fileUrl);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -77,8 +95,12 @@ function FileUploadButton({
   };
 
   const removeFile = (fileUrl) => {
-    const updatedValue = safeValue.filter((f) => f !== fileUrl);
-    onChange(updatedValue);
+    if (multiple) {
+      const updatedValue = safeValueArray.filter((f) => f !== fileUrl);
+      onChange(updatedValue);
+    } else {
+      onChange("");
+    }
   };
 
   const handleFileClick = (fileUrl) => {
@@ -87,7 +109,7 @@ function FileUploadButton({
   };
 
   const handleOpenModal = () => {
-    if (safeValue && safeValue.length > 0) {
+    if (safeValueArray && safeValueArray.length > 0) {
       setIsModalOpen(true);
     }
   };
@@ -125,9 +147,9 @@ function FileUploadButton({
           <ModalHeader>Uploaded Documents</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {safeValue && safeValue.length > 0 ? (
+            {safeValueArray && safeValueArray.length > 0 ? (
               <VStack align="stretch" spacing={2}>
-                {safeValue?.map((fileUrl, idx) => (
+                {safeValueArray?.map((fileUrl, idx) => (
                   <HStack
                     key={idx}
                     px="3"
@@ -230,47 +252,28 @@ export default function HFCustomFilesUpload({
   disabled,
   children,
   setUploadLoading = () => {},
+  multiple = true,
 }) {
   return (
     <Controller
       control={control}
       name={name}
-      defaultValue={[]}
+      defaultValue={multiple ? [] : ""}
       rules={{
         required: required ? "This is a required field" : false,
         ...rules,
       }}
       render={({field: {onChange, value}, fieldState: {error}}) => {
-        const normalizedValue = useMemo(() => {
-          if (!value) return [];
-
-          if (Array.isArray(value)) {
-            const filtered = value.filter(
-              (v) => v && typeof v === "string" && v.trim() !== ""
-            );
-            return filtered;
-          }
-
-          if (typeof value === "string") {
-            const trimmed = value.trim();
-            if (trimmed !== "") {
-              return [trimmed];
-            }
-          }
-
-          return [];
-        }, [value]);
-
         return (
           <>
-            {" "}
             <FileUploadButton
               name={name}
-              value={normalizedValue}
+              value={value}
               onChange={onChange}
               required={required}
               disabled={disabled}
-              setUploadLoading={setUploadLoading}>
+              setUploadLoading={setUploadLoading}
+              multiple={multiple}>
               {children}
             </FileUploadButton>
             <FormErrorMessage>{error?.message}</FormErrorMessage>
