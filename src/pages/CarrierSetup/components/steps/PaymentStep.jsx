@@ -41,23 +41,18 @@ const PaymentStep = ({control, subView = 1}) => {
             <EnterCompanyFactoring control={control} />
           </Box>
         );
+      case 6:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <ConfirmCompanyFactoring control={control} />
+          </Box>
+        );
       default:
         return (
           <Box className={styles.stepContentPayment}>
             <ConfirmCompanyFactoring control={control} />
           </Box>
         );
-      // case 7:
-      //   return (
-      //     <Box className={styles.stepContentPayment}>
-      //       <Text fontSize="24px" fontWeight="bold" color="#1e293b" mb="8px">
-      //         Payment View 7
-      //       </Text>
-      //       <Text fontSize="14px" color="#414651" mb="12px">
-      //         Payment step content for view 7
-      //       </Text>
-      //     </Box>
-      //   );
     }
   };
 

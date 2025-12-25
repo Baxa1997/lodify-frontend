@@ -96,12 +96,12 @@ const CarrierSetup = () => {
       return;
     }
 
-    if (currentStep === 6 && paymentSubView < 7) {
+    if (currentStep === 6 && paymentSubView < 6) {
       setPaymentSubView(paymentSubView + 1);
       return;
     }
 
-    if (currentStep === 6 && paymentSubView === 7) {
+    if (currentStep === 6 && paymentSubView === 6) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(7);
       setPaymentSubView(1);
