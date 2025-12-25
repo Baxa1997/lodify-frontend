@@ -1,45 +1,78 @@
 import React from "react";
-import {Box, Text, Flex, Button} from "@chakra-ui/react";
+import {Box, Text} from "@chakra-ui/react";
 import styles from "../../CarrierSetup.module.scss";
+import GetPaid from "./Payments/GetPaid";
+import ConfirmCompany from "./Payments/ConfirmCompany";
+import VerifyIdentity from "./Payments/VerifyIdentity";
+import OtpPhoneConfirm from "./Payments/OtpPhoneConfirm";
+import EnterCompanyFactoring from "./Payments/EnterCompanyFactoring";
+import ConfirmCompanyFactoring from "./Payments/ConfirmCompanyFactoring";
 
-const PaymentStep = ({onNext = () => {}, onBack = () => {}}) => {
-  return (
-    <Box className={styles.stepContent}>
-      {/* Your content will go here */}
+const PaymentStep = ({control, subView = 1}) => {
+  const renderPaymentView = () => {
+    switch (subView) {
+      case 1:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <GetPaid control={control} />
+          </Box>
+        );
+      case 2:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <ConfirmCompany control={control} />
+          </Box>
+        );
+      case 3:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <VerifyIdentity />
+          </Box>
+        );
+      case 4:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <OtpPhoneConfirm />
+          </Box>
+        );
+      case 5:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <EnterCompanyFactoring />
+          </Box>
+        );
+      case 6:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <ConfirmCompanyFactoring />
+          </Box>
+        );
+      // case 7:
+      //   return (
+      //     <Box className={styles.stepContentPayment}>
+      //       <Text fontSize="24px" fontWeight="bold" color="#1e293b" mb="8px">
+      //         Payment View 7
+      //       </Text>
+      //       <Text fontSize="14px" color="#414651" mb="12px">
+      //         Payment step content for view 7
+      //       </Text>
+      //     </Box>
+      //   );
+      default:
+        return (
+          <Box className={styles.stepContentPayment}>
+            <Text fontSize="24px" fontWeight="bold" color="#1e293b" mb="8px">
+              Payment View 1
+            </Text>
+            <Text fontSize="14px" color="#414651" mb="12px">
+              Payment step content for view 1
+            </Text>
+          </Box>
+        );
+    }
+  };
 
-      <Flex
-        justifyContent="space-between"
-        alignItems="center"
-        mt="40px"
-        pt="24px"
-        borderTop="1px solid #E5E7EB">
-        <Flex
-          alignItems="center"
-          gap="8px"
-          cursor="pointer"
-          onClick={onBack}
-          color="#535862">
-          <img src="/img/backArrow.svg" alt="arrow-left" />
-          <Text fontSize="14px" fontWeight="400">
-            Back
-          </Text>
-        </Flex>
-
-        <Button
-          bg="#EF6820"
-          color="white"
-          fontSize="14px"
-          fontWeight="600"
-          px="20px"
-          py="10px"
-          borderRadius="8px"
-          _hover={{bg: "#DC5A1A"}}
-          onClick={onNext}>
-          Continue
-        </Button>
-      </Flex>
-    </Box>
-  );
+  return renderPaymentView();
 };
 
 export default PaymentStep;

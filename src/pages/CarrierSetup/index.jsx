@@ -18,6 +18,7 @@ const CarrierSetup = () => {
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [identitySubView, setIdentitySubView] = useState(1);
   const [insuranceSubView, setInsuranceSubView] = useState(1);
+  const [paymentSubView, setPaymentSubView] = useState(1);
 
   const steps = [
     {
@@ -95,6 +96,18 @@ const CarrierSetup = () => {
       return;
     }
 
+    if (currentStep === 6 && paymentSubView < 7) {
+      setPaymentSubView(paymentSubView + 1);
+      return;
+    }
+
+    if (currentStep === 6 && paymentSubView === 7) {
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
+      setCurrentStep(7);
+      setPaymentSubView(1);
+      return;
+    }
+
     if (currentStep < steps.length) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(currentStep + 1);
@@ -112,6 +125,11 @@ const CarrierSetup = () => {
       return;
     }
 
+    if (currentStep === 6 && paymentSubView > 1) {
+      setPaymentSubView(paymentSubView - 1);
+      return;
+    }
+
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
 
@@ -120,6 +138,9 @@ const CarrierSetup = () => {
       }
       if (currentStep === 6) {
         setInsuranceSubView(1);
+      }
+      if (currentStep === 7) {
+        setPaymentSubView(1);
       }
     }
   };
@@ -147,6 +168,7 @@ const CarrierSetup = () => {
         onBack={handleBack}
         identitySubView={identitySubView}
         insuranceSubView={insuranceSubView}
+        paymentSubView={paymentSubView}
       />
     </Flex>
   );
