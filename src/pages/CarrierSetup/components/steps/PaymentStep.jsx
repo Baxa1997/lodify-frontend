@@ -26,7 +26,7 @@ const PaymentStep = ({control, subView = 1}) => {
       case 3:
         return (
           <Box className={styles.stepContentPayment}>
-            <VerifyIdentity />
+            <VerifyIdentity control={control} />
           </Box>
         );
       case 4:
