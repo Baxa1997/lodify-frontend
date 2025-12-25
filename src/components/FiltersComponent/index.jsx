@@ -116,6 +116,9 @@ const FiltersComponent = ({
             w={"90px"}
             h={"40px"}
             gap={"8px"}
+            _hover={{
+              background: "#EF6820",
+            }}
             onClick={onLastAddButtonClick}>
             <img src="/img/addIcon.svg" alt="" />
             <Text fontSize={"14px"} fontWeight={"600"} color={"#fff"}>
