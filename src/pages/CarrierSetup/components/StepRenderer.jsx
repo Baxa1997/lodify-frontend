@@ -58,9 +58,7 @@ const StepRenderer = ({
         />
       );
     case 7:
-      return (
-        <QuestionnaireStep control={control} onNext={onNext} onBack={onBack} />
-      );
+      return <QuestionnaireStep control={control} />;
     // case 8:
     // return <ContractStep onNext={onNext} onBack={onBack} />;
     default:
