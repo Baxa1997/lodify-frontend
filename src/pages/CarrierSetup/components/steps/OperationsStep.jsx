@@ -62,6 +62,7 @@ const OperationsStep = ({control}) => {
             Trailer types
           </Text>
           <HFMultiSelect
+            disabled
             options={trailerTypes}
             control={control}
             name="trailer_types"

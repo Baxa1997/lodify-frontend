@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Controller } from "react-hook-form";
-import { Flex } from "@chakra-ui/react";
+import React, {useState} from "react";
+import {Controller} from "react-hook-form";
+import {Flex} from "@chakra-ui/react";
 import tripsService from "../services/tripsService";
 import MultiSelect from "./MultiSelect";
 
@@ -13,6 +13,7 @@ function HFMultiSelect({
   table_slug = "",
   view_field = "name",
   props,
+  disabled = false,
 }) {
   const [Internaloptions, setInternalOptions] = useState([]);
   const getOptions = async () => {
@@ -22,7 +23,7 @@ function HFMultiSelect({
         response.data?.response?.map((item) => ({
           label: item[view_field],
           value: item?.[value] ?? item.guid,
-        })),
+        }))
       );
     }
   };
@@ -32,13 +33,14 @@ function HFMultiSelect({
       <Controller
         control={control}
         name={name}
-        render={({ field }) => (
+        render={({field}) => (
           <MultiSelect
             {...field}
             options={table_slug ? Internaloptions : options}
             onChange={field.onChange}
             size={size}
             onClick={getOptions}
+            isDisabled={disabled}
           />
         )}
       />

@@ -1,13 +1,12 @@
 import React, {useMemo} from "react";
-import {Box, Text, Flex, VStack, HStack, Badge} from "@chakra-ui/react";
-import {AiOutlineExclamationCircle} from "react-icons/ai";
+import {Box, Text, Flex, VStack} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSearchParams} from "react-router-dom";
 import {format} from "date-fns";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import carrierService from "@services/carrierService";
-import {AssosiationReport} from "./AssosiationReport";
+import {InsightAddress} from "./InsightAddress";
 
 const ContractStep = ({control, subView = 1}) => {
   const [searchParams] = useSearchParams();
@@ -55,19 +54,19 @@ const ContractStep = ({control, subView = 1}) => {
     enabled: Boolean(companies_id),
   });
 
-  const {data: vinMatchesData} = useQuery({
-    queryKey: ["VIN_MATCHES_DATA", companies_id],
+  const {data: contactMatchesData} = useQuery({
+    queryKey: ["GET_CONTACTS_MATCHES", companies_id],
     queryFn: () =>
       carrierService.getMatchedData({
         data: {
-          method: "vin",
+          method: "contact",
           object_data: {
             companies_id: companies_id,
           },
           table: "matches",
         },
       }),
-    select: (res) => res?.data?.response || [],
+    select: (res) => res?.data || {},
     enabled: Boolean(companies_id),
   });
 
@@ -94,29 +93,29 @@ const ContractStep = ({control, subView = 1}) => {
     select: (res) => res.data?.response || {},
   });
 
-  const associationInsights = useMemo(() => {
-    return [
-      {
-        title: "Reused Equipment Scheduled Auto",
-        date: "Observed March, 2024",
-        filtered: equipmentData?.length > 0 ? false : true,
-      },
-      {
-        title: "Flagged Factor",
-        date: "Observed May, 2023",
-        filtered: true,
-      },
-    ];
-  }, [equipmentData]);
+  // const associationInsights = useMemo(() => {
+  //   return [
+  //     {
+  //       title: "Reused Equipment Scheduled Auto",
+  //       date: "Observed March, 2024",
+  //       filtered: equipmentData?.length > 0 ? false : true,
+  //     },
+  //     {
+  //       title: "Flagged Factor",
+  //       date: "Observed May, 2023",
+  //       filtered: true,
+  //     },
+  //   ];
+  // }, [equipmentData]);
 
-  const locationInsights = useMemo(() => {
-    return virtualAddressData?.length > 0
-      ? virtualAddressData.map((item) => ({
-          title: "Virtual Office Address",
-          date: format(new Date(), "MMM dd, yyyy"),
-        }))
-      : [];
-  }, [virtualAddressData]);
+  // const locationInsights = useMemo(() => {
+  //   return virtualAddressData?.length > 0
+  //     ? virtualAddressData.map((item) => ({
+  //         title: "Virtual Office Address",
+  //         date: format(new Date(), "MMM dd, yyyy"),
+  //       }))
+  //     : [];
+  // }, [virtualAddressData]);
 
   const changedFields = useMemo(() => {
     if (!carrierAuditData) return [];
@@ -157,6 +156,44 @@ const ContractStep = ({control, subView = 1}) => {
         newValue: carrierAuditData[field.key],
       }));
   }, [carrierAuditData]);
+
+  // const matchedAddressesCount = useMemo(() => {
+  //   return (
+  //     (addressMatchesBodyData?.physical_address?.length || 0) +
+  //     (addressMatchesBodyData?.mailing_address?.length || 0)
+  //   );
+  // }, [addressMatchesBodyData]);
+
+  // const changedFieldsCount = useMemo(() => {
+  //   return (
+  //     changedFields?.filter(
+  //       (field) =>
+  //         field.oldValue &&
+  //         field.oldValue !== "" &&
+  //         field.newValue &&
+  //         field.oldValue !== field.newValue &&
+  //         (field.key === "email" ||
+  //           field.key === "phone" ||
+  //           field.key === "physical_address" ||
+  //           field.key === "mailing_address")
+  //     ).length || 0
+  //   );
+  // }, [changedFields]);
+
+  // const locationCount = useMemo(() => {
+  //   return (
+  //     changedFields?.filter(
+  //       (field) =>
+  //         (field.key === "physical_address" ||
+  //           field.key === "mailing_address") &&
+  //         field.oldValue &&
+  //         field.oldValue !== "" &&
+  //         field.newValue &&
+  //         field.oldValue !== field.newValue
+  //     ).length || 0
+  //   );
+  // }, [changedFields]);
+
   if (subView === 2) {
     return (
       <Box className={styles.stepContentContract}>
@@ -168,12 +205,7 @@ const ContractStep = ({control, subView = 1}) => {
           unmet requirements.
         </Text>
 
-        <Box
-          border="1px solid #E2E8F0"
-          borderRadius="8px"
-          p="12px"
-          bg="white"
-          mb="24px">
+        <Box border="1px solid #E2E8F0" borderRadius="8px" p="12px" bg="white">
           <Flex alignItems="flex-start" gap="12px">
             <img src="/img/inspectionsIcon.svg" alt="" />
             <Box>
@@ -188,220 +220,34 @@ const ContractStep = ({control, subView = 1}) => {
           </Flex>
         </Box>
 
-        {/* <Box p="12px" border="1px solid #E2E8F0" borderRadius="8px" bg="white">
-          <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="6px">
-            Temperature Controlled
-          </Text>
+        <VStack spacing="12px" align="stretch" mt="24px">
+          {virtualAddressData?.map((item) => (
+            <InsightAddress key={item.id} item={item} virtualAddress={true} />
+          ))}
 
-          <Text fontSize="14px" fontWeight="500" color="#414651">
-            Failed Rules
-          </Text>
-          <Text fontSize="12px" color="#414651">
-            These rules are enforced automatically and cannot be modified by
-            Lodify
-          </Text>
-          <Flex mt="4px">
-            <Text fontSize="14px" fontWeight="500" color="#414651">
-              Carrier has refrigeration breakdown coverage
-            </Text>
-            <Flex
-              w="48px"
-              h="28px"
-              bg="rgba(254, 223, 137, .4)"
-              border="1px solid #FEDF89"
-              borderRadius="24px"
-              justifyContent="center"
-              alignItems="center"
-              color="#B54708"
-              fontSize="12px"
-              fontWeight="500">
-              Fail
-            </Flex>
-          </Flex>
+          {contactMatchesData?.map((item) => (
+            <InsightAddress key={item.id} item={item} contact={true} />
+          ))}
 
-          <Flex mt="4px">
-            <Text fontSize="14px" fontWeight="500" color="#414651">
-              Certain data properties require broker approval
-            </Text>
-            <Flex
-              w="48px"
-              h="28px"
-              bg="rgba(254, 223, 137, .4)"
-              border="1px solid #FEDF89"
-              borderRadius="24px"
-              justifyContent="center"
-              alignItems="center"
-              color="#B54708"
-              fontSize="12px"
-              fontWeight="500">
-              Fail
-            </Flex>
-          </Flex>
-        </Box>
+          {addressMatchesBodyData?.physical_address?.map((item) => (
+            <InsightAddress key={item.id} item={item} physicalAddress={true} />
+          ))}
 
-        <Box
-          mt="20px"
-          p="12px"
-          border="1px solid #E2E8F0"
-          borderRadius="8px"
-          bg="white">
-          <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="6px">
-            Interstate
-          </Text>
+          {addressMatchesBodyData?.mailing_address?.map((item) => (
+            <InsightAddress key={item.id} item={item} mailingAddress={true} />
+          ))}
 
-          <Text fontSize="14px" fontWeight="500" color="#414651">
-            Failed Rules
-          </Text>
-          <Text fontSize="12px" color="#414651">
-            These rules are enforced automatically and cannot be modified by
-            Lodify
-          </Text>
-          <Flex mt="4px">
-            <Text fontSize="14px" fontWeight="500" color="#414651">
-              Carrier has refrigeration breakdown coverage
-            </Text>
-            <Flex
-              w="48px"
-              h="28px"
-              bg="rgba(254, 223, 137, .4)"
-              border="1px solid #FEDF89"
-              borderRadius="24px"
-              justifyContent="center"
-              alignItems="center"
-              color="#B54708"
-              fontSize="12px"
-              fontWeight="500">
-              Fail
-            </Flex>
-          </Flex>
-        </Box> */}
-
-        {/* <Box
-          mt="20px"
-          p="12px"
-          border="1px solid #E2E8F0"
-          borderRadius="8px"
-          bg="white">
-          <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="6px">
-            Interstate - California
-          </Text>
-
-          <Text fontSize="14px" fontWeight="500" color="#414651">
-            Failed Rules
-          </Text>
-          <Text fontSize="12px" color="#414651">
-            These rules are enforced automatically and cannot be modified by
-            Lodify
-          </Text>
-          <Flex mt="4px">
-            <Text fontSize="14px" fontWeight="500" color="#414651">
-              Carrier has refrigeration breakdown coverage
-            </Text>
-            <Flex
-              w="48px"
-              h="28px"
-              bg="rgba(254, 223, 137, .4)"
-              border="1px solid #FEDF89"
-              borderRadius="24px"
-              justifyContent="center"
-              alignItems="center"
-              color="#B54708"
-              fontSize="12px"
-              fontWeight="500">
-              Fail
-            </Flex>
-          </Flex>
-        </Box> */}
-
-        <VStack spacing="24px" align="stretch">
-          <Box>
-            <VStack
-              display="flex"
-              flexDir="row"
-              flexWrap="wrap"
-              gap="8px"
-              align="stretch">
-              {carrierInfoData?.broker_stat === "A" && (
-                <AssosiationReport
-                  label="Broker is Active"
-                  insight={{date: "Observed March, 2024"}}
-                />
-              )}
-              {associationInsights
-                ?.filter((insight) => !insight.filtered)
-                .map((insight, index) => (
-                  <AssosiationReport key={index} insight={insight} />
-                ))}
-              {addressMatchesBodyData?.physical_address?.length > 0 && (
-                <AssosiationReport
-                  label="Physical Address"
-                  insight={{date: "Matched"}}
-                />
-              )}
-              {addressMatchesBodyData?.mailing_address?.length > 0 && (
-                <AssosiationReport
-                  label="Mailing Address"
-                  insight={{date: "Matched"}}
-                />
-              )}
-              {vinMatchesData?.length > 0 && (
-                <AssosiationReport
-                  label="VIN Match"
-                  insight={{date: "Observed March, 2024"}}
-                />
-              )}
-              {equipmentData?.length > 0 && (
-                <AssosiationReport
-                  label="Reused Equipment Scheduled Auto"
-                  insight={{date: "Observed March, 2024"}}
-                />
-              )}
-              {changedFields?.map((field, index) => (
-                <AssosiationReport
-                  key={`changed-${field.key}-${index}`}
-                  label={field.label}
-                  insight={{date: "Changed"}}
-                />
-              ))}
-            </VStack>
-          </Box>
-
-          {locationInsights?.length > 0 && (
-            <Box>
-              <Text fontSize="14px" fontWeight="600" color="#181D27" mb="12px">
-                Location Insights
-              </Text>
-              <VStack spacing="8px" align="stretch">
-                {locationInsights.map((insight, index) => (
-                  <Flex
-                    key={index}
-                    w="100%"
-                    bg="#FAFAFA"
-                    borderRadius="8px"
-                    p="12px 16px"
-                    gap="12px"
-                    justifyContent="space-between">
-                    <Box>
-                      <Text color="#181D27" fontSize="14px" fontWeight="500">
-                        {insight.title}
-                      </Text>
-                      <Text color="#6B7280" fontSize="14px" fontWeight="400">
-                        {insight.date}
-                      </Text>
-                    </Box>
-                    <Box>
-                      <AiOutlineExclamationCircle
-                        width="20px"
-                        height="20px"
-                        fontSize="20px"
-                        color="#EF6820"
-                      />
-                    </Box>
-                  </Flex>
-                ))}
-              </VStack>
-            </Box>
-          )}
+          {changedFields?.map((field, index) => (
+            <InsightAddress
+              key={`audit-${field.key}-${index}`}
+              item={{
+                address: field.newValue,
+                oldValue: field.oldValue,
+                fieldLabel: field.label,
+              }}
+              isAuditChange={true}
+            />
+          ))}
         </VStack>
       </Box>
     );
