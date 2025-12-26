@@ -22,6 +22,7 @@ export const InsightAddress = ({
   mailingAddress = false,
   isAuditChange = false,
   virtualAddress = false,
+  isOfficer = false,
 }) => {
   const isVirtualPhysical =
     virtualAddress && item?.address_type === "physical_address";
@@ -36,6 +37,7 @@ export const InsightAddress = ({
     item?.address &&
     item?.oldValue !== item?.address;
   const isMatchedAudit = isAuditChange && !isChanged;
+  const isMatchedOfficer = isOfficer && !isAuditChange;
   return (
     <Accordion key={item} allowToggle>
       <AccordionItem
@@ -72,6 +74,8 @@ export const InsightAddress = ({
                     ? "Physical Address Changed"
                     : item?.fieldLabel === "Mailing Address"
                     ? "Mailing Address Changed"
+                    : item?.fieldLabel === "Company Officer 1" || item?.fieldLabel === "Company Officer 2"
+                    ? `${item?.fieldLabel} Changed`
                     : `${item?.fieldLabel} Changed`
                   : isMatchedAudit
                   ? item?.fieldLabel === "Phone"
@@ -82,7 +86,11 @@ export const InsightAddress = ({
                     ? "Your physical address is matched to a different company's address"
                     : item?.fieldLabel === "Mailing Address"
                     ? "Your mailing address is matched to a different company's address"
+                    : item?.fieldLabel === "Company Officer 1" || item?.fieldLabel === "Company Officer 2"
+                    ? `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
                     : `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
+                  : isMatchedOfficer
+                  ? `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
                   : isMatchedAddress
                   ? `Your ${
                       physicalAddress ? "physical" : "mailing"
@@ -100,7 +108,11 @@ export const InsightAddress = ({
                   fontWeight="400"
                   textAlign="left"
                   mt="4px">
-                  {isMatchedAddress
+                  {isMatchedOfficer
+                    ? item?.legal_name
+                      ? `Matched with: ${item.legal_name}`
+                      : item?.address || item?.name || item?.officer_name || "Officer not available"
+                    : isMatchedAddress
                     ? item?.legal_name
                       ? `Matched with: ${item.legal_name}`
                       : physicalAddress
@@ -177,6 +189,32 @@ export const InsightAddress = ({
               </span>
             </Text>
           )} */}
+          {isMatchedOfficer && (
+            <Box
+              pl="10px"
+              mb="16px"
+              p="12px"
+              bg="#EFF6FF"
+              borderRadius="8px"
+              border="1px solid #3B82F6">
+              <Flex align="center" gap="8px" mb="8px">
+                <HiOutlineCheckCircle color="#3B82F6" size="20px" />
+                <Text fontSize="14px" color="#3B82F6" fontWeight="600">
+                  This {item?.fieldLabel?.toLowerCase()} is matched to a different company
+                </Text>
+              </Flex>
+              {item?.legal_name && (
+                <VStack align="start" spacing="4px" pl="28px">
+                  <Text fontSize="13px" color="#1E40AF" fontWeight="600">
+                    Matched Company:
+                  </Text>
+                  <Text fontSize="13px" color="#1E40AF" fontWeight="500">
+                    {item.legal_name}
+                  </Text>
+                </VStack>
+              )}
+            </Box>
+          )}
           {isMatchedAddress && (
             <Box
               pl="10px"
@@ -281,6 +319,25 @@ export const InsightAddress = ({
               <Text fontSize="14px" color="#000" lineHeight="1.6">
                 {item?.address || "Not available"}
               </Text>
+            </Box>
+          ) : isMatchedOfficer ? (
+            <Box pl="10px">
+              <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                {item?.fieldLabel}:
+              </Text>
+              <Text fontSize="14px" color="#000" lineHeight="1.6">
+                {item?.address || item?.name || item?.officer_name || item?.contact || "Not available"}
+              </Text>
+              {item?.legal_name && (
+                <Box mt="12px">
+                  <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                    Matched Company:
+                  </Text>
+                  <Text fontSize="14px" color="#000" lineHeight="1.6">
+                    {item.legal_name}
+                  </Text>
+                </Box>
+              )}
             </Box>
           ) : (
             <Box pl="10px">

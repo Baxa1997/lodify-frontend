@@ -30,7 +30,6 @@ import {EquipmentMatch} from "./EquipmentMatch";
 function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
   const {
     virtualAddressData,
-    equipmentData,
     associationInsights,
     locationInsights,
     associatedCarrierData,
@@ -40,7 +39,8 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     contactsMatchesData,
   } = useInsightsProps();
 
-  const {company_officer_1, company_officer_2} = contactsMatchesData;
+  const {company_officer_1 = [], company_officer_2 = []} =
+    contactsMatchesData || {};
 
   const matchedAddressesData = addressMatchesBodyData?.physical_address?.concat(
     addressMatchesBodyData?.mailing_address
@@ -90,28 +90,31 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
   const totalInsights = useMemo(() => {
     return (
       (virtualAddressData?.length || 0) +
-      (equipmentData?.length || 0) +
+      (vinMatchesData?.length || 0) +
       (addressMatchesBodyData?.physical_address?.length || 0) +
       (addressMatchesBodyData?.mailing_address?.length || 0) +
       (changedFields?.length || 0) +
-      (vinMatchesData?.length || 0) +
-      (new_info?.broker_stat === "A" ? 1 : 0)
+      (company_officer_1?.length || 0) +
+      (company_officer_2?.length || 0)
     );
   }, [
     virtualAddressData,
-    equipmentData,
+    vinMatchesData,
     addressMatchesBodyData,
     changedFields,
     vinMatchesData,
-    new_info?.broker_stat,
+    company_officer_1,
+    company_officer_2,
   ]);
 
   const matchedAddressesCount = useMemo(() => {
     return (
       (addressMatchesBodyData?.physical_address?.length || 0) +
-      (addressMatchesBodyData?.mailing_address?.length || 0)
+      (addressMatchesBodyData?.mailing_address?.length || 0) +
+      (company_officer_1?.length || 0) +
+      (company_officer_2?.length || 0)
     );
-  }, [addressMatchesBodyData]);
+  }, [addressMatchesBodyData, company_officer_1, company_officer_2]);
 
   const changedFieldsCount = useMemo(() => {
     return (
@@ -216,6 +219,18 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                 {addressMatchesBodyData?.mailing_address?.length > 0 && (
                   <AssosiationReport
                     label="Mailing Address"
+                    insight={{date: "Matched"}}
+                  />
+                )}
+                {company_officer_1?.length > 0 && (
+                  <AssosiationReport
+                    label="Company Officer 1"
+                    insight={{date: "Matched"}}
+                  />
+                )}
+                {company_officer_2?.length > 0 && (
+                  <AssosiationReport
+                    label="Company Officer 2"
                     insight={{date: "Matched"}}
                   />
                 )}
@@ -436,6 +451,38 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                               )
                             )}
 
+                            {company_officer_1?.map((item, index) => (
+                              <InsightAddress
+                                key={`officer-1-${index}`}
+                                item={{
+                                  ...item,
+                                  fieldLabel: "Company Officer 1",
+                                  address:
+                                    item?.name ||
+                                    item?.officer_name ||
+                                    item?.contact ||
+                                    "Not available",
+                                }}
+                                isOfficer={true}
+                              />
+                            ))}
+
+                            {company_officer_2?.map((item, index) => (
+                              <InsightAddress
+                                key={`officer-2-${index}`}
+                                item={{
+                                  ...item,
+                                  fieldLabel: "Company Officer 2",
+                                  address:
+                                    item?.name ||
+                                    item?.officer_name ||
+                                    item?.contact ||
+                                    "Not available",
+                                }}
+                                isOfficer={true}
+                              />
+                            ))}
+
                             {changedFields?.map((field, index) => (
                               <InsightAddress
                                 key={`audit-${field.key}-${index}`}
@@ -459,7 +506,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                             Reused Equipment on a Scheduled Auto: 1
                           </Text>
                           <VStack spacing="16px" align="stretch">
-                            {equipmentData?.map((item) => (
+                            {vinMatchesData?.map((item) => (
                               <EquipmentMatch
                                 key={item?.id}
                                 item={item}
@@ -653,6 +700,122 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                               </Box>
                             )
                           )}
+
+                          {company_officer_1?.map((item, index) => (
+                            <Box
+                              key={`matched-officer-1-${index}`}
+                              border="1px solid #EF6820"
+                              borderRadius="12px"
+                              p="16px"
+                              bg="white">
+                              <VStack align="start" spacing="8px">
+                                <Text
+                                  fontSize="12px"
+                                  fontWeight="600"
+                                  color="#6B7280"
+                                  textTransform="capitalize">
+                                  Company Officer 1{" "}
+                                  <Text as="span" fontWeight="700" color="#000">
+                                    Matched
+                                  </Text>
+                                </Text>
+                                {item?.legal_name && (
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Matched Company:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="600"
+                                      color="#181D27">
+                                      {item.legal_name}
+                                    </Text>
+                                  </Box>
+                                )}
+                                <Box>
+                                  <Text
+                                    fontSize="12px"
+                                    fontWeight="600"
+                                    color="#6B7280"
+                                    mb="4px">
+                                    Officer Name:
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="400"
+                                    color="#181D27"
+                                    lineHeight="1.6">
+                                    {item?.name ||
+                                      item?.officer_name ||
+                                      item?.contact ||
+                                      "Not available"}
+                                  </Text>
+                                </Box>
+                              </VStack>
+                            </Box>
+                          ))}
+
+                          {company_officer_2?.map((item, index) => (
+                            <Box
+                              key={`matched-officer-2-${index}`}
+                              border="1px solid #EF6820"
+                              borderRadius="12px"
+                              p="16px"
+                              bg="white">
+                              <VStack align="start" spacing="8px">
+                                <Text
+                                  fontSize="12px"
+                                  fontWeight="600"
+                                  color="#6B7280"
+                                  textTransform="capitalize">
+                                  Company Officer 2{" "}
+                                  <Text as="span" fontWeight="700" color="#000">
+                                    Matched
+                                  </Text>
+                                </Text>
+                                {item?.legal_name && (
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Matched Company:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="600"
+                                      color="#181D27">
+                                      {item.legal_name}
+                                    </Text>
+                                  </Box>
+                                )}
+                                <Box>
+                                  <Text
+                                    fontSize="12px"
+                                    fontWeight="600"
+                                    color="#6B7280"
+                                    mb="4px">
+                                    Officer Name:
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="400"
+                                    color="#181D27"
+                                    lineHeight="1.6">
+                                    {item?.name ||
+                                      item?.officer_name ||
+                                      item?.contact ||
+                                      "Not available"}
+                                  </Text>
+                                </Box>
+                              </VStack>
+                            </Box>
+                          ))}
                         </VStack>
                       </TabPanel>
                     )}

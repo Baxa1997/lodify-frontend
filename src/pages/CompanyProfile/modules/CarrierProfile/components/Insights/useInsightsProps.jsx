@@ -68,11 +68,6 @@ export const useInsightsProps = () => {
 
   const associationInsights = [
     {
-      title: "Reused Equipment Scheduled Auto",
-      date: "Observed March, 2024",
-      filtered: equipmentData?.length > 0 ? false : true,
-    },
-    {
       title: "Flagged Factor",
       date: "Observed May, 2023",
       filtered: true,
