@@ -114,7 +114,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
             <Connection new_info={new_info} />
           </Box>
           <Box id="assessment">
-            <Assessments />
+            <Assessments new_info={new_info} />
           </Box>
           <Box id="insights" key={`insights-wrapper-${companies_id}`}>
             <Insights

@@ -14,7 +14,7 @@ import {useSearchParams} from "react-router-dom";
 import {FcCancel} from "react-icons/fc";
 import styles from "../../../../../../styles/tabs.module.scss";
 
-function Assessments() {
+function Assessments({new_info}) {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
   const [selectedTab, setSelectedTab] = useState(0);
@@ -27,12 +27,13 @@ function Assessments() {
           method: "base",
           object_data: {
             companies_id: companies_id,
+            dot_number: new_info?.dot_number,
           },
           table: "risk_assessment",
         },
       }),
     select: (res) => res?.data?.response || {},
-    enabled: Boolean(companies_id),
+    enabled: Boolean(companies_id && new_info?.dot_number),
   });
 
   const {data: carrierAssessmentData} = useQuery({
@@ -43,12 +44,13 @@ function Assessments() {
           method: "get",
           object_data: {
             companies_id: companies_id,
+            dot_number: new_info?.dot_number,
           },
           table: "load_limit",
         },
       }),
     select: (res) => res?.data?.response || {},
-    enabled: Boolean(companies_id),
+    enabled: Boolean(companies_id && new_info?.dot_number),
   });
 
   const monthMap = {
