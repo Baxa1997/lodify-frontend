@@ -107,7 +107,7 @@ export const EquipmentMatch = ({item, associatedCarrierData}) => {
                 color="#181D27"
                 fontWeight="400"
                 border="none">
-                {item?.vehicle_number || "-"}
+                {item?.model || "-"}
               </Td>
             </Tr>
             <Tr>
@@ -148,7 +148,7 @@ export const EquipmentMatch = ({item, associatedCarrierData}) => {
                 color="#181D27"
                 fontWeight="400"
                 border="none">
-                {item?.licence_plate || "-"}
+                {item?.plate || "-"}
               </Td>
             </Tr>
           </Tbody>
