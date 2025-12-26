@@ -511,6 +511,14 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       </CTableTd>
 
                       <CTableTd>
+                        <Box>
+                          <Text fontWeight="600" color="#181D27">
+                            {trip?.total_miles || 0}
+                          </Text>
+                        </Box>
+                      </CTableTd>
+
+                      <CTableTd>
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();

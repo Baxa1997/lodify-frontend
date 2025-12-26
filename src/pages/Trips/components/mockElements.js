@@ -81,6 +81,13 @@ export const tableElements = [
 
   {
     id: 14,
+    name: "Total Miles",
+    key: "total_miles",
+    sortable: true,
+  },
+
+  {
+    id: 15,
     name: "Actions",
     key: "actions",
     sortable: false,
@@ -155,6 +162,13 @@ export const tableActionsNeeded = [
 
   {
     id: 8,
+    name: "Total Miles",
+    key: "total_miles",
+    sortable: true,
+  },
+
+  {
+    id: 9,
     name: "Actions",
     key: "actions",
     sortable: true,

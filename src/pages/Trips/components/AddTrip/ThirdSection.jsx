@@ -1,10 +1,9 @@
-import {AddIcon, DeleteIcon} from "@chakra-ui/icons";
-import {Box, Button, Flex, Text, HStack} from "@chakra-ui/react";
-import {useState, useMemo} from "react";
+import {AddIcon} from "@chakra-ui/icons";
+import {Box, Button, Flex, Text} from "@chakra-ui/react";
+import {useMemo, useState} from "react";
 import {useFieldArray, useWatch} from "react-hook-form";
 import HFFilesField from "../../../../components/HFFilesField";
 import HFTextField from "../../../../components/HFTextField";
-import HFSelect from "../../../../components/HFSelect";
 import Accessorials from "../Accessorials";
 import AddReferenceModal from "./AddReferenceModal";
 

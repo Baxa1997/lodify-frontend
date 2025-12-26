@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Text, Divider} from "@chakra-ui/react";
+import {Box, Text, Divider, Flex} from "@chakra-ui/react";
 import {Controller} from "react-hook-form";
 
 const TotalRatesSection = ({watch, control}) => {
@@ -12,31 +12,55 @@ const TotalRatesSection = ({watch, control}) => {
   };
 
   return (
-    <Box w="100%" mb="32px" mt="24px">
-      <Controller
-        name="total_rates"
-        control={control}
-        defaultValue="7915.00"
-        render={({field}) => (
-          <Box
-            bg="white"
-            borderRadius="12px"
-            p="20px"
-            border="1px solid"
-            borderColor="#E9EAEB"
-            w="100%">
-            <Text fontSize="14px" fontWeight="500" color="#717680" mb="12px">
-              Total Rates
-            </Text>
+    <Box
+      display="grid"
+      gridTemplateColumns="1fr 1fr"
+      gap="20px"
+      borderRadius="12px"
+      p="20px"
+      border="1px solid"
+      borderColor="#E9EAEB">
+      <Box>
+        <Controller
+          name="total_rates"
+          control={control}
+          defaultValue="7915.00"
+          render={({field}) => (
+            <Box bg="white" w="100%">
+              <Text fontSize="14px" fontWeight="500" color="#717680" mb="12px">
+                Total Rates
+              </Text>
 
-            <Divider borderColor="#E9EAEB" mb="12px" />
+              <Divider borderColor="#E9EAEB" mb="12px" />
 
-            <Text fontSize="20px" fontWeight="700" color="#181D27">
-              ${getTotalAmount() + (watch("service_fee") ?? 0)}
-            </Text>
-          </Box>
-        )}
-      />
+              <Text fontSize="20px" fontWeight="700" color="#181D27">
+                ${getTotalAmount() + (watch("service_fee") ?? 0)}
+              </Text>
+            </Box>
+          )}
+        />
+      </Box>
+
+      <Box borderLeft="1px solid #E9EAEB" pl="20px">
+        <Controller
+          name="total_miles"
+          control={control}
+          defaultValue="7915.00"
+          render={({field}) => (
+            <Box bg="white">
+              <Text fontSize="14px" fontWeight="500" color="#717680" mb="12px">
+                Total Miles
+              </Text>
+
+              <Divider borderColor="#E9EAEB" mb="12px" />
+
+              <Text fontSize="20px" fontWeight="700" color="#181D27">
+                {watch("total_miles") || 0} mi
+              </Text>
+            </Box>
+          )}
+        />
+      </Box>
     </Box>
   );
 };

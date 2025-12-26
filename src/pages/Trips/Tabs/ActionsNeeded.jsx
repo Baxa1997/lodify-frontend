@@ -263,6 +263,12 @@ function ActionsNeeded() {
                       </CTableTd>
 
                       <CTableTd>
+                        <Text color="#181D27">
+                          {trip?.total_miles ?? "---"}
+                        </Text>
+                      </CTableTd>
+
+                      <CTableTd>
                         <Flex alignItems="center" gap={2}>
                           <Text
                             color={getActionButtonColor(
