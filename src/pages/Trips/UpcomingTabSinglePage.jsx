@@ -1,4 +1,4 @@
-import {Box, Text} from "@chakra-ui/react";
+import {Box, Text, Flex} from "@chakra-ui/react";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import styles from "../../styles/tabs.module.scss";
 import HeadBreadCrumb from "@components/HeadBreadCrumb";
@@ -9,6 +9,7 @@ import {useQuery} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {useState} from "react";
+import {AiOutlineExclamationCircle} from "react-icons/ai";
 
 function UpcomingTabSinglePage() {
   const {id} = useParams();
@@ -31,7 +32,7 @@ function UpcomingTabSinglePage() {
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
-    select: (data) => data?.data?.response?.[0] || [],
+    select: (data) => data?.data || {},
   });
 
   return (
@@ -53,11 +54,17 @@ function UpcomingTabSinglePage() {
         </TabList>
 
         <TabPanel>
-          <AddTrip tripData={tripData} />
+          <AddTrip
+            tripData={tripData?.response?.[0] || {}}
+            locationStatus={tripData?.is_same_location}
+          />
         </TabPanel>
 
         <TabPanel>
-          <GeneralTripsTab isLoading={isLoading} />
+          <GeneralTripsTab
+            isLoading={isLoading}
+            locationStatus={tripData?.is_same_location}
+          />
         </TabPanel>
       </Tabs>
     </Box>
