@@ -305,6 +305,33 @@ export const InsightAddress = ({
                   {item?.address || "Not available"}
                 </Text>
               </Box>
+              {item?.addedTime && (
+                <Box>
+                  <Text
+                    fontSize="12px"
+                    color="#6B7280"
+                    fontWeight="600"
+                    mb="4px">
+                    Changed Time:
+                  </Text>
+                  <Text fontSize="14px" color="#000" fontWeight="400">
+                    {(() => {
+                      try {
+                        const date =
+                          typeof item.addedTime === "string"
+                            ? parseISO(item.addedTime)
+                            : new Date(item.addedTime);
+                        if (isValid(date)) {
+                          return format(date, "MMM dd, yyyy");
+                        }
+                        return item.addedTime;
+                      } catch {
+                        return item.addedTime;
+                      }
+                    })()}
+                  </Text>
+                </Box>
+              )}
             </VStack>
           ) : isMatchedAudit ? (
             <Box pl="10px">

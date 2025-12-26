@@ -22,7 +22,7 @@ import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import styles from "../../../../../../styles/tabs.module.scss";
-import {format} from "date-fns";
+import {format, parseISO, isValid} from "date-fns";
 import {useInsightsProps} from "./useInsightsProps";
 import {InsightAddress} from "./InsightAddress";
 import {AssosiationReport} from "./AssosiationReport";
@@ -96,6 +96,7 @@ function Insights({
         ...field,
         oldValue: carrierAuditData[field.oldKey],
         newValue: carrierAuditData[field.key],
+        addedTime: carrierAuditData?.added_time,
       }));
   }, [carrierAuditData]);
 
@@ -588,6 +589,7 @@ function Insights({
                                   address: field.newValue,
                                   oldValue: field.oldValue,
                                   fieldLabel: field.label,
+                                  addedTime: field.addedTime,
                                 }}
                                 isAuditChange={true}
                               />
@@ -1273,6 +1275,41 @@ function Insights({
                                       {field.newValue || "Not available"}
                                     </Text>
                                   </Box>
+                                  {field.addedTime && (
+                                    <Box>
+                                      <Text
+                                        fontSize="12px"
+                                        fontWeight="600"
+                                        color="#6B7280"
+                                        mb="4px">
+                                        Changed Time:
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="400"
+                                        color="#181D27"
+                                        lineHeight="1.6">
+                                        {(() => {
+                                          try {
+                                            const date =
+                                              typeof field.addedTime ===
+                                              "string"
+                                                ? parseISO(field.addedTime)
+                                                : new Date(field.addedTime);
+                                            if (isValid(date)) {
+                                              return format(
+                                                date,
+                                                "MMM dd, yyyy"
+                                              );
+                                            }
+                                            return field.addedTime;
+                                          } catch {
+                                            return field.addedTime;
+                                          }
+                                        })()}
+                                      </Text>
+                                    </Box>
+                                  )}
                                 </VStack>
                               </Box>
                             ))}
@@ -1339,6 +1376,41 @@ function Insights({
                                       {field.newValue || "Not available"}
                                     </Text>
                                   </Box>
+                                  {field.addedTime && (
+                                    <Box>
+                                      <Text
+                                        fontSize="12px"
+                                        fontWeight="600"
+                                        color="#6B7280"
+                                        mb="4px">
+                                        Changed Time:
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="400"
+                                        color="#181D27"
+                                        lineHeight="1.6">
+                                        {(() => {
+                                          try {
+                                            const date =
+                                              typeof field.addedTime ===
+                                              "string"
+                                                ? parseISO(field.addedTime)
+                                                : new Date(field.addedTime);
+                                            if (isValid(date)) {
+                                              return format(
+                                                date,
+                                                "MMM dd, yyyy"
+                                              );
+                                            }
+                                            return field.addedTime;
+                                          } catch {
+                                            return field.addedTime;
+                                          }
+                                        })()}
+                                      </Text>
+                                    </Box>
+                                  )}
                                 </VStack>
                               </Box>
                             ))}
@@ -1414,6 +1486,41 @@ function Insights({
                                       {field.newValue || "Not available"}
                                     </Text>
                                   </Box>
+                                  {field.addedTime && (
+                                    <Box>
+                                      <Text
+                                        fontSize="12px"
+                                        fontWeight="600"
+                                        color="#6B7280"
+                                        mb="4px">
+                                        Changed Time:
+                                      </Text>
+                                      <Text
+                                        fontSize="14px"
+                                        fontWeight="400"
+                                        color="#181D27"
+                                        lineHeight="1.6">
+                                        {(() => {
+                                          try {
+                                            const date =
+                                              typeof field.addedTime ===
+                                              "string"
+                                                ? parseISO(field.addedTime)
+                                                : new Date(field.addedTime);
+                                            if (isValid(date)) {
+                                              return format(
+                                                date,
+                                                "MMM dd, yyyy"
+                                              );
+                                            }
+                                            return field.addedTime;
+                                          } catch {
+                                            return field.addedTime;
+                                          }
+                                        })()}
+                                      </Text>
+                                    </Box>
+                                  )}
                                 </VStack>
                               </Box>
                             ))}

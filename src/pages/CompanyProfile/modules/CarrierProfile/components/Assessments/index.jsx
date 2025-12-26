@@ -66,7 +66,6 @@ function Assessments() {
     december: "Dec",
   };
 
-  // First chart data with score (miles it can go) and total_miles (miles it went)
   const loadLimitData = useMemo(() => {
     if (
       !carrierAssessmentData ||
@@ -117,7 +116,6 @@ function Assessments() {
     return chartData;
   }, [carrierAssessmentData]);
 
-  // Second chart data with driver_count and order_count
   const barChartData = useMemo(() => {
     if (
       !carrierAssessmentData ||
