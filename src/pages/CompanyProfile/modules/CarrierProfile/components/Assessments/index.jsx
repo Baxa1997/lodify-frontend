@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import {
   InfoAccordionItem,
   InfoAccordionButton,
@@ -6,15 +6,18 @@ import {
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
 import {Flex, Box, Text, Badge, HStack} from "@chakra-ui/react";
+import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
 import Chart from "react-google-charts";
 import {useQuery} from "@tanstack/react-query";
 import carrierService from "@services/carrierService";
 import {useSearchParams} from "react-router-dom";
 import {FcCancel} from "react-icons/fc";
+import styles from "../../../../../../styles/tabs.module.scss";
 
 function Assessments() {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const {data: baseAssessmentData} = useQuery({
     queryKey: ["GET_ASSESSMENT_DATA", companies_id],
@@ -63,29 +66,32 @@ function Assessments() {
     december: "Dec",
   };
 
+  // First chart data with score (miles it can go) and total_miles (miles it went)
   const loadLimitData = useMemo(() => {
     if (
       !carrierAssessmentData ||
       Object.keys(carrierAssessmentData).length === 0
     ) {
       return [
-        ["Month", "Load Limit"],
-        ["Jan", 0],
-        ["Feb", 0],
-        ["Mar", 0],
-        ["Apr", 0],
-        ["May", 0],
-        ["Jun", 0],
-        ["Jul", 0],
-        ["Aug", 0],
-        ["Sep", 0],
-        ["Oct", 0],
-        ["Nov", 0],
-        ["Dec", 0],
+        ["Month", "Score (Miles Can Go)", "Total Miles (Miles Went)"],
+        ["Jan", 0, 0],
+        ["Feb", 0, 0],
+        ["Mar", 0, 0],
+        ["Apr", 0, 0],
+        ["May", 0, 0],
+        ["Jun", 0, 0],
+        ["Jul", 0, 0],
+        ["Aug", 0, 0],
+        ["Sep", 0, 0],
+        ["Oct", 0, 0],
+        ["Nov", 0, 0],
+        ["Dec", 0, 0],
       ];
     }
 
-    const chartData = [["Month", "Load Limit"]];
+    const chartData = [
+      ["Month", "Score (Miles Can Go)", "Total Miles (Miles Went)"],
+    ];
     const monthOrder = [
       "january",
       "february",
@@ -104,7 +110,57 @@ function Assessments() {
     monthOrder.forEach((month) => {
       const monthData = carrierAssessmentData[month];
       const score = monthData?.score || 0;
-      chartData.push([monthMap[month], score]);
+      const totalMiles = monthData?.total_miles || 0;
+      chartData.push([monthMap[month], score, totalMiles]);
+    });
+
+    return chartData;
+  }, [carrierAssessmentData]);
+
+  // Second chart data with driver_count and order_count
+  const barChartData = useMemo(() => {
+    if (
+      !carrierAssessmentData ||
+      Object.keys(carrierAssessmentData).length === 0
+    ) {
+      return [
+        ["Month", "Driver Count", "Order Count"],
+        ["Jan", 0, 0],
+        ["Feb", 0, 0],
+        ["Mar", 0, 0],
+        ["Apr", 0, 0],
+        ["May", 0, 0],
+        ["Jun", 0, 0],
+        ["Jul", 0, 0],
+        ["Aug", 0, 0],
+        ["Sep", 0, 0],
+        ["Oct", 0, 0],
+        ["Nov", 0, 0],
+        ["Dec", 0, 0],
+      ];
+    }
+
+    const chartData = [["Month", "Driver Count", "Order Count"]];
+    const monthOrder = [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+    ];
+
+    monthOrder.forEach((month) => {
+      const monthData = carrierAssessmentData[month];
+      const driverCount = monthData?.driver_count || 0;
+      const orderCount = monthData?.order_count || 0;
+      chartData.push([monthMap[month], driverCount, orderCount]);
     });
 
     return chartData;
@@ -118,27 +174,76 @@ function Assessments() {
       textStyle: {color: "#6B7280", fontSize: 11},
       gridlines: {color: "transparent"},
       baselineColor: "#E5E7EB",
-      format: "MMM",
+      showTextEvery: 1,
     },
     vAxis: {
-      textStyle: {color: "transparent"},
+      textStyle: {color: "#6B7280", fontSize: 11},
       gridlines: {color: "#F3F4F6", count: 5},
       baselineColor: "#E5E7EB",
       minValue: 0,
-      format: "",
+      format: "short",
     },
-    legend: {position: "none"},
-    colors: ["#EF6820"],
+    legend: {
+      position: "top",
+      textStyle: {color: "#6B7280", fontSize: 12},
+    },
+    tooltip: {
+      trigger: "focus",
+      isHtml: true,
+    },
+    focusTarget: "category",
+    colors: ["#EF6820", "#175CD3"],
     areaOpacity: 0.1,
     lineWidth: 3,
-    pointSize: 0,
+    pointSize: 6,
+    pointShape: "circle",
     chartArea: {
-      left: 10,
-      top: 10,
-      right: 10,
-      bottom: 20,
-      width: "110%",
-      height: "75%",
+      left: 60,
+      top: 40,
+      right: 20,
+      bottom: 40,
+      width: "100%",
+      height: "70%",
+      backgroundColor: "#fff",
+    },
+    backgroundColor: "#fff",
+  };
+
+  const barChartOptions = {
+    chart: {
+      title: "",
+    },
+    hAxis: {
+      textStyle: {color: "#6B7280", fontSize: 11},
+      gridlines: {color: "transparent"},
+      baselineColor: "#E5E7EB",
+      showTextEvery: 1,
+      slantedText: false,
+      slantedTextAngle: 0,
+    },
+    vAxis: {
+      textStyle: {color: "#6B7280", fontSize: 11},
+      gridlines: {color: "#F3F4F6", count: 5},
+      baselineColor: "#E5E7EB",
+      minValue: 0,
+      format: "short",
+    },
+    legend: {
+      position: "top",
+      textStyle: {color: "#6B7280", fontSize: 12},
+    },
+    tooltip: {
+      trigger: "focus",
+      isHtml: true,
+    },
+    colors: ["#EF6820", "#175CD3"],
+    chartArea: {
+      left: 60,
+      top: 40,
+      right: 20,
+      bottom: 50,
+      width: "100%",
+      height: "70%",
       backgroundColor: "#fff",
     },
     backgroundColor: "#fff",
@@ -243,15 +348,39 @@ function Assessments() {
             <Text fontSize="16px" fontWeight="600" color="#181D27" mb="16px">
               Load Limit
             </Text>
-            <Box w="100%" h="200px">
-              <Chart
-                chartType="AreaChart"
-                data={loadLimitData}
-                options={loadLimitOptions}
-                width="100%"
-                height="200px"
-              />
-            </Box>
+            <Tabs
+              selectedIndex={selectedTab}
+              onSelect={(index) => setSelectedTab(index)}
+              className={styles.tabsContainer}>
+              <TabList mb="16px">
+                <Tab>Performance</Tab>
+                <Tab>Activity</Tab>
+              </TabList>
+
+              <TabPanel p="0">
+                <Box w="100%" h="200px">
+                  <Chart
+                    chartType="AreaChart"
+                    data={loadLimitData}
+                    options={loadLimitOptions}
+                    width="100%"
+                    height="200px"
+                  />
+                </Box>
+              </TabPanel>
+
+              <TabPanel p="0">
+                <Box w="100%" h="200px">
+                  <Chart
+                    chartType="ColumnChart"
+                    data={barChartData}
+                    options={barChartOptions}
+                    width="100%"
+                    height="200px"
+                  />
+                </Box>
+              </TabPanel>
+            </Tabs>
           </Box>
         </Flex>
       </InfoAccordionPanel>
