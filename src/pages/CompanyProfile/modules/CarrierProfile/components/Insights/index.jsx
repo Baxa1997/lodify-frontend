@@ -37,7 +37,10 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     selectedTab,
     setSelectedTab,
     carrierAuditData,
+    contactsMatchesData,
   } = useInsightsProps();
+
+  const {company_officer_1, company_officer_2} = contactsMatchesData;
 
   const matchedAddressesData = addressMatchesBodyData?.physical_address?.concat(
     addressMatchesBodyData?.mailing_address

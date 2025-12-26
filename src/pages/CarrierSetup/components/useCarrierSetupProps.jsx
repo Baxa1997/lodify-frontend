@@ -1,12 +1,15 @@
-import {useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import carrierService from "@services/carrierService";
 import {useQuery} from "@tanstack/react-query";
 import {useForm} from "react-hook-form";
 import {useState, useEffect} from "react";
+import {useSelector} from "react-redux";
 
 export const useCarrierSetupProps = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
 
   const {data: carrierData} = useQuery({
     queryKey: ["carrier", id],
@@ -30,6 +33,8 @@ export const useCarrierSetupProps = () => {
   const [paymentSubView, setPaymentSubView] = useState(1);
   const [contractSubView, setContractSubView] = useState(1);
   const [isInsuranceLoading, setIsInsuranceLoading] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const steps = [
     {
@@ -170,8 +175,8 @@ export const useCarrierSetupProps = () => {
     }
 
     if (currentStep === 5 && contractSubView === 2) {
-      setCompletedSteps((prev) => new Set([...prev, currentStep]));
-      setContractSubView(1);
+      // Show confirmation modal on final step
+      setIsConfirmModalOpen(true);
       return;
     }
 
@@ -232,6 +237,39 @@ export const useCarrierSetupProps = () => {
     }
   }, [carrierData]);
 
+  const handleConfirmAddCarrier = () => {
+    if (!brokersId || !id) {
+      console.error("Missing broker ID or carrier ID");
+      return;
+    }
+
+    setIsConnecting(true);
+
+    const payload = {
+      joined_at: new Date().toISOString(),
+      brokers_id: brokersId,
+      companies_id: carrierData?.guid || id || "",
+    };
+
+    carrierService
+      .addCarrier(payload)
+      .then(() => {
+        setIsConnecting(false);
+        setIsConfirmModalOpen(false);
+        setCompletedSteps((prev) => new Set([...prev, currentStep]));
+        setContractSubView(1);
+        navigate(`/admin/carriers`);
+      })
+      .catch((error) => {
+        setIsConnecting(false);
+        console.error("Failed to add carrier:", error);
+      });
+  };
+
+  const handleCancelAddCarrier = () => {
+    setIsConfirmModalOpen(false);
+  };
+
   return {
     currentStep,
     control,
@@ -245,5 +283,11 @@ export const useCarrierSetupProps = () => {
     paymentSubView,
     contractSubView,
     isInsuranceLoading,
+    isConfirmModalOpen,
+    isConnecting,
+    handleConfirmAddCarrier,
+    handleCancelAddCarrier,
+    carrierData,
+    id,
   };
 };

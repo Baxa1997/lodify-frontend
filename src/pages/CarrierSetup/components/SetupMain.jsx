@@ -1,5 +1,17 @@
 import React from "react";
-import {Box, Text, Flex, Button} from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Flex,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 import StepRenderer from "./StepRenderer";
 import styles from "../CarrierSetup.module.scss";
 
@@ -13,6 +25,10 @@ const SetupMain = ({
   paymentSubView = 1,
   contractSubView = 1,
   isInsuranceLoading = false,
+  isConfirmModalOpen = false,
+  isConnecting = false,
+  onConfirmAddCarrier = () => {},
+  onCancelAddCarrier = () => {},
 }) => {
   return (
     <Box className={styles.mainContent} position={"relative"}>
@@ -111,6 +127,53 @@ const SetupMain = ({
           </Flex>
         </Flex>
       </Box>
+
+      <Modal
+        isOpen={isConfirmModalOpen}
+        onClose={onCancelAddCarrier}
+        isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Add Carrier</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text fontSize="16px" color="#414651">
+              Are you sure you want to add this carrier to your list?
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              borderColor="#D1D5DB"
+              color="#374151"
+              fontSize="14px"
+              fontWeight="500"
+              px="20px"
+              py="6px"
+              borderRadius="8px"
+              _hover={{bg: "#F9FAFB"}}
+              onClick={onCancelAddCarrier}
+              isDisabled={isConnecting}
+              mr={3}>
+              No, Cancel
+            </Button>
+            <Button
+              bg="#EF6820"
+              color="white"
+              fontSize="14px"
+              fontWeight="600"
+              px="20px"
+              py="6px"
+              borderRadius="8px"
+              _hover={{bg: "#DC5A1A"}}
+              onClick={onConfirmAddCarrier}
+              isLoading={isConnecting}
+              loadingText="Connecting...">
+              Yes, Add Carrier
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

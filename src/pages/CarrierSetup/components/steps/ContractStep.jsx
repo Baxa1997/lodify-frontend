@@ -225,9 +225,9 @@ const ContractStep = ({control, subView = 1}) => {
             <InsightAddress key={item.id} item={item} virtualAddress={true} />
           ))}
 
-          {contactMatchesData?.map((item) => (
+          {/* {contactMatchesData?.map((item) => (
             <InsightAddress key={item.id} item={item} contact={true} />
-          ))}
+          ))} */}
 
           {addressMatchesBodyData?.physical_address?.map((item) => (
             <InsightAddress key={item.id} item={item} physicalAddress={true} />

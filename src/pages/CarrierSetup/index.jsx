@@ -17,6 +17,10 @@ const CarrierSetup = () => {
     paymentSubView,
     contractSubView,
     isInsuranceLoading,
+    isConfirmModalOpen,
+    isConnecting,
+    handleConfirmAddCarrier,
+    handleCancelAddCarrier,
   } = useCarrierSetupProps();
   return (
     <Flex className={styles.multiStepContainer} minHeight="100vh">
@@ -35,6 +39,10 @@ const CarrierSetup = () => {
         paymentSubView={paymentSubView}
         contractSubView={contractSubView}
         isInsuranceLoading={isInsuranceLoading}
+        isConfirmModalOpen={isConfirmModalOpen}
+        isConnecting={isConnecting}
+        onConfirmAddCarrier={handleConfirmAddCarrier}
+        onCancelAddCarrier={handleCancelAddCarrier}
       />
     </Flex>
   );
