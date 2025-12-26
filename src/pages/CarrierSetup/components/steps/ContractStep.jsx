@@ -1,9 +1,162 @@
-import React from "react";
-import {Box, Text, Flex} from "@chakra-ui/react";
+import React, {useMemo} from "react";
+import {Box, Text, Flex, VStack, HStack, Badge} from "@chakra-ui/react";
+import {AiOutlineExclamationCircle} from "react-icons/ai";
+import {useQuery} from "@tanstack/react-query";
+import {useSearchParams} from "react-router-dom";
+import {format} from "date-fns";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
+import carrierService from "@services/carrierService";
+import {AssosiationReport} from "./AssosiationReport";
 
 const ContractStep = ({control, subView = 1}) => {
+  const [searchParams] = useSearchParams();
+  const companies_id = searchParams.get("id");
+
+  const {data: virtualAddressData} = useQuery({
+    queryKey: ["VIRTUAL_ADDRESS_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getVirtualAddress({
+        data: {
+          method: "virtual",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "addresses",
+        },
+      }),
+    select: (res) => res?.data?.virtual_addresses ?? [],
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: equipmentData} = useQuery({
+    queryKey: ["EQUIPMENT_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getEquipmentData({
+        data: {
+          method: "vin",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data?.response ?? [],
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: carrierAuditData} = useQuery({
+    queryKey: ["AUDIT_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getCarrierAudit({
+        companies_id: companies_id,
+      }),
+    select: (res) => res?.data?.response?.[0] ?? {},
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: vinMatchesData} = useQuery({
+    queryKey: ["VIN_MATCHES_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "vin",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: addressMatchesBodyData} = useQuery({
+    queryKey: ["ADDRESS_MATCHES_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "addresses",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data || {},
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: carrierInfoData} = useQuery({
+    queryKey: ["CARRIER_INFO_DATA", companies_id],
+    queryFn: () => carrierService.getCarrierSetupData(companies_id),
+    enabled: Boolean(companies_id),
+    select: (res) => res.data?.response || {},
+  });
+
+  const associationInsights = useMemo(() => {
+    return [
+      {
+        title: "Reused Equipment Scheduled Auto",
+        date: "Observed March, 2024",
+        filtered: equipmentData?.length > 0 ? false : true,
+      },
+      {
+        title: "Flagged Factor",
+        date: "Observed May, 2023",
+        filtered: true,
+      },
+    ];
+  }, [equipmentData]);
+
+  const locationInsights = useMemo(() => {
+    return virtualAddressData?.length > 0
+      ? virtualAddressData.map((item) => ({
+          title: "Virtual Office Address",
+          date: format(new Date(), "MMM dd, yyyy"),
+        }))
+      : [];
+  }, [virtualAddressData]);
+
+  const changedFields = useMemo(() => {
+    if (!carrierAuditData) return [];
+
+    const fields = [
+      {key: "email", label: "Email", oldKey: "old_email"},
+      {
+        key: "mailing_address",
+        label: "Mailing Address",
+        oldKey: "old_mailing_address",
+      },
+      {
+        key: "physical_address",
+        label: "Physical Address",
+        oldKey: "old_physical_address",
+      },
+      {key: "phone", label: "Phone", oldKey: "old_phone"},
+      {
+        key: "company_officer_1",
+        label: "Company Officer 1",
+        oldKey: "old_company_officer_1",
+      },
+      {
+        key: "company_officer_2",
+        label: "Company Officer 2",
+        oldKey: "old_company_officer_2",
+      },
+    ];
+
+    return fields
+      .filter((field) => {
+        const oldValue = carrierAuditData[field.oldKey];
+        return oldValue !== null && oldValue !== undefined && oldValue !== "";
+      })
+      .map((field) => ({
+        ...field,
+        oldValue: carrierAuditData[field.oldKey],
+        newValue: carrierAuditData[field.key],
+      }));
+  }, [carrierAuditData]);
   if (subView === 2) {
     return (
       <Box className={styles.stepContentContract}>
@@ -35,7 +188,7 @@ const ContractStep = ({control, subView = 1}) => {
           </Flex>
         </Box>
 
-        <Box p="12px" border="1px solid #E2E8F0" borderRadius="8px" bg="white">
+        {/* <Box p="12px" border="1px solid #E2E8F0" borderRadius="8px" bg="white">
           <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="6px">
             Temperature Controlled
           </Text>
@@ -121,9 +274,9 @@ const ContractStep = ({control, subView = 1}) => {
               Fail
             </Flex>
           </Flex>
-        </Box>
+        </Box> */}
 
-        <Box
+        {/* <Box
           mt="20px"
           p="12px"
           border="1px solid #E2E8F0"
@@ -158,7 +311,98 @@ const ContractStep = ({control, subView = 1}) => {
               Fail
             </Flex>
           </Flex>
-        </Box>
+        </Box> */}
+
+        <VStack spacing="24px" align="stretch">
+          <Box>
+            <VStack
+              display="flex"
+              flexDir="row"
+              flexWrap="wrap"
+              gap="8px"
+              align="stretch">
+              {carrierInfoData?.broker_stat === "A" && (
+                <AssosiationReport
+                  label="Broker is Active"
+                  insight={{date: "Observed March, 2024"}}
+                />
+              )}
+              {associationInsights
+                ?.filter((insight) => !insight.filtered)
+                .map((insight, index) => (
+                  <AssosiationReport key={index} insight={insight} />
+                ))}
+              {addressMatchesBodyData?.physical_address?.length > 0 && (
+                <AssosiationReport
+                  label="Physical Address"
+                  insight={{date: "Matched"}}
+                />
+              )}
+              {addressMatchesBodyData?.mailing_address?.length > 0 && (
+                <AssosiationReport
+                  label="Mailing Address"
+                  insight={{date: "Matched"}}
+                />
+              )}
+              {vinMatchesData?.length > 0 && (
+                <AssosiationReport
+                  label="VIN Match"
+                  insight={{date: "Observed March, 2024"}}
+                />
+              )}
+              {equipmentData?.length > 0 && (
+                <AssosiationReport
+                  label="Reused Equipment Scheduled Auto"
+                  insight={{date: "Observed March, 2024"}}
+                />
+              )}
+              {changedFields?.map((field, index) => (
+                <AssosiationReport
+                  key={`changed-${field.key}-${index}`}
+                  label={field.label}
+                  insight={{date: "Changed"}}
+                />
+              ))}
+            </VStack>
+          </Box>
+
+          {locationInsights?.length > 0 && (
+            <Box>
+              <Text fontSize="14px" fontWeight="600" color="#181D27" mb="12px">
+                Location Insights
+              </Text>
+              <VStack spacing="8px" align="stretch">
+                {locationInsights.map((insight, index) => (
+                  <Flex
+                    key={index}
+                    w="100%"
+                    bg="#FAFAFA"
+                    borderRadius="8px"
+                    p="12px 16px"
+                    gap="12px"
+                    justifyContent="space-between">
+                    <Box>
+                      <Text color="#181D27" fontSize="14px" fontWeight="500">
+                        {insight.title}
+                      </Text>
+                      <Text color="#6B7280" fontSize="14px" fontWeight="400">
+                        {insight.date}
+                      </Text>
+                    </Box>
+                    <Box>
+                      <AiOutlineExclamationCircle
+                        width="20px"
+                        height="20px"
+                        fontSize="20px"
+                        color="#EF6820"
+                      />
+                    </Box>
+                  </Flex>
+                ))}
+              </VStack>
+            </Box>
+          )}
+        </VStack>
       </Box>
     );
   }

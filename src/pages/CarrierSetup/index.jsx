@@ -48,41 +48,41 @@ const CarrierSetup = () => {
       completed: completedSteps.has(2),
       active: currentStep === 2,
     },
+    // {
+    //   id: 3,
+    //   title: "Coverage Map",
+    //   completed: completedSteps.has(3),
+    //   active: currentStep === 3,
+    // },
     {
       id: 3,
-      title: "Coverage Map",
+      title: "Certifications",
       completed: completedSteps.has(3),
       active: currentStep === 3,
     },
     {
       id: 4,
-      title: "Certifications",
+      title: "Insurance",
       completed: completedSteps.has(4),
       active: currentStep === 4,
     },
+    // {
+    //   id: 6,
+    //   title: "Payment",
+    //   completed: completedSteps.has(6),
+    //   active: currentStep === 6,
+    // },
+    // {
+    //   id: 7,
+    //   title: "Questionnaire",
+    //   completed: completedSteps.has(7),
+    //   active: currentStep === 7,
+    // },
     {
       id: 5,
-      title: "Insurance",
+      title: "Contract",
       completed: completedSteps.has(5),
       active: currentStep === 5,
-    },
-    {
-      id: 6,
-      title: "Payment",
-      completed: completedSteps.has(6),
-      active: currentStep === 6,
-    },
-    {
-      id: 7,
-      title: "Questionnaire",
-      completed: completedSteps.has(7),
-      active: currentStep === 7,
-    },
-    {
-      id: 8,
-      title: "Contract",
-      completed: completedSteps.has(8),
-      active: currentStep === 8,
     },
   ];
 
@@ -99,12 +99,12 @@ const CarrierSetup = () => {
       return;
     }
 
-    if (currentStep === 5 && insuranceSubView === 1) {
+    if (currentStep === 4 && insuranceSubView === 1) {
       setInsuranceSubView(2);
       return;
     }
 
-    if (currentStep === 5 && insuranceSubView === 2) {
+    if (currentStep === 4 && insuranceSubView === 2) {
       setIsInsuranceLoading(true);
       const formData = watch();
       const insuranceData = formData.insurance || {};
@@ -146,7 +146,7 @@ const CarrierSetup = () => {
         .then(() => {
           setIsInsuranceLoading(false);
           setCompletedSteps((prev) => new Set([...prev, currentStep]));
-          setCurrentStep(6);
+          setCurrentStep(5);
           setInsuranceSubView(1);
         })
         .catch((error) => {
@@ -156,24 +156,24 @@ const CarrierSetup = () => {
       return;
     }
 
-    if (currentStep === 6 && paymentSubView < 6) {
-      setPaymentSubView(paymentSubView + 1);
-      return;
-    }
+    // if (currentStep === 6 && paymentSubView < 6) {
+    //   setPaymentSubView(paymentSubView + 1);
+    //   return;
+    // }
 
-    if (currentStep === 6 && paymentSubView === 6) {
-      setCompletedSteps((prev) => new Set([...prev, currentStep]));
-      setCurrentStep(7);
-      setPaymentSubView(1);
-      return;
-    }
+    // if (currentStep === 6 && paymentSubView === 6) {
+    //   setCompletedSteps((prev) => new Set([...prev, currentStep]));
+    //   setCurrentStep(7);
+    //   setPaymentSubView(1);
+    //   return;
+    // }
 
-    if (currentStep === 8 && contractSubView === 1) {
+    if (currentStep === 5 && contractSubView === 1) {
       setContractSubView(2);
       return;
     }
 
-    if (currentStep === 8 && contractSubView === 2) {
+    if (currentStep === 5 && contractSubView === 2) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setContractSubView(1);
       return;
@@ -191,17 +191,17 @@ const CarrierSetup = () => {
       return;
     }
 
-    if (currentStep === 5 && insuranceSubView === 2) {
+    if (currentStep === 4 && insuranceSubView === 2) {
       setInsuranceSubView(1);
       return;
     }
 
-    if (currentStep === 6 && paymentSubView > 1) {
-      setPaymentSubView(paymentSubView - 1);
-      return;
-    }
+    // if (currentStep === 6 && paymentSubView > 1) {
+    //   setPaymentSubView(paymentSubView - 1);
+    //   return;
+    // }
 
-    if (currentStep === 8 && contractSubView === 2) {
+    if (currentStep === 5 && contractSubView === 2) {
       setContractSubView(1);
       return;
     }
@@ -212,13 +212,10 @@ const CarrierSetup = () => {
       if (currentStep === 2) {
         setIdentitySubView(1);
       }
-      if (currentStep === 6) {
+      if (currentStep === 4) {
         setInsuranceSubView(1);
       }
-      if (currentStep === 7) {
-        setPaymentSubView(1);
-      }
-      if (currentStep === 8) {
+      if (currentStep === 5) {
         setContractSubView(1);
       }
     }
