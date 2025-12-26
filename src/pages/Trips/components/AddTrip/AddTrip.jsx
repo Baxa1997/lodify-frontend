@@ -14,8 +14,9 @@ import tripsService from "../../../../services/tripsService";
 import {useSelector} from "react-redux";
 import {generateID} from "@utils/generateID";
 import {transformTripData, transformFileData} from "./hooks/transforData";
+import {IoWarningOutline} from "react-icons/io5";
 
-function AddTrip({tripData = {}}) {
+function AddTrip({tripData = {}, locationStatus = {}}) {
   const {id} = useParams();
   const navigate = useNavigate();
   const toast = useToast();
@@ -331,6 +332,30 @@ function AddTrip({tripData = {}}) {
         )}
 
         <form action="" onSubmit={handleSubmit(onSubmit)}>
+          {locationStatus?.is_same_location === false && (
+            <Box
+              w="100%"
+              mb="20px"
+              p="8px"
+              bg="#FEF3C7"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              borderRadius="8px"
+              border="1px solid #F59E0B">
+              <Flex align="center" gap="12px">
+                <Box fontSize="20px" fontWeight="600">
+                  <IoWarningOutline />
+                </Box>
+                <Text fontSize="14px" color="#000" fontWeight="600">
+                  Address Mismatch Warning: The integration address and your
+                  real physical address do not match. Please verify the address
+                  information before proceeding.
+                </Text>
+              </Flex>
+            </Box>
+          )}
+
           <FirstSection
             tripType={tripType}
             control={control}
