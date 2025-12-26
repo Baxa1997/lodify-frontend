@@ -239,7 +239,7 @@ function Insights({
                 align="stretch">
                 {new_info?.broker_stat === "A" && (
                   <AssosiationReport
-                    label="Broker is Active"
+                    label="Broker Authority is Active"
                     insight={{date: "Observed March, 2024"}}
                   />
                 )}
@@ -247,8 +247,8 @@ function Insights({
                   (insurance) => insurance?.cancl_effective_date
                 ) && (
                   <AssosiationReport
-                    label="Insurance Cancellation"
-                    insight={{date: "Cancellation Effective Date"}}
+                    label="Insurance will be expired"
+                    insight={{date: insurance?.cancl_effective_date}}
                   />
                 )}
                 {associationInsights
