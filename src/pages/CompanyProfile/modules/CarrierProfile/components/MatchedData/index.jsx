@@ -13,9 +13,13 @@ export const MatchedData = ({
   vinMatchesData,
   addressMatchesBodyData,
   ipMatchesData,
+  contactsMatchesData,
 }) => {
   const {addressMatchesHeadData, addressMatchesContacts} =
     useMatchedDataProps();
+
+  const {email, phone, company_officer_1, company_officer_2} =
+    contactsMatchesData || {};
 
   return (
     <Box>
@@ -82,6 +86,58 @@ export const MatchedData = ({
               headData={addressMatchesHeadData}
               bodyData={ipMatchesData}
             />
+
+            {email && email.length > 0 && (
+              <MatchesSection
+                title="Email Matches"
+                matchedByLabel="Email"
+                matchedCount={email?.length}
+                address={email?.[0]?.email}
+                headData={addressMatchesHeadData}
+                bodyData={email}
+              />
+            )}
+
+            {phone && phone.length > 0 && (
+              <MatchesSection
+                title="Phone Matches"
+                matchedByLabel="Phone"
+                matchedCount={phone?.length}
+                address={phone?.[0]?.phone}
+                headData={addressMatchesHeadData}
+                bodyData={phone}
+              />
+            )}
+
+            {company_officer_1 && company_officer_1.length > 0 && (
+              <MatchesSection
+                title="Company Officer 1 Matches"
+                matchedByLabel="Officer Name"
+                matchedCount={company_officer_1?.length}
+                address={
+                  company_officer_1?.[0]?.name ||
+                  company_officer_1?.[0]?.officer_name ||
+                  company_officer_1?.[0]?.contact
+                }
+                headData={addressMatchesHeadData}
+                bodyData={company_officer_1}
+              />
+            )}
+
+            {company_officer_2 && company_officer_2.length > 0 && (
+              <MatchesSection
+                title="Company Officer 2 Matches"
+                matchedByLabel="Officer Name"
+                matchedCount={company_officer_2?.length}
+                address={
+                  company_officer_2?.[0]?.name ||
+                  company_officer_2?.[0]?.officer_name ||
+                  company_officer_2?.[0]?.contact
+                }
+                headData={addressMatchesHeadData}
+                bodyData={company_officer_2}
+              />
+            )}
           </VStack>
         </InfoAccordionPanel>
       </InfoAccordionItem>

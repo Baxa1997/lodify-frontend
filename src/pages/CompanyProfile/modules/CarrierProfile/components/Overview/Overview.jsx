@@ -26,7 +26,6 @@ export const Overview = ({carrierDetails, generalInfo}) => {
   const companies_id = searchParams.get("id");
   const [accordionIndex, setAccordionIndex] = useState([]);
 
-  // Reset accordion to closed when carrier ID changes
   useEffect(() => {
     setAccordionIndex([]);
   }, [companies_id]);
@@ -63,6 +62,22 @@ export const Overview = ({carrierDetails, generalInfo}) => {
     enabled: Boolean(companies_id),
   });
 
+  const {data: contactsMatchesData} = useQuery({
+    queryKey: ["GET_CONTACTS_MATCHES_DATA", companies_id],
+    queryFn: () =>
+      carrierService.getMatchedData({
+        data: {
+          method: "contact",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "matches",
+        },
+      }),
+    select: (res) => res?.data || {},
+    enabled: Boolean(companies_id),
+  });
+
   return (
     <Box
       display="flex"
@@ -84,6 +99,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
             <Insights
               new_info={new_info}
               vinMatchesData={vinMatchesData}
+              contactsMatchesData={contactsMatchesData}
               addressMatchesBodyData={addressMatchesBodyData}
             />
           </Box>
@@ -119,6 +135,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
           </Box>
           <Box id="matched-data">
             <MatchedData
+              contactsMatchesData={contactsMatchesData}
               ipMatchesData={addressMatchesBodyData?.ip_address}
               vinMatchesData={vinMatchesData}
               addressMatchesBodyData={addressMatchesBodyData}

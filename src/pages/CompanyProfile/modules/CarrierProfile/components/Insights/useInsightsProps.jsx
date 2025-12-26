@@ -50,22 +50,6 @@ export const useInsightsProps = () => {
     enabled: Boolean(companies_id),
   });
 
-  const {data: contactsMatchesData} = useQuery({
-    queryKey: ["GET_CONTACTS_MATCHES_DATA", companies_id],
-    queryFn: () =>
-      carrierService.getMatchedData({
-        data: {
-          method: "contact",
-          object_data: {
-            companies_id: companies_id,
-          },
-          table: "matches",
-        },
-      }),
-    select: (res) => res?.data || {},
-    enabled: Boolean(companies_id),
-  });
-
   const associationInsights = [
     {
       title: "Flagged Factor",
@@ -105,6 +89,5 @@ export const useInsightsProps = () => {
     setSelectedTab,
     selectedTab,
     carrierAuditData,
-    contactsMatchesData,
   };
 };

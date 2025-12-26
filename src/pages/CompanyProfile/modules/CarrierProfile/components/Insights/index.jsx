@@ -29,7 +29,12 @@ import {AssosiationReport} from "./AssosiationReport";
 import {useMemo, useState, useEffect} from "react";
 import {EquipmentMatch} from "./EquipmentMatch";
 
-function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
+function Insights({
+  vinMatchesData,
+  addressMatchesBodyData,
+  new_info,
+  contactsMatchesData,
+}) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const companiesId = searchParams.get("id");
@@ -43,7 +48,6 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     selectedTab,
     setSelectedTab,
     carrierAuditData,
-    contactsMatchesData,
   } = useInsightsProps();
 
   const {
@@ -52,8 +56,6 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     email = [],
     phone = [],
   } = contactsMatchesData || {};
-
-  console.log("contactsMatchesDatacontactsMatchesData", contactsMatchesData);
 
   const changedFields = useMemo(() => {
     if (!carrierAuditData) return [];
