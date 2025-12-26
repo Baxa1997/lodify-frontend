@@ -78,6 +78,27 @@ export const Overview = ({carrierDetails, generalInfo}) => {
     enabled: Boolean(companies_id),
   });
 
+  const {data: pendingInsuranceData} = useQuery({
+    queryKey: [
+      "GET_PENDING_INSURANCE_DATA",
+      companies_id,
+      new_info?.dot_number,
+    ],
+    queryFn: () =>
+      carrierService.getCarrierInfo({
+        data: {
+          method: "list",
+          object_data: {
+            dot_number: new_info?.dot_number,
+            companies_id: companies_id,
+          },
+          table: "insurance",
+        },
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(companies_id && new_info?.dot_number),
+  });
+
   return (
     <Box
       display="flex"
@@ -101,6 +122,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
               vinMatchesData={vinMatchesData}
               contactsMatchesData={contactsMatchesData}
               addressMatchesBodyData={addressMatchesBodyData}
+              pendingInsuranceData={pendingInsuranceData}
             />
           </Box>
           <Box id="victim-identity">
@@ -113,7 +135,10 @@ export const Overview = ({carrierDetails, generalInfo}) => {
             <Authority new_info={new_info} carrierDetails={carrierDetails} />
           </Box>
           <Box id="insurance">
-            <ActiveAndPendingInsurance new_info={new_info} />
+            <ActiveAndPendingInsurance
+              new_info={new_info}
+              pendingInsuranceData={pendingInsuranceData}
+            />
           </Box>
           <Box id="safety">
             <Safety />

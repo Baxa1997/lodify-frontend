@@ -17,14 +17,20 @@ import {
 import {useActiveAndPendingInsuranceProps} from "./useActiveAndPendingInsuranceProps";
 import {format, isValid, parseISO, isAfter, isBefore} from "date-fns";
 
-export const ActiveAndPendingInsurance = ({new_info}) => {
+export const ActiveAndPendingInsurance = ({
+  new_info,
+  pendingInsuranceData: pendingInsuranceDataProp,
+}) => {
   const {
     isLoading,
-    pendingInsuranceData,
+    pendingInsuranceData: pendingInsuranceDataHook,
     rejectedInsuranceData,
     onAccordionChange,
     getPendingInsuranceData,
   } = useActiveAndPendingInsuranceProps(new_info);
+
+  const pendingInsuranceData =
+    pendingInsuranceDataProp || pendingInsuranceDataHook;
 
   const allInsuranceData = [
     ...(pendingInsuranceData || []),
@@ -244,10 +250,8 @@ export const ActiveAndPendingInsurance = ({new_info}) => {
                             fontWeight="500"
                             color="#181D27">
                             {formatDate(
-                              item?.expiration_date ||
-                                item?.exp_date ||
-                                item?.expirationDate ||
-                                item?.expiration
+                              item?.cancl_effective_date ||
+                                item?.expiration_date
                             )}
                           </Text>
                         </Box>

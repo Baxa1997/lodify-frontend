@@ -34,6 +34,7 @@ function Insights({
   addressMatchesBodyData,
   new_info,
   contactsMatchesData,
+  pendingInsuranceData,
 }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -99,6 +100,10 @@ function Insights({
   }, [carrierAuditData]);
 
   const totalInsights = useMemo(() => {
+    const hasInsuranceCancellation =
+      pendingInsuranceData?.some(
+        (insurance) => insurance?.cancl_effective_date
+      ) || false;
     return (
       (virtualAddressData?.length || 0) +
       (vinMatchesData?.length || 0) +
@@ -108,7 +113,9 @@ function Insights({
       (company_officer_1?.length || 0) +
       (company_officer_2?.length || 0) +
       (email?.length || 0) +
-      (phone?.length || 0)
+      (phone?.length || 0) +
+      (hasInsuranceCancellation ? 1 : 0) +
+      (new_info?.broker_stat === "A" ? 1 : 0)
     );
   }, [
     virtualAddressData,
@@ -120,6 +127,8 @@ function Insights({
     company_officer_2,
     email,
     phone,
+    pendingInsuranceData,
+    new_info?.broker_stat,
   ]);
 
   const matchedAddressesCount = useMemo(() => {
@@ -232,6 +241,14 @@ function Insights({
                   <AssosiationReport
                     label="Broker is Active"
                     insight={{date: "Observed March, 2024"}}
+                  />
+                )}
+                {pendingInsuranceData?.some(
+                  (insurance) => insurance?.cancl_effective_date
+                ) && (
+                  <AssosiationReport
+                    label="Insurance Cancellation"
+                    insight={{date: "Cancellation Effective Date"}}
                   />
                 )}
                 {associationInsights
