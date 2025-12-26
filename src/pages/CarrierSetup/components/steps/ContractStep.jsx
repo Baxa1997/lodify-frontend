@@ -104,6 +104,46 @@ const ContractStep = ({control, subView = 1}) => {
       "the broker"
   );
 
+  const changedFields = useMemo(() => {
+    if (!carrierAuditData) return [];
+
+    const fields = [
+      {key: "email", label: "Email", oldKey: "old_email"},
+      {
+        key: "mailing_address",
+        label: "Mailing Address",
+        oldKey: "old_mailing_address",
+      },
+      {
+        key: "physical_address",
+        label: "Physical Address",
+        oldKey: "old_physical_address",
+      },
+      {key: "phone", label: "Phone", oldKey: "old_phone"},
+      {
+        key: "company_officer_1",
+        label: "Company Officer 1",
+        oldKey: "old_company_officer_1",
+      },
+      {
+        key: "company_officer_2",
+        label: "Company Officer 2",
+        oldKey: "old_company_officer_2",
+      },
+    ];
+
+    return fields
+      .filter((field) => {
+        const oldValue = carrierAuditData[field.oldKey];
+        return oldValue !== null && oldValue !== undefined && oldValue !== "";
+      })
+      .map((field) => ({
+        ...field,
+        oldValue: carrierAuditData[field.oldKey],
+        newValue: carrierAuditData[field.key],
+      }));
+  }, [carrierAuditData]);
+
   const totalInsightsCount = useMemo(() => {
     return (
       (virtualAddressData?.length || 0) +
@@ -149,46 +189,6 @@ const ContractStep = ({control, subView = 1}) => {
   //       }))
   //     : [];
   // }, [virtualAddressData]);
-
-  const changedFields = useMemo(() => {
-    if (!carrierAuditData) return [];
-
-    const fields = [
-      {key: "email", label: "Email", oldKey: "old_email"},
-      {
-        key: "mailing_address",
-        label: "Mailing Address",
-        oldKey: "old_mailing_address",
-      },
-      {
-        key: "physical_address",
-        label: "Physical Address",
-        oldKey: "old_physical_address",
-      },
-      {key: "phone", label: "Phone", oldKey: "old_phone"},
-      {
-        key: "company_officer_1",
-        label: "Company Officer 1",
-        oldKey: "old_company_officer_1",
-      },
-      {
-        key: "company_officer_2",
-        label: "Company Officer 2",
-        oldKey: "old_company_officer_2",
-      },
-    ];
-
-    return fields
-      .filter((field) => {
-        const oldValue = carrierAuditData[field.oldKey];
-        return oldValue !== null && oldValue !== undefined && oldValue !== "";
-      })
-      .map((field) => ({
-        ...field,
-        oldValue: carrierAuditData[field.oldKey],
-        newValue: carrierAuditData[field.key],
-      }));
-  }, [carrierAuditData]);
 
   // const matchedAddressesCount = useMemo(() => {
   //   return (
