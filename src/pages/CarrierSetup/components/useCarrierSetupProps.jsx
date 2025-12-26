@@ -175,7 +175,6 @@ export const useCarrierSetupProps = () => {
     }
 
     if (currentStep === 5 && contractSubView === 2) {
-      // Show confirmation modal on final step
       setIsConfirmModalOpen(true);
       return;
     }

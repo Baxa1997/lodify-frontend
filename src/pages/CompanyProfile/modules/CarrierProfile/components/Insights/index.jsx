@@ -16,18 +16,25 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Button,
 } from "@chakra-ui/react";
 import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import styles from "../../../../../../styles/tabs.module.scss";
 import {format} from "date-fns";
 import {useInsightsProps} from "./useInsightsProps";
 import {InsightAddress} from "./InsightAddress";
 import {AssosiationReport} from "./AssosiationReport";
-import {useMemo} from "react";
+import {useMemo, useState, useEffect} from "react";
 import {EquipmentMatch} from "./EquipmentMatch";
 
 function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const companiesId = searchParams.get("id");
+  const [accordionIndex, setAccordionIndex] = useState([]);
+  const [insightsDetailsIndex, setInsightsDetailsIndex] = useState([]);
   const {
     virtualAddressData,
     associationInsights,
@@ -39,12 +46,14 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     contactsMatchesData,
   } = useInsightsProps();
 
-  const {company_officer_1 = [], company_officer_2 = []} =
-    contactsMatchesData || {};
+  const {
+    company_officer_1 = [],
+    company_officer_2 = [],
+    email = [],
+    phone = [],
+  } = contactsMatchesData || {};
 
-  const matchedAddressesData = addressMatchesBodyData?.physical_address?.concat(
-    addressMatchesBodyData?.mailing_address
-  );
+  console.log("contactsMatchesDatacontactsMatchesData", contactsMatchesData);
 
   const changedFields = useMemo(() => {
     if (!carrierAuditData) return [];
@@ -95,7 +104,9 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
       (addressMatchesBodyData?.mailing_address?.length || 0) +
       (changedFields?.length || 0) +
       (company_officer_1?.length || 0) +
-      (company_officer_2?.length || 0)
+      (company_officer_2?.length || 0) +
+      (email?.length || 0) +
+      (phone?.length || 0)
     );
   }, [
     virtualAddressData,
@@ -105,6 +116,8 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
     vinMatchesData,
     company_officer_1,
     company_officer_2,
+    email,
+    phone,
   ]);
 
   const matchedAddressesCount = useMemo(() => {
@@ -112,9 +125,17 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
       (addressMatchesBodyData?.physical_address?.length || 0) +
       (addressMatchesBodyData?.mailing_address?.length || 0) +
       (company_officer_1?.length || 0) +
-      (company_officer_2?.length || 0)
+      (company_officer_2?.length || 0) +
+      (email?.length || 0) +
+      (phone?.length || 0)
     );
-  }, [addressMatchesBodyData, company_officer_1, company_officer_2]);
+  }, [
+    addressMatchesBodyData,
+    company_officer_1,
+    company_officer_2,
+    email,
+    phone,
+  ]);
 
   const changedFieldsCount = useMemo(() => {
     return (
@@ -134,7 +155,8 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
 
   const locationCount = useMemo(() => {
     return (
-      changedFields?.filter(
+      (virtualAddressData?.length || 0) +
+      (changedFields?.filter(
         (field) =>
           (field.key === "physical_address" ||
             field.key === "mailing_address") &&
@@ -142,12 +164,17 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
           field.oldValue !== "" &&
           field.newValue &&
           field.oldValue !== field.newValue
-      ).length || 0
+      ).length || 0)
     );
-  }, [changedFields]);
+  }, [virtualAddressData, changedFields]);
+
+  useEffect(() => {
+    setAccordionIndex([]);
+    setInsightsDetailsIndex([]);
+  }, [companiesId]);
 
   return (
-    <InfoAccordionItem id="insights">
+    <InfoAccordionItem id="insights" index={accordionIndex}>
       <InfoAccordionButton>
         <Flex justify="space-between" align="center" width="100%">
           <HStack spacing="8px">
@@ -234,6 +261,18 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                     insight={{date: "Matched"}}
                   />
                 )}
+                {email?.length > 0 && (
+                  <AssosiationReport
+                    label="Email"
+                    insight={{date: "Matched"}}
+                  />
+                )}
+                {phone?.length > 0 && (
+                  <AssosiationReport
+                    label="Phone"
+                    insight={{date: "Matched"}}
+                  />
+                )}
                 {vinMatchesData?.length > 0 && (
                   <AssosiationReport
                     label="VIN Match"
@@ -292,7 +331,11 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
           </VStack>
 
           <Box>
-            <Accordion allowToggle defaultIndex={[]}>
+            <Accordion
+              allowToggle
+              index={insightsDetailsIndex}
+              onChange={setInsightsDetailsIndex}
+              key={`insights-details-${companiesId}`}>
               <AccordionItem
                 border="1px solid #E5E7EB"
                 borderRadius="12px"
@@ -328,7 +371,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                     </Box>
                   </Flex>
                 </AccordionButton>
-                <AccordionPanel pb="20px" px="20px">
+                <AccordionPanel expanded={false} pb="20px" px="20px">
                   <Tabs
                     className={styles.tabsContainer}
                     selectedIndex={selectedTab}
@@ -436,6 +479,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                   item={item}
                                   allowToggle={true}
                                   physicalAddress={true}
+                                  onNavigate={navigate}
                                 />
                               )
                             )}
@@ -447,6 +491,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                   item={item}
                                   allowToggle={true}
                                   mailingAddress={true}
+                                  onNavigate={navigate}
                                 />
                               )
                             )}
@@ -464,6 +509,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                     "Not available",
                                 }}
                                 isOfficer={true}
+                                onNavigate={navigate}
                               />
                             ))}
 
@@ -480,6 +526,39 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                     "Not available",
                                 }}
                                 isOfficer={true}
+                                onNavigate={navigate}
+                              />
+                            ))}
+
+                            {email?.map((item, index) => (
+                              <InsightAddress
+                                key={`email-${index}`}
+                                item={{
+                                  ...item,
+                                  fieldLabel: "Email",
+                                  address:
+                                    item?.email ||
+                                    item?.contact ||
+                                    "Not available",
+                                }}
+                                isAuditChange={true}
+                                onNavigate={navigate}
+                              />
+                            ))}
+
+                            {phone?.map((item, index) => (
+                              <InsightAddress
+                                key={`phone-${index}`}
+                                item={{
+                                  ...item,
+                                  fieldLabel: "Phone",
+                                  address:
+                                    item?.phone ||
+                                    item?.contact ||
+                                    "Not available",
+                                }}
+                                isAuditChange={true}
+                                onNavigate={navigate}
                               />
                             ))}
 
@@ -583,6 +662,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                           {addressMatchesBodyData?.physical_address?.map(
                             (item, index) => (
                               <Box
+                                position="relative"
                                 key={`matched-physical-${index}`}
                                 border="1px solid #EF6820"
                                 borderRadius="12px"
@@ -636,6 +716,27 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                         "Not available"}
                                     </Text>
                                   </Box>
+                                  {item?.guid && (
+                                    <Button
+                                      position="absolute"
+                                      top="16px"
+                                      right="16px"
+                                      size="sm"
+                                      bg="#EF6820"
+                                      color="white"
+                                      _hover={{bg: "#DC5A1A"}}
+                                      onClick={() =>
+                                        navigate(
+                                          `/admin/company?id=${item.guid}`,
+                                          {
+                                            replace: false,
+                                          }
+                                        )
+                                      }
+                                      mt="8px">
+                                      Carrier Profile
+                                    </Button>
+                                  )}
                                 </VStack>
                               </Box>
                             )
@@ -644,6 +745,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                           {addressMatchesBodyData?.mailing_address?.map(
                             (item, index) => (
                               <Box
+                                position="relative"
                                 key={`matched-mailing-${index}`}
                                 border="1px solid #EF6820"
                                 borderRadius="12px"
@@ -696,6 +798,27 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                       {item?.mailing_address || "Not available"}
                                     </Text>
                                   </Box>
+                                  {item?.guid && (
+                                    <Button
+                                      position="absolute"
+                                      top="16px"
+                                      right="16px"
+                                      size="sm"
+                                      bg="#EF6820"
+                                      color="white"
+                                      _hover={{bg: "#DC5A1A"}}
+                                      onClick={() =>
+                                        navigate(
+                                          `/admin/company?id=${item.guid}`,
+                                          {
+                                            replace: false,
+                                          }
+                                        )
+                                      }
+                                      mt="8px">
+                                      Carrier Profile
+                                    </Button>
+                                  )}
                                 </VStack>
                               </Box>
                             )
@@ -703,6 +826,7 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
 
                           {company_officer_1?.map((item, index) => (
                             <Box
+                              position="relative"
                               key={`matched-officer-1-${index}`}
                               border="1px solid #EF6820"
                               borderRadius="12px"
@@ -755,12 +879,34 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                       "Not available"}
                                   </Text>
                                 </Box>
+                                {item?.guid && (
+                                  <Button
+                                    position="absolute"
+                                    top="16px"
+                                    right="16px"
+                                    size="sm"
+                                    bg="#EF6820"
+                                    color="white"
+                                    _hover={{bg: "#DC5A1A"}}
+                                    onClick={() =>
+                                      navigate(
+                                        `/admin/company?id=${item.guid}`,
+                                        {
+                                          replace: false,
+                                        }
+                                      )
+                                    }
+                                    mt="8px">
+                                    Carrier Profile
+                                  </Button>
+                                )}
                               </VStack>
                             </Box>
                           ))}
 
                           {company_officer_2?.map((item, index) => (
                             <Box
+                              position="relative"
                               key={`matched-officer-2-${index}`}
                               border="1px solid #EF6820"
                               borderRadius="12px"
@@ -813,6 +959,185 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                                       "Not available"}
                                   </Text>
                                 </Box>
+                                {item?.guid && (
+                                  <Button
+                                    position="absolute"
+                                    top="16px"
+                                    right="16px"
+                                    size="sm"
+                                    bg="#EF6820"
+                                    color="white"
+                                    _hover={{bg: "#DC5A1A"}}
+                                    onClick={() =>
+                                      navigate(
+                                        `/admin/company?id=${item.guid}`,
+                                        {
+                                          replace: false,
+                                        }
+                                      )
+                                    }
+                                    mt="8px">
+                                    Carrier Profile
+                                  </Button>
+                                )}
+                              </VStack>
+                            </Box>
+                          ))}
+
+                          {email?.map((item, index) => (
+                            <Box
+                              position="relative"
+                              key={`matched-email-${index}`}
+                              border="1px solid #EF6820"
+                              borderRadius="12px"
+                              p="16px"
+                              bg="white">
+                              <VStack align="start" spacing="8px">
+                                <Text
+                                  fontSize="12px"
+                                  fontWeight="600"
+                                  color="#6B7280"
+                                  textTransform="capitalize">
+                                  Email{" "}
+                                  <Text as="span" fontWeight="700" color="#000">
+                                    Matched
+                                  </Text>
+                                </Text>
+                                {item?.legal_name && (
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Matched Company:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="600"
+                                      color="#181D27">
+                                      {item.legal_name}
+                                    </Text>
+                                  </Box>
+                                )}
+                                <Box>
+                                  <Text
+                                    fontSize="12px"
+                                    fontWeight="600"
+                                    color="#6B7280"
+                                    mb="4px">
+                                    Email:
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="400"
+                                    color="#181D27"
+                                    lineHeight="1.6">
+                                    {item?.email ||
+                                      item?.contact ||
+                                      "Not available"}
+                                  </Text>
+                                </Box>
+                                {item?.guid && (
+                                  <Button
+                                    position="absolute"
+                                    top="16px"
+                                    right="16px"
+                                    size="sm"
+                                    bg="#EF6820"
+                                    color="white"
+                                    _hover={{bg: "#DC5A1A"}}
+                                    onClick={() =>
+                                      navigate(
+                                        `/admin/company?id=${item.guid}`,
+                                        {
+                                          replace: false,
+                                        }
+                                      )
+                                    }
+                                    mt="8px">
+                                    Carrier Profile
+                                  </Button>
+                                )}
+                              </VStack>
+                            </Box>
+                          ))}
+
+                          {phone?.map((item, index) => (
+                            <Box
+                              position="relative"
+                              key={`matched-phone-${index}`}
+                              border="1px solid #EF6820"
+                              borderRadius="12px"
+                              p="16px"
+                              bg="white">
+                              <VStack align="start" spacing="8px">
+                                <Text
+                                  fontSize="12px"
+                                  fontWeight="600"
+                                  color="#6B7280"
+                                  textTransform="capitalize">
+                                  Phone{" "}
+                                  <Text as="span" fontWeight="700" color="#000">
+                                    Matched
+                                  </Text>
+                                </Text>
+                                {item?.legal_name && (
+                                  <Box>
+                                    <Text
+                                      fontSize="12px"
+                                      fontWeight="600"
+                                      color="#6B7280"
+                                      mb="4px">
+                                      Matched Company:
+                                    </Text>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="600"
+                                      color="#181D27">
+                                      {item.legal_name}
+                                    </Text>
+                                  </Box>
+                                )}
+                                <Box>
+                                  <Text
+                                    fontSize="12px"
+                                    fontWeight="600"
+                                    color="#6B7280"
+                                    mb="4px">
+                                    Phone:
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="400"
+                                    color="#181D27"
+                                    lineHeight="1.6">
+                                    {item?.phone ||
+                                      item?.contact ||
+                                      "Not available"}
+                                  </Text>
+                                </Box>
+                                {item?.guid && (
+                                  <Button
+                                    position="absolute"
+                                    top="16px"
+                                    right="16px"
+                                    size="sm"
+                                    bg="#EF6820"
+                                    color="white"
+                                    _hover={{bg: "#DC5A1A"}}
+                                    onClick={() =>
+                                      navigate(
+                                        `/admin/company?id=${item.guid}`,
+                                        {
+                                          replace: false,
+                                        }
+                                      )
+                                    }
+                                    mt="8px">
+                                    Carrier Profile
+                                  </Button>
+                                )}
                               </VStack>
                             </Box>
                           ))}
@@ -823,6 +1148,50 @@ function Insights({vinMatchesData, addressMatchesBodyData, new_info}) {
                     {locationCount > 0 && (
                       <TabPanel>
                         <VStack spacing="12px" align="stretch" mt="20px">
+                          {virtualAddressData?.map((item, index) => (
+                            <Box
+                              key={`virtual-${item.id || index}`}
+                              border="1px solid #F38744"
+                              borderRadius="12px"
+                              p="16px"
+                              bg="white">
+                              <VStack align="start" spacing="8px">
+                                <Text
+                                  fontSize="12px"
+                                  fontWeight="600"
+                                  color="#6B7280"
+                                  textTransform="capitalize">
+                                  {item?.address_type === "physical_address"
+                                    ? "Physical Address"
+                                    : item?.address_type === "mailing_address"
+                                    ? "Mailing Address"
+                                    : "Address"}{" "}
+                                  <Text as="span" fontWeight="700" color="#000">
+                                    Virtual
+                                  </Text>
+                                </Text>
+                                <Box>
+                                  <Text
+                                    fontSize="12px"
+                                    fontWeight="600"
+                                    color="#6B7280"
+                                    mb="4px">
+                                    Address:
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="400"
+                                    color="#181D27"
+                                    lineHeight="1.6">
+                                    {item?.virtual_address ||
+                                      item?.address ||
+                                      "Not available"}
+                                  </Text>
+                                </Box>
+                              </VStack>
+                            </Box>
+                          ))}
+
                           {changedFields
                             ?.filter(
                               (field) =>

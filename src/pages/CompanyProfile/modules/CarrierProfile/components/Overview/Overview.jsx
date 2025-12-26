@@ -17,12 +17,19 @@ import Assessments from "../Assessments";
 import Insights from "../Insights";
 import {useQuery} from "@tanstack/react-query";
 import {useSearchParams} from "react-router-dom";
+import {useState, useEffect} from "react";
 import carrierService from "@services/carrierService";
 
 export const Overview = ({carrierDetails, generalInfo}) => {
   const [searchParams] = useSearchParams();
   const {new_info, performance} = generalInfo;
   const companies_id = searchParams.get("id");
+  const [accordionIndex, setAccordionIndex] = useState([]);
+
+  // Reset accordion to closed when carrier ID changes
+  useEffect(() => {
+    setAccordionIndex([]);
+  }, [companies_id]);
 
   const {data: vinMatchesData} = useQuery({
     queryKey: ["GET_VIN_MATCHES_DATA", companies_id],
@@ -66,14 +73,14 @@ export const Overview = ({carrierDetails, generalInfo}) => {
       position="relative">
       <SidebarTabs />
       <Box flex="1" minW="0">
-        <InfoAccordion>
+        <InfoAccordion index={accordionIndex} onChange={setAccordionIndex}>
           <Box id="connection-status">
             <Connection new_info={new_info} />
           </Box>
           <Box id="assessment">
             <Assessments />
           </Box>
-          <Box id="insights">
+          <Box id="insights" key={`insights-wrapper-${companies_id}`}>
             <Insights
               new_info={new_info}
               vinMatchesData={vinMatchesData}

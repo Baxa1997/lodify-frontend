@@ -11,6 +11,7 @@ import {
   AccordionIcon,
   Badge,
   VStack,
+  Button,
 } from "@chakra-ui/react";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
 import {MdLocationOff} from "react-icons/md";
@@ -23,6 +24,7 @@ export const InsightAddress = ({
   isAuditChange = false,
   virtualAddress = false,
   isOfficer = false,
+  onNavigate,
 }) => {
   const isVirtualPhysical =
     virtualAddress && item?.address_type === "physical_address";
@@ -74,7 +76,8 @@ export const InsightAddress = ({
                     ? "Physical Address Changed"
                     : item?.fieldLabel === "Mailing Address"
                     ? "Mailing Address Changed"
-                    : item?.fieldLabel === "Company Officer 1" || item?.fieldLabel === "Company Officer 2"
+                    : item?.fieldLabel === "Company Officer 1" ||
+                      item?.fieldLabel === "Company Officer 2"
                     ? `${item?.fieldLabel} Changed`
                     : `${item?.fieldLabel} Changed`
                   : isMatchedAudit
@@ -86,7 +89,8 @@ export const InsightAddress = ({
                     ? "Your physical address is matched to a different company's address"
                     : item?.fieldLabel === "Mailing Address"
                     ? "Your mailing address is matched to a different company's address"
-                    : item?.fieldLabel === "Company Officer 1" || item?.fieldLabel === "Company Officer 2"
+                    : item?.fieldLabel === "Company Officer 1" ||
+                      item?.fieldLabel === "Company Officer 2"
                     ? `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
                     : `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
                   : isMatchedOfficer
@@ -111,7 +115,10 @@ export const InsightAddress = ({
                   {isMatchedOfficer
                     ? item?.legal_name
                       ? `Matched with: ${item.legal_name}`
-                      : item?.address || item?.name || item?.officer_name || "Officer not available"
+                      : item?.address ||
+                        item?.name ||
+                        item?.officer_name ||
+                        "Officer not available"
                     : isMatchedAddress
                     ? item?.legal_name
                       ? `Matched with: ${item.legal_name}`
@@ -176,19 +183,6 @@ export const InsightAddress = ({
           </Flex>
         </AccordionButton>
         <AccordionPanel>
-          {/* {item?.legal_name && (
-            <Text
-              pl="10px"
-              fontSize="12px"
-              color="#6B7280"
-              fontWeight="600"
-              mb="4px">
-              Company:{" "}
-              <span style={{fontWeight: "bold", color: "#000"}}>
-                {item?.legal_name}
-              </span>
-            </Text>
-          )} */}
           {isMatchedOfficer && (
             <Box
               pl="10px"
@@ -200,7 +194,8 @@ export const InsightAddress = ({
               <Flex align="center" gap="8px" mb="8px">
                 <HiOutlineCheckCircle color="#3B82F6" size="20px" />
                 <Text fontSize="14px" color="#3B82F6" fontWeight="600">
-                  This {item?.fieldLabel?.toLowerCase()} is matched to a different company
+                  This {item?.fieldLabel?.toLowerCase()} is matched to a
+                  different company
                 </Text>
               </Flex>
               {item?.legal_name && (
@@ -319,6 +314,21 @@ export const InsightAddress = ({
               <Text fontSize="14px" color="#000" lineHeight="1.6">
                 {item?.address || "Not available"}
               </Text>
+              {item?.guid && onNavigate && (
+                <Button
+                  size="sm"
+                  bg="#EF6820"
+                  color="white"
+                  _hover={{bg: "#DC5A1A"}}
+                  onClick={() =>
+                    onNavigate(`/admin/company?id=${item.guid}`, {
+                      replace: false,
+                    })
+                  }
+                  mt="12px">
+                  Carrier Profile
+                </Button>
+              )}
             </Box>
           ) : isMatchedOfficer ? (
             <Box pl="10px">
@@ -326,17 +336,40 @@ export const InsightAddress = ({
                 {item?.fieldLabel}:
               </Text>
               <Text fontSize="14px" color="#000" lineHeight="1.6">
-                {item?.address || item?.name || item?.officer_name || item?.contact || "Not available"}
+                {item?.address ||
+                  item?.name ||
+                  item?.officer_name ||
+                  item?.contact ||
+                  "Not available"}
               </Text>
               {item?.legal_name && (
                 <Box mt="12px">
-                  <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                  <Text
+                    fontSize="12px"
+                    color="#6B7280"
+                    fontWeight="600"
+                    mb="4px">
                     Matched Company:
                   </Text>
                   <Text fontSize="14px" color="#000" lineHeight="1.6">
                     {item.legal_name}
                   </Text>
                 </Box>
+              )}
+              {item?.guid && onNavigate && (
+                <Button
+                  size="sm"
+                  bg="#EF6820"
+                  color="white"
+                  _hover={{bg: "#DC5A1A"}}
+                  onClick={() =>
+                    onNavigate(`/admin/company?id=${item.guid}`, {
+                      replace: false,
+                    })
+                  }
+                  mt="12px">
+                  Carrier Profile
+                </Button>
               )}
             </Box>
           ) : (
@@ -351,6 +384,24 @@ export const InsightAddress = ({
                   ? item?.mailing_address || "Not available"
                   : item?.virtual_address || item?.address || "Not available"}
               </Text>
+              {(item?.guid || item?.companies_id) && onNavigate && (
+                <Button
+                  size="sm"
+                  bg="#EF6820"
+                  color="white"
+                  _hover={{bg: "#DC5A1A"}}
+                  onClick={() =>
+                    onNavigate(
+                      `/admin/company?id=${item.guid || item.companies_id}`,
+                      {
+                        replace: false,
+                      }
+                    )
+                  }
+                  mt="12px">
+                  Carrier Profile
+                </Button>
+              )}
             </Box>
           )}
         </AccordionPanel>
