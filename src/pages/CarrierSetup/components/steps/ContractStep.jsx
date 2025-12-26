@@ -3,6 +3,7 @@ import {Box, Text, Flex, VStack} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSearchParams} from "react-router-dom";
 import {format} from "date-fns";
+import {useSelector} from "react-redux";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import carrierService from "@services/carrierService";
@@ -70,6 +71,9 @@ const ContractStep = ({control, subView = 1}) => {
     enabled: Boolean(companies_id),
   });
 
+  const {company_officer_1 = [], company_officer_2 = []} =
+    contactMatchesData || {};
+
   const {data: addressMatchesBodyData} = useQuery({
     queryKey: ["ADDRESS_MATCHES_DATA", companies_id],
     queryFn: () =>
@@ -92,6 +96,35 @@ const ContractStep = ({control, subView = 1}) => {
     enabled: Boolean(companies_id),
     select: (res) => res.data?.response || {},
   });
+
+  const brokerCompanyName = useSelector(
+    (state) =>
+      state.auth.user_data?.company_name ||
+      state.auth.user_data?.legal_name ||
+      "the broker"
+  );
+
+  const totalInsightsCount = useMemo(() => {
+    return (
+      (virtualAddressData?.length || 0) +
+      (addressMatchesBodyData?.physical_address?.length || 0) +
+      (addressMatchesBodyData?.mailing_address?.length || 0) +
+      (company_officer_1?.length || 0) +
+      (company_officer_2?.length || 0) +
+      (changedFields?.length || 0)
+    );
+  }, [
+    virtualAddressData,
+    addressMatchesBodyData,
+    company_officer_1,
+    company_officer_2,
+    changedFields,
+  ]);
+
+  const carrierName =
+    carrierInfoData?.legal_name ||
+    carrierInfoData?.company_name ||
+    "the carrier";
 
   // const associationInsights = useMemo(() => {
   //   return [
@@ -201,8 +234,8 @@ const ContractStep = ({control, subView = 1}) => {
           Failed Assesment
         </Text>
         <Text fontSize="14px" color="#414651" mb="18px">
-          We cannot connect EAGLE EYE TRUCKING LLC to R & R Express, Inc. due to
-          unmet requirements.
+          We cannot connect {carrierName} to {brokerCompanyName} due to unmet
+          requirements.
         </Text>
 
         <Box border="1px solid #E2E8F0" borderRadius="8px" p="12px" bg="white">
@@ -213,8 +246,9 @@ const ContractStep = ({control, subView = 1}) => {
                 Important
               </Text>
               <Text fontSize="14px" color="#414651">
-                EAGLE EYE TRUCKING LLC does not meet 3 of R & R Express,
-                Inc.&apos;s requirements.
+                {carrierName} does not meet {totalInsightsCount} of{" "}
+                {brokerCompanyName}
+                &apos;s requirements.
               </Text>
             </Box>
           </Flex>
@@ -235,6 +269,38 @@ const ContractStep = ({control, subView = 1}) => {
 
           {addressMatchesBodyData?.mailing_address?.map((item) => (
             <InsightAddress key={item.id} item={item} mailingAddress={true} />
+          ))}
+
+          {company_officer_1?.map((item, index) => (
+            <InsightAddress
+              key={`officer-1-${index}`}
+              item={{
+                ...item,
+                fieldLabel: "Company Officer 1",
+                address:
+                  item?.name ||
+                  item?.officer_name ||
+                  item?.contact ||
+                  "Not available",
+              }}
+              isOfficer={true}
+            />
+          ))}
+
+          {company_officer_2?.map((item, index) => (
+            <InsightAddress
+              key={`officer-2-${index}`}
+              item={{
+                ...item,
+                fieldLabel: "Company Officer 2",
+                address:
+                  item?.name ||
+                  item?.officer_name ||
+                  item?.contact ||
+                  "Not available",
+              }}
+              isOfficer={true}
+            />
           ))}
 
           {changedFields?.map((field, index) => (
