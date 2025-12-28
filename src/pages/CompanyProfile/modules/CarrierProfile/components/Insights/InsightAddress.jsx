@@ -82,7 +82,7 @@ export const InsightAddress = ({
                     : `${item?.fieldLabel} Changed`
                   : isMatchedAudit
                   ? item?.fieldLabel === "Phone"
-                    ? "Your phone is matched to a different company's phone"
+                    ? "Your phone number is matched to a different company's phone"
                     : item?.fieldLabel === "Email"
                     ? "Your email is matched to a different company's email"
                     : item?.fieldLabel === "Physical Address"
@@ -92,6 +92,8 @@ export const InsightAddress = ({
                     : item?.fieldLabel === "Company Officer 1" ||
                       item?.fieldLabel === "Company Officer 2"
                     ? `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
+                    : item?.fieldLabel === "VIN Match"
+                    ? "VIN matched to a different company's VIN"
                     : `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
                   : isMatchedOfficer
                   ? `Your ${item?.fieldLabel?.toLowerCase()} is matched to a different company's ${item?.fieldLabel?.toLowerCase()}`
@@ -134,6 +136,36 @@ export const InsightAddress = ({
                     : mailingAddress
                     ? "Mailing Address"
                     : "Virtual Address"}
+                </Text>
+              )}
+              {isAuditChange && isMatchedAudit && (item?.fieldLabel === "Phone" || item?.fieldLabel === "Email") && (item?.legal_name || item?.company_name) && (
+                <Text
+                  color="#6B7280"
+                  fontSize="13px"
+                  fontWeight="400"
+                  textAlign="left"
+                  mt="4px">
+                  Matched with: {item?.legal_name || item?.company_name}
+                </Text>
+              )}
+              {isAuditChange && isMatchedAudit && item?.fieldLabel === "Phone" && !item?.legal_name && !item?.company_name && (
+                <Text
+                  color="#6B7280"
+                  fontSize="13px"
+                  fontWeight="400"
+                  textAlign="left"
+                  mt="4px">
+                  Matched with: {item?.address || "Not available"}
+                </Text>
+              )}
+              {isAuditChange && isMatchedAudit && item?.fieldLabel === "VIN Match" && (item?.legal_name || item?.company_name) && (
+                <Text
+                  color="#6B7280"
+                  fontSize="13px"
+                  fontWeight="400"
+                  textAlign="left"
+                  mt="4px">
+                  Matched with: {item?.legal_name || item?.company_name}
                 </Text>
               )}
               {isChanged && (
@@ -335,13 +367,100 @@ export const InsightAddress = ({
             </VStack>
           ) : isMatchedAudit ? (
             <Box pl="10px">
-              <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
-                {item?.fieldLabel}:
-              </Text>
-              <Text fontSize="14px" color="#000" lineHeight="1.6">
-                {item?.address || "Not available"}
-              </Text>
-              {item?.guid && onNavigate && (
+              {item?.fieldLabel === "Phone" || item?.fieldLabel === "Email" ? (
+                <>
+                  {item?.legal_name || item?.company_name ? (
+                    <>
+                      <Box mb="12px">
+                        <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                          Matched with:
+                        </Text>
+                        <Text fontSize="14px" color="#000" lineHeight="1.6">
+                          {item?.legal_name || item?.company_name || "Not available"}
+                        </Text>
+                      </Box>
+                      {item?.fieldLabel === "Phone" && (
+                        <Box>
+                          <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                            Phone:
+                          </Text>
+                          <Text fontSize="14px" color="#000" lineHeight="1.6">
+                            {item?.phone || item?.contact || item?.address || "Not available"}
+                          </Text>
+                        </Box>
+                      )}
+                      {item?.fieldLabel === "Email" && (
+                        <Box>
+                          <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                            Email:
+                          </Text>
+                          <Text fontSize="14px" color="#000" lineHeight="1.6">
+                            {item?.email || item?.contact || item?.address || "Not available"}
+                          </Text>
+                        </Box>
+                      )}
+                    </>
+                  ) : (
+                    <Box>
+                      <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                        {item?.fieldLabel}:
+                      </Text>
+                      <Text fontSize="14px" color="#000" lineHeight="1.6">
+                        {item?.address || "Not available"}
+                      </Text>
+                    </Box>
+                  )}
+                </>
+              ) : item?.fieldLabel === "VIN Match" ? (
+                <>
+                  {item?.legal_name && (
+                    <Box mb="12px">
+                      <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                        Matched with:
+                      </Text>
+                      <Text fontSize="14px" color="#000" lineHeight="1.6">
+                        {item?.legal_name || "Not available"}
+                      </Text>
+                    </Box>
+                  )}
+                  <Box>
+                    <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                      VIN number:
+                    </Text>
+                    <Text fontSize="14px" color="#000" lineHeight="1.6" fontFamily="monospace">
+                      {item?.address || item?.vin_number || "Not available"}
+                    </Text>
+                  </Box>
+                  {item?.guid || item?.companies_id ? (
+                    <Button
+                      size="sm"
+                      bg="#EF6820"
+                      color="white"
+                      _hover={{bg: "#DC5A1A"}}
+                      onClick={() =>
+                        onNavigate?.(
+                          `/admin/company?id=${item?.guid || item?.companies_id}`,
+                          {
+                            replace: false,
+                          }
+                        )
+                      }
+                      mt="12px">
+                      Carrier Profile
+                    </Button>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  <Text fontSize="12px" color="#6B7280" fontWeight="600" mb="4px">
+                    {item?.fieldLabel}:
+                  </Text>
+                  <Text fontSize="14px" color="#000" lineHeight="1.6">
+                    {item?.address || "Not available"}
+                  </Text>
+                </>
+              )}
+              {item?.guid && onNavigate && item?.fieldLabel !== "VIN Match" && (
                 <Button
                   size="sm"
                   bg="#EF6820"

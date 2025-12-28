@@ -446,7 +446,7 @@ function TransitTab({tripType = "", isActive = true}) {
                       <CTableTd>
                         <Box>
                           <Text fontWeight="600" color="#181D27">
-                            {trip?.total_miles || 0}
+                            {trip?.total_miles?.toFixed(0) || 0} miles
                           </Text>
                         </Box>
                       </CTableTd>

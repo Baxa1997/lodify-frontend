@@ -58,6 +58,8 @@ function Insights({
     phone = [],
   } = contactsMatchesData || {};
 
+  console.log("phonephone", phone);
+
   const changedFields = useMemo(() => {
     if (!carrierAuditData) return [];
 
@@ -123,7 +125,35 @@ function Insights({
     vinMatchesData,
     addressMatchesBodyData,
     changedFields,
+    company_officer_1,
+    company_officer_2,
+    email,
+    phone,
+    pendingInsuranceData,
+    new_info?.broker_stat,
+  ]);
+
+  const associationCount = useMemo(() => {
+    const hasInsuranceCancellation =
+      pendingInsuranceData?.some(
+        (insurance) => insurance?.cancl_effective_date
+      ) || false;
+    return (
+      (vinMatchesData?.length || 0) +
+      (addressMatchesBodyData?.physical_address?.length || 0) +
+      (addressMatchesBodyData?.mailing_address?.length || 0) +
+      (changedFields?.length || 0) +
+      (company_officer_1?.length || 0) +
+      (company_officer_2?.length || 0) +
+      (email?.length || 0) +
+      (phone?.length || 0) +
+      (hasInsuranceCancellation ? 1 : 0) +
+      (new_info?.broker_stat === "A" ? 1 : 0)
+    );
+  }, [
     vinMatchesData,
+    addressMatchesBodyData,
+    changedFields,
     company_officer_1,
     company_officer_2,
     email,
@@ -408,7 +438,7 @@ function Insights({
                           py="2px"
                           fontSize="11px"
                           fontWeight="600">
-                          {totalInsights}
+                          {associationCount}
                         </Badge>
                       </Tab>
                       {vinMatchesData?.length > 0 && (
@@ -594,6 +624,23 @@ function Insights({
                                 isAuditChange={true}
                               />
                             ))}
+                            {/* 
+                            {vinMatchesData?.map((item, index) => (
+                              <InsightAddress
+                                key={`vin-match-${index}`}
+                                item={{
+                                  ...item,
+                                  fieldLabel: "VIN Match",
+                                  address: item?.vin_number || "Not available",
+                                  legal_name: item?.legal_name,
+                                  guid: item?.guid || item?.companies_id,
+                                  companies_id:
+                                    item?.companies_id || item?.guid,
+                                }}
+                                isAuditChange={true}
+                                onNavigate={navigate}
+                              />
+                            ))} */}
                           </VStack>
                         </Box>
 
@@ -670,6 +717,26 @@ function Insights({
                                     {item?.vin_number || "Not available"}
                                   </Text>
                                 </Box>
+                                {item?.guid || item?.companies_id ? (
+                                  <Button
+                                    size="sm"
+                                    bg="#EF6820"
+                                    color="white"
+                                    _hover={{bg: "#DC5A1A"}}
+                                    onClick={() =>
+                                      navigate(
+                                        `/admin/company?id=${
+                                          item?.guid || item?.companies_id
+                                        }`,
+                                        {
+                                          replace: false,
+                                        }
+                                      )
+                                    }
+                                    mt="8px">
+                                    Carrier Profile
+                                  </Button>
+                                ) : null}
                               </VStack>
                             </Box>
                           ))}

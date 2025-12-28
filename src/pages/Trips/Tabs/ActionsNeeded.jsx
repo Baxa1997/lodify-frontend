@@ -264,7 +264,7 @@ function ActionsNeeded() {
 
                       <CTableTd>
                         <Text color="#181D27">
-                          {trip?.total_miles ?? "---"}
+                          {trip?.total_miles?.toFixed(0) ?? "---"} miles
                         </Text>
                       </CTableTd>
 
