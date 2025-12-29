@@ -15,7 +15,7 @@ function NotificationActionNeeded() {
     setPage,
     offset,
     count,
-  } = useNotifications();
+  } = useNotifications({type: "Action Needed"});
   return (
     <>
       <NotificationFilters />

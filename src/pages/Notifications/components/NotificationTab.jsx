@@ -14,7 +14,7 @@ function NotificationTab() {
     page,
     setPage,
     count,
-  } = useNotifications();
+  } = useNotifications({type: "Notification"});
   return (
     <>
       <NotificationFilters />

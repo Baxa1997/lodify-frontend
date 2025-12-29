@@ -5,7 +5,7 @@ import {Box, Text} from "@chakra-ui/react";
 import {format, parseISO, isValid} from "date-fns";
 import {useState} from "react";
 
-export const useNotifications = () => {
+export const useNotifications = ({type = "Action Needed"}) => {
   const clientType = useSelector((state) => state.auth.clientType);
   const userId = useSelector((state) => state.auth.userId);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
@@ -124,7 +124,7 @@ export const useNotifications = () => {
       queryFn: () =>
         notificationService.getList({
           [companyType]: userId,
-          type: ["Trip Late"],
+          type: [type],
           offset: offset,
           limit: limit,
         }),
