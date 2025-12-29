@@ -5,7 +5,16 @@ import {useNotifications} from "./useNotifications";
 import {NotificationDataTable} from "./NotificationDataTable";
 
 function NotificationTab() {
-  const {headData, data} = useNotifications();
+  const {
+    headData,
+    data,
+    isNotificationsLoading,
+    limit,
+    setLimit,
+    page,
+    setPage,
+    count,
+  } = useNotifications();
   return (
     <>
       <NotificationFilters />
@@ -24,12 +33,13 @@ function NotificationTab() {
           headData={headData}
           data={data}
           caption={""}
-          limit={10}
-          setLimit={() => {}}
-          page={1}
-          setPage={() => {}}
+          limit={limit}
+          setLimit={setLimit}
+          page={page}
+          setPage={setPage}
           pagination
-          count={0}
+          count={count}
+          isLoading={isNotificationsLoading}
           tableProps={{
             width: "100%",
           }}

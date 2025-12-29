@@ -21,14 +21,14 @@ export const NotificationDataTable = ({
   data = [],
   caption,
   limit,
-  setLimit = () => {},
   page,
-  setPage = () => {},
   pagination,
-  isLoading = false,
-  tableProps = {},
   count = 0,
   actionLabel = "Action",
+  isLoading = false,
+  tableProps = {},
+  setPage = () => {},
+  setLimit = () => {},
   ...props
 }) => {
   const [expandedRows, setExpandedRows] = useState(new Set());
@@ -58,6 +58,7 @@ export const NotificationDataTable = ({
             <Tr>
               {headData?.map((head, index) => (
                 <Th
+                  p="10px 16px"
                   key={index}
                   isNumeric={head.isNumeric}
                   width={head.thProps?.width || "130px"}
@@ -213,7 +214,7 @@ export const NotificationDataTable = ({
               setLimit={setLimit}
               page={page}
               setPage={setPage}
-              pageCount={Math.ceil(count / limit)}
+              pageCount={Math.ceil(count / limit) || 1}
             />
           </Box>
         </Box>
