@@ -21,7 +21,7 @@ import {
   FormLabel,
   Flex,
 } from "@chakra-ui/react";
-import {MdEmail, MdLock} from "react-icons/md";
+import {MdEmail, MdLock, MdCheckCircle} from "react-icons/md";
 import {IoArrowBackOutline} from "react-icons/io5";
 import IPAddressFinder from "@utils/getIpAddress";
 import OtpInput from "react-otp-input";
@@ -38,7 +38,7 @@ const Login = () => {
   const [connectionCheck, setConnectionCheck] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [forgotPasswordStep, setForgotPasswordStep] = useState("login");
+  const [forgotPasswordStep, setForgotPasswordStep] = useState("login"); // login, otp, password, success
   const [userEmail, setUserEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [smsId, setSmsId] = useState("");
@@ -587,15 +587,19 @@ const Login = () => {
         guid: emailGuid,
       });
 
-      dispatch(showAlert("Password reset successfully", "success"));
+      // Show success step
+      setForgotPasswordStep("success");
+
+      // Navigate back to login after 3 seconds
       setTimeout(() => {
         setShowForgotPassword(false);
         setForgotPasswordStep("login");
         setUserEmail("");
         setOtpCode("");
         setSmsId("");
+        setEmailGuid("");
         forgotPasswordForm.reset();
-      }, 2000);
+      }, 3000);
     } catch (error) {
       dispatch(
         showAlert(
@@ -621,6 +625,7 @@ const Login = () => {
     setUserEmail("");
     setOtpCode("");
     setSmsId("");
+    setEmailGuid("");
     forgotPasswordForm.reset();
   };
 
@@ -969,6 +974,63 @@ const Login = () => {
                 </Text>
               </Flex>
             </form>
+          )}
+
+          {forgotPasswordStep === "success" && (
+            <Box className={styles.authForm}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                py="40px">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  w="80px"
+                  h="80px"
+                  borderRadius="50%"
+                  bg="#10B981"
+                  mb="24px">
+                  <MdCheckCircle size={48} color="white" />
+                </Box>
+
+                <Text
+                  fontSize="24px"
+                  fontWeight="700"
+                  color="#181D27"
+                  mb="12px"
+                  textAlign="center">
+                  Password Reset Successful!
+                </Text>
+
+                <Text
+                  fontSize="16px"
+                  color="#6B7280"
+                  textAlign="center"
+                  mb="32px"
+                  maxW="400px">
+                  Your password has been successfully reset. You will be
+                  redirected to the login page shortly.
+                </Text>
+
+                <Button
+                  w="100%"
+                  h="44px"
+                  bg="#ef6820"
+                  color="white"
+                  fontSize="16px"
+                  fontWeight="600"
+                  borderRadius="8px"
+                  onClick={handleBackToLogin}
+                  _hover={{
+                    bg: "#ef6820",
+                  }}>
+                  Back to Login
+                </Button>
+              </Box>
+            </Box>
           )}
         </div>
       </div>
