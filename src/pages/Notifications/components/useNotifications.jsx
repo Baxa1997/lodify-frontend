@@ -91,6 +91,25 @@ export const useNotifications = ({
     {
       label: "Description",
       key: "title",
+      render: (value, row) => {
+        const isUnread = row?.is_read === false || row?.is_read === 0;
+        return (
+          <Box display="flex" alignItems="center" gap="8px">
+            {isUnread && (
+              <Box
+                w="8px"
+                h="8px"
+                borderRadius="50%"
+                bg="#DC2626"
+                flexShrink={0}
+              />
+            )}
+            <Text fontSize="14px" color="#374151">
+              {value || "—"}
+            </Text>
+          </Box>
+        );
+      },
     },
     {
       label: "Severity",
@@ -118,6 +137,12 @@ export const useNotifications = ({
     {
       label: "Actions",
       key: "actions",
+      thProps: {
+        width: "150px",
+      },
+      tdProps: {
+        width: "150px",
+      },
       render: (value, row) => (
         <Button
           fontWeight="500"

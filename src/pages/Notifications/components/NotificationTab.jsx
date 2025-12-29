@@ -4,12 +4,29 @@ import {Box} from "@chakra-ui/react";
 import {useNotifications} from "./useNotifications";
 import {NotificationDataTable} from "./NotificationDataTable";
 import NotificationDetailModal from "./NotificationDetailModal";
+import notificationService from "@services/notificationService";
+import {useQueryClient} from "@tanstack/react-query";
 
 function NotificationTab() {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleViewNotification = (notification) => {
+  const handleViewNotification = async (notification) => {
+    // Mark notification as read if it's unread
+    if (
+      notification?.guid &&
+      (notification?.is_read === false || notification?.is_read === 0)
+    ) {
+      try {
+        await notificationService.markAsRead(notification.guid);
+        // Invalidate and refetch notifications to update the UI
+        queryClient.invalidateQueries({queryKey: ["NOTIFICATIONS"]});
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error);
+      }
+    }
+
     setSelectedNotification(notification);
     setIsModalOpen(true);
   };

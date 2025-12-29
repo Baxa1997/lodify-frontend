@@ -68,6 +68,7 @@ export const NotificationDataTable = ({
                   textTransform="capitalize"
                   letterSpacing="0.5px"
                   borderBottom="1px solid #E5E7EB"
+                  borderRight="none"
                   {...head.thProps}>
                   <Box display="flex" alignItems="center" gap="6px">
                     {head.label}
@@ -101,7 +102,13 @@ export const NotificationDataTable = ({
             ) : (
               data?.map((row, rowIndex) => (
                 <>
-                  <Tr>
+                  <Tr
+                    bg={
+                      row?.is_read === false || row?.is_read === 0
+                        ? "#FEF2F2"
+                        : "white"
+                    }
+                    borderBottom="1px solid #E5E7EB">
                     {headData?.map((head, colIndex) => {
                       if (colIndex === 0) {
                         return (
@@ -111,10 +118,11 @@ export const NotificationDataTable = ({
                             fontWeight={"400"}
                             fontSize={"14px"}
                             color="#374151"
-                            borderBottom="1px solid #F3F4F6"
-                            bg="white"
+                            borderBottom="none"
+                            borderRight="none"
+                            bg="transparent"
                             px={head.tdProps?.px || "16px"}
-                            py={head.tdProps?.py || "12px"}
+                            py={head.tdProps?.py || "16px"}
                             {...head.tdProps}>
                             {head?.key === "action" ? (
                               <Box display="flex" alignItems="center" gap="6px">
@@ -176,10 +184,11 @@ export const NotificationDataTable = ({
                           fontWeight={"400"}
                           fontSize={"14px"}
                           color="#374151"
-                          borderBottom="1px solid #F3F4F6"
-                          bg="white"
+                          borderBottom="none"
+                          borderRight="none"
+                          bg="transparent"
                           px={head.tdProps?.px || "16px"}
-                          py={head.tdProps?.py || "12px"}
+                          py={head.tdProps?.py || "16px"}
                           {...head.tdProps}>
                           {head?.render
                             ? head.render(
