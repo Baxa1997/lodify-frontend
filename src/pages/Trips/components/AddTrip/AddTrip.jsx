@@ -287,7 +287,7 @@ function AddTrip({tripData = {}, locationStatus = {}}) {
       document.body.style.overflow = "unset";
     };
   }, [isRocFileLoading]);
-  console.log("locationStatuslocationStatus", locationStatus);
+
   return (
     <>
       {isRocFileLoading && (
@@ -332,7 +332,6 @@ function AddTrip({tripData = {}, locationStatus = {}}) {
         )}
 
         <form action="" onSubmit={handleSubmit(onSubmit)}>
-          {/* {locationStatus?.is_same_location === false && ( */}
           <Box
             w="100%"
             mb="20px"
@@ -360,7 +359,6 @@ function AddTrip({tripData = {}, locationStatus = {}}) {
               </Text>
             </Flex>
           </Box>
-          {/* )} */}
 
           <FirstSection
             tripType={tripType}

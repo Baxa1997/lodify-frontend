@@ -90,7 +90,7 @@ export const EquipmentMatch = ({item, associatedCarrierData}) => {
                 {item?.make || "-"}
               </Td>
             </Tr>
-            <Tr>
+            {/* <Tr>
               <Td
                 px="0"
                 py="6px"
@@ -109,8 +109,8 @@ export const EquipmentMatch = ({item, associatedCarrierData}) => {
                 border="none">
                 {item?.model || "-"}
               </Td>
-            </Tr>
-            <Tr>
+            </Tr> */}
+            {/* <Tr>
               <Td
                 px="0"
                 py="6px"
@@ -129,7 +129,7 @@ export const EquipmentMatch = ({item, associatedCarrierData}) => {
                 border="none">
                 {item?.year ? item?.year : "-"}
               </Td>
-            </Tr>
+            </Tr> */}
 
             <Tr>
               <Td

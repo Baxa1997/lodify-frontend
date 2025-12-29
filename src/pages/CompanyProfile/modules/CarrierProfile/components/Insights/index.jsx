@@ -58,8 +58,6 @@ function Insights({
     phone = [],
   } = contactsMatchesData || {};
 
-  console.log("phonephone", phone);
-
   const changedFields = useMemo(() => {
     if (!carrierAuditData) return [];
 
