@@ -5,7 +5,7 @@ import {
   InfoAccordionPanel,
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
-import {Flex, Box, Text, Badge, HStack} from "@chakra-ui/react";
+import {Flex, Box, Text, Badge, HStack, VStack} from "@chakra-ui/react";
 import {Tabs, TabList, Tab, TabPanel} from "react-tabs";
 import Chart from "react-google-charts";
 import {useQuery} from "@tanstack/react-query";
@@ -74,7 +74,7 @@ function Assessments({new_info}) {
       Object.keys(carrierAssessmentData).length === 0
     ) {
       return [
-        ["Month", "Score (Miles Can Go)", "Total Miles (Miles Went)"],
+        ["Month", "Score (Miles)", "Total Miles"],
         ["Jan", 0, 0],
         ["Feb", 0, 0],
         ["Mar", 0, 0],
@@ -90,9 +90,7 @@ function Assessments({new_info}) {
       ];
     }
 
-    const chartData = [
-      ["Month", "Score (Miles Can Go)", "Total Miles (Miles Went)"],
-    ];
+    const chartData = [["Month", "Score (Miles)", "Total Miles"]];
     const monthOrder = [
       "january",
       "february",
@@ -171,7 +169,7 @@ function Assessments({new_info}) {
       title: "",
     },
     hAxis: {
-      textStyle: {color: "#6B7280", fontSize: 11},
+      textStyle: {color: "#6B7280", fontSize: 12},
       gridlines: {color: "transparent"},
       baselineColor: "#E5E7EB",
       showTextEvery: 1,
@@ -184,8 +182,7 @@ function Assessments({new_info}) {
       format: "short",
     },
     legend: {
-      position: "top",
-      textStyle: {color: "#6B7280", fontSize: 12},
+      position: "none",
     },
     tooltip: {
       trigger: "focus",
@@ -194,16 +191,16 @@ function Assessments({new_info}) {
     focusTarget: "category",
     colors: ["#EF6820", "#175CD3"],
     areaOpacity: 0.1,
-    lineWidth: 3,
-    pointSize: 6,
+    lineWidth: 4,
+    pointSize: 0,
     pointShape: "circle",
     chartArea: {
-      left: 60,
-      top: 40,
+      left: 10,
+      top: 20,
       right: 20,
-      bottom: 40,
+      bottom: 20,
       width: "100%",
-      height: "70%",
+      height: "75%",
       backgroundColor: "#fff",
     },
     backgroundColor: "#fff",
@@ -218,7 +215,7 @@ function Assessments({new_info}) {
       gridlines: {color: "transparent"},
       baselineColor: "#E5E7EB",
       showTextEvery: 1,
-      slantedText: false,
+
       slantedTextAngle: 0,
     },
     vAxis: {
@@ -229,8 +226,7 @@ function Assessments({new_info}) {
       format: "short",
     },
     legend: {
-      position: "top",
-      textStyle: {color: "#6B7280", fontSize: 12},
+      position: "none",
     },
     tooltip: {
       trigger: "focus",
@@ -238,12 +234,12 @@ function Assessments({new_info}) {
     },
     colors: ["#EF6820", "#175CD3"],
     chartArea: {
-      left: 60,
-      top: 40,
+      left: 10,
+      top: 20,
       right: 20,
-      bottom: 50,
+      bottom: 20,
       width: "100%",
-      height: "70%",
+      height: "75%",
       backgroundColor: "#fff",
     },
     backgroundColor: "#fff",
@@ -358,27 +354,69 @@ function Assessments({new_info}) {
               </TabList>
 
               <TabPanel p="0">
-                <Box w="100%" h="200px">
-                  <Chart
-                    chartType="AreaChart"
-                    data={loadLimitData}
-                    options={loadLimitOptions}
-                    width="100%"
-                    height="200px"
-                  />
-                </Box>
+                <VStack spacing="12px" align="stretch">
+                  <Box w="100%" h="200px">
+                    <Chart
+                      chartType="AreaChart"
+                      data={loadLimitData}
+                      options={loadLimitOptions}
+                      width="100%"
+                      height="200px"
+                    />
+                  </Box>
+                  <Flex
+                    justify="center"
+                    align="center"
+                    gap="24px"
+                    pt="4px"
+                    borderTop="1px solid #F3F4F6">
+                    <HStack spacing="8px">
+                      <Box w="12px" h="12px" bg="#EF6820" borderRadius="50%" />
+                      <Text fontSize="13px" color="#374151" fontWeight="500">
+                        Score (Miles)
+                      </Text>
+                    </HStack>
+                    <HStack spacing="8px">
+                      <Box w="12px" h="12px" bg="#175CD3" borderRadius="50%" />
+                      <Text fontSize="13px" color="#374151" fontWeight="500">
+                        Total Miles
+                      </Text>
+                    </HStack>
+                  </Flex>
+                </VStack>
               </TabPanel>
 
               <TabPanel p="0">
-                <Box w="100%" h="200px">
-                  <Chart
-                    chartType="ColumnChart"
-                    data={barChartData}
-                    options={barChartOptions}
-                    width="100%"
-                    height="200px"
-                  />
-                </Box>
+                <VStack spacing="12px" align="stretch">
+                  <Box w="100%" h="200px">
+                    <Chart
+                      chartType="ColumnChart"
+                      data={barChartData}
+                      options={barChartOptions}
+                      width="100%"
+                      height="200px"
+                    />
+                  </Box>
+                  <Flex
+                    justify="center"
+                    align="center"
+                    gap="24px"
+                    pt="4px"
+                    borderTop="1px solid #F3F4F6">
+                    <HStack spacing="8px">
+                      <Box w="12px" h="12px" bg="#EF6820" borderRadius="50%" />
+                      <Text fontSize="13px" color="#374151" fontWeight="500">
+                        Driver Count
+                      </Text>
+                    </HStack>
+                    <HStack spacing="8px">
+                      <Box w="12px" h="12px" bg="#175CD3" borderRadius="50%" />
+                      <Text fontSize="13px" color="#374151" fontWeight="500">
+                        Order Count
+                      </Text>
+                    </HStack>
+                  </Flex>
+                </VStack>
               </TabPanel>
             </Tabs>
           </Box>
