@@ -105,6 +105,7 @@ function Insights({
       pendingInsuranceData?.some(
         (insurance) => insurance?.cancl_effective_date
       ) || false;
+
     return (
       (virtualAddressData?.length || 0) +
       (vinMatchesData?.length || 0) +
@@ -145,8 +146,7 @@ function Insights({
       (company_officer_2?.length || 0) +
       (email?.length || 0) +
       (phone?.length || 0) +
-      (hasInsuranceCancellation ? 1 : 0) +
-      (new_info?.broker_stat === "A" ? 1 : 0)
+      (hasInsuranceCancellation ? 1 : 0)
     );
   }, [
     vinMatchesData,
@@ -212,7 +212,7 @@ function Insights({
     setAccordionIndex([]);
     setInsightsDetailsIndex([]);
   }, [companiesId]);
-
+  console.log("pendingInsuranceDatapendingInsuranceData", pendingInsuranceData);
   return (
     <InfoAccordionItem id="insights" index={accordionIndex}>
       <InfoAccordionButton>
@@ -411,7 +411,7 @@ function Insights({
                         fontSize="12px"
                         fontWeight="600"
                         textTransform="capitalize">
-                        TOTAL INSIGHTS DISCOVERED: {totalInsights}{" "}
+                        TOTAL INSIGHTS DISCOVERED: {associationCount}{" "}
                       </Badge>
                     </HStack>
                     <Box ml="auto">
