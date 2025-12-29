@@ -15,6 +15,17 @@ const notificationService = {
       },
     });
   },
+  markAllAsRead: (clientType) => {
+    return httpRequest.post("v2/invoke_function/lodify-drivers-gateway", {
+      data: {
+        method: "read_all",
+        object_data: {
+          client_type: clientType,
+        },
+        table: "notifications",
+      },
+    });
+  },
 };
 
 export default notificationService;
