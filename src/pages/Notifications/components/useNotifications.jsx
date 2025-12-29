@@ -1,11 +1,14 @@
 import {useQuery} from "@tanstack/react-query";
 import notificationService from "@services/notificationService";
 import {useSelector} from "react-redux";
-import {Box, Text} from "@chakra-ui/react";
+import {Box, Text, Button} from "@chakra-ui/react";
 import {format, parseISO, isValid} from "date-fns";
 import {useState} from "react";
 
-export const useNotifications = ({type = "Action Needed"}) => {
+export const useNotifications = ({
+  type = "Action Needed",
+  onViewNotification,
+}) => {
   const clientType = useSelector((state) => state.auth.clientType);
   const userId = useSelector((state) => state.auth.userId);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
@@ -112,10 +115,26 @@ export const useNotifications = ({type = "Action Needed"}) => {
         </Text>
       ),
     },
-    // {
-    //   label: "Actions",
-    //   key: "actions",
-    // },
+    {
+      label: "Actions",
+      key: "actions",
+      render: (value, row) => (
+        <Button
+          fontWeight="500"
+          variant="outline"
+          color="#EF6820"
+          h="28px"
+          w="80px"
+          fontSize="13px"
+          borderColor="#535862"
+          borderRadius="22px"
+          border="none"
+          px="12px"
+          onClick={() => onViewNotification?.(row)}>
+          View
+        </Button>
+      ),
+    },
   ];
 
   const {data: notificationsData = {}, isLoading: isNotificationsLoading} =
@@ -124,7 +143,7 @@ export const useNotifications = ({type = "Action Needed"}) => {
       queryFn: () =>
         notificationService.getList({
           [companyType]: userId,
-          type: [type],
+          notification_type: [type],
           offset: offset,
           limit: limit,
         }),

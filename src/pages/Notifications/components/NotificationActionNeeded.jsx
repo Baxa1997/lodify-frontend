@@ -1,10 +1,24 @@
-import React from "react";
+import React, {useState} from "react";
 import NotificationFilters from "./NotificationFilters";
 import {Box} from "@chakra-ui/react";
 import {useNotifications} from "./useNotifications";
 import {NotificationDataTable} from "./NotificationDataTable";
+import NotificationDetailModal from "./NotificationDetailModal";
 
 function NotificationActionNeeded() {
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewNotification = (notification) => {
+    setSelectedNotification(notification);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedNotification(null);
+  };
+
   const {
     headData,
     data,
@@ -15,7 +29,11 @@ function NotificationActionNeeded() {
     setPage,
     offset,
     count,
-  } = useNotifications({type: "Action Needed"});
+  } = useNotifications({
+    type: "Action Needed",
+    onViewNotification: handleViewNotification,
+  });
+
   return (
     <>
       <NotificationFilters />
@@ -46,6 +64,12 @@ function NotificationActionNeeded() {
           }}
         />
       </Box>
+
+      <NotificationDetailModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        notification={selectedNotification}
+      />
     </>
   );
 }
