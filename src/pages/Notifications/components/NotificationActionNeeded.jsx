@@ -12,21 +12,27 @@ function NotificationActionNeeded() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const handleViewNotification = async (notification) => {
+  const handleViewNotification = (notification) => {
+    // Open modal immediately for smooth UX
+    setSelectedNotification(notification);
+    setIsModalOpen(true);
+
+    // Mark notification as read in the background (non-blocking)
     if (
       notification?.guid &&
       (notification?.is_read === false || notification?.is_read === 0)
     ) {
-      try {
-        await notificationService.markAsRead(notification.guid);
-        queryClient.invalidateQueries({queryKey: ["NOTIFICATIONS"]});
-      } catch (error) {
-        console.error("Failed to mark notification as read:", error);
-      }
+      // Fire and forget - don't await
+      notificationService
+        .markAsRead(notification.guid)
+        .then(() => {
+          // Invalidate and refetch notifications to update the UI
+          queryClient.invalidateQueries({queryKey: ["NOTIFICATIONS"]});
+        })
+        .catch((error) => {
+          console.error("Failed to mark notification as read:", error);
+        });
     }
-
-    setSelectedNotification(notification);
-    setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
