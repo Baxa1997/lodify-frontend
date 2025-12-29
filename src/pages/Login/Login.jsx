@@ -21,9 +21,10 @@ import {
   FormLabel,
   Flex,
 } from "@chakra-ui/react";
-import {MdEmail} from "react-icons/md";
+import {MdEmail, MdLock} from "react-icons/md";
 import {IoArrowBackOutline} from "react-icons/io5";
 import IPAddressFinder from "@utils/getIpAddress";
+import OtpInput from "react-otp-input";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -37,6 +38,15 @@ const Login = () => {
   const [connectionCheck, setConnectionCheck] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordStep, setForgotPasswordStep] = useState("login");
+  const [userEmail, setUserEmail] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [smsId, setSmsId] = useState("");
+  const [isGettingEmail, setIsGettingEmail] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [emailGuid, setEmailGuid] = useState("");
 
   const {
     register,
@@ -55,7 +65,9 @@ const Login = () => {
 
   const forgotPasswordForm = useForm({
     defaultValues: {
-      email: "",
+      login: "",
+      newPassword: "",
+      repeatPassword: "",
     },
     mode: "onChange",
   });
@@ -437,21 +449,179 @@ const Login = () => {
     }
   }, [connectionCheck, getFormValue?.tables]);
 
-  const onForgotPasswordSubmit = async (data) => {
-    setIsLoading(true);
+  const handleGetEmail = async (login) => {
+    if (!login || login.trim() === "") {
+      dispatch(showAlert("Please enter your login", "error"));
+      return;
+    }
+
+    setIsGettingEmail(true);
     try {
-      console.log("Forgot password for:", data.email);
-      dispatch(showAlert("Password reset link sent to your email", "success"));
+      const response = await authService.getEmailByLogin(login);
+
+      const email = response?.data?.email || response?.email;
+
+      setEmailGuid(response?.data?.guid || response?.guid);
+      if (email) {
+        setUserEmail(email);
+        setForgotPasswordStep("otp");
+
+        await handleSendOtp(email);
+      } else {
+        dispatch(showAlert("Email not found for this login", "error"));
+      }
+    } catch (error) {
+      dispatch(
+        showAlert(
+          error?.response?.data?.data ||
+            "Failed to retrieve email. Please try again.",
+          "error"
+        )
+      );
+    } finally {
+      setIsGettingEmail(false);
+    }
+  };
+
+  const handleSendOtp = async (email) => {
+    setIsSendingOtp(true);
+    try {
+      const response = await authService.sendCode(
+        {
+          type: "MAILCHIMP",
+          recipient: email,
+          sms_template_id: "4b73c53e-df0b-4f24-8d24-e7f03d858cda",
+          field_slug: "text",
+          variables: {},
+        },
+        {
+          project_id: "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1",
+        }
+      );
+      console.log("responseresponse====>", response);
+      if (response?.sms_id) {
+        setSmsId(response?.sms_id);
+        dispatch(showAlert("OTP sent to your email", "success"));
+      } else {
+        dispatch(showAlert("Failed to send OTP. Please try again.", "error"));
+      }
+    } catch (error) {
+      dispatch(
+        showAlert(
+          error?.response?.data?.message ||
+            "Failed to send OTP. Please try again.",
+          "error"
+        )
+      );
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otpCode.length !== 4) {
+      dispatch(showAlert("Please enter a valid 4-digit OTP code", "error"));
+      return;
+    }
+
+    if (!smsId) {
+      dispatch(
+        showAlert("OTP session expired. Please request a new code.", "error")
+      );
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      const response = await authService.verifyCode(
+        smsId,
+        {
+          provider: "email",
+          otp: otpCode,
+        },
+        {
+          project_id: "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1",
+        }
+      );
+
+      if (response) {
+        dispatch(showAlert("OTP verified successfully", "success"));
+        setForgotPasswordStep("password");
+      } else {
+        dispatch(
+          showAlert("OTP verification failed. Please try again.", "error")
+        );
+      }
+    } catch (error) {
+      dispatch(
+        showAlert(
+          error?.response?.data?.data ||
+            error?.response?.data?.message ||
+            error?.message ||
+            "Invalid OTP code. Please try again.",
+          "error"
+        )
+      );
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleResetPassword = async (data) => {
+    if (data.newPassword !== data.repeatPassword) {
+      dispatch(showAlert("Passwords do not match", "error"));
+      return;
+    }
+
+    if (data.newPassword.length < 6) {
+      dispatch(showAlert("Password must be at least 6 characters", "error"));
+      return;
+    }
+
+    setIsResettingPassword(true);
+    console.log("emailGuidemailGuid====>", emailGuid);
+    try {
+      const login = forgotPasswordForm.getValues("login");
+      await authService.resetPassword({
+        password: data.newPassword,
+        guid: emailGuid,
+      });
+
+      dispatch(showAlert("Password reset successfully", "success"));
       setTimeout(() => {
         setShowForgotPassword(false);
+        setForgotPasswordStep("login");
+        setUserEmail("");
+        setOtpCode("");
+        setSmsId("");
+        forgotPasswordForm.reset();
       }, 2000);
     } catch (error) {
       dispatch(
-        showAlert("Failed to send reset link. Please try again.", "error")
+        showAlert(
+          error?.response?.data?.data ||
+            "Failed to reset password. Please try again.",
+          "error"
+        )
       );
     } finally {
-      setIsLoading(false);
+      setIsResettingPassword(false);
     }
+  };
+
+  const handleResendOtp = async () => {
+    if (userEmail) {
+      await handleSendOtp(userEmail);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    setShowForgotPassword(false);
+    setForgotPasswordStep("login");
+    setUserEmail("");
+    setOtpCode("");
+    setSmsId("");
+    forgotPasswordForm.reset();
   };
 
   if (showForgotPassword) {
@@ -462,18 +632,9 @@ const Login = () => {
             display="flex"
             flexDirection="column"
             alignItems="center"
-            mb="24px">
-            {/* <Box
-              w="48px"
-              h="48px"
-              borderRadius="12px"
-              bg="#FFF4ED"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              mb="16px"> */}
+            mb="14px">
             <img src="img/singleLogo.svg" alt="" />
-            {/* </Box> */}
+
             <Text
               mt="12px"
               fontSize="24px"
@@ -484,86 +645,331 @@ const Login = () => {
             </Text>
           </Box>
 
-          <form
-            onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)}
-            className={styles.authForm}>
-            <FormControl
-              isInvalid={!!forgotPasswordForm.formState.errors.email}>
-              <FormLabel
-                fontSize="14px"
-                fontWeight="500"
-                color="#181D27"
-                mb="8px">
-                Email Address
-              </FormLabel>
-              <InputGroup>
-                <InputLeftElement pointerEvents="none" pl="12px">
-                  <MdEmail color="#6B7280" size={18} />
-                </InputLeftElement>
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  pl="44px"
-                  h="44px"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  fontSize="14px"
-                  bg="#FAFAFA"
-                  _focus={{
-                    borderColor: "#1570EF",
-                    boxShadow: "0 0 0 1px #1570EF",
-                    bg: "white",
-                  }}
-                  {...forgotPasswordForm.register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                />
-              </InputGroup>
-              {forgotPasswordForm.formState.errors.email && (
-                <Text color="#E53E3E" fontSize="12px" mt="4px">
-                  {forgotPasswordForm.formState.errors.email.message}
-                </Text>
-              )}
-            </FormControl>
-
-            <Button
-              type="submit"
-              w="100%"
-              h="44px"
-              bg="#ef6820"
-              color="white"
-              fontSize="16px"
-              fontWeight="600"
-              borderRadius="8px"
-              mb="20px"
-              isLoading={isLoading}
-              loadingText="Sending..."
-              _hover={{
-                bg: "#ef6820",
+          {forgotPasswordStep === "login" && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const login = forgotPasswordForm.getValues("login");
+                handleGetEmail(login);
               }}
-              _disabled={{
-                bg: "#9CA3AF",
-                cursor: "not-allowed",
-              }}>
-              Reset Password
-            </Button>
+              className={styles.authForm}>
+              <FormControl
+                isInvalid={!!forgotPasswordForm.formState.errors.login}>
+                <FormLabel
+                  fontSize="14px"
+                  fontWeight="500"
+                  color="#181D27"
+                  mb="8px">
+                  Login
+                </FormLabel>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" pl="12px">
+                    <MdEmail color="#6B7280" size={18} />
+                  </InputLeftElement>
+                  <Input
+                    type="text"
+                    placeholder="Enter your login"
+                    pl="44px"
+                    h="44px"
+                    border="1px solid #D5D7DA"
+                    borderRadius="8px"
+                    fontSize="14px"
+                    bg="#FAFAFA"
+                    _focus={{
+                      borderColor: "#1570EF",
+                      boxShadow: "0 0 0 1px #1570EF",
+                      bg: "white",
+                    }}
+                    {...forgotPasswordForm.register("login", {
+                      required: "Login is required",
+                    })}
+                  />
+                </InputGroup>
+                {forgotPasswordForm.formState.errors.login && (
+                  <Text color="#E53E3E" fontSize="12px" mt="4px">
+                    {forgotPasswordForm.formState.errors.login.message}
+                  </Text>
+                )}
+              </FormControl>
 
-            <Flex
-              justifyContent="center"
-              alignItems="center"
-              gap="8px"
-              onClick={() => setShowForgotPassword(false)}
-              cursor="pointer">
-              <IoArrowBackOutline size={14} color="#ef6820" />
-              <Text textAlign="center" fontSize="14px" color="#ef6820">
-                Back to Login
+              <Button
+                type="submit"
+                w="100%"
+                h="44px"
+                bg="#ef6820"
+                color="white"
+                fontSize="16px"
+                fontWeight="600"
+                borderRadius="8px"
+                mb="20px"
+                isLoading={isGettingEmail}
+                loadingText="Getting email..."
+                _hover={{
+                  bg: "#ef6820",
+                }}
+                _disabled={{
+                  bg: "#9CA3AF",
+                  cursor: "not-allowed",
+                }}>
+                Continue
+              </Button>
+
+              <Flex
+                justifyContent="center"
+                alignItems="center"
+                gap="8px"
+                onClick={handleBackToLogin}
+                cursor="pointer">
+                <IoArrowBackOutline size={14} color="#ef6820" />
+                <Text textAlign="center" fontSize="14px" color="#ef6820">
+                  Back to Login
+                </Text>
+              </Flex>
+            </form>
+          )}
+
+          {forgotPasswordStep === "otp" && (
+            <Box>
+              {/* <Text
+                fontSize="18px"
+                fontWeight="600"
+                color="#111827"
+                mb="0px"
+                textAlign="center">
+                Check your email
+              </Text> */}
+              <Text
+                fontSize="14px"
+                color="#6B7280"
+                mb="10px"
+                textAlign="center">
+                We sent a verification code to {userEmail}
               </Text>
-            </Flex>
-          </form>
+
+              <Box display="flex" justifyContent="center" mb="4px">
+                <OtpInput
+                  value={otpCode}
+                  onChange={setOtpCode}
+                  numInputs={4}
+                  renderSeparator={<span style={{width: "12px"}} />}
+                  renderInput={(props) => (
+                    <input
+                      {...props}
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        fontSize: "24px",
+                        fontWeight: "600",
+                        textAlign: "center",
+                        border: "2px solid #e2e8f0",
+                        borderRadius: "8px",
+                        background: "#f8fafc",
+                        color: "#1e293b",
+                        outline: "none",
+                        transition: "all 0.2s ease",
+                      }}
+                      placeholder="0"
+                      onFocus={(e) => {
+                        e.target.style.borderColor = "#ef6820";
+                        e.target.style.background = "white";
+                        e.target.style.boxShadow =
+                          "0 0 0 3px rgba(239, 104, 32, 0.1)";
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "#e2e8f0";
+                        e.target.style.background = "#f8fafc";
+                        e.target.style.boxShadow = "none";
+                      }}
+                    />
+                  )}
+                />
+              </Box>
+
+              <Button
+                w="100%"
+                h="44px"
+                bg="#ef6820"
+                color="white"
+                fontSize="16px"
+                fontWeight="600"
+                borderRadius="8px"
+                my="12px"
+                onClick={handleVerifyOtp}
+                isLoading={isVerifyingOtp}
+                loadingText="Verifying..."
+                isDisabled={otpCode.length !== 4 || isVerifyingOtp}
+                _hover={{
+                  bg: "#ef6820",
+                }}
+                _disabled={{
+                  bg: "#9CA3AF",
+                  cursor: "not-allowed",
+                }}>
+                Verify OTP
+              </Button>
+
+              <Flex
+                justifyContent="center"
+                alignItems="center"
+                gap="8px"
+                mb="6px">
+                <Text fontSize="14px" color="#6B7280">
+                  Code didn't send?{" "}
+                </Text>
+                <Text
+                  fontSize="14px"
+                  color="#ef6820"
+                  cursor={isSendingOtp ? "not-allowed" : "pointer"}
+                  onClick={handleResendOtp}
+                  opacity={isSendingOtp ? 0.6 : 1}>
+                  {isSendingOtp ? "Sending..." : "Resend"}
+                </Text>
+              </Flex>
+
+              <Flex
+                justifyContent="center"
+                alignItems="center"
+                gap="8px"
+                onClick={() => setForgotPasswordStep("login")}
+                cursor="pointer">
+                <IoArrowBackOutline size={14} color="#ef6820" />
+                <Text textAlign="center" fontSize="14px" color="#ef6820">
+                  Back
+                </Text>
+              </Flex>
+            </Box>
+          )}
+
+          {forgotPasswordStep === "password" && (
+            <form
+              onSubmit={forgotPasswordForm.handleSubmit(handleResetPassword)}
+              className={styles.authForm}>
+              <FormControl
+                isInvalid={!!forgotPasswordForm.formState.errors.newPassword}>
+                <FormLabel
+                  fontSize="14px"
+                  fontWeight="500"
+                  color="#181D27"
+                  mb="8px">
+                  New Password
+                </FormLabel>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" pl="12px">
+                    <MdLock color="#6B7280" size={18} />
+                  </InputLeftElement>
+                  <Input
+                    type="password"
+                    placeholder="Enter new password"
+                    pl="44px"
+                    h="44px"
+                    border="1px solid #D5D7DA"
+                    borderRadius="8px"
+                    fontSize="14px"
+                    bg="#FAFAFA"
+                    _focus={{
+                      borderColor: "#1570EF",
+                      boxShadow: "0 0 0 1px #1570EF",
+                      bg: "white",
+                    }}
+                    {...forgotPasswordForm.register("newPassword", {
+                      required: "New password is required",
+                      minLength: {
+                        value: 6,
+                        message: "Password must be at least 6 characters",
+                      },
+                    })}
+                  />
+                </InputGroup>
+                {forgotPasswordForm.formState.errors.newPassword && (
+                  <Text color="#E53E3E" fontSize="12px" mt="4px">
+                    {forgotPasswordForm.formState.errors.newPassword.message}
+                  </Text>
+                )}
+              </FormControl>
+
+              <FormControl
+                isInvalid={!!forgotPasswordForm.formState.errors.repeatPassword}
+                mt="16px">
+                <FormLabel
+                  fontSize="14px"
+                  fontWeight="500"
+                  color="#181D27"
+                  mb="8px">
+                  Repeat Password
+                </FormLabel>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" pl="12px">
+                    <MdLock color="#6B7280" size={18} />
+                  </InputLeftElement>
+                  <Input
+                    type="password"
+                    placeholder="Repeat new password"
+                    pl="44px"
+                    h="44px"
+                    border="1px solid #D5D7DA"
+                    borderRadius="8px"
+                    fontSize="14px"
+                    bg="#FAFAFA"
+                    _focus={{
+                      borderColor: "#1570EF",
+                      boxShadow: "0 0 0 1px #1570EF",
+                      bg: "white",
+                    }}
+                    {...forgotPasswordForm.register("repeatPassword", {
+                      required: "Please repeat your password",
+                      validate: (value) => {
+                        const newPassword =
+                          forgotPasswordForm.getValues("newPassword");
+                        return (
+                          value === newPassword || "Passwords do not match"
+                        );
+                      },
+                    })}
+                  />
+                </InputGroup>
+                {forgotPasswordForm.formState.errors.repeatPassword && (
+                  <Text color="#E53E3E" fontSize="12px" mt="4px">
+                    {forgotPasswordForm.formState.errors.repeatPassword.message}
+                  </Text>
+                )}
+              </FormControl>
+
+              <Button
+                type="submit"
+                w="100%"
+                h="44px"
+                bg="#ef6820"
+                color="white"
+                fontSize="16px"
+                fontWeight="600"
+                borderRadius="8px"
+                mb="10px"
+                mt="8px"
+                isLoading={isResettingPassword}
+                loadingText="Resetting..."
+                _hover={{
+                  bg: "#ef6820",
+                }}
+                _disabled={{
+                  bg: "#9CA3AF",
+                  cursor: "not-allowed",
+                }}>
+                Reset Password
+              </Button>
+
+              <Flex
+                justifyContent="center"
+                alignItems="center"
+                gap="8px"
+                onClick={() => setForgotPasswordStep("otp")}
+                cursor="pointer">
+                <IoArrowBackOutline size={14} color="#ef6820" />
+                <Text textAlign="center" fontSize="14px" color="#ef6820">
+                  Back
+                </Text>
+              </Flex>
+            </form>
+          )}
         </div>
       </div>
     );
@@ -659,13 +1065,6 @@ const Login = () => {
             <Text textAlign="center" color="#535862" fontWeight="400">
               New to Lodify?
             </Text>
-            {/* <p>
-              Don't have an account?
-              <Link to="/role-selection" className={styles.authLink}>
-                {" "}
-                Sign up
-              </Link>
-            </p> */}
           </div>
         </div>
       </div>

@@ -52,6 +52,37 @@ const authService = {
         "Content-Type": "application/json",
       },
     }),
+  getEmailByLogin: (login) => {
+    const payload = {
+      data: {
+        method: "email",
+        object_data: {
+          login: login,
+        },
+        table: "by_login",
+      },
+    };
+
+    return httpRequest.post("v2/invoke_function/lodify-integrations", payload, {
+      headers: {
+        "X-API-KEY": "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+        authorization: "API-KEY",
+        "Content-Type": "application/json",
+      },
+    });
+  },
+  resetPassword: (data) =>
+    httpRequest.put(
+      `v2/items/broker_users`,
+      {data},
+      {
+        headers: {
+          Authorization: "API-KEY",
+          "x-api-key": "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+          "Content-Type": "application/json",
+        },
+      }
+    ),
 };
 
 export default authService;
