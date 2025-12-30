@@ -58,28 +58,28 @@ export const PerformanceGrade = ({
   const performanceDataValue = {
     overall: {
       label: "Overall",
-      value: performanceData?.overall + "%",
+      value: performanceData?.overall + "%" || 0 + "%",
       grade: performanceData?.grade || "",
       gradeColor: "#dcfae6",
       showHelpLink: true,
     },
     onTime: {
       label: "On time",
-      value: performanceData?.on_time + "%",
+      value: performanceData?.on_time + "%" || 0 + "%",
       change: performanceData?.on_time || 0,
       period: "1 week",
       tooltipLabel: "On time delivery percentage",
     },
     acceptance: {
       label: "Acceptance",
-      value: performanceData?.acceptance + "%",
+      value: performanceData?.acceptance + "%" || 0 + "%",
       change: performanceData?.acceptance || 0,
       period: "1 week",
       tooltipLabel: "Acceptance rate",
     },
     appUsage: {
       label: "App usage",
-      value: performanceData?.app_usage + "%",
+      value: performanceData?.app_usage + "%" || 0 + "%",
       change: performanceData?.app_usage || 0,
       period: "1 week",
       tooltipLabel: "App usage percentage",

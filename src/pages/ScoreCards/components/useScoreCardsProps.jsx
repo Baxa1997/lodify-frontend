@@ -97,7 +97,7 @@ const useScoreCardsProps = () => {
       dashboardService.getPerformanceData({
         method: "grade",
         object_data: {
-          driverType: companies_id,
+          companies_id: companies_id,
           from: dateRange.from,
           to: dateRange.to,
         },
