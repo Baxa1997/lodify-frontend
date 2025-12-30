@@ -13,8 +13,11 @@ import {
   Flex,
   Link,
 } from "@chakra-ui/react";
+import {useNavigate} from "react-router-dom";
 
 const NotificationDetailModal = ({isOpen, onClose, notification}) => {
+  const navigate = useNavigate();
+
   const renderSeverityBadge = (severity) => {
     const severityLower = severity?.toLowerCase() || "";
     let bgColor = "#6B7280";
@@ -84,6 +87,7 @@ const NotificationDetailModal = ({isOpen, onClose, notification}) => {
       {
         text: "See Assets",
         url: notification?.assets_link || "#",
+        key: "assets_link",
       },
     ];
 
@@ -146,6 +150,13 @@ const NotificationDetailModal = ({isOpen, onClose, notification}) => {
                   fontSize="14px"
                   textDecoration="underline"
                   _hover={{color: "#DC5A1A"}}
+                  onClick={() => {
+                    if (link.key === "assets_link") {
+                      navigate(
+                        `/admin/trips/${notification?.pickup_id_data?.guid}`
+                      );
+                    }
+                  }}
                   display="block"
                   mb={index < links.length - 1 ? "8px" : "0"}>
                   {link.text}

@@ -33,20 +33,16 @@ function NotificationActionNeeded() {
   const clientTypeValue = isBroker ? "broker" : "carrier";
 
   const handleViewNotification = (notification) => {
-    // Open modal immediately for smooth UX
     setSelectedNotification(notification);
     setIsModalOpen(true);
 
-    // Mark notification as read in the background (non-blocking)
     if (
       notification?.guid &&
       (notification?.is_read === false || notification?.is_read === 0)
     ) {
-      // Fire and forget - don't await
       notificationService
         .markAsRead(notification.guid)
         .then(() => {
-          // Invalidate and refetch notifications to update the UI
           queryClient.invalidateQueries({queryKey: ["NOTIFICATIONS"]});
           queryClient.invalidateQueries({queryKey: ["NOTIFICATION_COUNT"]});
         })
