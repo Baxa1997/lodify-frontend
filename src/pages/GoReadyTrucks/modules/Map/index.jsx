@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {Box} from "@chakra-ui/react";
 import FiltersComponent from "../../components/FiltersComponent";
 import GoogleMapComponent from "./GoogleMapComponent";
@@ -6,12 +6,18 @@ import {useSelector} from "react-redux";
 import {useQuery} from "@tanstack/react-query";
 import goReadyTrucksService from "@services/goReadyTrucksService";
 
-const MapComponent = () => {
+const MapComponent = ({tabIndex = 0}) => {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  const {data: trucksData, isLoading} = useQuery({
-    queryKey: ["MAP_TRUCKS_DATA"],
+  const isActive = tabIndex === 0;
+
+  const {
+    data: trucksData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["DASHBOARD_MAP_TRUCKS_DATA", companiesId],
     queryFn: () => {
       return goReadyTrucksService.getTrucks({
         method: "get",
@@ -22,10 +28,17 @@ const MapComponent = () => {
       });
     },
     select: (data) => data?.data?.response || [],
-    refetchOnMount: true,
+    enabled: isActive && !!companiesId,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
+
+  useEffect(() => {
+    if (isActive && companiesId) {
+      refetch();
+    }
+  }, [isActive, companiesId, refetch]);
 
   return (
     <Box>

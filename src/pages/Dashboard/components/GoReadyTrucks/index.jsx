@@ -87,10 +87,10 @@ export const GoReadyTrucks = () => {
 
         <TabPanels>
           <TabPanel px="0" pt="20px">
-            <MapComponent />
+            <MapComponent tabIndex={activeTab} />
           </TabPanel>
           <TabPanel px="0" pt="20px">
-            <ActiveComponent />
+            <ActiveComponent tabIndex={activeTab} />
           </TabPanel>
         </TabPanels>
       </Tabs>

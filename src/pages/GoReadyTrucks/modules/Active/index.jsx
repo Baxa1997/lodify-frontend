@@ -30,7 +30,7 @@ import {tableActionsNeeded} from "../../hooks";
 import {useQuery} from "@tanstack/react-query";
 import goReadyTrucksService from "@services/goReadyTrucksService";
 
-function ActiveComponent() {
+function ActiveComponent({tabIndex = 0}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,8 +41,10 @@ function ActiveComponent() {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  const {data: trucksData, isLoading} = useQuery({
-    queryKey: ["ACTIVE_TRUCKS_DATA"],
+  const isActive = tabIndex === 1;
+  
+  const {data: trucksData, isLoading, refetch} = useQuery({
+    queryKey: ["DASHBOARD_ACTIVE_TRUCKS_DATA", companiesId],
     queryFn: () => {
       return goReadyTrucksService.getTrucks({
         method: "get",
@@ -53,10 +55,17 @@ function ActiveComponent() {
       });
     },
     select: (data) => data?.data?.response || [],
-    refetchOnMount: true,
+    enabled: isActive && !!companiesId,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
+
+  React.useEffect(() => {
+    if (isActive && companiesId) {
+      refetch();
+    }
+  }, [isActive, companiesId, refetch]);
 
   const getCustomerInfo = (trip) => {
     return {
