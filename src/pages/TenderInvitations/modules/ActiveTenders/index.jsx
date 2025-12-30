@@ -96,7 +96,7 @@ function ActiveTenders() {
         environment_id: envId,
         method: "list",
         object_data: {
-          limit: 2,
+          limit: 10,
           offset: (currentPage - 1) * pageSize,
           timer_expired: false,
           carriers_id:
