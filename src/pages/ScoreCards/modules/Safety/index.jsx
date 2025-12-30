@@ -1,9 +1,9 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {SafetyPercentileCard} from "./components/SafetyPercentileCard";
 import {UnderReviewSection} from "./components/UnderReviewSection";
 
-const Safety = () => {
+const Safety = ({safetyData = []}) => {
   const currentDate = new Date();
   const monthNames = [
     "January",
@@ -31,38 +31,15 @@ const Safety = () => {
   const day = currentDate.getDate();
   const ordinalDay = getOrdinal(day);
 
-  const percentileData = [
-    {
-      title: "Unsafe driving percentile",
-      value: 49,
-      hasData: true,
-    },
-    {
-      title: "HOS compliance Percentile",
-      value: 49,
-      hasData: true,
-    },
-    {
-      title: "Vehicle Maintenance Percentile",
-      value: 66,
-      hasData: true,
-    },
-    {
-      title: "Unsafe driving percentile",
-      value: null,
-      hasData: false,
-    },
-    {
-      title: "Unsafe driving percentile",
-      value: null,
-      hasData: false,
-    },
-    {
-      title: "Unsafe driving percentile",
-      value: null,
-      hasData: false,
-    },
-  ];
+  const percentileData = useMemo(() => {
+    return safetyData.map((item) => {
+      return {
+        title: item.basic_desc,
+        value: item.percentage,
+        hasData: true,
+      };
+    });
+  }, [safetyData]);
 
   return (
     <Box bg="#fff" mt="24px" borderRadius="12px">
@@ -90,13 +67,19 @@ const Safety = () => {
           gap="6px"
           _hover={{textDecoration: "underline"}}
           whiteSpace="nowrap">
-          <Box
-            as="img"
-            src="/img/questionRound.svg"
-            alt="info"
+          <Flex
             w="16px"
             h="16px"
-          />
+            borderRadius="50%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize="10px"
+            border="1px solid #EF6820"
+            fontWeight="700"
+            color="#EF6820">
+            ?
+          </Flex>
           View FAQs
         </Link>
       </Flex>

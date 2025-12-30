@@ -107,6 +107,20 @@ const useScoreCardsProps = () => {
     enabled: Boolean(companies_id),
   });
 
+  const {data: safetyData = []} = useQuery({
+    queryKey: ["GET_SAFETY_DATA", companies_id],
+    queryFn: () =>
+      dashboardService.getSafetyData({
+        method: "list",
+        object_data: {
+          companies_id: companies_id,
+        },
+        table: "violation_percentages",
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(!brokers_id && companies_id),
+  });
+
   return {
     brokerSafetyData,
     driversData: driversData?.response,
@@ -119,6 +133,7 @@ const useScoreCardsProps = () => {
     setFilterRange,
     performanceData,
     dateRange,
+    safetyData,
   };
 };
 
