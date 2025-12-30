@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import {Flex, Text, Box, IconButton, HStack} from "@chakra-ui/react";
-import {LuChevronLeft, LuChevronRight} from "react-icons/lu";
 import Select from "@components/Select";
 
 function PerformanceFilter() {
@@ -16,6 +15,7 @@ function PerformanceFilter() {
 
   return (
     <Flex
+      mt="20px"
       w={"100%"}
       bg="#FAFAFA"
       p="20px"

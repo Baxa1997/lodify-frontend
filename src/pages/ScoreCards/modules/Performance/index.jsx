@@ -1,18 +1,23 @@
 import React from "react";
-import {PerformanceGrade} from "./components/PerformanceGrade";
 import PerformanceFilter from "./components/PerformanceFilter";
-import DetailedMetricCard from "./components/DetailMetricCard";
-import {Box} from "@chakra-ui/react";
 import {ScoreCardsPerformance} from "./components/ScoreCardsPerformance";
 import {PerformanceByDrivers} from "./components/PerformanceByDrivers";
 
-const Performance = () => {
+const Performance = ({
+  performanceData = [],
+  driversData = [],
+  limit,
+  setLimit,
+  page,
+  setPage,
+  count,
+}) => {
   return (
     <>
-      <PerformanceGrade />
+      {/* <PerformanceGrade /> */}
       <PerformanceFilter />
 
-      <Box
+      {/* <Box
         mt="20px"
         display="grid"
         gridTemplateColumns="repeat(2, 1fr)"
@@ -108,10 +113,17 @@ const Performance = () => {
               "Reflects the share of loads completed without service issues.",
           }}
         />
-      </Box>
+      </Box> */}
 
-      <ScoreCardsPerformance />
-      <PerformanceByDrivers />
+      <ScoreCardsPerformance performanceData={performanceData} />
+      <PerformanceByDrivers
+        driversData={driversData}
+        limit={limit}
+        setLimit={setLimit}
+        page={page}
+        setPage={setPage}
+        count={count}
+      />
     </>
   );
 };

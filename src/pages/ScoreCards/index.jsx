@@ -7,8 +7,11 @@ import Performance from "./modules/Performance";
 import Safety from "./modules/Safety";
 import CompanyExecution from "./modules/CompanyExecution";
 import DriverExecution from "./modules/DriverExecution";
+import useScoreCardsProps from "./components/useScoreCardsProps";
 
 const ScoreCards = () => {
+  const {brokerSafetyData, driversData, limit, setLimit, page, setPage, count} =
+    useScoreCardsProps();
   return (
     <>
       <HeadBreadCrumb />
@@ -30,7 +33,15 @@ const ScoreCards = () => {
         </TabList>
 
         <TabPanel>
-          <Performance />
+          <Performance
+            performanceData={brokerSafetyData}
+            driversData={driversData}
+            limit={limit}
+            setLimit={setLimit}
+            page={page}
+            count={count}
+            setPage={setPage}
+          />
         </TabPanel>
         <TabPanel>
           <Safety />

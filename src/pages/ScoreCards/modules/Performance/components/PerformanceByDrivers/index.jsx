@@ -5,87 +5,27 @@ import SearchInput from "@components/SearchInput";
 import {DataTable} from "@components/DataTable";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
 
-export const PerformanceByDrivers = () => {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+export const PerformanceByDrivers = ({
+  driversData = [],
+  limit,
+  setLimit = () => {},
+  page,
+  setPage = () => {},
+  count,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
-
-  const driversData = [
-    {
-      driver: "Furkat Yuldashev",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 1,
-      distance: "1,896.55 ml",
-    },
-    {
-      driver: "Oybek E Karimov",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 11,
-      distance: "1,140.24 ml",
-    },
-    {
-      driver: "Nodir Shavkatov",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 2,
-      distance: "852.01 ml",
-    },
-    {
-      driver: "Anaskhon Pulatov",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 2,
-      distance: "523.13 ml",
-    },
-    {
-      driver: "Aziz Mukhammadiev",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 3,
-      distance: "1,776.55 ml",
-    },
-    {
-      driver: "Alibek Zaripov",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 2,
-      distance: "588.45 ml",
-    },
-    {
-      driver: "Bunyod Homidov",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 1,
-      distance: "219.05 ml",
-    },
-    {
-      driver: "Muhammed Girgin",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 1,
-      distance: "2,579.52 ml",
-    },
-    {
-      driver: "Bekzod Umarov",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 23,
-      distance: "12,165.52 ml",
-    },
-    {
-      driver: "Isomiddin Gofurov",
-      onTime: "100.00%",
-      appStepsCompletion: "100.00%",
-      legs: 16,
-      distance: "8,193.84 ml",
-    },
-  ];
-
-  const filteredData = driversData.filter((driver) =>
-    driver.driver.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  console.log("driversDatadriversData", driversData);
+  const filteredData = driversData
+    .filter(
+      (driver) =>
+        driver?.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        driver?.last_name?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .map((driver) => ({
+      full_name: driver?.first_name + " " + driver?.last_name,
+      onTime: driver?.on_time_percentage,
+      verificationScore: driver?.verification_score,
+    }));
 
   const headData = [
     {
@@ -108,7 +48,7 @@ export const PerformanceByDrivers = () => {
           </Box>
         </Flex>
       ),
-      key: "driver",
+      key: "full_name",
       thProps: {
         width: "200px",
       },
@@ -168,7 +108,7 @@ export const PerformanceByDrivers = () => {
           </Box>
         </Flex>
       ),
-      key: "appStepsCompletion",
+      key: "verificationScore",
       thProps: {
         width: "200px",
       },
@@ -178,66 +118,66 @@ export const PerformanceByDrivers = () => {
         </Text>
       ),
     },
-    {
-      label: (
-        <Flex alignItems="center" gap="6px" cursor="pointer">
-          <Text
-            fontSize="12px"
-            fontWeight="600"
-            color="#374151"
-            textTransform="capitalize">
-            Legs
-          </Text>
-          <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
-            <LuChevronUp
-              size={12}
-              color="#9CA3AF"
-              style={{marginBottom: "-2px"}}
-            />
-            <LuChevronDown size={12} color="#9CA3AF" />
-          </Box>
-        </Flex>
-      ),
-      key: "legs",
-      thProps: {
-        width: "120px",
-      },
-      render: (value) => (
-        <Text fontSize="14px" fontWeight="400" color="#374151">
-          {value}
-        </Text>
-      ),
-    },
-    {
-      label: (
-        <Flex alignItems="center" gap="6px" cursor="pointer">
-          <Text
-            fontSize="12px"
-            fontWeight="600"
-            color="#374151"
-            textTransform="capitalize">
-            Distance
-          </Text>
-          <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
-            <LuChevronUp
-              size={12}
-              color="#9CA3AF"
-              style={{marginBottom: "-2px"}}
-            />
-            <LuChevronDown size={12} color="#9CA3AF" />
-          </Box>
-        </Flex>
-      ),
-      key: "distance",
-      thProps: {
-        width: "150px",
-      },
-      render: (value) => (
-        <Text fontSize="14px" fontWeight="400" color="#374151">
-          {value}
-        </Text>
-      ),
-    },
+    // {
+    //   label: (
+    //     <Flex alignItems="center" gap="6px" cursor="pointer">
+    //       <Text
+    //         fontSize="12px"
+    //         fontWeight="600"
+    //         color="#374151"
+    //         textTransform="capitalize">
+    //         Legs
+    //       </Text>
+    //       <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
+    //         <LuChevronUp
+    //           size={12}
+    //           color="#9CA3AF"
+    //           style={{marginBottom: "-2px"}}
+    //         />
+    //         <LuChevronDown size={12} color="#9CA3AF" />
+    //       </Box>
+    //     </Flex>
+    //   ),
+    //   key: "legs",
+    //   thProps: {
+    //     width: "120px",
+    //   },
+    //   render: (value) => (
+    //     <Text fontSize="14px" fontWeight="400" color="#374151">
+    //       {value}
+    //     </Text>
+    //   ),
+    // },
+    // {
+    //   label: (
+    //     <Flex alignItems="center" gap="6px" cursor="pointer">
+    //       <Text
+    //         fontSize="12px"
+    //         fontWeight="600"
+    //         color="#374151"
+    //         textTransform="capitalize">
+    //         Distance
+    //       </Text>
+    //       <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
+    //         <LuChevronUp
+    //           size={12}
+    //           color="#9CA3AF"
+    //           style={{marginBottom: "-2px"}}
+    //         />
+    //         <LuChevronDown size={12} color="#9CA3AF" />
+    //       </Box>
+    //     </Flex>
+    //   ),
+    //   key: "distance",
+    //   thProps: {
+    //     width: "150px",
+    //   },
+    //   render: (value) => (
+    //     <Text fontSize="14px" fontWeight="400" color="#374151">
+    //       {value}
+    //     </Text>
+    //   ),
+    // },
   ];
 
   return (
@@ -317,7 +257,7 @@ export const PerformanceByDrivers = () => {
         setPage={setPage}
         limit={limit}
         setLimit={setLimit}
-        count={filteredData.length}
+        count={count}
         border="1px solid #E5E7EB"
         borderRadius="12px"
         overflow="hidden"
