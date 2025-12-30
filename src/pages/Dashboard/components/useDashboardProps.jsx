@@ -3,6 +3,8 @@ import dashboardService from "@services/dashboardService";
 import {useSelector} from "react-redux";
 
 const useDashboardProps = () => {
+  const clientType = useSelector((state) => state.auth.clientType);
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const {companies_id} = useSelector((state) => state.auth.user_data);
 
   const {data: tripsCountData = {}} = useQuery({
@@ -17,6 +19,34 @@ const useDashboardProps = () => {
         table: "trip_counts",
       }),
     select: (res) => res?.data || {},
+  });
+
+  const {data: performanceData = {}} = useQuery({
+    queryKey: ["PERFORMANCE_DATA", companies_id],
+    queryFn: () =>
+      dashboardService.getPerformanceData({
+        method: "grade",
+        object_data: {
+          companies_id: companies_id,
+        },
+        table: "calculate",
+      }),
+    select: (res) => res?.data || {},
+    enabled: Boolean(companies_id),
+  });
+
+  const {data: safetyData = []} = useQuery({
+    queryKey: ["SAFETY_DATA", companies_id],
+    queryFn: () =>
+      dashboardService.getSafetyData({
+        method: "list",
+        object_data: {
+          companies_id: companies_id,
+        },
+        table: "violation_percentages",
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(companies_id),
   });
 
   const calculateGaugeLabel = (total, lateCount) => {
@@ -82,7 +112,10 @@ const useDashboardProps = () => {
   ];
 
   return {
+    isBroker,
     tripsData,
+    performanceData,
+    safetyData,
   };
 };
 

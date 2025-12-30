@@ -2,43 +2,43 @@ import React from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {PerformanceCard} from "./PerformanceCard";
 
-export const PerformanceGrade = () => {
-  const performanceData = {
+export const PerformanceGrade = ({performanceData = {}}) => {
+  const performanceDataObj = {
     overall: {
       label: "Overall",
-      value: "99%",
-      grade: "A",
+      value: `${performanceData?.overall || 0}%`,
+      grade: performanceData?.grade || "",
       gradeColor: "#dcfae6",
       showHelpLink: true,
     },
     onTime: {
       label: "On time",
-      value: "100.0%",
+      value: `${performanceData?.on_time || 0}%`,
       change: "0.0%",
       period: "1 week",
       tooltipLabel: "On time delivery percentage",
     },
     acceptance: {
       label: "Acceptance",
-      value: "100.0%",
+      value: `${performanceData?.acceptance || 0}%`,
       change: "0.0%",
       period: "1 week",
       tooltipLabel: "Acceptance rate",
     },
     appUsage: {
       label: "App usage",
-      value: "99.8%",
+      value: `${performanceData?.app_usage || 0}%`,
       change: "0.0%",
       period: "1 week",
       tooltipLabel: "App usage percentage",
     },
-    disruptionFree: {
-      label: "Disruption free",
-      value: "100.0%",
-      change: "0.0%",
-      period: "1 week",
-      tooltipLabel: "Disruption free percentage",
-    },
+    // disruptionFree: {
+    //   label: "Disruption free",
+    //   value: "100.0%",
+    //   change: "0.0%",
+    //   period: "1 week",
+    //   tooltipLabel: "Disruption free percentage",
+    // },
   };
 
   return (
@@ -86,13 +86,13 @@ export const PerformanceGrade = () => {
       <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
         <PerformanceCard
           width="300px"
-          {...performanceData.overall}
+          {...performanceDataObj.overall}
           showGrade={true}
         />
-        <PerformanceCard {...performanceData.onTime} />
-        <PerformanceCard {...performanceData.acceptance} />
-        <PerformanceCard {...performanceData.appUsage} />
-        <PerformanceCard {...performanceData.disruptionFree} />
+        <PerformanceCard {...performanceDataObj.onTime} />
+        <PerformanceCard {...performanceDataObj.acceptance} />
+        <PerformanceCard {...performanceDataObj.appUsage} />
+        {/* <PerformanceCard {...performanceDataObj.disruptionFree} /> */}
       </Flex>
     </Box>
   );

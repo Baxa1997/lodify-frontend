@@ -29,14 +29,14 @@ export const TripCard = ({
             {title}
           </Text>
 
-          <Button
+          {/* <Button
             color="#EF6820"
             border="none"
             variant="outline"
             size="sm"
             colorScheme="primary">
             View
-          </Button>
+          </Button> */}
         </Flex>
 
         <Box textAlign="center">
