@@ -177,12 +177,12 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
                       {showBadge && (
                         <Box
                           position="absolute"
-                          top="-4px"
-                          right="-134px"
-                          w="20px"
-                          h="20px"
+                          top="0px"
+                          right="-204px"
+                          w="24px"
+                          h="24px"
                           bg="#DC2626"
-                          borderRadius="50%"
+                          borderRadius="10px"
                           display="flex"
                           alignItems="center"
                           justifyContent="center">
