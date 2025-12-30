@@ -92,10 +92,10 @@ export const ScoreCardCompanyCard = ({
               {completedLoads.toLocaleString()}
             </Text>
             <Badge
-              bg={gradeColors(grade).bg}
+              bg={gradeColors(grade)?.bg}
               border="1px solid"
-              borderColor={gradeColors(grade).border}
-              color={gradeColors(grade).text}
+              borderColor={gradeColors(grade)?.border}
+              color={gradeColors(grade)?.text}
               fontSize="14px"
               fontWeight="700"
               px="10px"
