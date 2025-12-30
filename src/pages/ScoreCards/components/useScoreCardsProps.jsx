@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 import {useQuery} from "@tanstack/react-query";
 import dashboardService from "@services/dashboardService";
 import {useSelector} from "react-redux";
@@ -7,10 +7,51 @@ const useScoreCardsProps = () => {
   const clientType = useSelector((state) => state.auth.clientType);
   const {companies_id} = useSelector((state) => state.auth.user_data);
   const {brokers_id} = useSelector((state) => state.auth.user_data);
+  const [filterRange, setFilterRange] = useState("last_6_active_weeks");
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const offset = (page - 1) * limit;
+
+  const dateRange = useMemo(() => {
+    const now = new Date();
+    const to = now.toISOString();
+
+    let from;
+    switch (filterRange) {
+      case "last_6_active_weeks":
+        const sixWeeksAgo = new Date(now);
+        sixWeeksAgo.setDate(sixWeeksAgo.getDate() - 42);
+        sixWeeksAgo.setHours(0, 0, 0, 0);
+        from = sixWeeksAgo.toISOString();
+        break;
+      case "last_7_days":
+        const sevenDaysAgo = new Date(now);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
+        from = sevenDaysAgo.toISOString();
+        break;
+      case "last_30_days":
+        const thirtyDaysAgo = new Date(now);
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
+        from = thirtyDaysAgo.toISOString();
+        break;
+      case "last_90_days":
+        const ninetyDaysAgo = new Date(now);
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+        ninetyDaysAgo.setHours(0, 0, 0, 0);
+        from = ninetyDaysAgo.toISOString();
+        break;
+      default:
+        const defaultFrom = new Date(now);
+        defaultFrom.setDate(defaultFrom.getDate() - 42);
+        defaultFrom.setHours(0, 0, 0, 0);
+        from = defaultFrom.toISOString();
+    }
+
+    return {from, to};
+  }, [filterRange]);
 
   const {data: brokerSafetyData = []} = useQuery({
     queryKey: ["GET_BROKER_SAFETY_DATA", brokers_id],
@@ -42,6 +83,28 @@ const useScoreCardsProps = () => {
     enabled: Boolean(brokers_id),
   });
 
+  const {data: performanceData = {}} = useQuery({
+    queryKey: [
+      "PERFORMANCE_GRADE",
+      brokers_id,
+      filterRange,
+      dateRange.from,
+      dateRange.to,
+    ],
+    queryFn: () =>
+      dashboardService.getPerformanceData({
+        method: "grade",
+        object_data: {
+          companies_id: companies_id,
+          from: dateRange.from,
+          to: dateRange.to,
+        },
+        table: "calculate",
+      }),
+    select: (res) => res?.data || {},
+    enabled: Boolean(companies_id),
+  });
+
   return {
     brokerSafetyData,
     driversData: driversData?.response,
@@ -50,6 +113,10 @@ const useScoreCardsProps = () => {
     setLimit,
     page,
     setPage,
+    filterRange,
+    setFilterRange,
+    performanceData,
+    dateRange,
   };
 };
 

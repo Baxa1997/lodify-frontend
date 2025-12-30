@@ -2,7 +2,10 @@ import React, {useState} from "react";
 import {Flex, Text, Box, IconButton, HStack} from "@chakra-ui/react";
 import Select from "@components/Select";
 
-function PerformanceFilter() {
+function PerformanceFilter({
+  setFilterRange = () => {},
+  filterRange = "last_6_active_weeks",
+}) {
   const [currentWeek, setCurrentWeek] = useState(32);
 
   const handlePreviousWeek = () => {
@@ -11,6 +14,10 @@ function PerformanceFilter() {
 
   const handleNextWeek = () => {
     setCurrentWeek((prev) => Math.min(52, prev + 1));
+  };
+
+  const handleFilterRange = (range) => {
+    setFilterRange(range);
   };
 
   return (
@@ -36,6 +43,7 @@ function PerformanceFilter() {
         <Flex alignItems="center" gap="12px">
           <Box flex="1">
             <Select
+              value={filterRange}
               options={[
                 {label: "Last 6 active weeks", value: "last_6_active_weeks"},
                 {label: "Last 7 Days", value: "last_7_days"},
@@ -43,6 +51,7 @@ function PerformanceFilter() {
                 {label: "Last 90 Days", value: "last_90_days"},
               ]}
               defaultValue="last_6_active_weeks"
+              onChange={handleFilterRange}
             />
           </Box>
         </Flex>

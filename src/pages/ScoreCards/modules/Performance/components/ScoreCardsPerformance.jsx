@@ -3,7 +3,7 @@ import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {ScoreCardCompanyCard} from "./ScoreCardCompanyCard";
 import {IoIosArrowForward} from "react-icons/io";
 
-export const ScoreCardsPerformance = ({performanceData = []}) => {
+export const ScoreCardsPerformance = ({brokerSafetyData = []}) => {
   const getGaugeColor = (grade) => {
     switch (grade) {
       case ("A+", "A"):
@@ -20,9 +20,9 @@ export const ScoreCardsPerformance = ({performanceData = []}) => {
         return "#10B981";
     }
   };
-  console.log("performanceDataperformanceData", performanceData);
+
   const companiesData = useMemo(() => {
-    return performanceData.map((item) => {
+    return brokerSafetyData.map((item) => {
       return {
         companyName: item.legal_name,
         logo: null,
@@ -33,7 +33,7 @@ export const ScoreCardsPerformance = ({performanceData = []}) => {
         profilePictures: [],
       };
     });
-  }, [performanceData]);
+  }, [brokerSafetyData]);
 
   const currentDate = new Date();
   const monthNames = [
