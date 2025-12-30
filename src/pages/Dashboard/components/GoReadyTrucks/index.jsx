@@ -10,8 +10,9 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import {MapView} from "./MapView";
-import {ListView} from "./ListView";
+import MapComponent from "../../../GoReadyTrucks/modules/Map";
+import ActiveComponent from "../../../GoReadyTrucks/modules/Active";
+import {IoIosArrowForward} from "react-icons/io";
 
 export const GoReadyTrucks = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -44,9 +45,7 @@ export const GoReadyTrucks = () => {
           _hover={{textDecoration: "underline"}}
           whiteSpace="nowrap">
           View details
-          <Text as="span" fontSize="12px">
-            &gt;
-          </Text>
+          <IoIosArrowForward />
         </Link>
       </Flex>
 
@@ -88,10 +87,10 @@ export const GoReadyTrucks = () => {
 
         <TabPanels>
           <TabPanel px="0" pt="20px">
-            <MapView />
+            <MapComponent />
           </TabPanel>
           <TabPanel px="0" pt="20px">
-            <ListView />
+            <ActiveComponent />
           </TabPanel>
         </TabPanels>
       </Tabs>
