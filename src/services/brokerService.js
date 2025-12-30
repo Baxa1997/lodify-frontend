@@ -7,6 +7,8 @@ const brokerService = {
       `v2/items/broker_carriers?data=${encodeURIComponent(dataParam)}`
     );
   },
+  getCarrierReviews: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-drivers-gateway", data),
 };
 
 export default brokerService;

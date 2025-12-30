@@ -22,7 +22,7 @@ const Reviews = () => {
 
         <Tabs className={styles.tabsContainer}>
           <TabList>
-            <Tab onClick={() => setTripType("upcoming")}>Broker</Tab>
+            <Tab onClick={() => setTripType("upcoming")}>Carrier</Tab>
             <Tab onClick={() => setTripType("in_transit")}>Facility</Tab>
             <Tab onClick={() => setTripType("completed")}>Driver</Tab>
           </TabList>

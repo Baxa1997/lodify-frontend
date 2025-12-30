@@ -1,10 +1,10 @@
 import React, {useState, useMemo, useEffect, useRef} from "react";
 import {Box, Flex, Spinner, Text} from "@chakra-ui/react";
 import {useInfiniteQuery} from "@tanstack/react-query";
-import tripsService from "@services/tripsService";
 import {useSelector} from "react-redux";
 import useDebounce from "@hooks/useDebounce";
 import ReviewElement from "./ReviewElement";
+import brokerService from "@services/brokerService";
 
 const mockData = [
   {
@@ -49,18 +49,14 @@ const BrokerTab = () => {
   } = useInfiniteQuery({
     queryKey: ["BROKERS", brokersId, envId, searchQuery],
     queryFn: ({pageParam = 0}) =>
-      tripsService.getList({
-        app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
-        environment_id: envId,
-        method: "list",
-        object_data: {
-          carrier_id: brokersId,
-          own_brokers: true,
-          limit: 20,
-          offset: Boolean(searchQuery) ? 0 : pageParam,
-          search: searchQuery,
+      brokerService.getCarrierReviews({
+        data: {
+          table: "carrier",
+          object_data: {
+            brokers_id: brokersId,
+          },
+          method: "reviews",
         },
-        table: "brokers",
       }),
     getNextPageParam: (lastPage, allPages) => {
       if (Boolean(searchQuery)) {
@@ -76,6 +72,8 @@ const BrokerTab = () => {
       }
     },
   });
+
+  console.log("datadata", data);
 
   const brokersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
@@ -100,7 +98,7 @@ const BrokerTab = () => {
       );
     });
   }, [brokersData, searchQuery]);
-
+  console.log("filteredBrokersfilteredBrokers", filteredBrokers);
   const handleViewBroker = (broker) => {
     console.log("View broker:", broker);
   };
@@ -149,7 +147,7 @@ const BrokerTab = () => {
             gridTemplateColumns="repeat(3, 1fr)"
             gap="20px"
             mb="20px">
-            {mockData?.map((broker) => (
+            {filteredBrokers?.map((broker) => (
               <ReviewElement
                 key={broker.guid}
                 review={broker}

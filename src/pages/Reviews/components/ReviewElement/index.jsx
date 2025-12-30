@@ -25,7 +25,13 @@ const ReviewElement = ({
   const toast = useToast();
   const [loading, setLoading] = useState(null);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
-  const {email, company_name, rating, connected_date, guid} = review;
+  const {
+    email,
+    legal_name: company_name,
+    companies_rating: rating,
+    joined_at: connected_date,
+    guid,
+  } = review;
 
   const handleAddCarrier = (carrier) => {
     setLoading({
