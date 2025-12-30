@@ -4,6 +4,7 @@ import {FiDownload} from "react-icons/fi";
 import SearchInput from "@components/SearchInput";
 import {DataTable} from "@components/DataTable";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
+import {useSelector} from "react-redux";
 
 export const PerformanceByDrivers = ({
   driversData = [],
@@ -13,8 +14,12 @@ export const PerformanceByDrivers = ({
   setPage = () => {},
   count,
 }) => {
+  const client_type = useSelector((state) => state.auth.client_type);
   const [searchQuery, setSearchQuery] = useState("");
-  console.log("driversDatadriversData", driversData);
+  const {brokers_id} = useSelector((state) => state.auth.user_data);
+
+  const isBroker = Boolean(brokers_id);
+
   const filteredData = driversData
     .filter(
       (driver) =>
@@ -25,6 +30,7 @@ export const PerformanceByDrivers = ({
       full_name: driver?.first_name + " " + driver?.last_name,
       onTime: driver?.on_time_percentage,
       verificationScore: driver?.verification_score,
+      legal_name: driver?.legal_name,
     }));
 
   const headData = [
@@ -118,6 +124,37 @@ export const PerformanceByDrivers = ({
         </Text>
       ),
     },
+    {
+      label: (
+        <Flex alignItems="center" gap="6px" cursor="pointer">
+          <Text
+            fontSize="12px"
+            fontWeight="600"
+            color="#374151"
+            textTransform="capitalize">
+            Company Name
+          </Text>
+          <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
+            <LuChevronUp
+              size={12}
+              color="#9CA3AF"
+              style={{marginBottom: "-2px"}}
+            />
+            <LuChevronDown size={12} color="#9CA3AF" />
+          </Box>
+        </Flex>
+      ),
+      key: "legal_name",
+      thProps: {
+        width: "120px",
+      },
+      render: (value) => (
+        <Text fontSize="14px" fontWeight="400" color="#374151">
+          {value}
+        </Text>
+      ),
+    },
+
     // {
     //   label: (
     //     <Flex alignItems="center" gap="6px" cursor="pointer">
@@ -178,8 +215,8 @@ export const PerformanceByDrivers = ({
     //     </Text>
     //   ),
     // },
-  ];
-
+  ]?.filter((column) => (!isBroker ? column.key !== "legal_name" : true));
+  console.log("isBrokerisBroker", isBroker);
   return (
     <Box bg="#fff" borderRadius="12px" mt="32px">
       <Flex
