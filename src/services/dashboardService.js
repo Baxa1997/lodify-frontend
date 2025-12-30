@@ -1,0 +1,8 @@
+import httpRequest from "../utils/httpRequest";
+
+const dashboardService = {
+  getTripsCount: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", {data}),
+};
+
+export default dashboardService;

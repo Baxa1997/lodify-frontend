@@ -332,33 +332,35 @@ function AddTrip({tripData = {}, locationStatus = {}}) {
         )}
 
         <form action="" onSubmit={handleSubmit(onSubmit)}>
-          <Box
-            w="100%"
-            mb="20px"
-            p="8px"
-            bg="#FEF3C7"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            borderRadius="8px"
-            border="1px solid #F59E0B">
-            <Flex align="center" gap="12px">
-              <Box fontSize="20px" fontWeight="600">
-                <IoWarningOutline />
-              </Box>
-              <Text fontSize="14px" color="#000" fontWeight="600">
-                Address Mismatch Warning: The integration address and your real
-                physical address do not match. Please verify the address
-                information before proceeding.{" "}
-                {locationStatus?.interval && (
-                  <span>
-                    (Distance: {(locationStatus.interval / 1609.34).toFixed(2)}{" "}
-                    miles)
-                  </span>
-                )}
-              </Text>
-            </Flex>
-          </Box>
+          {locationStatus?.is_same_location === false && (
+            <Box
+              w="100%"
+              mb="20px"
+              p="8px"
+              bg="#FEF3C7"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              borderRadius="8px"
+              border="1px solid #F59E0B">
+              <Flex align="center" gap="12px">
+                <Box fontSize="20px" fontWeight="600">
+                  <IoWarningOutline />
+                </Box>
+                <Text fontSize="14px" color="#000" fontWeight="600">
+                  Address Mismatch Warning: The integration address and your
+                  real physical address do not match. Please verify the address
+                  information before proceeding.{" "}
+                  {locationStatus?.interval && (
+                    <span>
+                      (Distance:{" "}
+                      {(locationStatus.interval / 1609.34).toFixed(2)} miles)
+                    </span>
+                  )}
+                </Text>
+              </Flex>
+            </Box>
+          )}
 
           <FirstSection
             tripType={tripType}
