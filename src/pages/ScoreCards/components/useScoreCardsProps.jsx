@@ -13,6 +13,8 @@ const useScoreCardsProps = () => {
   const [page, setPage] = useState(1);
   const offset = (page - 1) * limit;
 
+  const driverType = isBroker ? "brokers_id" : "companies_id";
+
   const dateRange = useMemo(() => {
     const now = new Date();
     const to = now.toISOString();
@@ -68,19 +70,19 @@ const useScoreCardsProps = () => {
   });
 
   const {data: driversData = {}} = useQuery({
-    queryKey: ["GET_DRIVERS_DATA", brokers_id, limit, offset],
+    queryKey: ["GET_DRIVERS_DATA", brokers_id, limit, offset, companies_id],
     queryFn: () =>
       dashboardService.getPerformanceData({
         method: "get",
         object_data: {
-          brokers_id: brokers_id,
+          [driverType]: isBroker ? brokers_id : companies_id,
           limit: limit,
           offset: offset,
         },
         table: "drivers",
       }),
     select: (res) => res?.data || {},
-    enabled: Boolean(brokers_id),
+    enabled: Boolean(brokers_id || companies_id),
   });
 
   const {data: performanceData = {}} = useQuery({
@@ -95,7 +97,7 @@ const useScoreCardsProps = () => {
       dashboardService.getPerformanceData({
         method: "grade",
         object_data: {
-          companies_id: companies_id,
+          driverType: companies_id,
           from: dateRange.from,
           to: dateRange.to,
         },

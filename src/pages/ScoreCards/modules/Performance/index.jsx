@@ -20,6 +20,80 @@ const Performance = ({
   setFilterRange = () => {},
   dateRange = {from: "", to: ""},
 }) => {
+  const detailedData = {
+    onTime: {
+      percentage: performanceData?.on_time || 0,
+      color: "#1570EF",
+      subtitle: "Legs with no carrier controlled delays",
+      description:
+        "Tracks how often loads are picked up and delivered as scheduled.",
+      details: [
+        {
+          label: "On time to pickup",
+          value: `${performanceData?.on_time_data?.on_time_to_pickup || 0}%`,
+        },
+        {
+          label: "On time to Delivery",
+          value: `${performanceData?.on_time_data?.on_time_delivery || 0}%`,
+        },
+
+        {
+          label: "On time to Delivery and Pickup",
+          value: `${
+            performanceData?.on_time_data?.on_time_deliver_and_pickup || 0
+          }%`,
+        },
+      ],
+    },
+    acceptance: {
+      percentage: performanceData?.acceptance || 0,
+      color: "#9333EA",
+      subtitle: "Accepted work",
+      description:
+        "Measures the percentage of loads and blocks accepted without rejecti...",
+      details: [
+        {
+          label: "Accepted trips",
+          value: performanceData?.acceptance_data?.accepted_trips || 0,
+        },
+        {
+          label: "Rejected trips",
+          value: performanceData?.acceptance_data?.rejected_trips || 0,
+        },
+      ],
+    },
+    appUsage: {
+      percentage: performanceData?.app_usage || 0,
+      color: "#EC4899",
+      subtitle: "App Usage",
+      description:
+        "Shows how consistently the Lodify app is used during trips.",
+      details: [
+        {
+          label: "On time to origin",
+          value: "100.0%",
+          contribution: "37.5% of score",
+        },
+        {
+          label: "Location availability",
+          value: "99.8%",
+          contribution: "62.5% of score",
+        },
+      ],
+    },
+    disruptionFree: {
+      percentage: performanceData?.disruption_free || 0,
+      color: "#1E40AF",
+      subtitle: "Loads with no disruption",
+      description:
+        "Reflects the share of loads completed without service issues.",
+      details: [
+        {label: "Loads with disruption across", value: "0"},
+        {label: "Completed loads", value: "119"},
+      ],
+    },
+  };
+
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   return (
@@ -42,96 +116,16 @@ const Performance = ({
           display="grid"
           gridTemplateColumns="repeat(2, 1fr)"
           gap="24px">
-          <DetailedMetricCard
-            title="On time"
-            data={{
-              percentage: 100,
-              color: "#1570EF",
-              details: [
-                {
-                  value: "100.0%",
-                  label: "On time to origin",
-                  contribution: "37.5% of score",
-                },
-                {
-                  value: "100.0%",
-                  label: "On time to destination",
-                  contribution: "62.5% of score",
-                },
-              ],
-              subtitle: "Legs with no carrier controlled delays",
-              description:
-                "Tracks how often loads are picked up and delivered as scheduled.",
-            }}
-          />
-
+          <DetailedMetricCard title="On Time" data={detailedData.onTime} />
           <DetailedMetricCard
             title="Acceptance"
-            data={{
-              percentage: 100,
-              color: "#9333EA",
-              details: [
-                {
-                  value: "0",
-                  label: "Rejected blocks",
-                  contribution: null,
-                },
-                {
-                  value: "0",
-                  label: "Rejected loads",
-                  contribution: "62.5% of score",
-                },
-              ],
-              subtitle: "Accepted work",
-              description:
-                "Measures the percentage of loads and blocks accepted without rejection",
-            }}
+            data={detailedData.acceptance}
           />
 
+          <DetailedMetricCard title="App Usage" data={detailedData.appUsage} />
           <DetailedMetricCard
-            title="App usage"
-            data={{
-              percentage: 99.8,
-              color: "#EC4899",
-              details: [
-                {
-                  value: "100.0%",
-                  label: "On time to origin",
-                  contribution: "37.5% of score",
-                },
-                {
-                  value: "99.8%",
-                  label: "Location availability",
-                  contribution: "62.5% of score",
-                },
-              ],
-              subtitle: "App Usage",
-              description:
-                "Shows how consistently the Lodify app is used during trips.",
-            }}
-          />
-
-          <DetailedMetricCard
-            title="Disruption-free"
-            data={{
-              percentage: 100,
-              color: "#1E40AF",
-              details: [
-                {
-                  value: "0",
-                  label: "Loads with disruption across",
-                  contribution: null,
-                },
-                {
-                  value: "119",
-                  label: "Completed loads",
-                  contribution: null,
-                },
-              ],
-              subtitle: "Loads with no disruption",
-              description:
-                "Reflects the share of loads completed without service issues.",
-            }}
+            title="Disruption Free"
+            data={detailedData.disruptionFree}
           />
         </Box>
       )}
