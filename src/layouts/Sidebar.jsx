@@ -2,16 +2,18 @@ import React, {useState} from "react";
 import {brokerMenuItems, menuItems} from "../utils/menuItems";
 import styles from "./AdminLayout.module.scss";
 import {useNavigate, useLocation} from "react-router-dom";
-import {Tooltip, Menu, MenuButton, MenuList} from "@chakra-ui/react";
+import {Tooltip, Menu, MenuButton, MenuList, Box, Text} from "@chakra-ui/react";
 import SidebarFooter from "./SidebarFooter";
 import SidebarChildMenu from "./SidebarChildMenu";
 import {useSelector} from "react-redux";
+import {useNotificationCount} from "../hooks/useNotificationCount";
 
 const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const clientType = useSelector((state) => state.auth.clientType);
   const [expandedItems, setExpandedItems] = useState(new Set());
+  const {unreadCount} = useNotificationCount();
 
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
@@ -58,6 +60,8 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
               (hasChildren &&
                 item.children.some((child) => isActiveRoute(child.path)));
 
+            const showBadge = item.id === "notifications" && unreadCount > 0;
+
             return (
               <li key={item.id} className={styles.navItem}>
                 {!sidebarOpen ? (
@@ -80,8 +84,30 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
                             style={{
                               width: "20px",
                               margin: "0 auto",
+                              position: "relative",
                             }}>
                             <img src={item.icon} alt="" />
+                            {showBadge && (
+                              <Box
+                                position="absolute"
+                                top="-4px"
+                                right="4px"
+                                w="20px"
+                                h="20px"
+                                bg="#DC2626"
+                                borderRadius="50%"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center">
+                                <Text
+                                  fontSize="10px"
+                                  fontWeight="700"
+                                  color="white"
+                                  lineHeight="1">
+                                  {unreadCount > 9 ? "9+" : unreadCount}
+                                </Text>
+                              </Box>
+                            )}
                           </span>
                         </MenuButton>
                       </Tooltip>
@@ -108,8 +134,31 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
                           isActive ? styles.active : ""
                         }`}
                         onClick={() => handleMenuItemClick(item)}>
-                        <span className={styles.navIcon}>
+                        <span
+                          className={styles.navIcon}
+                          style={{position: "relative"}}>
                           <img src={item.icon} alt="" />
+                          {showBadge && (
+                            <Box
+                              position="absolute"
+                              top="-4px"
+                              right="-10px"
+                              w="20px"
+                              h="20px"
+                              bg="#DC2626"
+                              borderRadius="50%"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center">
+                              <Text
+                                fontSize="10px"
+                                fontWeight="700"
+                                color="white"
+                                lineHeight="1">
+                                {unreadCount > 9 ? "9+" : unreadCount}
+                              </Text>
+                            </Box>
+                          )}
                         </span>
                       </button>
                     </Tooltip>
@@ -119,9 +168,33 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
                     className={`${styles.navLink} ${
                       isActive ? styles.active : ""
                     }`}
-                    onClick={() => handleMenuItemClick(item)}>
-                    <span className={styles.navIcon}>
+                    onClick={() => handleMenuItemClick(item)}
+                    style={{position: "relative"}}>
+                    <span
+                      className={styles.navIcon}
+                      style={{position: "relative"}}>
                       <img src={item.icon} alt="" />
+                      {showBadge && (
+                        <Box
+                          position="absolute"
+                          top="-4px"
+                          right="-134px"
+                          w="20px"
+                          h="20px"
+                          bg="#DC2626"
+                          borderRadius="50%"
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center">
+                          <Text
+                            fontSize="10px"
+                            fontWeight="700"
+                            color="white"
+                            lineHeight="1">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </Text>
+                        </Box>
+                      )}
                     </span>
                     <span className={styles.navLabel}>{item.label}</span>
                     {hasChildren && (

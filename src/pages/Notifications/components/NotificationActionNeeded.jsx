@@ -48,6 +48,7 @@ function NotificationActionNeeded() {
         .then(() => {
           // Invalidate and refetch notifications to update the UI
           queryClient.invalidateQueries({queryKey: ["NOTIFICATIONS"]});
+          queryClient.invalidateQueries({queryKey: ["NOTIFICATION_COUNT"]});
         })
         .catch((error) => {
           console.error("Failed to mark notification as read:", error);
@@ -70,6 +71,7 @@ function NotificationActionNeeded() {
       await notificationService.markAllAsRead(clientTypeValue);
       dispatch(showAlert("All notifications marked as read", "success"));
       queryClient.invalidateQueries({queryKey: ["NOTIFICATIONS"]});
+      queryClient.invalidateQueries({queryKey: ["NOTIFICATION_COUNT"]});
       setIsReadAllDialogOpen(false);
     } catch (error) {
       dispatch(

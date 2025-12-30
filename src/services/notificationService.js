@@ -26,6 +26,17 @@ const notificationService = {
       },
     });
   },
+  getUnreadCount: (clientType) => {
+    return httpRequest.post("v2/invoke_function/lodify-drivers-gateway", {
+      data: {
+        method: "count",
+        object_data: {
+          client_type: clientType,
+        },
+        table: "notifications",
+      },
+    });
+  },
 };
 
 export default notificationService;
