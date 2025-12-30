@@ -12,17 +12,13 @@ export const CompanyCard = ({
   profilePictures = [],
 }) => {
   const getGradeColor = (grade) => {
-    if (grade === "A+")
+    if (grade === "A+" && grade === "A")
       return {bg: "#dcfae6", border: "#abefc6", text: "#079455"};
-    if (grade === "A")
-      return {bg: "#dcfae6", border: "#abefc6", text: "#079455"};
-    if (grade === "B+")
+    if (grade === "B+" && grade === "B")
       return {bg: "#fef3c7", border: "#fde68a", text: "#d97706"};
-    if (grade === "B")
+    if (grade === "C" && grade === "D")
       return {bg: "#fef3c7", border: "#fde68a", text: "#d97706"};
-    if (grade === "C")
-      return {bg: "#fed7aa", border: "#fdba74", text: "#ea580c"};
-    if (grade === "D")
+    if (grade === "F")
       return {bg: "#fee2e2", border: "#fecaca", text: "#dc2626"};
     return {bg: "#f3f4f6", border: "#e5e7eb", text: "#6b7280"};
   };

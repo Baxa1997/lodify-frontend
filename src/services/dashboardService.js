@@ -7,6 +7,8 @@ const dashboardService = {
     httpRequest.post("v2/invoke_function/lodify-dashboard", {data}),
   getSafetyData: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", {data}),
+  getBrokerSafetyData: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", {data}),
 };
 
 export default dashboardService;

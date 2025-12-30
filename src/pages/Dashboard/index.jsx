@@ -9,7 +9,7 @@ import useDashboardProps from "./components/useDashboardProps";
 import SafetyCarrier from "./components/SafetyCarrier";
 
 const Dashboard = () => {
-  const {isBroker, tripsData, performanceData, safetyData} =
+  const {isBroker, tripsData, performanceData, safetyData, brokerSafetyData} =
     useDashboardProps();
 
   return (
@@ -25,9 +25,9 @@ const Dashboard = () => {
       </Text>
       <Box py="20px" pb="32px" bg="#f5f5f5" minH="calc(100vh - 80px)">
         <TripsNeedingAttention tripsData={tripsData} />
-        <PerformanceGrade performanceData={performanceData} />
+        {!isBroker && <PerformanceGrade performanceData={performanceData} />}
         {isBroker ? (
-          <SafetyStatus />
+          <SafetyStatus brokerSafetyData={brokerSafetyData} />
         ) : (
           <SafetyCarrier safetyData={safetyData} />
         )}

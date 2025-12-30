@@ -1,64 +1,39 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {CompanyCard} from "./CompanyCard";
+import {IoIosArrowForward} from "react-icons/io";
 
-export const SafetyStatus = () => {
-  const companiesData = [
-    {
-      companyName: "UPS",
-      logo: null,
-      completedLoads: 5210,
-      grade: "A+",
-      percentage: 100,
-      gaugeColor: "#10B981",
-      profilePictures: [],
-    },
-    {
-      companyName: "Amazon Relay",
-      logo: null,
-      completedLoads: 5210,
-      grade: "A",
-      percentage: 95,
-      gaugeColor: "#10B981",
-      profilePictures: [],
-    },
-    {
-      companyName: "JB Hunt",
-      logo: null,
-      completedLoads: 5210,
-      grade: "B+",
-      percentage: 89,
-      gaugeColor: "#F97316",
-      profilePictures: [],
-    },
-    {
-      companyName: "FedEx",
-      logo: null,
-      completedLoads: 5210,
-      grade: "B",
-      percentage: 88,
-      gaugeColor: "#F97316",
-      profilePictures: [],
-    },
-    {
-      companyName: "XPO Logistics",
-      logo: null,
-      completedLoads: 5210,
-      grade: "C",
-      percentage: 87,
-      gaugeColor: "#F97316",
-      profilePictures: [],
-    },
-    {
-      companyName: "HDL",
-      logo: null,
-      completedLoads: 5210,
-      grade: "D",
-      percentage: 85,
-      gaugeColor: "#F97316",
-      profilePictures: [],
-    },
-  ];
+export const SafetyStatus = ({brokerSafetyData = []}) => {
+  const getGaugeColor = (grade) => {
+    switch (grade) {
+      case ("A+", "A"):
+        return "#079455";
+      case ("B+", "B"):
+        return "#F79009";
+      case ("C+", "C"):
+        return "#DC6803";
+      case ("D+", "D"):
+        return "#DC6803";
+      case "F":
+        return "red";
+      default:
+        return "#10B981";
+    }
+  };
+
+  const companiesData = useMemo(() => {
+    return brokerSafetyData.map((item) => {
+      return {
+        companyName: item.legal_name,
+        logo: null,
+        completedLoads: item?.total_orders,
+        grade: item.grade,
+        percentage: item?.on_time_percentage,
+        gaugeColor: getGaugeColor(item.grade),
+        profilePictures: [],
+      };
+    });
+  }, [brokerSafetyData]);
 
   const currentDate = new Date();
   const monthNames = [
@@ -114,9 +89,7 @@ export const SafetyStatus = () => {
           _hover={{textDecoration: "underline"}}
           whiteSpace="nowrap">
           View more
-          <Text as="span" fontSize="12px">
-            &gt;
-          </Text>
+          <IoIosArrowForward />
         </Link>
       </Flex>
 

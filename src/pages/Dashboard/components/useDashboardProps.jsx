@@ -6,6 +6,9 @@ const useDashboardProps = () => {
   const clientType = useSelector((state) => state.auth.clientType);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const {companies_id} = useSelector((state) => state.auth.user_data);
+  const {brokers_id} = useSelector((state) => state.auth.user_data);
+
+  const companyType = isBroker ? "brokers_id" : "companies_id";
 
   const {data: tripsCountData = {}} = useQuery({
     queryKey: ["TRIPS_COUNT", companies_id],
@@ -13,8 +16,8 @@ const useDashboardProps = () => {
       dashboardService.getTripsCount({
         method: "get",
         object_data: {
-          companies_id: companies_id,
-          client_type: "carrier",
+          [companyType]: isBroker ? brokers_id : companies_id,
+          client_type: isBroker ? "broker" : "carrier",
         },
         table: "trip_counts",
       }),
@@ -46,7 +49,21 @@ const useDashboardProps = () => {
         table: "violation_percentages",
       }),
     select: (res) => res?.data?.response || [],
-    enabled: Boolean(companies_id),
+    enabled: Boolean(!brokers_id && companies_id),
+  });
+
+  const {data: brokerSafetyData = []} = useQuery({
+    queryKey: ["BROKER_SAFETY_DATA", brokers_id],
+    queryFn: () =>
+      dashboardService.getBrokerSafetyData({
+        method: "get",
+        object_data: {
+          brokers_id: brokers_id,
+        },
+        table: "broker_carriers",
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(brokers_id),
   });
 
   const calculateGaugeLabel = (total, lateCount) => {
@@ -116,6 +133,7 @@ const useDashboardProps = () => {
     tripsData,
     performanceData,
     safetyData,
+    brokerSafetyData,
   };
 };
 
