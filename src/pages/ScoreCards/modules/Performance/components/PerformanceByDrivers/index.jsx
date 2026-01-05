@@ -154,69 +154,38 @@ export const PerformanceByDrivers = ({
         </Text>
       ),
     },
-
-    // {
-    //   label: (
-    //     <Flex alignItems="center" gap="6px" cursor="pointer">
-    //       <Text
-    //         fontSize="12px"
-    //         fontWeight="600"
-    //         color="#374151"
-    //         textTransform="capitalize">
-    //         Legs
-    //       </Text>
-    //       <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
-    //         <LuChevronUp
-    //           size={12}
-    //           color="#9CA3AF"
-    //           style={{marginBottom: "-2px"}}
-    //         />
-    //         <LuChevronDown size={12} color="#9CA3AF" />
-    //       </Box>
-    //     </Flex>
-    //   ),
-    //   key: "legs",
-    //   thProps: {
-    //     width: "120px",
-    //   },
-    //   render: (value) => (
-    //     <Text fontSize="14px" fontWeight="400" color="#374151">
-    //       {value}
-    //     </Text>
-    //   ),
-    // },
-    // {
-    //   label: (
-    //     <Flex alignItems="center" gap="6px" cursor="pointer">
-    //       <Text
-    //         fontSize="12px"
-    //         fontWeight="600"
-    //         color="#374151"
-    //         textTransform="capitalize">
-    //         Distance
-    //       </Text>
-    //       <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
-    //         <LuChevronUp
-    //           size={12}
-    //           color="#9CA3AF"
-    //           style={{marginBottom: "-2px"}}
-    //         />
-    //         <LuChevronDown size={12} color="#9CA3AF" />
-    //       </Box>
-    //     </Flex>
-    //   ),
-    //   key: "distance",
-    //   thProps: {
-    //     width: "150px",
-    //   },
-    //   render: (value) => (
-    //     <Text fontSize="14px" fontWeight="400" color="#374151">
-    //       {value}
-    //     </Text>
-    //   ),
-    // },
+    {
+      label: (
+        <Flex alignItems="center" gap="6px" cursor="pointer">
+          <Text
+            fontSize="12px"
+            fontWeight="600"
+            color="#374151"
+            textTransform="capitalize">
+            Loads
+          </Text>
+          <Box display="flex" flexDirection="column" gap="0" lineHeight="1">
+            <LuChevronUp
+              size={12}
+              color="#9CA3AF"
+              style={{marginBottom: "-2px"}}
+            />
+            <LuChevronDown size={12} color="#9CA3AF" />
+          </Box>
+        </Flex>
+      ),
+      key: "loads",
+      thProps: {
+        width: "120px",
+      },
+      render: (value) => (
+        <Text fontSize="14px" fontWeight="400" color="#374151">
+          {value}
+        </Text>
+      ),
+    },
   ]?.filter((column) => (!isBroker ? column.key !== "legal_name" : true));
-  console.log("isBrokerisBroker", isBroker);
+
   return (
     <Box bg="#fff" borderRadius="12px" mt="32px">
       <Flex

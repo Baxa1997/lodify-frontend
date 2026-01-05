@@ -91,6 +91,12 @@ const useDashboardProps = () => {
     staleTime: 0,
   });
 
+  const {data: nationalAverageData = {}} = useQuery({
+    queryKey: ["NATIONAL_AVERAGE"],
+    queryFn: () => dashboardService.getNationalAverage(),
+    select: (res) => res?.data?.response?.[0] || {},
+  });
+
   const calculateGaugeLabel = (total, lateCount) => {
     if (lateCount / total > 0.5) {
       return "High";
@@ -160,6 +166,7 @@ const useDashboardProps = () => {
     safetyData,
     brokerSafetyData,
     carrierInfoData,
+    nationalAverageData,
   };
 };
 

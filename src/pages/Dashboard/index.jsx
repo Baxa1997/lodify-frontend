@@ -7,6 +7,7 @@ import {SafetyStatus} from "./components/SafetyStatus";
 import {GoReadyTrucks} from "./components/GoReadyTrucks";
 import useDashboardProps from "./components/useDashboardProps";
 import SafetyCarrier from "./components/SafetyCarrier";
+import NationalAverage from "./components/SafetyCarrier/NationalAverage";
 
 const Dashboard = () => {
   const {
@@ -16,6 +17,7 @@ const Dashboard = () => {
     safetyData,
     brokerSafetyData,
     carrierInfoData,
+    nationalAverageData,
   } = useDashboardProps();
 
   return (
@@ -40,6 +42,7 @@ const Dashboard = () => {
             safetyData={safetyData}
           />
         )}
+        <NationalAverage nationalAverageData={nationalAverageData} />
 
         <GoReadyTrucks />
       </Box>

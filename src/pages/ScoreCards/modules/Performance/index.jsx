@@ -36,13 +36,6 @@ const Performance = ({
           label: "On time to Delivery",
           value: `${performanceData?.on_time_data?.on_time_delivery || 0}%`,
         },
-
-        {
-          label: "On time to Delivery and Pickup",
-          value: `${
-            performanceData?.on_time_data?.on_time_deliver_and_pickup || 0
-          }%`,
-        },
       ],
     },
     acceptance: {

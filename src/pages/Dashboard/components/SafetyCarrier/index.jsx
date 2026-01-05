@@ -33,58 +33,6 @@ const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
   const ordinalDay = getOrdinal(day);
   const year = currentDate.getFullYear();
 
-  // const safetyMetrics = [
-  //   {
-  //     title: "Unsafe driving percentile",
-  //     value: "30%",
-  //     hasData: true,
-  //     progressValue: 30,
-  //     progressColor: "#EF4444",
-  //     statusText: "Safe Position",
-  //     icon: "/img/unsafeDriving.svg",
-  //   },
-  //   {
-  //     title: "HOS compliance Percentile",
-  //     value: "49%",
-  //     hasData: true,
-  //     progressValue: 49,
-  //     progressColor: "#F97316",
-  //     statusText: "Safe Position",
-  //     icon: "/img/hos.svg",
-  //   },
-  //   {
-  //     title: "Vehicle Maintenance Percentile",
-  //     value: "66%",
-  //     hasData: true,
-  //     progressValue: 66,
-  //     progressColor: "#10B981",
-  //     statusText: "Safe Position",
-  //     icon: "/img/vehicleMaint.svg",
-  //   },
-
-  //   {
-  //     title: "Unsafe driving percentile",
-  //     value: "No data available",
-  //     hasData: false,
-  //     statusText: "Awaiting update",
-  //     icon: "/img/nodata.svg",
-  //   },
-  //   {
-  //     title: "Unsafe driving percentile",
-  //     value: "No data available",
-  //     hasData: false,
-  //     statusText: "Report in progress",
-  //     icon: "/img/nodata.svg",
-  //   },
-  //   {
-  //     title: "Unsafe driving percentile",
-  //     value: "No data available",
-  //     hasData: false,
-  //     statusText: "Connect data source",
-  //     icon: "/img/nodata.svg",
-  //   },
-  // ];
-
   const progressColor = (percentage) => {
     if (percentage > 50) return "#EF4444";
     if (percentage > 30) return "#F97316";
