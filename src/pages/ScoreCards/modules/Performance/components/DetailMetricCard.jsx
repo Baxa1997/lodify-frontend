@@ -1,7 +1,9 @@
 import {Flex, Text, Box, VStack, Link} from "@chakra-ui/react";
 import {MdKeyboardArrowRight} from "react-icons/md";
+import {ResponsiveBar} from "@nivo/bar";
 
 const DetailedMetricCard = ({title = "Overall", data = {}}) => {
+  console.log({data});
   return (
     <Flex
       bg="white"
@@ -27,9 +29,9 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
           </Text>
         </Box>
 
-        <Flex p="20px" gap="24px">
-          <Box position="relative" width="33%" flexShrink={0}>
-            <BarChart percentage={data?.percentage} color={data?.color} />
+        <Flex p="20px" pb="0" gap="24px">
+          <Box position="relative" width="55%" flexShrink={0}>
+            <BarChart data={data} layout="vertical" title={title} />
           </Box>
 
           <VStack
@@ -40,34 +42,70 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
             flex="1">
             {(Array.isArray(data?.details) ? data.details : [data?.details])
               .filter(Boolean)
-              .map((detail, index) => (
-                <Box key={index}>
-                  <Text
-                    fontSize="14px"
-                    fontWeight="600"
-                    color="#181D27"
-                    mb="4px">
-                    {detail?.value}
-                    {detail?.contribution && (
+              .map((detail, index) => {
+                const getItemColor = (label, index) => {
+                  if (label?.toLowerCase().includes("accepted")) {
+                    return "#10B981";
+                  }
+                  if (label?.toLowerCase().includes("rejected")) {
+                    return "#EF4444";
+                  }
+
+                  const colors = [
+                    data?.color || "#1570EF",
+                    "#9333EA",
+                    "#EC4899",
+                    "#1E40AF",
+                    "#10B981",
+                    "#F59E0B",
+                  ];
+                  return colors[index % colors.length];
+                };
+                const itemColor = getItemColor(detail?.label, index);
+
+                let displayValue = detail?.value;
+                if (title === "Acceptance") {
+                  displayValue = parseFloat(detail?.value) || 0;
+                }
+
+                return (
+                  <Flex key={index} alignItems="center" gap="12px">
+                    <Box
+                      w="12px"
+                      h="12px"
+                      borderRadius="50%"
+                      bg={itemColor}
+                      flexShrink={0}
+                    />
+                    <Box flex="1">
                       <Text
-                        as="span"
-                        fontSize="12px"
-                        color="#6B7280"
-                        fontWeight="400"
-                        ml="4px">
-                        ({detail.contribution})
+                        fontSize="14px"
+                        fontWeight="600"
+                        color="#181D27"
+                        mb="4px">
+                        {displayValue}
+                        {detail?.contribution && (
+                          <Text
+                            as="span"
+                            fontSize="12px"
+                            color="#6B7280"
+                            fontWeight="400"
+                            ml="4px">
+                            ({detail.contribution})
+                          </Text>
+                        )}
                       </Text>
-                    )}
-                  </Text>
-                  <Text fontSize="13px" color="#6B7280" fontWeight="400">
-                    {detail?.label}
-                  </Text>
-                </Box>
-              ))}
+                      <Text fontSize="13px" color="#6B7280" fontWeight="400">
+                        {detail?.label}
+                      </Text>
+                    </Box>
+                  </Flex>
+                );
+              })}
           </VStack>
 
           <Box
-            width="24%"
+            width="40px"
             w="24px"
             h="24px"
             flexShrink={0}
@@ -119,91 +157,172 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
   );
 };
 
-const BarChart = ({percentage, color}) => {
-  const chartHeight = 160;
-  const chartWidth = 120;
-  const barWidth = 32;
-  const normalizedPercentage = Math.min(Math.max(percentage || 0, 0), 100);
-  const barHeight = (normalizedPercentage / 100) * chartHeight;
-  const xPosition = (chartWidth - barWidth) / 2;
+const BarChart = ({data, layout = "vertical", title = ""}) => {
+  const {percentage, color, details} = data || {};
+  const detailsArray = Array.isArray(details)
+    ? details
+    : details
+    ? [details]
+    : [];
+
+  const hasDetails = detailsArray.length > 0;
+  const isAcceptance = title === "Acceptance";
+  const totalUnits = 300;
+
+  const chartData = hasDetails
+    ? detailsArray.map((detail, index) => {
+        let value = 0;
+        if (isAcceptance) {
+          value = parseFloat(detail?.value) || 0;
+        } else {
+          const valueStr = String(detail?.value || "0").replace(/%/g, "");
+          value = parseFloat(valueStr) || 0;
+        }
+        return {
+          id: detail?.label || `Item ${index + 1}`,
+          value: value,
+          label: detail?.label || "",
+        };
+      })
+    : [
+        {
+          id: "value",
+          value: Math.min(Math.max(percentage || 0, 0), 100),
+        },
+      ];
+
+  const getColorForLabel = (label, index) => {
+    if (label?.toLowerCase().includes("accepted")) {
+      return "#10B981";
+    }
+    if (label?.toLowerCase().includes("rejected")) {
+      return "#EF4444";
+    }
+
+    const defaultColors = [
+      color || "#1570EF",
+      "#9333EA",
+      "#EC4899",
+      "#1E40AF",
+      "#10B981",
+      "#F59E0B",
+    ];
+    return defaultColors[index % defaultColors.length];
+  };
+
+  const chartHeight = 240;
+  const chartKeys = hasDetails ? ["value"] : ["value"];
+
+  const maxValue = hasDetails
+    ? isAcceptance
+      ? totalUnits
+      : Math.max(...chartData.map((d) => d.value), 100)
+    : 100;
 
   return (
-    <Box
-      position="relative"
-      w="100%"
-      h="100%"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      flexDirection="column">
-      <Box position="relative" w={`${chartWidth}px`} h={`${chartHeight}px`}>
-        <svg width={chartWidth} height={chartHeight}>
-          <line
-            x1="0"
-            y1={chartHeight * 0.75}
-            x2={chartWidth}
-            y2={chartHeight * 0.75}
-            stroke="#F3F4F6"
-            strokeWidth="1"
-            strokeDasharray="2,2"
-          />
-          <line
-            x1="0"
-            y1={chartHeight * 0.5}
-            x2={chartWidth}
-            y2={chartHeight * 0.5}
-            stroke="#F3F4F6"
-            strokeWidth="1"
-            strokeDasharray="2,2"
-          />
-          <line
-            x1="0"
-            y1={chartHeight * 0.25}
-            x2={chartWidth}
-            y2={chartHeight * 0.25}
-            stroke="#F3F4F6"
-            strokeWidth="1"
-            strokeDasharray="2,2"
-          />
-
-          <rect
-            x={xPosition}
-            y="0"
-            width={barWidth}
-            height={chartHeight}
-            fill="#F3F4F6"
-            rx="4"
-          />
-
-          <rect
-            x={xPosition}
-            y={chartHeight - barHeight}
-            width={barWidth}
-            height={barHeight}
-            fill={color}
-            rx="4"
-            style={{
-              transition: "height 0.5s ease",
-            }}
-          />
-        </svg>
-
-        <Box
-          position="absolute"
-          top={chartHeight - barHeight - 30}
-          left="50%"
-          transform="translateX(-50%)"
-          textAlign="center"
-          pointerEvents="none">
-          <Text
-            fontSize="22px"
-            fontWeight="600"
-            color="#181D27"
-            lineHeight="1.2">
-            {percentage}%
-          </Text>
-        </Box>
-      </Box>
+    <Box position="relative" w="100%" h={`${chartHeight}px`}>
+      <ResponsiveBar
+        data={chartData}
+        keys={chartKeys}
+        indexBy="id"
+        layout={layout}
+        margin={{top: 20, right: 20, bottom: 10, left: 50}}
+        padding={hasDetails ? 0.5 : 0.6}
+        barComponent={({bar}) => {
+          const barWidth = 40;
+          return (
+            <g transform={`translate(${bar.x},${bar.y})`}>
+              <rect
+                x={-barWidth / 2}
+                y={0}
+                width={barWidth}
+                height={bar.height}
+                fill={bar.color}
+                rx={4}
+              />
+              {bar.height > 20 && (
+                <text
+                  x={0}
+                  y={bar.height / 2}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="#FFFFFF"
+                  fontSize={12}
+                  fontWeight={600}>
+                  {isAcceptance
+                    ? Math.round(bar.data.value)
+                    : `${Math.round(bar.data.value)}%`}
+                </text>
+              )}
+            </g>
+          );
+        }}
+        valueScale={{
+          type: "linear",
+          min: 0,
+          max: isAcceptance ? totalUnits : Math.max(maxValue * 1.1, 100),
+        }}
+        indexScale={{type: "band", round: true}}
+        colors={(bar) => {
+          if (hasDetails) {
+            const label = chartData[bar.index]?.label || "";
+            return getColorForLabel(label, bar.index);
+          }
+          return color || "#1570EF";
+        }}
+        axisTop={null}
+        axisRight={null}
+        axisBottom={null}
+        axisLeft={{
+          tickSize: 5,
+          tickPadding: 8,
+          tickRotation: 0,
+          legend: "",
+          legendPosition: "middle",
+          legendOffset: -45,
+          format: (value) =>
+            isAcceptance ? `${Math.round(value)}` : `${Math.round(value)}%`,
+          tickValues: 5,
+        }}
+        enableLabel={false}
+        enableGridY={true}
+        enableGridX={false}
+        gridYValues={5}
+        gridYStrokeDasharray="2,2"
+        gridYStroke="#E5E7EB"
+        animate={true}
+        motionConfig="gentle"
+        borderRadius={4}
+        isInteractive={true}
+        theme={{
+          axis: {
+            ticks: {
+              text: {
+                fill: "#6B7280",
+                fontSize: 11,
+                fontWeight: 500,
+              },
+              line: {
+                stroke: "#E5E7EB",
+                strokeWidth: 1,
+              },
+            },
+            domain: {
+              line: {
+                stroke: "#E5E7EB",
+                strokeWidth: 1,
+              },
+            },
+          },
+          grid: {
+            line: {
+              stroke: "#E5E7EB",
+              strokeWidth: 1,
+              strokeDasharray: "2,2",
+            },
+          },
+        }}
+      />
     </Box>
   );
 };
