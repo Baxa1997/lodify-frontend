@@ -8,6 +8,7 @@ import {
 } from "../../../../components/InfoAccordion";
 import Chart from "react-google-charts";
 import {MdKeyboardArrowRight} from "react-icons/md";
+import DetailedMetricCard from "./DetailMetricCard";
 
 export const Performance = ({performanceData}) => {
   const summaryData = {
@@ -374,116 +375,116 @@ export const Performance = ({performanceData}) => {
     );
   };
 
-  const DetailedMetricCard = ({title, data}) => {
-    return (
-      <Flex
-        bg="white"
-        flexDirection="column"
-        justifyContent="space-between"
-        border="1px solid #E5E7EB"
-        borderRadius="12px">
-        <VStack spacing="10px" align="stretch">
-          <Text
-            borderBottom="1px solid #E5E7EB"
-            fontSize="14px"
-            fontWeight="700"
-            color="#181D27"
-            mb="4px"
-            p="12px 20px">
-            {title}
-          </Text>
-          <Box mb="20px" px="20px">
-            <Text fontSize="14px" color="#181D27" fontWeight="500" mb="4px">
-              {data.subtitle}
-            </Text>
-            <Text fontSize="12px" color="#6B7280" lineHeight="1.5">
-              {data.description}
-            </Text>
-          </Box>
+  // const DetailedMetricCard = ({title, data}) => {
+  //   return (
+  //     <Flex
+  //       bg="white"
+  //       flexDirection="column"
+  //       justifyContent="space-between"
+  //       border="1px solid #E5E7EB"
+  //       borderRadius="12px">
+  //       <VStack spacing="10px" align="stretch">
+  //         <Text
+  //           borderBottom="1px solid #E5E7EB"
+  //           fontSize="14px"
+  //           fontWeight="700"
+  //           color="#181D27"
+  //           mb="4px"
+  //           p="12px 20px">
+  //           {title}
+  //         </Text>
+  //         <Box mb="20px" px="20px">
+  //           <Text fontSize="14px" color="#181D27" fontWeight="500" mb="4px">
+  //             {data.subtitle}
+  //           </Text>
+  //           <Text fontSize="12px" color="#6B7280" lineHeight="1.5">
+  //             {data.description}
+  //           </Text>
+  //         </Box>
 
-          <Flex px="12px" gap="24px" alignItems="flex-start">
-            <Box position="relative">
-              <CircularProgress
-                percentage={data.percentage}
-                color={data.color}
-              />
-            </Box>
-            <VStack spacing="16px" align="flex-start" flex="1" pt="8px">
-              {data.details.map((detail, index) => (
-                <Box key={index}>
-                  <Text
-                    fontSize="14px"
-                    fontWeight="600"
-                    color="#181D27"
-                    mb="4px">
-                    {detail.value}
-                    {detail.contribution && (
-                      <Text
-                        as="span"
-                        fontSize="12px"
-                        color="#6B7280"
-                        fontWeight="400"
-                        ml="4px">
-                        ({detail.contribution})
-                      </Text>
-                    )}
-                  </Text>
-                  <Text fontSize="11px" color="#6B7280" fontWeight="400">
-                    {detail.label}
-                  </Text>
-                </Box>
-              ))}
-            </VStack>
-            <Box
-              w="24px"
-              h="24px"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              mt="8px">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M3 18L9 12L13 16L21 8"
-                  stroke="#10B981"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M21 8H15M21 8V14"
-                  stroke="#10B981"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Box>
-          </Flex>
+  //         <Flex px="12px" gap="24px" alignItems="flex-start">
+  //           <Box position="relative">
+  //             <CircularProgress
+  //               percentage={data.percentage}
+  //               color={data.color}
+  //             />
+  //           </Box>
+  //           <VStack spacing="16px" align="flex-start" flex="1" pt="8px">
+  //             {data.details.map((detail, index) => (
+  //               <Box key={index}>
+  //                 <Text
+  //                   fontSize="14px"
+  //                   fontWeight="600"
+  //                   color="#181D27"
+  //                   mb="4px">
+  //                   {detail.value}
+  //                   {detail.contribution && (
+  //                     <Text
+  //                       as="span"
+  //                       fontSize="12px"
+  //                       color="#6B7280"
+  //                       fontWeight="400"
+  //                       ml="4px">
+  //                       ({detail.contribution})
+  //                     </Text>
+  //                   )}
+  //                 </Text>
+  //                 <Text fontSize="11px" color="#6B7280" fontWeight="400">
+  //                   {detail.label}
+  //                 </Text>
+  //               </Box>
+  //             ))}
+  //           </VStack>
+  //           <Box
+  //             w="24px"
+  //             h="24px"
+  //             display="flex"
+  //             alignItems="center"
+  //             justifyContent="center"
+  //             mt="8px">
+  //             <svg
+  //               width="24"
+  //               height="24"
+  //               viewBox="0 0 24 24"
+  //               fill="none"
+  //               xmlns="http://www.w3.org/2000/svg">
+  //               <path
+  //                 d="M3 18L9 12L13 16L21 8"
+  //                 stroke="#10B981"
+  //                 strokeWidth="2"
+  //                 strokeLinecap="round"
+  //                 strokeLinejoin="round"
+  //               />
+  //               <path
+  //                 d="M21 8H15M21 8V14"
+  //                 stroke="#10B981"
+  //                 strokeWidth="2"
+  //                 strokeLinecap="round"
+  //                 strokeLinejoin="round"
+  //               />
+  //             </svg>
+  //           </Box>
+  //         </Flex>
 
-          <Flex
-            alignItems="center"
-            justifyContent="flex-end"
-            p="12px 20px"
-            borderTop="1px solid #E5E7EB">
-            <Link
-              href="#"
-              fontSize="14px"
-              color="#175CD3"
-              fontWeight="500"
-              _hover={{textDecoration: "underline"}}>
-              View details
-            </Link>
-            <MdKeyboardArrowRight w="20px" h="20px" />
-          </Flex>
-        </VStack>
-      </Flex>
-    );
-  };
+  //         <Flex
+  //           alignItems="center"
+  //           justifyContent="flex-end"
+  //           p="12px 20px"
+  //           borderTop="1px solid #E5E7EB">
+  //           <Link
+  //             href="#"
+  //             fontSize="14px"
+  //             color="#175CD3"
+  //             fontWeight="500"
+  //             _hover={{textDecoration: "underline"}}>
+  //             View details
+  //           </Link>
+  //           <MdKeyboardArrowRight w="20px" h="20px" />
+  //         </Flex>
+  //       </VStack>
+  //     </Flex>
+  //   );
+  // };
 
   return (
     <Box>

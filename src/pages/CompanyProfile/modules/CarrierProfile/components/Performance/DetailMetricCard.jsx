@@ -20,15 +20,15 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
           {title}
         </Text>
         <Box px="20px">
-          <Text fontSize="16px" color="#181D27" fontWeight="600">
+          <Text fontSize="14px" color="#181D27" fontWeight="600">
             {data?.subtitle}
           </Text>
-          <Text fontSize="14px" color="#6B7280" lineHeight="1.5">
+          <Text fontSize="12px" color="#6B7280" lineHeight="1.5">
             {data?.description}
           </Text>
         </Box>
 
-        <Flex p="20px" pb="0" gap="24px">
+        <Flex p="10px" pb="0" gap="24px">
           <Box position="relative" width="55%" flexShrink={0}>
             <BarChart data={data} layout="vertical" title={title} />
           </Box>
@@ -78,7 +78,7 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
                     />
                     <Box flex="1">
                       <Text
-                        fontSize="14px"
+                        fontSize="12px"
                         fontWeight="600"
                         color="#181D27"
                         mb="4px">
@@ -94,7 +94,7 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
                           </Text>
                         )}
                       </Text>
-                      <Text fontSize="13px" color="#6B7280" fontWeight="400">
+                      <Text fontSize="11px" color="#6B7280" fontWeight="400">
                         {detail?.label}
                       </Text>
                     </Box>
@@ -103,7 +103,7 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
               })}
           </VStack>
 
-          <Box
+          {/* <Box
             width="40px"
             w="72px"
             h="24px"
@@ -113,7 +113,7 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
             justifyContent="center"
             mt="8px">
             <img src="/img/chartView.svg" alt="" />
-          </Box>
+          </Box> */}
         </Flex>
 
         <Flex
@@ -209,7 +209,7 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
         margin={{top: 20, right: 20, bottom: 10, left: 50}}
         padding={hasDetails ? 0.5 : 0.6}
         barComponent={({bar}) => {
-          const barWidth = 40;
+          const barWidth = 30;
           return (
             <g transform={`translate(${bar.x},${bar.y})`}>
               <rect
@@ -227,7 +227,7 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill="#FFFFFF"
-                  fontSize={12}
+                  fontSize={9}
                   fontWeight={600}>
                   {isAcceptance || isDisruptionFree
                     ? Math.round(bar.data.value)
