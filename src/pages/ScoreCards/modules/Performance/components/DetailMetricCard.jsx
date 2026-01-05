@@ -64,7 +64,7 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
                 const itemColor = getItemColor(detail?.label, index);
 
                 let displayValue = detail?.value;
-                if (title === "Acceptance") {
+                if (title === "Acceptance" || title === "Disruption Free") {
                   displayValue = parseFloat(detail?.value) || 0;
                 }
 
@@ -106,14 +106,15 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
 
           <Box
             width="40px"
-            w="24px"
+            w="72px"
             h="24px"
             flexShrink={0}
             display="flex"
             alignItems="center"
             justifyContent="center"
             mt="8px">
-            <svg
+            <img src="/img/chartView.svg" alt="" />
+            {/* <svg
               width="24"
               height="24"
               viewBox="0 0 24 24"
@@ -133,7 +134,7 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-            </svg>
+            </svg> */}
           </Box>
         </Flex>
 
@@ -167,12 +168,13 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
 
   const hasDetails = detailsArray.length > 0;
   const isAcceptance = title === "Acceptance";
+  const isDisruptionFree = title === "Disruption Free";
   const totalUnits = 300;
 
   const chartData = hasDetails
     ? detailsArray.map((detail, index) => {
         let value = 0;
-        if (isAcceptance) {
+        if (isAcceptance || isDisruptionFree) {
           value = parseFloat(detail?.value) || 0;
         } else {
           const valueStr = String(detail?.value || "0").replace(/%/g, "");
@@ -214,7 +216,7 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
   const chartKeys = hasDetails ? ["value"] : ["value"];
 
   const maxValue = hasDetails
-    ? isAcceptance
+    ? isAcceptance || isDisruptionFree
       ? totalUnits
       : Math.max(...chartData.map((d) => d.value), 100)
     : 100;
@@ -249,7 +251,7 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
                   fill="#FFFFFF"
                   fontSize={12}
                   fontWeight={600}>
-                  {isAcceptance
+                  {isAcceptance || isDisruptionFree
                     ? Math.round(bar.data.value)
                     : `${Math.round(bar.data.value)}%`}
                 </text>
@@ -260,7 +262,10 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
         valueScale={{
           type: "linear",
           min: 0,
-          max: isAcceptance ? totalUnits : Math.max(maxValue * 1.1, 100),
+          max:
+            isAcceptance || isDisruptionFree
+              ? totalUnits
+              : Math.max(maxValue * 1.1, 100),
         }}
         indexScale={{type: "band", round: true}}
         colors={(bar) => {
@@ -281,7 +286,9 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
           legendPosition: "middle",
           legendOffset: -45,
           format: (value) =>
-            isAcceptance ? `${Math.round(value)}` : `${Math.round(value)}%`,
+            isAcceptance || isDisruptionFree
+              ? `${Math.round(value)}`
+              : `${Math.round(value)}%`,
           tickValues: 5,
         }}
         enableLabel={false}
