@@ -1,8 +1,10 @@
 import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import NationalCard from "./NationalCard";
+import {format} from "date-fns";
 
 const NationalAverage = ({nationalAverageData = {}}) => {
+  console.log("nationalAverageData", nationalAverageData);
   const nationalAverage = [
     {
       title: "Driver",
@@ -27,6 +29,15 @@ const NationalAverage = ({nationalAverageData = {}}) => {
     }));
   }, [nationalAverage]);
 
+  const formattedDate = new Date(nationalAverageData?.date).toLocaleDateString(
+    "en-US",
+    {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+    }
+  );
+
   return (
     <Box bg="#fff" p="24px" borderRadius="12px" mt="32px">
       <Flex
@@ -35,9 +46,15 @@ const NationalAverage = ({nationalAverageData = {}}) => {
         flexDirection={{base: "column", md: "row"}}
         mb="24px"
         gap="12px">
-        <Text fontSize="20px" fontWeight="700" color="#181D27" mb="4px">
-          National Average
-        </Text>
+        <Box>
+          <Text fontSize="20px" fontWeight="700" color="#181D27" mb="0px">
+            National Average
+          </Text>
+          <Text fontSize="12px" fontWeight="500" color="red" mb="4px">
+            as of Date {formattedDate}
+          </Text>
+        </Box>
+
         <Link
           href="#"
           fontSize="14px"

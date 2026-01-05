@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Text, Flex, Progress} from "@chakra-ui/react";
+import {Box, Text, Flex} from "@chakra-ui/react";
 
 const NationalCard = ({title, value}) => {
   return (
