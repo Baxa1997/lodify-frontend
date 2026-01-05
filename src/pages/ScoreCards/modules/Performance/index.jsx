@@ -53,11 +53,11 @@ const Performance = ({
         "Measures the percentage of loads and blocks accepted without rejecti...",
       details: [
         {
-          label: "Accepted trips",
+          label: "Accepted loads",
           value: performanceData?.acceptance_data?.accepted_trips || 0,
         },
         {
-          label: "Rejected trips",
+          label: "Rejected loads",
           value: performanceData?.acceptance_data?.rejected_trips || 0,
         },
       ],

@@ -1,6 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
 import dashboardService from "@services/dashboardService";
 import {useSelector} from "react-redux";
+import carrierService from "@services/carrierService";
 
 const useDashboardProps = () => {
   const clientType = useSelector((state) => state.auth.clientType);
@@ -64,6 +65,30 @@ const useDashboardProps = () => {
       }),
     select: (res) => res?.data?.response || [],
     enabled: Boolean(brokers_id),
+  });
+
+  const {
+    data: carrierInfoData = {},
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ["CARRIER_INFO", isBroker ? brokers_id : companies_id],
+    queryFn: () =>
+      carrierService.getCarrierInfo({
+        data: {
+          method: "get",
+          object_data: {
+            [companyType]: isBroker ? brokers_id : companies_id,
+          },
+          table: "carrier_info",
+        },
+      }),
+    select: (data) => data?.data?.response || {},
+    enabled: Boolean(isBroker ? brokers_id : companies_id),
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
   const calculateGaugeLabel = (total, lateCount) => {
@@ -134,6 +159,7 @@ const useDashboardProps = () => {
     performanceData,
     safetyData,
     brokerSafetyData,
+    carrierInfoData,
   };
 };
 

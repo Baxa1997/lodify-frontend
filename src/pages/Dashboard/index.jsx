@@ -9,8 +9,14 @@ import useDashboardProps from "./components/useDashboardProps";
 import SafetyCarrier from "./components/SafetyCarrier";
 
 const Dashboard = () => {
-  const {isBroker, tripsData, performanceData, safetyData, brokerSafetyData} =
-    useDashboardProps();
+  const {
+    isBroker,
+    tripsData,
+    performanceData,
+    safetyData,
+    brokerSafetyData,
+    carrierInfoData,
+  } = useDashboardProps();
 
   return (
     <>
@@ -29,7 +35,10 @@ const Dashboard = () => {
         {isBroker ? (
           <SafetyStatus brokerSafetyData={brokerSafetyData} />
         ) : (
-          <SafetyCarrier safetyData={safetyData} />
+          <SafetyCarrier
+            carrierInfoData={carrierInfoData}
+            safetyData={safetyData}
+          />
         )}
 
         <GoReadyTrucks />

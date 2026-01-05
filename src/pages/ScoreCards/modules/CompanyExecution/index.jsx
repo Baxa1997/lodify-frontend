@@ -46,7 +46,7 @@ const CompanyExecution = () => {
             details: [
               {
                 value: "0",
-                label: "Rejected blocks",
+                label: "Accepted loads",
                 contribution: null,
               },
               {

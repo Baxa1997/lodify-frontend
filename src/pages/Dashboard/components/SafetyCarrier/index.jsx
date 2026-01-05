@@ -2,7 +2,7 @@ import React, {useMemo} from "react";
 import {Box, Text, Flex, Link, Progress} from "@chakra-ui/react";
 import SafetyMetricCard from "./SafetyMetricCard";
 
-const SafetyCarrier = ({safetyData = []}) => {
+const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
   const currentDate = new Date();
   const monthNames = [
     "January",
@@ -118,6 +118,14 @@ const SafetyCarrier = ({safetyData = []}) => {
     }));
   }, [safetyData]);
 
+  const highRiskMetrics = useMemo(() => {
+    return safetyData.filter((item) => item.percentage > 70);
+  }, [safetyData]);
+
+  const hasHighRiskMetrics = highRiskMetrics.length > 0;
+  const highRiskCount = highRiskMetrics.length;
+  const highRiskTitles = highRiskMetrics.map((item) => item.basic_desc);
+
   return (
     <Box bg="#fff" p="24px" borderRadius="12px" mt="32px">
       <Flex
@@ -126,14 +134,9 @@ const SafetyCarrier = ({safetyData = []}) => {
         flexDirection={{base: "column", md: "row"}}
         mb="24px"
         gap="12px">
-        <Box>
-          <Text fontSize="20px" fontWeight="700" color="#181D27" mb="4px">
-            Lodify safety status for {currentMonth} {year}
-          </Text>
-          <Text fontSize="14px" color="#6B7280" fontWeight="400">
-            Updated on {ordinalDay} {currentMonth} {year}
-          </Text>
-        </Box>
+        <Text fontSize="20px" fontWeight="700" color="#181D27" mb="4px">
+          {carrierInfoData?.legal_name || ""}
+        </Text>
         <Link
           href="#"
           fontSize="14px"
@@ -159,6 +162,31 @@ const SafetyCarrier = ({safetyData = []}) => {
           View FAQs
         </Link>
       </Flex>
+
+      {hasHighRiskMetrics && (
+        <Box
+          w="100%"
+          bg="#FFFAEB"
+          border="1px solid #FEDF89"
+          borderRadius="8px"
+          p="12px 16px"
+          mb="24px">
+          <Flex alignItems="flex-start" gap="8px">
+            <Box>
+              <Text fontSize="14px" fontWeight="600" color="#B54708" mb="4px">
+                ⚠️ Warning: {highRiskCount}{" "}
+                {highRiskCount === 1 ? "metric" : "metrics"}{" "}
+                {highRiskCount === 1 ? "is" : "are"} higher than 70% {}
+              </Text>
+              {highRiskTitles.map((title, index) => (
+                <Text key={index} fontSize="13px" color="#92400E" mb="2px">
+                  • {title}
+                </Text>
+              ))}
+            </Box>
+          </Flex>
+        </Box>
+      )}
 
       <Box
         display="grid"

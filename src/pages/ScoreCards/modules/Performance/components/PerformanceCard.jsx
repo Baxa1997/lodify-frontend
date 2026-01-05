@@ -25,12 +25,12 @@ export const PerformanceCard = ({
         w={width}>
         <Flex alignItems="center" gap="8px" mb="8px">
           <Text fontSize="14px" fontWeight="500" color="#181D27">
-            {label}
+            {label || ""}
           </Text>
         </Flex>
         <Flex h="32px" alignItems="center" gap="12px" mb="8px">
           <Text fontSize="24px" fontWeight="600" color="#181D27">
-            {value}
+            {value || " "}
           </Text>
           {grade && (
             <Box
@@ -115,7 +115,7 @@ export const PerformanceCard = ({
         )}
       </Flex>
       <Text fontSize="24px" fontWeight="600" color="#181D27" mb="8px">
-        {value}
+        {value || ""}
       </Text>
       <Text fontSize="12px" color="#6B7280" fontWeight="400">
         {change} {period}

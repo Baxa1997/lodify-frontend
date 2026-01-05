@@ -17,11 +17,11 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
           color="#181D27"
           mb="4px"
           p="12px 20px">
-          {title}
+          {title || ""}
         </Text>
         <Box px="20px">
           <Text fontSize="16px" color="#181D27" fontWeight="600">
-            {data?.subtitle}
+            {data?.subtitle || ""}
           </Text>
           <Text fontSize="14px" color="#6B7280" lineHeight="1.5">
             {data?.description}
@@ -102,18 +102,6 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
                 );
               })}
           </VStack>
-
-          <Box
-            width="40px"
-            w="72px"
-            h="24px"
-            flexShrink={0}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            mt="8px">
-            <img src="/img/chartView.svg" alt="" />
-          </Box>
         </Flex>
 
         <Flex
@@ -278,7 +266,6 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
         animate={true}
         motionConfig="gentle"
         borderRadius={4}
-        isInteractive={true}
         theme={{
           axis: {
             ticks: {
