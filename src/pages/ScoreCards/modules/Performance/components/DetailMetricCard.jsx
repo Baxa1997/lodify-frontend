@@ -1,6 +1,5 @@
 import {Flex, Text, Box, VStack, Link} from "@chakra-ui/react";
 import {MdKeyboardArrowRight} from "react-icons/md";
-import Chart from "react-google-charts";
 
 const DetailedMetricCard = ({title = "Overall", data = {}}) => {
   return (
@@ -30,10 +29,7 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
 
         <Flex p="20px" gap="24px">
           <Box position="relative" width="33%" flexShrink={0}>
-            <CircularProgress
-              percentage={data?.percentage}
-              color={data?.color}
-            />
+            <BarChart percentage={data?.percentage} color={data?.color} />
           </Box>
 
           <VStack
@@ -123,48 +119,90 @@ const DetailedMetricCard = ({title = "Overall", data = {}}) => {
   );
 };
 
-const CircularProgress = ({percentage, color}) => {
-  const remaining = 100 - percentage;
-  const chartData = [
-    ["Label", "Value"],
-    ["Progress", percentage],
-    ["Remaining", remaining],
-  ];
-
-  const options = {
-    pieHole: 0.75,
-    pieSliceText: "none",
-    legend: "none",
-    tooltip: {trigger: "none"},
-    slices: {
-      0: {color: color},
-      1: {color: "#F3F4F6"},
-    },
-    chartArea: {left: 0, top: 0, width: "100%", height: "100%"},
-    backgroundColor: "transparent",
-  };
+const BarChart = ({percentage, color}) => {
+  const chartHeight = 160;
+  const chartWidth = 120;
+  const barWidth = 32;
+  const normalizedPercentage = Math.min(Math.max(percentage || 0, 0), 100);
+  const barHeight = (normalizedPercentage / 100) * chartHeight;
+  const xPosition = (chartWidth - barWidth) / 2;
 
   return (
-    <Box position="relative" w="100%" h="100%" overflow="hidden">
-      <Box w="160px" h="160px" position="relative">
-        <Chart
-          chartType="PieChart"
-          data={chartData}
-          options={options}
-          style={{width: "100%", height: "100%"}}
-        />
-      </Box>
-      <Box
-        position="absolute"
-        top="50%"
-        left="45%"
-        transform="translate(-50%, -50%)"
-        textAlign="center"
-        w="100%"
-        pointerEvents="none">
-        <Text fontSize="22px" fontWeight="600" color="#181D27" lineHeight="1.2">
-          {percentage}%
-        </Text>
+    <Box
+      position="relative"
+      w="100%"
+      h="100%"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      flexDirection="column">
+      <Box position="relative" w={`${chartWidth}px`} h={`${chartHeight}px`}>
+        <svg width={chartWidth} height={chartHeight}>
+          <line
+            x1="0"
+            y1={chartHeight * 0.75}
+            x2={chartWidth}
+            y2={chartHeight * 0.75}
+            stroke="#F3F4F6"
+            strokeWidth="1"
+            strokeDasharray="2,2"
+          />
+          <line
+            x1="0"
+            y1={chartHeight * 0.5}
+            x2={chartWidth}
+            y2={chartHeight * 0.5}
+            stroke="#F3F4F6"
+            strokeWidth="1"
+            strokeDasharray="2,2"
+          />
+          <line
+            x1="0"
+            y1={chartHeight * 0.25}
+            x2={chartWidth}
+            y2={chartHeight * 0.25}
+            stroke="#F3F4F6"
+            strokeWidth="1"
+            strokeDasharray="2,2"
+          />
+
+          <rect
+            x={xPosition}
+            y="0"
+            width={barWidth}
+            height={chartHeight}
+            fill="#F3F4F6"
+            rx="4"
+          />
+
+          <rect
+            x={xPosition}
+            y={chartHeight - barHeight}
+            width={barWidth}
+            height={barHeight}
+            fill={color}
+            rx="4"
+            style={{
+              transition: "height 0.5s ease",
+            }}
+          />
+        </svg>
+
+        <Box
+          position="absolute"
+          top={chartHeight - barHeight - 30}
+          left="50%"
+          transform="translateX(-50%)"
+          textAlign="center"
+          pointerEvents="none">
+          <Text
+            fontSize="22px"
+            fontWeight="600"
+            color="#181D27"
+            lineHeight="1.2">
+            {percentage}%
+          </Text>
+        </Box>
       </Box>
     </Box>
   );

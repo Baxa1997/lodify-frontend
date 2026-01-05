@@ -49,20 +49,20 @@ function UpcomingTabSinglePage() {
         onSelect={(index) => setSelectedTabId(index)}
         className={styles.tabsContainer}>
         <TabList>
+          <Tab>Status Details</Tab>
           <Tab>Trip</Tab>
-          <Tab>History</Tab>
         </TabList>
 
         <TabPanel>
-          <AddTrip
-            tripData={tripData?.response?.[0] || {}}
+          <GeneralTripsTab
+            isLoading={isLoading}
             locationStatus={tripData?.is_same_location}
           />
         </TabPanel>
 
         <TabPanel>
-          <GeneralTripsTab
-            isLoading={isLoading}
+          <AddTrip
+            tripData={tripData?.response?.[0] || {}}
             locationStatus={tripData?.is_same_location}
           />
         </TabPanel>
