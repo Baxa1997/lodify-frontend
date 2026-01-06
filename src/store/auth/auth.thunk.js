@@ -4,6 +4,24 @@ import {authActions} from "./auth.slice";
 import {store} from "..";
 import {companyActions} from "../company/company.slice";
 
+const getCarrierStatus = (companies_id) => {
+  authService
+    .getCarrierStatus({
+      data: {
+        method: "update",
+        object_data: {
+          companies_id: companies_id,
+          setup_skip: true,
+        },
+        table: "company",
+      },
+    })
+    .then((res) => {
+      localStorage.setItem("carrierStatus", res?.data?.response?.setup_skip);
+      console.log("resresres====>", res?.data?.response);
+    });
+};
+
 export const loginAction = createAsyncThunk(
   "auth/login",
   async (data, {dispatch}) => {
@@ -17,7 +35,11 @@ export const loginAction = createAsyncThunk(
           ip_address: data?.ip_address,
         })
       );
-      console.log("datadatadata", data);
+
+      if (Boolean(!res?.user_data?.brokers_id)) {
+        getCarrierStatus(res?.user_data?.companies_id);
+      }
+
       dispatch(companyActions.setCompanyId(res?.user?.company_id));
       dispatch(companyActions.setProjectId(data.project_id));
       dispatch(companyActions.setEnvironmentId(res?.environment_id));

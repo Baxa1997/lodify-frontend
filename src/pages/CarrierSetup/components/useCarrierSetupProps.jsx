@@ -67,23 +67,23 @@ export const useCarrierSetupProps = () => {
       completed: completedSteps.has(4),
       active: currentStep === 4,
     },
-    // {
-    //   id: 6,
-    //   title: "Payment",
-    //   completed: completedSteps.has(6),
-    //   active: currentStep === 6,
-    // },
-    // {
-    //   id: 7,
-    //   title: "Questionnaire",
-    //   completed: completedSteps.has(7),
-    //   active: currentStep === 7,
-    // },
     {
       id: 5,
-      title: "Contract",
+      title: "Payment",
       completed: completedSteps.has(5),
       active: currentStep === 5,
+    },
+    {
+      id: 6,
+      title: "Questionnaire",
+      completed: completedSteps.has(6),
+      active: currentStep === 6,
+    },
+    {
+      id: 7,
+      title: "Contract",
+      completed: completedSteps.has(7),
+      active: currentStep === 7,
     },
   ];
 
@@ -157,24 +157,24 @@ export const useCarrierSetupProps = () => {
       return;
     }
 
-    // if (currentStep === 6 && paymentSubView < 6) {
-    //   setPaymentSubView(paymentSubView + 1);
-    //   return;
-    // }
+    if (currentStep === 5 && paymentSubView < 6) {
+      setPaymentSubView(paymentSubView + 1);
+      return;
+    }
 
-    // if (currentStep === 6 && paymentSubView === 6) {
-    //   setCompletedSteps((prev) => new Set([...prev, currentStep]));
-    //   setCurrentStep(7);
-    //   setPaymentSubView(1);
-    //   return;
-    // }
+    if (currentStep === 5 && paymentSubView === 6) {
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
+      setCurrentStep(6);
+      setPaymentSubView(1);
+      return;
+    }
 
-    if (currentStep === 5 && contractSubView === 1) {
+    if (currentStep === 7 && contractSubView === 1) {
       setContractSubView(2);
       return;
     }
 
-    if (currentStep === 5 && contractSubView === 2) {
+    if (currentStep === 7 && contractSubView === 2) {
       setIsConfirmModalOpen(true);
       return;
     }
@@ -196,12 +196,12 @@ export const useCarrierSetupProps = () => {
       return;
     }
 
-    // if (currentStep === 6 && paymentSubView > 1) {
-    //   setPaymentSubView(paymentSubView - 1);
-    //   return;
-    // }
+    if (currentStep === 5 && paymentSubView > 1) {
+      setPaymentSubView(paymentSubView - 1);
+      return;
+    }
 
-    if (currentStep === 5 && contractSubView === 2) {
+    if (currentStep === 7 && contractSubView === 2) {
       setContractSubView(1);
       return;
     }
@@ -215,7 +215,7 @@ export const useCarrierSetupProps = () => {
       if (currentStep === 4) {
         setInsuranceSubView(1);
       }
-      if (currentStep === 5) {
+      if (currentStep === 7) {
         setContractSubView(1);
       }
     }

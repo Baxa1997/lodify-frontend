@@ -38,7 +38,7 @@ const Login = () => {
   const [connectionCheck, setConnectionCheck] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [forgotPasswordStep, setForgotPasswordStep] = useState("login"); // login, otp, password, success
+  const [forgotPasswordStep, setForgotPasswordStep] = useState("login");
   const [userEmail, setUserEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [smsId, setSmsId] = useState("");
@@ -376,6 +376,7 @@ const Login = () => {
     );
 
     dispatch(authActions.setStatus(computedEnv?.access_type));
+
     dispatch(
       loginAction({
         ...data,
@@ -498,7 +499,7 @@ const Login = () => {
           project_id: "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1",
         }
       );
-      console.log("responseresponse====>", response);
+
       if (response?.sms_id) {
         setSmsId(response?.sms_id);
         dispatch(showAlert("OTP sent to your email", "success"));
@@ -579,7 +580,7 @@ const Login = () => {
     }
 
     setIsResettingPassword(true);
-    console.log("emailGuidemailGuid====>", emailGuid);
+
     try {
       const login = forgotPasswordForm.getValues("login");
       await authService.resetPassword({
@@ -587,10 +588,8 @@ const Login = () => {
         guid: emailGuid,
       });
 
-      // Show success step
       setForgotPasswordStep("success");
 
-      // Navigate back to login after 3 seconds
       setTimeout(() => {
         setShowForgotPassword(false);
         setForgotPasswordStep("login");
@@ -735,14 +734,6 @@ const Login = () => {
 
           {forgotPasswordStep === "otp" && (
             <Box>
-              {/* <Text
-                fontSize="18px"
-                fontWeight="600"
-                color="#111827"
-                mb="0px"
-                textAlign="center">
-                Check your email
-              </Text> */}
               <Text
                 fontSize="14px"
                 color="#6B7280"

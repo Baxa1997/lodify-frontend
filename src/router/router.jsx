@@ -56,7 +56,9 @@ const PublicRoute = ({children}) => {
   const isAuth = useSelector((state) => state?.auth?.isAuth);
   const location = useLocation();
 
-  if (isAuth) {
+  if (isAuth && Boolean(!localStorage.getItem("carrierStatus"))) {
+    return <Navigate to="/carrier-setup?carrier_setup=true" replace />;
+  } else if (isAuth) {
     const from = location.state?.from?.pathname || "/admin/dashboard";
     return <Navigate to={from} replace />;
   }

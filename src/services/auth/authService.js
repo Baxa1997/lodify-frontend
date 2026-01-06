@@ -83,6 +83,9 @@ const authService = {
         },
       }
     ),
+
+  getCarrierStatus: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-integrations", data),
 };
 
 export default authService;

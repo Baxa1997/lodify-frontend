@@ -26,6 +26,8 @@ const SidebarFooter = ({sidebarOpen = true}) => {
     dispatch(authActions.logout());
     localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("carrierStatus");
+    localStorage.removeItem("auth");
     navigate("/login", {replace: true});
   };
 

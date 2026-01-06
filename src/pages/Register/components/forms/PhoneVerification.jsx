@@ -19,12 +19,11 @@ const PhoneVerification = ({
   const handleSendPhoneCode = async () => {
     setIsLoading(true);
     try {
-      // Skip Firebase verification and proceed directly to OTP entry
       await new Promise((resolve) => setTimeout(resolve, 500));
       setCurrentSubStep("phone-verify");
     } catch (error) {
       console.error("Failed to send phone code:", error);
-      // Even if there's an error, proceed to OTP entry
+
       setCurrentSubStep("phone-verify");
     } finally {
       setIsLoading(false);
@@ -35,14 +34,10 @@ const PhoneVerification = ({
     if (phoneCode.length === 4) {
       setIsLoading(true);
       try {
-        // Skip Firebase verification - always accept any 4-digit code or default 1234
         await new Promise((resolve) => setTimeout(resolve, 500));
-        console.log("Phone verification skipped - proceeding to next step");
-        // After phone verification, move to email entry
         setCurrentSubStep("email");
       } catch (error) {
         console.error("Failed to verify phone code:", error);
-        // Even if there's an error, proceed to next step
         setCurrentSubStep("email");
       } finally {
         setIsLoading(false);
