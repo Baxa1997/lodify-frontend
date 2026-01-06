@@ -81,7 +81,6 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         );
       }
 
-      // Verify OTP using Firebase via authService
       const response = await authService.verifyPhoneCode("verify_otp", {
         otp: otpCode,
         session_info: verificationId,
@@ -100,7 +99,6 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
           position: "top-right",
         });
 
-        // Call success callback to navigate to next sub-view
         if (onVerifySuccess) {
           onVerifySuccess();
         }
@@ -131,27 +129,71 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         isClosable: true,
         position: "top-right",
       });
-      // Reset OTP input on error
       setOtpCode("");
     } finally {
       setIsVerifying(false);
     }
   };
 
+  // Normalize phone number to Firebase format (+1XXXXXXXXXX)
+  const normalizePhoneNumber = (phone) => {
+    if (!phone) return null;
+
+    // Remove all non-digit characters
+    const digitsOnly = phone.replace(/\D/g, "");
+
+    // If already starts with +, check if it has country code
+    if (phone.trim().startsWith("+")) {
+      // Extract digits after +
+      const afterPlus = phone.replace(/[^\d]/g, "");
+      // If starts with 1 and has 11 digits, it's already +1XXXXXXXXXX
+      if (afterPlus.startsWith("1") && afterPlus.length === 11) {
+        return `+${afterPlus}`;
+      }
+      // If has 10 digits after +, assume it's missing country code, add +1
+      if (afterPlus.length === 10) {
+        return `+1${afterPlus}`;
+      }
+      // Otherwise return as is if it's valid
+      if (afterPlus.length >= 10 && afterPlus.length <= 15) {
+        return `+${afterPlus}`;
+      }
+    }
+
+    // If no +, check if it's 10 digits (US number without country code)
+    if (digitsOnly.length === 10) {
+      return `+1${digitsOnly}`;
+    }
+
+    // If it's 11 digits and starts with 1, add +
+    if (digitsOnly.length === 11 && digitsOnly.startsWith("1")) {
+      return `+${digitsOnly}`;
+    }
+
+    // If it's already in correct format, return as is
+    if (phone.trim().startsWith("+") && /^\+\d{10,15}$/.test(phone.trim())) {
+      return phone.trim();
+    }
+
+    return null;
+  };
+
   const handleResend = async () => {
     setIsResending(true);
     try {
-      const phone =
+      const rawPhone =
         watch("payment.verify_phone") || watch("identity.telephone");
 
-      if (!phone || phone.trim() === "") {
+      if (!rawPhone || rawPhone.trim() === "") {
         throw new Error(
           "Missing phone information. Please go back and try again."
         );
       }
 
-      // Validate phone format
-      if (!/^\+\d{10,15}$/.test(phone.trim())) {
+      // Normalize phone number
+      const phone = normalizePhoneNumber(rawPhone);
+
+      if (!phone || !/^\+\d{10,15}$/.test(phone)) {
         throw new Error("Invalid phone number format.");
       }
 
@@ -160,19 +202,18 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         throw new Error("reCAPTCHA not ready yet. Please try again.");
       }
 
-      // Resend OTP using Firebase
+      // Use normalized phone number
       const confirmationResult = await signInWithPhoneNumber(
         auth,
-        phone.trim(),
+        phone,
         appVerifier
       );
 
-      // Store new confirmation result and verification ID
       window.confirmationResultPayment = confirmationResult;
       const verificationId = confirmationResult?.verificationId;
 
       setValue("payment.verify_verification_id", verificationId);
-      setValue("payment.verify_phone", phone.trim());
+      setValue("payment.verify_phone", phone);
 
       toast({
         title: "Code Resent Successfully!",
@@ -183,7 +224,6 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         position: "top-right",
       });
 
-      // Reset OTP input
       setOtpCode("");
     } catch (error) {
       console.error("Failed to resend code:", error);
@@ -219,7 +259,7 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         Enter the code we just sent to the mobile number you entered.
       </Text>
 
-      <Box display="flex" justifyContent="center" mb="24px">
+      <Box display="flex" justifyContent="center" mb="24px" width="100%">
         <Controller
           control={control}
           name="payment.otp_code"
@@ -231,12 +271,12 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
                 field.onChange(value);
               }}
               numInputs={6}
-              renderSeparator={<span style={{width: "0px"}} />}
+              renderSeparator={<span style={{width: "8px"}} />}
               renderInput={(props) => (
                 <input
                   {...props}
                   style={{
-                    width: "70px",
+                    width: "56px",
                     height: "70px",
                     fontSize: "24px",
                     fontWeight: "600",
@@ -280,6 +320,7 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
                 justifyContent: "center",
                 alignItems: "center",
                 gap: "8px",
+                width: "100%",
               }}
             />
           )}
@@ -292,7 +333,6 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         </Text>
       )}
 
-      {/* reCAPTCHA container for resend - must exist in DOM */}
       <div
         id="recaptcha-container-otp-payment"
         style={{

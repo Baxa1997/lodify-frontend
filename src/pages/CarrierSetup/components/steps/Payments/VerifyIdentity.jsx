@@ -56,10 +56,42 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
     };
   }, [isLocal, toast]);
 
+  const normalizePhoneNumber = (phone) => {
+    if (!phone) return null;
+
+    const digitsOnly = phone.replace(/\D/g, "");
+
+    if (phone.trim().startsWith("+")) {
+      const afterPlus = phone.replace(/[^\d]/g, "");
+      if (afterPlus.startsWith("1") && afterPlus.length === 11) {
+        return `+${afterPlus}`;
+      }
+      if (afterPlus.length === 10) {
+        return `+1${afterPlus}`;
+      }
+      if (afterPlus.length >= 10 && afterPlus.length <= 15) {
+        return `+${afterPlus}`;
+      }
+    }
+
+    if (digitsOnly.length === 10) {
+      return `+1${digitsOnly}`;
+    }
+
+    if (digitsOnly.length === 11 && digitsOnly.startsWith("1")) {
+      return `+${digitsOnly}`;
+    }
+
+    if (phone.trim().startsWith("+") && /^\+\d{10,15}$/.test(phone.trim())) {
+      return phone.trim();
+    }
+
+    return null;
+  };
+
   const handleSendOtp = async () => {
     const phone = watch("identity.telephone");
 
-    // Validate phone number
     if (!phone || phone.trim() === "") {
       toast({
         title: "Missing Phone Number",
@@ -72,12 +104,13 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
       return;
     }
 
-    // Validate phone format
-    if (!/^\+\d{10,15}$/.test(phone.trim())) {
+    const normalizedPhone = normalizePhoneNumber(phone);
+
+    if (!normalizedPhone || !/^\+\d{10,15}$/.test(normalizedPhone)) {
       toast({
         title: "Invalid Phone Number",
         description:
-          "Please enter a valid phone number with + and country code.",
+          "Please enter a valid phone number. We'll automatically format it with country code.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -93,19 +126,17 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
         throw new Error("reCAPTCHA not ready yet. Please try again.");
       }
 
-      // Send OTP using Firebase
       const confirmationResult = await signInWithPhoneNumber(
         auth,
-        phone.trim(),
+        normalizedPhone,
         appVerifier
       );
 
-      // Store confirmation result and verification ID
       window.confirmationResultPayment = confirmationResult;
       const verificationId = confirmationResult?.verificationId;
 
       setValue("payment.verify_verification_id", verificationId);
-      setValue("payment.verify_phone", phone.trim());
+      setValue("payment.verify_phone", normalizedPhone);
 
       toast({
         title: "SMS sent!",
@@ -116,7 +147,6 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
         position: "top-right",
       });
 
-      // Navigate to OTP confirmation page
       if (onSendOtp) {
         onSendOtp();
       }
@@ -192,7 +222,6 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
           We&apos;ll send a verification code to your phone number.
         </Text>
 
-        {/* reCAPTCHA container - must exist in DOM */}
         <div
           id="recaptcha-container-payment"
           style={{

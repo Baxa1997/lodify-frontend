@@ -3,12 +3,6 @@ import {Box, Text, Input} from "@chakra-ui/react";
 import {Controller} from "react-hook-form";
 
 const ConfirmCompany = ({control}) => {
-  const defaultValues = {
-    factoring_company_name: "TBK BANK D/B/A TRIUMPH",
-    telephone: "(214) 513-9600",
-    email: "payments@tbcap.com",
-  };
-
   return (
     <Box>
       <Text fontSize="20px" fontWeight="bold" color="#1e293b" mb="8px">
@@ -37,11 +31,10 @@ const ConfirmCompany = ({control}) => {
             <Controller
               control={control}
               name="factoring_company_name"
-              defaultValue={defaultValues.factoring_company_name}
               render={({field}) => (
                 <Input
                   {...field}
-                  value={field.value || defaultValues.factoring_company_name}
+                  value={field.value}
                   isReadOnly
                   bg="#F8F9FA"
                   border="1px solid #D5D7DA"
@@ -69,11 +62,10 @@ const ConfirmCompany = ({control}) => {
             <Controller
               control={control}
               name="factoring_telephone"
-              defaultValue={defaultValues.telephone}
               render={({field}) => (
                 <Input
                   {...field}
-                  value={field.value || defaultValues.telephone}
+                  value={field.value}
                   isReadOnly
                   bg="#F8F9FA"
                   border="1px solid #D5D7DA"
@@ -101,11 +93,10 @@ const ConfirmCompany = ({control}) => {
             <Controller
               control={control}
               name="factoring_email"
-              defaultValue={defaultValues.email}
               render={({field}) => (
                 <Input
                   {...field}
-                  value={field.value || defaultValues.email}
+                  value={field.value}
                   type="email"
                   isReadOnly
                   bg="#F8F9FA"
