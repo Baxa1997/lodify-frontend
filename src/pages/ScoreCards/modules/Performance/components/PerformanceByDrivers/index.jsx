@@ -31,6 +31,7 @@ export const PerformanceByDrivers = ({
       onTime: driver?.on_time_percentage,
       verificationScore: driver?.verification_score,
       legal_name: driver?.legal_name,
+      loads: driver?.loads,
     }));
 
   const headData = [
@@ -179,9 +180,12 @@ export const PerformanceByDrivers = ({
         width: "120px",
       },
       render: (value) => (
-        <Text fontSize="14px" fontWeight="400" color="#374151">
-          {value}
-        </Text>
+        console.log("valueeeeeeeeeee", value),
+        (
+          <Text fontSize="14px" fontWeight="400" color="#374151">
+            {value}
+          </Text>
+        )
       ),
     },
   ]?.filter((column) => (!isBroker ? column.key !== "legal_name" : true));
