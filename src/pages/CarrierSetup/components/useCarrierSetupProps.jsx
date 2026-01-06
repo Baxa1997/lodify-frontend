@@ -377,7 +377,14 @@ export const useCarrierSetupProps = () => {
     }
   };
 
-  // Map carrierData to nested form structure
+  const handlePaymentOtpSent = () => {
+    setPaymentSubView(4);
+  };
+
+  const handlePaymentOtpVerified = () => {
+    setPaymentSubView(5);
+  };
+
   const mapCarrierDataToForm = (data) => {
     if (!data) return {};
 
@@ -451,52 +458,43 @@ export const useCarrierSetupProps = () => {
     setIsConnecting(true);
 
     try {
-      // Submit all step data in sequence
       console.log("Submitting all step data...");
 
-      // 1. Submit Identity data
       const identitySuccess = await handleIdentitySubmit();
       if (!identitySuccess) {
         throw new Error("Failed to submit identity data");
       }
 
-      // 2. Submit Operations data
       const operationsSuccess = await handleOperationsSubmit();
       if (!operationsSuccess) {
         throw new Error("Failed to submit operations data");
       }
 
-      // 3. Submit Certifications data
       const certificationsSuccess = await handleCertificationsSubmit();
       if (!certificationsSuccess) {
         throw new Error("Failed to submit certifications data");
       }
 
-      // 4. Submit Insurance data
       const insuranceSuccess = await handleInsuranceSubmit();
       if (!insuranceSuccess) {
         throw new Error("Failed to submit insurance data");
       }
 
-      // 5. Submit Payment data
       const paymentSuccess = await handlePaymentSubmit();
       if (!paymentSuccess) {
         throw new Error("Failed to submit payment data");
       }
 
-      // 6. Submit Questionnaire data
       const questionnaireSuccess = await handleQuestionnaireSubmit();
       if (!questionnaireSuccess) {
         throw new Error("Failed to submit questionnaire data");
       }
 
-      // 7. Submit Contract data
       const contractSuccess = await handleContractSubmit();
       if (!contractSuccess) {
         throw new Error("Failed to submit contract data");
       }
 
-      // Finally, add the carrier connection
       const payload = {
         joined_at: new Date().toISOString(),
         brokers_id: brokersId,
@@ -532,6 +530,7 @@ export const useCarrierSetupProps = () => {
     currentStep,
     control,
     watch,
+    setValue,
     steps,
     handleStepChange,
     handleNext,
@@ -545,6 +544,8 @@ export const useCarrierSetupProps = () => {
     isConnecting,
     handleConfirmAddCarrier,
     handleCancelAddCarrier,
+    handlePaymentOtpSent,
+    handlePaymentOtpVerified,
     carrierData,
     id,
     isEditable,

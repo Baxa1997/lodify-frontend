@@ -18,6 +18,8 @@ import styles from "../CarrierSetup.module.scss";
 const SetupMain = ({
   currentStep,
   control,
+  watch,
+  setValue,
   onNext = () => {},
   onBack = () => {},
   identitySubView = 1,
@@ -29,6 +31,8 @@ const SetupMain = ({
   isConnecting = false,
   onConfirmAddCarrier = () => {},
   onCancelAddCarrier = () => {},
+  onPaymentOtpSent = () => {},
+  onPaymentOtpVerified = () => {},
   isEditable = false,
   canSkipSetup = false,
   onSkipSetup = () => {},
@@ -65,6 +69,8 @@ const SetupMain = ({
         <StepRenderer
           currentStep={currentStep}
           control={control}
+          watch={watch}
+          setValue={setValue}
           onNext={onNext}
           onBack={onBack}
           identitySubView={identitySubView}
@@ -72,6 +78,8 @@ const SetupMain = ({
           paymentSubView={paymentSubView}
           contractSubView={contractSubView}
           isEditable={isEditable}
+          onPaymentOtpSent={onPaymentOtpSent}
+          onPaymentOtpVerified={onPaymentOtpVerified}
         />
 
         <Flex
@@ -85,20 +93,6 @@ const SetupMain = ({
           justifyContent="space-between"
           alignItems="center">
           <Flex alignItems="center" gap="12px">
-            {canSkipSetup && (
-              <Button
-                variant="ghost"
-                color="#6B7280"
-                fontSize="14px"
-                fontWeight="500"
-                px="16px"
-                py="6px"
-                borderRadius="8px"
-                _hover={{bg: "#F9FAFB", color: "#374151"}}
-                onClick={onSkipSetup}>
-                Skip setup
-              </Button>
-            )}
             <Flex
               alignItems="center"
               gap="8px"
@@ -117,18 +111,21 @@ const SetupMain = ({
           </Text>
 
           <Flex gap="12px">
-            <Button
-              variant="outline"
-              borderColor="#D1D5DB"
-              color="#374151"
-              fontSize="14px"
-              fontWeight="500"
-              px="20px"
-              py="6px"
-              borderRadius="8px"
-              _hover={{bg: "#F9FAFB"}}>
-              No, Edit
-            </Button>
+            {canSkipSetup && (
+              <Button
+                variant="outline"
+                borderColor="#D1D5DB"
+                color="#374151"
+                fontSize="14px"
+                fontWeight="500"
+                px="20px"
+                py="6px"
+                borderRadius="8px"
+                _hover={{bg: "#F9FAFB"}}
+                onClick={onSkipSetup}>
+                Skip setup
+              </Button>
+            )}
             <Button
               bg="#EF6820"
               color="white"

@@ -8,6 +8,8 @@ const CarrierSetup = () => {
   const {
     steps,
     control,
+    watch,
+    setValue,
     currentStep,
     isConnecting,
     paymentSubView,
@@ -21,6 +23,8 @@ const CarrierSetup = () => {
     handleStepChange,
     handleConfirmAddCarrier,
     handleCancelAddCarrier,
+    handlePaymentOtpSent,
+    handlePaymentOtpVerified,
     isEditable,
     canSkipSetup,
     handleSkipSetup,
@@ -34,6 +38,8 @@ const CarrierSetup = () => {
       />
       <SetupMain
         control={control}
+        watch={watch}
+        setValue={setValue}
         currentStep={currentStep}
         onNext={handleNext}
         onBack={handleBack}
@@ -46,6 +52,8 @@ const CarrierSetup = () => {
         isConnecting={isConnecting}
         onConfirmAddCarrier={handleConfirmAddCarrier}
         onCancelAddCarrier={handleCancelAddCarrier}
+        onPaymentOtpSent={handlePaymentOtpSent}
+        onPaymentOtpVerified={handlePaymentOtpVerified}
         isEditable={isEditable}
         canSkipSetup={canSkipSetup}
         onSkipSetup={handleSkipSetup}

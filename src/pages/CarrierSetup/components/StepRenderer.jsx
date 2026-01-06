@@ -11,11 +11,15 @@ import ContractStep from "./steps/ContractStep";
 const StepRenderer = ({
   currentStep,
   control,
+  watch,
+  setValue,
   identitySubView = 1,
   insuranceSubView = 1,
   paymentSubView = 1,
   contractSubView = 1,
   isEditable = false,
+  onPaymentOtpSent,
+  onPaymentOtpVerified,
 }) => {
   switch (currentStep) {
     case 1:
@@ -44,8 +48,12 @@ const StepRenderer = ({
       return (
         <PaymentStep
           control={control}
+          watch={watch}
+          setValue={setValue}
           subView={paymentSubView}
           isEditable={isEditable}
+          onOtpSent={onPaymentOtpSent}
+          onOtpVerified={onPaymentOtpVerified}
         />
       );
     case 6:

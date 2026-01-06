@@ -8,7 +8,14 @@ import OtpPhoneConfirm from "./Payments/OtpPhoneConfirm";
 import EnterCompanyFactoring from "./Payments/EnterCompanyFactoring";
 import ConfirmCompanyFactoring from "./Payments/ConfirmCompanyFactoring";
 
-const PaymentStep = ({control, subView = 1}) => {
+const PaymentStep = ({
+  control,
+  watch,
+  setValue,
+  subView = 1,
+  onOtpSent,
+  onOtpVerified,
+}) => {
   const renderPaymentView = () => {
     switch (subView) {
       case 1:
@@ -26,13 +33,23 @@ const PaymentStep = ({control, subView = 1}) => {
       case 3:
         return (
           <Box className={styles.stepContentPayment}>
-            <VerifyIdentity control={control} />
+            <VerifyIdentity
+              control={control}
+              watch={watch}
+              setValue={setValue}
+              onSendOtp={onOtpSent}
+            />
           </Box>
         );
       case 4:
         return (
           <Box className={styles.stepContentPayment}>
-            <OtpPhoneConfirm control={control} />
+            <OtpPhoneConfirm
+              control={control}
+              watch={watch}
+              setValue={setValue}
+              onVerifySuccess={onOtpVerified}
+            />
           </Box>
         );
       case 5:

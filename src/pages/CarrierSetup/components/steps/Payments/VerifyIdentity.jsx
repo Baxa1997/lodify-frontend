@@ -1,10 +1,81 @@
-import React from "react";
-import {Box, Text, Input} from "@chakra-ui/react";
+import React, {useState} from "react";
+import {Box, Text, Input, Button, useToast} from "@chakra-ui/react";
 import {Controller} from "react-hook-form";
 import {PhoneInput} from "react-international-phone";
 import "react-international-phone/style.css";
+import authService from "../../../../../services/auth/authService";
 
-const VerifyIdentity = ({control}) => {
+const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+
+  const handleSendOtp = async () => {
+    const phone = watch("payment.verify_mobile_phone");
+    const emailOrPhone = watch("payment.verify_email_or_phone");
+
+    if (!phone || !emailOrPhone) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both mobile phone and email/phone number.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const isEmail = emailOrPhone.includes("@");
+
+      const response = await authService.sendCode(
+        {
+          type: isEmail ? "MAILCHIMP" : "SMS",
+          recipient: isEmail ? emailOrPhone : phone,
+          sms_template_id: "4b73c53e-df0b-4f24-8d24-e7f03d858cda",
+          field_slug: "text",
+          variables: {},
+        },
+        {
+          project_id: "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1",
+        }
+      );
+
+      if (response?.data?.sms_id) {
+        setValue("payment.verify_sms_id", response.data.sms_id);
+
+        toast({
+          title: "Code Sent Successfully!",
+          description: `Verification code has been sent to your ${
+            isEmail ? "email" : "phone"
+          }.`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+
+        if (onSendOtp) {
+          onSendOtp();
+        }
+      }
+    } catch (error) {
+      console.error("Failed to send OTP:", error);
+      toast({
+        title: "Failed to Send Code",
+        description:
+          error?.response?.data?.message || "Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Box>
       <Text fontSize="20px" fontWeight="bold" color="#1e293b">
@@ -13,7 +84,7 @@ const VerifyIdentity = ({control}) => {
       </Text>
 
       <Text fontSize="16px" color="#414651" mb="30px" mt="8px">
-        Enter the code we just sent to the mobile number you entered.
+        Enter your mobile number to receive a verification code.
       </Text>
 
       <Box display="flex" flexDirection="column" gap="10px">
@@ -32,7 +103,7 @@ const VerifyIdentity = ({control}) => {
           </Text>
           <Controller
             control={control}
-            name="verify_mobile_phone"
+            name="payment.verify_mobile_phone"
             render={({field}) => (
               <Box
                 display="flex"
@@ -112,7 +183,7 @@ const VerifyIdentity = ({control}) => {
           </Text>
           <Controller
             control={control}
-            name="verify_email_or_phone"
+            name="payment.verify_email_or_phone"
             render={({field}) => (
               <Input
                 {...field}
@@ -132,9 +203,19 @@ const VerifyIdentity = ({control}) => {
           />
         </Box>
 
-        <Text fontSize="14px" color="#414651">
+        <Text fontSize="14px" color="#414651" mb="16px">
           We&apos;ll send a one-time code to what you enter.
         </Text>
+
+        <Button
+          colorScheme="orange"
+          size="lg"
+          width="100%"
+          onClick={handleSendOtp}
+          isLoading={isLoading}
+          loadingText="Sending code...">
+          Send Verification Code
+        </Button>
       </Box>
     </Box>
   );
