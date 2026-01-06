@@ -88,7 +88,7 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
       });
       console.log({response});
       // Check HTTP status code for success (200-299 range)
-      if (response?.status >= 200 && response?.status < 300) {
+      if (response !== "failed to verify") {
         setValue("payment.phone_verified", true);
 
         toast({
