@@ -8,15 +8,15 @@ const getCarrierStatus = (companies_id) => {
   authService
     .getCarrierStatus({
       data: {
-        method: "update",
+        method: "get",
         object_data: {
           companies_id: companies_id,
-          setup_skip: true,
         },
         table: "company",
       },
     })
     .then((res) => {
+      console.log("resssssss==========/??????????", res);
       localStorage.setItem("carrierStatus", res?.data?.response?.setup_skip);
     });
 };
@@ -36,6 +36,7 @@ export const loginAction = createAsyncThunk(
       );
 
       if (Boolean(!res?.user_data?.brokers_id)) {
+        console.log("resssssss==========", res);
         getCarrierStatus(res?.user_data?.companies_id);
       }
 

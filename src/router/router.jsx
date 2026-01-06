@@ -59,7 +59,7 @@ const PublicRoute = ({children}) => {
   );
   const location = useLocation();
 
-  if (isAuth && Boolean(!localStorage.getItem("carrierStatus") === "true")) {
+  if (isAuth && Boolean(localStorage.getItem("carrierStatus") !== "true")) {
     return (
       <Navigate
         to={`/carrier-setup?id=${companiesId}&carrier_setup=true`}

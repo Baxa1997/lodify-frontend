@@ -10,49 +10,56 @@ import {
   ModalCloseButton,
   Button,
   Flex,
-  Input,
 } from "@chakra-ui/react";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import {useWatch} from "react-hook-form";
+import HFPhoneInput from "@components/HFPhoneInput";
 
 const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
   const values = useWatch({control});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentContactType, setCurrentContactType] = useState("");
-  const [modalData, setModalData] = useState({
+  const [originalValues, setOriginalValues] = useState({
     name: "",
     email: "",
     phone: "",
   });
-
+  console.log("values==========", values);
   const handleOpenModal = (contactType) => {
     setCurrentContactType(contactType);
 
     const prefix = contactType.toLowerCase().replace(" ", "_");
-    setModalData({
+
+    const original = {
       name: values?.contact_information?.[`${prefix}_name`] || "",
       email: values?.contact_information?.[`${prefix}_email`] || "",
       phone: values?.contact_information?.[`${prefix}_phone`] || "",
-    });
+    };
+    setOriginalValues(original);
 
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
+    const prefix = currentContactType.toLowerCase().replace(" ", "_");
+    setValue(`contact_information.${prefix}_name`, originalValues.name);
+    setValue(`contact_information.${prefix}_email`, originalValues.email);
+    setValue(`contact_information.${prefix}_phone`, originalValues.phone);
+
     setIsModalOpen(false);
     setCurrentContactType("");
-    setModalData({name: "", email: "", phone: ""});
+    setOriginalValues({name: "", email: "", phone: ""});
   };
 
   const handleSaveContact = () => {
-    const prefix = currentContactType.toLowerCase().replace(" ", "_");
+    setIsModalOpen(false);
+    setCurrentContactType("");
+    setOriginalValues({name: "", email: "", phone: ""});
+  };
 
-    setValue(`contact_information.${prefix}_name`, modalData.name);
-    setValue(`contact_information.${prefix}_email`, modalData.email);
-    setValue(`contact_information.${prefix}_phone`, modalData.phone);
-
-    handleCloseModal();
+  const getCurrentFieldPrefix = () => {
+    return currentContactType.toLowerCase().replace(" ", "_");
   };
 
   const getContactData = (contactType) => {
@@ -119,78 +126,56 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
             <ModalCloseButton />
             <ModalBody pb={6}>
               <Box mb={4}>
-                <Text fontSize="14px" fontWeight="500" color="#414651" mb="6px">
-                  Full name{" "}
-                  <Text as="span" color="red.500">
-                    *
-                  </Text>
-                </Text>
-                <Input
+                <HFTextField
+                  label="Full name"
+                  required
+                  control={control}
+                  name={`contact_information.${getCurrentFieldPrefix()}_name`}
                   placeholder="Enter full name"
-                  value={modalData.name}
-                  onChange={(e) =>
-                    setModalData({...modalData, name: e.target.value})
-                  }
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  height="40px"
-                  _focus={{
-                    borderColor: "#3b82f6",
-                    boxShadow: "0 0 0 1px #3b82f6",
+                  style={{
+                    border: "1px solid #D5D7DA",
+                  }}
+                  labelStyle={{
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#414651",
                   }}
                 />
               </Box>
 
               <Box mb={4}>
-                <Text fontSize="14px" fontWeight="500" color="#414651" mb="6px">
-                  Email Address{" "}
-                  <Text as="span" color="red.500">
-                    *
-                  </Text>
-                </Text>
-                <Input
-                  type="email"
+                <HFTextField
+                  label="Email Address"
+                  required
+                  control={control}
+                  name={`contact_information.${getCurrentFieldPrefix()}_email`}
                   placeholder="name@example.com"
-                  value={modalData.email}
-                  onChange={(e) =>
-                    setModalData({...modalData, email: e.target.value})
-                  }
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  height="40px"
-                  _focus={{
-                    borderColor: "#3b82f6",
-                    boxShadow: "0 0 0 1px #3b82f6",
+                  type="email"
+                  style={{
+                    border: "1px solid #D5D7DA",
+                  }}
+                  labelStyle={{
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#414651",
                   }}
                 />
               </Box>
 
               <Box mb={6}>
-                <Text fontSize="14px" fontWeight="500" color="#414651" mb="6px">
-                  Phone number
-                </Text>
-                <Input
-                  type="tel"
+                <HFPhoneInput
+                  label="Phone number"
+                  control={control}
+                  name={`contact_information.${getCurrentFieldPrefix()}_phone`}
                   placeholder="+1"
-                  value={modalData.phone}
-                  onChange={(e) =>
-                    setModalData({...modalData, phone: e.target.value})
-                  }
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  height="40px"
-                  _focus={{
-                    borderColor: "#3b82f6",
-                    boxShadow: "0 0 0 1px #3b82f6",
+                  type="tel"
+                  style={{
+                    border: "1px solid #D5D7DA",
+                  }}
+                  labelStyle={{
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#414651",
                   }}
                 />
               </Box>
@@ -218,8 +203,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
                   py="6px"
                   borderRadius="8px"
                   _hover={{bg: "#DC5A1A"}}
-                  onClick={handleSaveContact}
-                  isDisabled={!modalData.name || !modalData.email}>
+                  onClick={handleSaveContact}>
                   Save
                 </Button>
               </Flex>

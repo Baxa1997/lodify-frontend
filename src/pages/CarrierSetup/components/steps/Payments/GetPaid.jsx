@@ -12,20 +12,20 @@ import {Controller} from "react-hook-form";
 
 const GetPaid = ({control}) => {
   const paymentOptions = [
-    {
-      value: "quickpay",
-      title: "QuickPay- 2",
-      details: "2 Days, 3% Free",
-      showAch: true,
-      showInfo: true,
-    },
-    {
-      value: "standard",
-      title: "Standard Pay",
-      details: "30 Days, 0% Free",
-      showAch: true,
-      showInfo: false,
-    },
+    // {
+    //   value: "quickpay",
+    //   title: "QuickPay- 2",
+    //   details: "2 Days, 3% Free",
+    //   showAch: true,
+    //   showInfo: true,
+    // },
+    // {
+    //   value: "standard",
+    //   title: "Standard Pay",
+    //   details: "30 Days, 0% Free",
+    //   showAch: true,
+    //   showInfo: false,
+    // },
     {
       value: "factoring",
       title: "Factoring",

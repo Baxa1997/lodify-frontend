@@ -37,11 +37,9 @@ export const useCarrierSetupProps = () => {
   const [isInsuranceLoading, setIsInsuranceLoading] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  
-  // Ref to prevent infinite loops in field syncing
+
   const isSyncingRef = useRef(false);
 
-  // Step-specific API handlers
   const [stepLoadingStates, setStepLoadingStates] = useState({
     identity: false,
     operations: false,
@@ -394,15 +392,25 @@ export const useCarrierSetupProps = () => {
   useEffect(() => {
     if (currentStep === 5 && paymentSubView === 3) {
       const formValues = watch();
-      
+
       // Pre-fill email from identity if payment email is empty
-      if (formValues.identity?.email && !formValues.payment?.verify_email_or_phone) {
-        setValue('payment.verify_email_or_phone', formValues.identity.email, {shouldValidate: false});
+      if (
+        formValues.identity?.email &&
+        !formValues.payment?.verify_email_or_phone
+      ) {
+        setValue("payment.verify_email_or_phone", formValues.identity.email, {
+          shouldValidate: false,
+        });
       }
-      
+
       // Pre-fill phone from identity if payment phone is empty
-      if (formValues.identity?.telephone && !formValues.payment?.verify_mobile_phone) {
-        setValue('payment.verify_mobile_phone', formValues.identity.telephone, {shouldValidate: false});
+      if (
+        formValues.identity?.telephone &&
+        !formValues.payment?.verify_mobile_phone
+      ) {
+        setValue("payment.verify_mobile_phone", formValues.identity.telephone, {
+          shouldValidate: false,
+        });
       }
     }
   }, [currentStep, paymentSubView, watch, setValue]);
@@ -411,6 +419,7 @@ export const useCarrierSetupProps = () => {
     if (!data) return {};
 
     return {
+      ...data,
       identity: {
         legal_name: data.legal_name || "",
         us_dot_number: data.us_dot_number || "",
@@ -490,41 +499,49 @@ export const useCarrierSetupProps = () => {
     if (isSyncingRef.current) return;
 
     const subscription = watch((formValues, {name, type}) => {
-      if (!name || type !== 'change') return;
+      if (!name || type !== "change") return;
       if (isSyncingRef.current) return;
 
       isSyncingRef.current = true;
 
       try {
         // Sync email from identity to payment
-        if (name === 'identity.email') {
+        if (name === "identity.email") {
           const email = formValues.identity?.email;
           if (email && !formValues.payment?.verify_email_or_phone) {
-            setValue('payment.verify_email_or_phone', email, {shouldValidate: false});
+            setValue("payment.verify_email_or_phone", email, {
+              shouldValidate: false,
+            });
           }
         }
 
         // Sync telephone from identity to payment
-        if (name === 'identity.telephone') {
+        if (name === "identity.telephone") {
           const phone = formValues.identity?.telephone;
           if (phone && !formValues.payment?.verify_mobile_phone) {
-            setValue('payment.verify_mobile_phone', phone, {shouldValidate: false});
+            setValue("payment.verify_mobile_phone", phone, {
+              shouldValidate: false,
+            });
           }
         }
 
         // Sync email from insurance to payment (if needed)
-        if (name === 'insurance.worker_email') {
+        if (name === "insurance.worker_email") {
           const email = formValues.insurance?.worker_email;
           if (email && !formValues.payment?.verify_email_or_phone) {
-            setValue('payment.verify_email_or_phone', email, {shouldValidate: false});
+            setValue("payment.verify_email_or_phone", email, {
+              shouldValidate: false,
+            });
           }
         }
 
         // Sync phone from insurance to payment (if needed)
-        if (name === 'insurance.phone_number') {
+        if (name === "insurance.phone_number") {
           const phone = formValues.insurance?.phone_number;
           if (phone && !formValues.payment?.verify_mobile_phone) {
-            setValue('payment.verify_mobile_phone', phone, {shouldValidate: false});
+            setValue("payment.verify_mobile_phone", phone, {
+              shouldValidate: false,
+            });
           }
         }
       } finally {
