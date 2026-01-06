@@ -147,7 +147,6 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         );
       }
 
-      // Validate phone format (HFPhoneInput should already format with +1)
       if (!/^\+\d{10,15}$/.test(phone.trim())) {
         throw new Error("Invalid phone number format.");
       }
@@ -157,7 +156,6 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         throw new Error("reCAPTCHA not ready yet. Please try again.");
       }
 
-      // Use normalized phone number
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         phone.trim(),

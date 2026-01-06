@@ -448,7 +448,7 @@ export const useCarrierSetupProps = () => {
         phy_state: data.phy_state || "",
         phy_zip: data.phy_zip || "",
         phy_country: data.phy_country || "",
-        telephone: data.telephone || "",
+        telephone: `+1${data.telephone || ""}`,
         email: data.email || "",
         company_officer_1: data.company_officer_1 || "",
         company_officer_2: data.company_officer_2 || "",

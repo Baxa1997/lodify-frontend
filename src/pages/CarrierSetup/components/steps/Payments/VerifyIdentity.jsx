@@ -71,7 +71,6 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
       return;
     }
 
-    // Validate phone format (HFPhoneInput should already format with +1)
     if (!/^\+\d{10,15}$/.test(phone.trim())) {
       toast({
         title: "Invalid Phone Number",
