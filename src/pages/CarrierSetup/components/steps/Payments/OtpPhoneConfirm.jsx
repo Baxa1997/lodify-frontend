@@ -86,8 +86,9 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         session_info: verificationId,
         provider: "firebase",
       });
-
-      if (response?.data) {
+      console.log({response});
+      // Check HTTP status code for success (200-299 range)
+      if (response?.status >= 200 && response?.status < 300) {
         setValue("payment.phone_verified", true);
 
         toast({
