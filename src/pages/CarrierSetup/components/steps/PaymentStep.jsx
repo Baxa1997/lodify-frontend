@@ -43,7 +43,7 @@ const PaymentStep = ({
         );
       case 4:
         return (
-          <Box className={styles.stepContentPayment}>
+          <Box className={styles.stepContentPaymentOtp}>
             <OtpPhoneConfirm
               control={control}
               watch={watch}
