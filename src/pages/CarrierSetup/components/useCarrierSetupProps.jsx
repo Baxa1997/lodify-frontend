@@ -57,6 +57,7 @@ export const useCarrierSetupProps = () => {
     try {
       const formData = watch();
       const identityData = formData.identity || {};
+      const contactInfo = formData.contact_information || {};
       const payload = {
         companies_id: carrierData?.guid || id || "",
         legal_name: identityData.legal_name || "",
@@ -70,6 +71,7 @@ export const useCarrierSetupProps = () => {
         email: identityData.email || "",
         company_officer_1: identityData.company_officer_1 || "",
         company_officer_2: identityData.company_officer_2 || "",
+        contact_information: contactInfo,
       };
       await carrierService.updateIdentity(payload);
       setStepLoadingStates((prev) => ({...prev, identity: false}));
@@ -458,6 +460,20 @@ export const useCarrierSetupProps = () => {
       },
       contract: {
         // Contract data will be handled separately if needed
+      },
+      contact_information: {
+        dispatch_name: data.contact_information?.dispatch_name || "",
+        dispatch_email: data.contact_information?.dispatch_email || "",
+        dispatch_phone: data.contact_information?.dispatch_phone || "",
+        billing_name: data.contact_information?.billing_name || "",
+        billing_email: data.contact_information?.billing_email || "",
+        billing_phone: data.contact_information?.billing_phone || "",
+        claims_name: data.contact_information?.claims_name || "",
+        claims_email: data.contact_information?.claims_email || "",
+        claims_phone: data.contact_information?.claims_phone || "",
+        after_hours_name: data.contact_information?.after_hours_name || "",
+        after_hours_email: data.contact_information?.after_hours_email || "",
+        after_hours_phone: data.contact_information?.after_hours_phone || "",
       },
     };
   };

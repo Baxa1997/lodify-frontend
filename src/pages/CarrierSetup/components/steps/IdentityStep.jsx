@@ -1,43 +1,232 @@
-import React from "react";
-import {Box, Text, Flex, Button} from "@chakra-ui/react";
+import React, {useState} from "react";
+import {
+  Box,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Flex,
+  Input,
+} from "@chakra-ui/react";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import {useWatch} from "react-hook-form";
 
-const IdentityStep = ({
-  control,
-  onNext,
-  onBack,
-  subView = 1,
-  isEditable = false,
-}) => {
+const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
   const values = useWatch({control});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentContactType, setCurrentContactType] = useState("");
+  const [modalData, setModalData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+
+  const handleOpenModal = (contactType) => {
+    setCurrentContactType(contactType);
+
+    const prefix = contactType.toLowerCase().replace(" ", "_");
+    setModalData({
+      name: values?.contact_information?.[`${prefix}_name`] || "",
+      email: values?.contact_information?.[`${prefix}_email`] || "",
+      phone: values?.contact_information?.[`${prefix}_phone`] || "",
+    });
+
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setCurrentContactType("");
+    setModalData({name: "", email: "", phone: ""});
+  };
+
+  const handleSaveContact = () => {
+    const prefix = currentContactType.toLowerCase().replace(" ", "_");
+
+    setValue(`contact_information.${prefix}_name`, modalData.name);
+    setValue(`contact_information.${prefix}_email`, modalData.email);
+    setValue(`contact_information.${prefix}_phone`, modalData.phone);
+
+    handleCloseModal();
+  };
+
+  const getContactData = (contactType) => {
+    const prefix = contactType.toLowerCase().replace(" ", "_");
+    return {
+      name: values?.contact_information?.[`${prefix}_name`] || "---",
+      email: values?.contact_information?.[`${prefix}_email`] || "---",
+      phone: values?.contact_information?.[`${prefix}_phone`] || "---",
+    };
+  };
 
   if (subView === 2) {
     return (
-      <Box className={styles.stepContentIdentityContact}>
-        <Text fontSize="14x" fontWeight="600" color="#181D27">
-          Confirm your contact information.
-        </Text>
-        <Text fontSize="14px" color="#6B7280" mb="14px">
-          Enter the code we just sent to the mobile number you entered.
-        </Text>
+      <>
+        <Box className={styles.stepContentIdentityContact}>
+          <Text fontSize="14x" fontWeight="600" color="#181D27">
+            Confirm your contact information.
+          </Text>
+          <Text fontSize="14px" color="#6B7280" mb="14px">
+            Enter the code we just sent to the mobile number you entered.
+          </Text>
 
-        <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
-          {values?.identity?.company_officer_1 && (
+          <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
             <ContactsInfo
-              name={values?.identity?.company_officer_1}
-              src="/img/afterHours.svg"
+              contactLabel="Dispatch"
+              {...getContactData("Dispatch")}
+              src="/img/dispatch.svg"
+              onClick={() => handleOpenModal("Dispatch")}
             />
-          )}
-          {values?.identity?.company_officer_2 && (
+
             <ContactsInfo
-              name={values?.identity?.company_officer_2}
+              contactLabel="Billing"
+              {...getContactData("Billing")}
               src="/img/billing.svg"
+              onClick={() => handleOpenModal("Billing")}
             />
-          )}
+
+            <ContactsInfo
+              contactLabel="Claims"
+              {...getContactData("Claims")}
+              src="/img/claims.svg"
+              onClick={() => handleOpenModal("Claims")}
+            />
+
+            <ContactsInfo
+              contactLabel="After Hours"
+              {...getContactData("After Hours")}
+              src="/img/afterHours.svg"
+              onClick={() => handleOpenModal("After Hours")}
+            />
+          </Box>
         </Box>
-      </Box>
+
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          size="md"
+          isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader fontSize="18px" fontWeight="600" color="#181D27">
+              {currentContactType}
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <Box mb={4}>
+                <Text fontSize="14px" fontWeight="500" color="#414651" mb="6px">
+                  Full name{" "}
+                  <Text as="span" color="red.500">
+                    *
+                  </Text>
+                </Text>
+                <Input
+                  placeholder="Enter full name"
+                  value={modalData.name}
+                  onChange={(e) =>
+                    setModalData({...modalData, name: e.target.value})
+                  }
+                  border="1px solid #D5D7DA"
+                  borderRadius="8px"
+                  fontSize="14px"
+                  px="12px"
+                  py="8px"
+                  height="40px"
+                  _focus={{
+                    borderColor: "#3b82f6",
+                    boxShadow: "0 0 0 1px #3b82f6",
+                  }}
+                />
+              </Box>
+
+              <Box mb={4}>
+                <Text fontSize="14px" fontWeight="500" color="#414651" mb="6px">
+                  Email Address{" "}
+                  <Text as="span" color="red.500">
+                    *
+                  </Text>
+                </Text>
+                <Input
+                  type="email"
+                  placeholder="name@example.com"
+                  value={modalData.email}
+                  onChange={(e) =>
+                    setModalData({...modalData, email: e.target.value})
+                  }
+                  border="1px solid #D5D7DA"
+                  borderRadius="8px"
+                  fontSize="14px"
+                  px="12px"
+                  py="8px"
+                  height="40px"
+                  _focus={{
+                    borderColor: "#3b82f6",
+                    boxShadow: "0 0 0 1px #3b82f6",
+                  }}
+                />
+              </Box>
+
+              <Box mb={6}>
+                <Text fontSize="14px" fontWeight="500" color="#414651" mb="6px">
+                  Phone number
+                </Text>
+                <Input
+                  type="tel"
+                  placeholder="+1"
+                  value={modalData.phone}
+                  onChange={(e) =>
+                    setModalData({...modalData, phone: e.target.value})
+                  }
+                  border="1px solid #D5D7DA"
+                  borderRadius="8px"
+                  fontSize="14px"
+                  px="12px"
+                  py="8px"
+                  height="40px"
+                  _focus={{
+                    borderColor: "#3b82f6",
+                    boxShadow: "0 0 0 1px #3b82f6",
+                  }}
+                />
+              </Box>
+
+              <Flex gap="12px" justifyContent="flex-end">
+                <Button
+                  variant="outline"
+                  borderColor="#D1D5DB"
+                  color="#374151"
+                  fontSize="14px"
+                  fontWeight="500"
+                  px="20px"
+                  py="6px"
+                  borderRadius="8px"
+                  _hover={{bg: "#F9FAFB"}}
+                  onClick={handleCloseModal}>
+                  Close
+                </Button>
+                <Button
+                  bg="#EF6820"
+                  color="white"
+                  fontSize="14px"
+                  fontWeight="600"
+                  px="20px"
+                  py="6px"
+                  borderRadius="8px"
+                  _hover={{bg: "#DC5A1A"}}
+                  onClick={handleSaveContact}
+                  isDisabled={!modalData.name || !modalData.email}>
+                  Save
+                </Button>
+              </Flex>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </>
     );
   }
 
@@ -253,13 +442,24 @@ const ContactsInfo = ({
   name = "",
   phone = "",
   email = "",
+  onClick,
 }) => {
   return (
     <Box>
       <Text fontSize="14x" fontWeight="500" color="#414651" mb="8px">
         {contactLabel}
       </Text>
-      <Box border="1px solid #D5D7DA" p="12px 14px" borderRadius="8px">
+      <Box
+        border="1px solid #D5D7DA"
+        p="12px 14px"
+        borderRadius="8px"
+        cursor="pointer"
+        transition="all 0.2s"
+        _hover={{
+          borderColor: "#3b82f6",
+          boxShadow: "0 0 0 1px #3b82f6",
+        }}
+        onClick={onClick}>
         <img width="28px" height="28px" src={src} alt="phone" />
         <Text
           color="#181D27"
@@ -267,13 +467,13 @@ const ContactsInfo = ({
           fontWeight="600"
           mt="12px"
           mb="6px">
-          {name}
+          {name || "Name Surname"}
         </Text>
         <Text mb="6px" color="#535862" fontSize="14px">
-          {email}
+          {email || "---"}
         </Text>
         <Text color="#535862" fontSize="14px">
-          {phone}
+          {phone || "---"}
         </Text>
       </Box>
     </Box>

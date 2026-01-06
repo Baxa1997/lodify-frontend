@@ -180,12 +180,9 @@ export const PerformanceByDrivers = ({
         width: "120px",
       },
       render: (value) => (
-        console.log("valueeeeeeeeeee", value),
-        (
-          <Text fontSize="14px" fontWeight="400" color="#374151">
-            {value}
-          </Text>
-        )
+        <Text fontSize="14px" fontWeight="400" color="#374151">
+          {value}
+        </Text>
       ),
     },
   ]?.filter((column) => (!isBroker ? column.key !== "legal_name" : true));

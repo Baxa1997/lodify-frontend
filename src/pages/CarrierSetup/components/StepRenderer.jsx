@@ -26,6 +26,7 @@ const StepRenderer = ({
       return (
         <IdentityStep
           control={control}
+          setValue={setValue}
           subView={identitySubView}
           isEditable={isEditable}
         />
