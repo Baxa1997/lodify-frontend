@@ -278,7 +278,7 @@ export const useCarrierSetupProps = () => {
     },
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1 && identitySubView === 1) {
       setIdentitySubView(2);
       return;
@@ -298,20 +298,42 @@ export const useCarrierSetupProps = () => {
     }
 
     if (currentStep === 4 && insuranceSubView === 2) {
-      // Just collect data and move to next step
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(5);
       setInsuranceSubView(1);
       return;
     }
 
-    if (currentStep === 5 && paymentSubView < 6) {
+    if (currentStep === 5 && paymentSubView === 3) {
+      const formData = watch();
+      const isOtpVerified = formData.payment?.phone_verified;
+      const hasVerificationId = formData.payment?.verify_verification_id;
+
+      if (!isOtpVerified) {
+        if (!hasVerificationId) {
+          // OTP not sent yet - user needs to click "Send Verification Code" button
+          console.warn(
+            "Please send OTP first by clicking 'Send Verification Code' button"
+          );
+          return;
+        } else {
+          // OTP sent but not verified, don't allow proceeding
+          console.warn("OTP verification required before proceeding");
+          return;
+        }
+      }
+
+      // OTP verified, proceed to next subview
+      setPaymentSubView(4);
+      return;
+    }
+
+    if (currentStep === 5 && paymentSubView < 6 && paymentSubView !== 3) {
       setPaymentSubView(paymentSubView + 1);
       return;
     }
 
     if (currentStep === 5 && paymentSubView === 6) {
-      // Just collect data and move to next step
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(6);
       setPaymentSubView(1);
@@ -328,7 +350,6 @@ export const useCarrierSetupProps = () => {
       return;
     }
 
-    // Just collect data and move to next step for all remaining steps
     if (currentStep < steps.length) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(currentStep + 1);
@@ -381,6 +402,8 @@ export const useCarrierSetupProps = () => {
   };
 
   const handlePaymentOtpSent = () => {
+    // Navigate to OTP confirmation page
+    // OTP sending is handled directly in VerifyIdentity component using Firebase
     setPaymentSubView(4);
   };
 
@@ -388,12 +411,10 @@ export const useCarrierSetupProps = () => {
     setPaymentSubView(5);
   };
 
-  // Pre-fill payment fields with identity data when entering payment step
   useEffect(() => {
     if (currentStep === 5 && paymentSubView === 3) {
       const formValues = watch();
 
-      // Pre-fill email from identity if payment email is empty
       if (
         formValues.identity?.email &&
         !formValues.payment?.verify_email_or_phone
@@ -403,7 +424,6 @@ export const useCarrierSetupProps = () => {
         });
       }
 
-      // Pre-fill phone from identity if payment phone is empty
       if (
         formValues.identity?.telephone &&
         !formValues.payment?.verify_mobile_phone
@@ -441,9 +461,7 @@ export const useCarrierSetupProps = () => {
         trailer_count: data.trailer_count || "",
         specialization: data.specialization || "",
       },
-      certifications: {
-        // Certifications data will be handled separately if needed
-      },
+      certifications: {},
       insurance: {
         first_name: data.insurance?.first_name || "",
         last_name: data.insurance?.last_name || "",
@@ -461,15 +479,9 @@ export const useCarrierSetupProps = () => {
         phone_number: data.insurance?.phone_number || "",
         worker_email: data.insurance?.worker_email || "",
       },
-      payment: {
-        // Payment data will be handled separately if needed
-      },
-      questionnaire: {
-        // Questionnaire data will be handled separately if needed
-      },
-      contract: {
-        // Contract data will be handled separately if needed
-      },
+      payment: {},
+      questionnaire: {},
+      contract: {},
       contact_information: {
         dispatch_name: data.contact_information?.dispatch_name || "",
         dispatch_email: data.contact_information?.dispatch_email || "",
@@ -494,7 +506,6 @@ export const useCarrierSetupProps = () => {
     }
   }, [carrierData, reset]);
 
-  // Sync common fields between steps
   useEffect(() => {
     if (isSyncingRef.current) return;
 
@@ -505,7 +516,6 @@ export const useCarrierSetupProps = () => {
       isSyncingRef.current = true;
 
       try {
-        // Sync email from identity to payment
         if (name === "identity.email") {
           const email = formValues.identity?.email;
           if (email && !formValues.payment?.verify_email_or_phone) {
@@ -515,7 +525,6 @@ export const useCarrierSetupProps = () => {
           }
         }
 
-        // Sync telephone from identity to payment
         if (name === "identity.telephone") {
           const phone = formValues.identity?.telephone;
           if (phone && !formValues.payment?.verify_mobile_phone) {
@@ -525,7 +534,6 @@ export const useCarrierSetupProps = () => {
           }
         }
 
-        // Sync email from insurance to payment (if needed)
         if (name === "insurance.worker_email") {
           const email = formValues.insurance?.worker_email;
           if (email && !formValues.payment?.verify_email_or_phone) {
@@ -535,7 +543,6 @@ export const useCarrierSetupProps = () => {
           }
         }
 
-        // Sync phone from insurance to payment (if needed)
         if (name === "insurance.phone_number") {
           const phone = formValues.insurance?.phone_number;
           if (phone && !formValues.payment?.verify_mobile_phone) {
@@ -545,7 +552,6 @@ export const useCarrierSetupProps = () => {
           }
         }
       } finally {
-        // Reset the syncing flag after a short delay
         setTimeout(() => {
           isSyncingRef.current = false;
         }, 100);
@@ -564,8 +570,6 @@ export const useCarrierSetupProps = () => {
     setIsConnecting(true);
 
     try {
-      console.log("Submitting all step data...");
-
       const identitySuccess = await handleIdentitySubmit();
       if (!identitySuccess) {
         throw new Error("Failed to submit identity data");
@@ -617,7 +621,6 @@ export const useCarrierSetupProps = () => {
     } catch (error) {
       setIsConnecting(false);
       console.error("Failed to complete carrier setup:", error);
-      // Optionally show error message to user
     }
   };
 

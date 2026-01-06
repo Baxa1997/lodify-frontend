@@ -1,54 +1,98 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef, useMemo} from "react";
 import {Box, Text, Flex, useToast} from "@chakra-ui/react";
 import {Controller} from "react-hook-form";
 import OtpInput from "react-otp-input";
 import authService from "../../../../../services/auth/authService";
+import {RecaptchaVerifier, signInWithPhoneNumber} from "firebase/auth";
+import {auth} from "../../../../../config/firebase";
 
 const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
   const [otpCode, setOtpCode] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const toast = useToast();
+  const recaptchaRef = useRef(null);
+
+  const isLocal = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const h = window.location.hostname;
+    return h === "localhost" || h === "127.0.0.1";
+  }, []);
+
+  useEffect(() => {
+    if (!recaptchaRef.current) {
+      const verifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container-otp-payment",
+        {
+          size: "invisible",
+          callback: () => {
+            console.log("reCAPTCHA solved ✅");
+          },
+          "expired-callback": () => {
+            toast({
+              title: "reCAPTCHA expired",
+              description: "Please try again.",
+              status: "warning",
+              duration: 3000,
+              isClosable: true,
+            });
+          },
+        }
+      );
+
+      recaptchaRef.current = verifier;
+      verifier
+        .render()
+        .then((widgetId) => {
+          window.recaptchaWidgetIdOtpPayment = widgetId;
+        })
+        .catch((e) => console.error("reCAPTCHA render error:", e));
+    }
+
+    return () => {
+      try {
+        recaptchaRef.current && recaptchaRef.current.clear();
+      } catch (_) {}
+      recaptchaRef.current = null;
+    };
+  }, [isLocal, toast]);
 
   const handleOtpChange = (value) => {
     setOtpCode(value);
   };
 
   useEffect(() => {
-    if (otpCode.length === 4) {
+    if (otpCode.length === 6) {
       handleVerifyOtp();
     }
   }, [otpCode]);
 
   const handleVerifyOtp = async () => {
-    if (otpCode.length !== 4) return;
+    if (otpCode.length !== 6) return;
 
     setIsVerifying(true);
     try {
-      const smsId = watch("payment.verify_sms_id");
-      if (!smsId) {
+      const verificationId = watch("payment.verify_verification_id");
+
+      if (!verificationId) {
         throw new Error(
-          "No verification session found. Please resend the code."
+          "No verification session found. Please go back and resend the code."
         );
       }
 
-      const response = await authService.verifyCode(
-        smsId,
-        {
-          provider: "sms",
-          otp: otpCode,
-        },
-        {
-          project_id: "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1",
-        }
-      );
+      // Verify OTP using Firebase via authService
+      const response = await authService.verifyPhoneCode("verify_otp", {
+        otp: otpCode,
+        session_info: verificationId,
+        provider: "firebase",
+      });
 
       if (response?.data) {
-        // Store verification status
         setValue("payment.phone_verified", true);
 
         toast({
-          title: "Verification Successful!",
+          title: "Phone Verified Successfully!",
           description: "Your phone number has been verified.",
           status: "success",
           duration: 3000,
@@ -60,13 +104,28 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         if (onVerifySuccess) {
           onVerifySuccess();
         }
+      } else {
+        throw new Error("Verification failed. Please try again.");
       }
     } catch (error) {
       console.error("Failed to verify OTP:", error);
+
+      let errorMessage = "Invalid verification code";
+      if (error?.code === "auth/invalid-verification-code") {
+        errorMessage = "Invalid verification code";
+      } else if (error?.code === "auth/code-expired") {
+        errorMessage = "Verification code expired. Please request a new one";
+      } else if (error?.code === "auth/session-expired") {
+        errorMessage = "Session expired. Please request a new code";
+      } else if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Verification Failed",
-        description:
-          error?.response?.data?.message || "Invalid code. Please try again.",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -82,51 +141,65 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
   const handleResend = async () => {
     setIsResending(true);
     try {
-      const phone = watch("payment.verify_mobile_phone");
-      const emailOrPhone = watch("payment.verify_email_or_phone");
+      const phone =
+        watch("payment.verify_phone") || watch("identity.telephone");
 
-      if (!phone || !emailOrPhone) {
+      if (!phone || phone.trim() === "") {
         throw new Error(
           "Missing phone information. Please go back and try again."
         );
       }
 
-      const isEmail = emailOrPhone.includes("@");
+      // Validate phone format
+      if (!/^\+\d{10,15}$/.test(phone.trim())) {
+        throw new Error("Invalid phone number format.");
+      }
 
-      const response = await authService.sendCode(
-        {
-          type: isEmail ? "MAILCHIMP" : "SMS",
-          recipient: isEmail ? emailOrPhone : phone,
-          sms_template_id: "4b73c53e-df0b-4f24-8d24-e7f03d858cda",
-          field_slug: "text",
-          variables: {},
-        },
-        {
-          project_id: "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1",
-        }
+      const appVerifier = recaptchaRef.current;
+      if (!appVerifier) {
+        throw new Error("reCAPTCHA not ready yet. Please try again.");
+      }
+
+      // Resend OTP using Firebase
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phone.trim(),
+        appVerifier
       );
 
-      if (response?.data?.sms_id) {
-        setValue("payment.verify_sms_id", response.data.sms_id);
+      // Store new confirmation result and verification ID
+      window.confirmationResultPayment = confirmationResult;
+      const verificationId = confirmationResult?.verificationId;
 
-        toast({
-          title: "Code Resent Successfully!",
-          description: "New verification code has been sent.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
+      setValue("payment.verify_verification_id", verificationId);
+      setValue("payment.verify_phone", phone.trim());
 
-        // Reset OTP input
-        setOtpCode("");
-      }
+      toast({
+        title: "Code Resent Successfully!",
+        description: "New verification code has been sent to your phone.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+
+      // Reset OTP input
+      setOtpCode("");
     } catch (error) {
       console.error("Failed to resend code:", error);
+
+      let errorMessage = "Please try again later.";
+      if (error?.code === "auth/invalid-phone-number") {
+        errorMessage = "Invalid phone number format.";
+      } else if (error?.code === "auth/too-many-requests") {
+        errorMessage = "Too many requests. Please try again later.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Failed to Resend Code",
-        description:
-          error?.response?.data?.message || "Please try again later.",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -157,20 +230,20 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
                 handleOtpChange(value);
                 field.onChange(value);
               }}
-              numInputs={4}
-              renderSeparator={<span style={{width: "12px"}} />}
+              numInputs={6}
+              renderSeparator={<span style={{width: "0px"}} />}
               renderInput={(props) => (
                 <input
                   {...props}
                   style={{
-                    width: "80px",
-                    height: "80px",
+                    width: "70px",
+                    height: "70px",
                     fontSize: "24px",
                     fontWeight: "600",
                     textAlign: "center",
-                    border: "1px solid #D5D7DA",
+                    border: "2px solid #e2e8f0",
                     borderRadius: "8px",
-                    background: "white",
+                    background: "#f8fafc",
                     color: "#1e293b",
                     outline: "none",
                     transition: "all 0.2s ease",
@@ -181,25 +254,33 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
                   disabled={isVerifying}
                   onFocus={(e) => {
                     e.target.style.borderColor = "#3b82f6";
+                    e.target.style.background = "white";
                     e.target.style.boxShadow =
                       "0 0 0 3px rgba(59, 130, 246, 0.1)";
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = "#D5D7DA";
+                    e.target.style.borderColor = "#e2e8f0";
+                    e.target.style.background = "#f8fafc";
                     e.target.style.boxShadow = "none";
                   }}
                   onMouseEnter={(e) => {
                     if (document.activeElement !== e.target) {
-                      e.target.style.borderColor = "#94a3b8";
+                      e.target.style.borderColor = "#cbd5e1";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (document.activeElement !== e.target) {
-                      e.target.style.borderColor = "#D5D7DA";
+                      e.target.style.borderColor = "#e2e8f0";
                     }
                   }}
                 />
               )}
+              containerStyle={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "8px",
+              }}
             />
           )}
         />
@@ -210,6 +291,18 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
           Verifying code...
         </Text>
       )}
+
+      {/* reCAPTCHA container for resend - must exist in DOM */}
+      <div
+        id="recaptcha-container-otp-payment"
+        style={{
+          margin: "10px 0",
+          display: "flex",
+          justifyContent: "center",
+          height: "30px",
+          width: "100%",
+        }}
+      />
 
       <Flex justifyContent="center" alignItems="center" gap="4px">
         <Text fontSize="14px" color="#414651">

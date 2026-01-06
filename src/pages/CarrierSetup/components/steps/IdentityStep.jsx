@@ -11,12 +11,15 @@ import {
   Button,
   Flex,
 } from "@chakra-ui/react";
+import {useSearchParams} from "react-router-dom";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import {useWatch} from "react-hook-form";
 import HFPhoneInput from "@components/HFPhoneInput";
 
 const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
+  const [searchParams] = useSearchParams();
+  const carrierSetup = searchParams.get("carrier_setup");
   const values = useWatch({control});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentContactType, setCurrentContactType] = useState("");
@@ -25,7 +28,10 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
     email: "",
     phone: "",
   });
-  console.log("values==========", values);
+
+  // Disable fields in first subview if carrier_setup query param is "true"
+  const shouldDisableFields = subView === 1 && carrierSetup === "true";
+  const fieldDisabled = !isEditable || shouldDisableFields;
   const handleOpenModal = (contactType) => {
     setCurrentContactType(contactType);
 
@@ -225,7 +231,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
 
       <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
         <HFTextField
-          disabled={!isEditable}
+          disabled={fieldDisabled}
           label="Legal name"
           control={control}
           name="identity.legal_name"
@@ -241,7 +247,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
         />
 
         <HFTextField
-          disabled={!isEditable}
+          disabled={fieldDisabled}
           label="Identifires"
           control={control}
           name="identity.us_dot_number"
@@ -264,7 +270,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="Address Line 1"
             control={control}
             name="identity.phy_street"
@@ -280,7 +286,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           />
 
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="Address Line 2"
             control={control}
             name=""
@@ -296,7 +302,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           />
 
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="City"
             control={control}
             name="identity.phy_city"
@@ -312,7 +318,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           />
 
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="State"
             control={control}
             name="identity.phy_state"
@@ -328,7 +334,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           />
 
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="ZIP"
             control={control}
             name="identity.phy_zip"
@@ -344,7 +350,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           />
 
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="Country"
             control={control}
             name="identity.phy_country"
@@ -360,7 +366,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           />
 
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="Phone(s)"
             control={control}
             name="identity.telephone"
@@ -384,7 +390,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="12px">
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="Email address"
             control={control}
             name="identity.email"
@@ -400,7 +406,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           />
 
           <HFTextField
-            disabled={!isEditable}
+            disabled={fieldDisabled}
             label="Phone number"
             control={control}
             name="identity.telephone"

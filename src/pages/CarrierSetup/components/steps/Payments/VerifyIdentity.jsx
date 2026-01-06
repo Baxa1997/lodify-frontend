@@ -1,23 +1,83 @@
-import React, {useState} from "react";
-import {Box, Text, Input, Button, useToast} from "@chakra-ui/react";
-import {Controller} from "react-hook-form";
-import {PhoneInput} from "react-international-phone";
-import "react-international-phone/style.css";
-import authService from "../../../../../services/auth/authService";
+import React, {useState, useEffect, useRef, useMemo} from "react";
+import {Box, Text, Button, useToast} from "@chakra-ui/react";
 import HFPhoneInput from "@components/HFPhoneInput";
+import {RecaptchaVerifier, signInWithPhoneNumber} from "firebase/auth";
+import {auth} from "../../../../../config/firebase";
+import HFTextField from "@components/HFTextField";
 
 const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
+  const recaptchaRef = useRef(null);
+
+  const isLocal = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const h = window.location.hostname;
+    return h === "localhost" || h === "127.0.0.1";
+  }, []);
+
+  useEffect(() => {
+    if (!recaptchaRef.current) {
+      const verifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container-payment",
+        {
+          size: "invisible",
+          callback: () => {
+            console.log("reCAPTCHA solved ✅");
+          },
+          "expired-callback": () => {
+            toast({
+              title: "reCAPTCHA expired",
+              description: "Please try again.",
+              status: "warning",
+              duration: 3000,
+              isClosable: true,
+            });
+          },
+        }
+      );
+
+      recaptchaRef.current = verifier;
+      verifier
+        .render()
+        .then((widgetId) => {
+          window.recaptchaWidgetIdPayment = widgetId;
+          console.log("reCAPTCHA ready with ID:", widgetId);
+        })
+        .catch((e) => console.error("reCAPTCHA render error:", e));
+    }
+
+    return () => {
+      try {
+        recaptchaRef.current && recaptchaRef.current.clear();
+      } catch (_) {}
+      recaptchaRef.current = null;
+    };
+  }, [isLocal, toast]);
 
   const handleSendOtp = async () => {
-    const phone = watch("payment.verify_mobile_phone");
-    const emailOrPhone = watch("payment.verify_email_or_phone");
+    const phone = watch("identity.telephone");
 
-    if (!phone || !emailOrPhone) {
+    // Validate phone number
+    if (!phone || phone.trim() === "") {
       toast({
-        title: "Missing Information",
-        description: "Please enter both mobile phone and email/phone number.",
+        title: "Missing Phone Number",
+        description: "Please enter your mobile phone number.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
+    // Validate phone format
+    if (!/^\+\d{10,15}$/.test(phone.trim())) {
+      toast({
+        title: "Invalid Phone Number",
+        description:
+          "Please enter a valid phone number with + and country code.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -28,45 +88,53 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
 
     setIsLoading(true);
     try {
-      const isEmail = emailOrPhone.includes("@");
+      const appVerifier = recaptchaRef.current;
+      if (!appVerifier) {
+        throw new Error("reCAPTCHA not ready yet. Please try again.");
+      }
 
-      const response = await authService.sendCode(
-        {
-          type: isEmail ? "MAILCHIMP" : "SMS",
-          recipient: isEmail ? emailOrPhone : phone,
-          sms_template_id: "4b73c53e-df0b-4f24-8d24-e7f03d858cda",
-          field_slug: "text",
-          variables: {},
-        },
-        {
-          project_id: "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1",
-        }
+      // Send OTP using Firebase
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phone.trim(),
+        appVerifier
       );
 
-      if (response?.data?.sms_id) {
-        setValue("payment.verify_sms_id", response.data.sms_id);
+      // Store confirmation result and verification ID
+      window.confirmationResultPayment = confirmationResult;
+      const verificationId = confirmationResult?.verificationId;
 
-        toast({
-          title: "Code Sent Successfully!",
-          description: `Verification code has been sent to your ${
-            isEmail ? "email" : "phone"
-          }.`,
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
+      setValue("payment.verify_verification_id", verificationId);
+      setValue("payment.verify_phone", phone.trim());
 
-        if (onSendOtp) {
-          onSendOtp();
-        }
+      toast({
+        title: "SMS sent!",
+        description: "Verification code sent successfully to your phone.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+
+      // Navigate to OTP confirmation page
+      if (onSendOtp) {
+        onSendOtp();
       }
     } catch (error) {
       console.error("Failed to send OTP:", error);
+      let errorMessage = "Unable to send code. Please try again.";
+
+      if (error?.code === "auth/invalid-phone-number") {
+        errorMessage = "Invalid phone number format.";
+      } else if (error?.code === "auth/too-many-requests") {
+        errorMessage = "Too many requests. Please try again later.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
       toast({
-        title: "Failed to Send Code",
-        description:
-          error?.response?.data?.message || "Please try again later.",
+        title: "Verification Failed",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -90,105 +158,51 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
 
       <Box display="flex" flexDirection="column" gap="10px">
         <Box>
-          <Text
-            as="label"
-            fontSize="14px"
-            fontWeight="500"
-            color="#414651"
-            mb="6px"
-            display="block">
-            Mobile phone
-            <Box as="span" color="blue.500" ml="2px">
-              *
-            </Box>
-          </Text>
           <HFPhoneInput
+            label="Mobile phone"
+            required
             control={control}
-            name="telephone"
+            name="identity.telephone"
             defaultCountry="us"
             forceCallingCode="1"
             preferredCountries={["us"]}
             placeholder="Enter Mobile"
-            style={{
-              "--rip-border-radius": "0",
-              "--rip-border-color": "transparent",
-              "--rip-border-color-focus": "transparent",
-              "--rip-font-size": "14px",
-              "--rip-height": "40px",
-              "--rip-gap": "0px",
-              "--rip-outline": "none",
-              "--rip-box-shadow": "none",
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              position: "relative",
-            }}
-            inputStyle={{
-              fontSize: "14px",
-              height: "38px",
-              border: "none",
-              borderRadius: "0",
-              padding: "8px 12px 8px 44px",
-              outline: "none",
-              boxShadow: "none",
-              flex: 1,
-            }}
-            countrySelectorStyleProps={{
-              style: {
-                position: "absolute",
-                zIndex: 10,
-                background: "#fff",
-                outline: "none",
-                border: "none",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-              },
-            }}
-            hideDropdown={false}
-            showDropdownSearch={true}
-            disableFormatting={false}
           />
         </Box>
 
         <Box mt="10px">
-          <Text
-            as="label"
-            fontSize="14px"
-            fontWeight="500"
-            color="#414651"
-            mb="6px"
-            display="block">
-            Email or phone number
-            <Box as="span" color="blue.500" ml="2px">
-              *
-            </Box>
-          </Text>
-          <Controller
+          <HFTextField
+            label="Email address"
+            disabled={true}
             control={control}
             name="payment.verify_email_or_phone"
-            render={({field}) => (
-              <Input
-                {...field}
-                placeholder="name@domain.com or +1 555-123-4567"
-                border="1px solid #D5D7DA"
-                borderRadius="8px"
-                fontSize="14px"
-                px="12px"
-                py="8px"
-                height="40px"
-                _focus={{
-                  borderColor: "#3b82f6",
-                  boxShadow: "0 0 0 1px #3b82f6",
-                }}
-              />
-            )}
+            placeholder="name@domain.com"
+            style={{
+              border: "1px solid #D5D7DA",
+            }}
+            labelStyle={{
+              fontSize: "14px",
+              fontWeight: "500",
+              color: "#414651",
+            }}
           />
         </Box>
 
         <Text fontSize="14px" color="#414651" mb="16px">
-          We&apos;ll send a one-time code to what you enter.
+          We&apos;ll send a verification code to your phone number.
         </Text>
+
+        {/* reCAPTCHA container - must exist in DOM */}
+        <div
+          id="recaptcha-container-payment"
+          style={{
+            margin: "10px 0",
+            display: "flex",
+            justifyContent: "center",
+            height: "30px",
+            width: "100%",
+          }}
+        />
 
         <Button
           colorScheme="orange"

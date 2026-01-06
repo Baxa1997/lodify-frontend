@@ -12,6 +12,7 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from "@chakra-ui/react";
+import {useWatch} from "react-hook-form";
 import StepRenderer from "./StepRenderer";
 import styles from "../CarrierSetup.module.scss";
 
@@ -37,6 +38,16 @@ const SetupMain = ({
   canSkipSetup = false,
   onSkipSetup = () => {},
 }) => {
+  // Watch OTP verification status for payment step
+  const phoneVerified = useWatch({
+    control,
+    name: "payment.phone_verified",
+    defaultValue: false,
+  });
+  
+  // Check if we're on payment step subView 3 and OTP is not verified
+  const isPaymentOtpRequired =
+    currentStep === 5 && paymentSubView === 3 && !phoneVerified;
   return (
     <Box className={styles.mainContent} position={"relative"}>
       <Flex
@@ -138,8 +149,11 @@ const SetupMain = ({
               onClick={onNext}
               isLoading={isInsuranceLoading}
               loadingText="Loading..."
-              isDisabled={isInsuranceLoading}>
-              Yes, continue
+              isDisabled={isInsuranceLoading || isPaymentOtpRequired}
+              opacity={isPaymentOtpRequired ? 0.5 : 1}>
+              {isPaymentOtpRequired
+                ? "Verify OTP to continue"
+                : "Yes, continue"}
             </Button>
           </Flex>
         </Flex>
