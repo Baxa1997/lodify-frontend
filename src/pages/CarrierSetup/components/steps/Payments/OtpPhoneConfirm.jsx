@@ -68,27 +68,35 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
     }
   }, [otpCode]);
 
-  const handleVerifyOtp = async () => {
+  const handleVerifyOtp = () => {
     if (otpCode.length !== 6) return;
 
+    const verificationId = watch("payment.verify_verification_id");
+
+    if (!verificationId) {
+      toast({
+        title: "Verification Failed",
+        description:
+          "No verification session found. Please go back and resend the code.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      setOtpCode("");
+      return;
+    }
+
     setIsVerifying(true);
-    try {
-      const verificationId = watch("payment.verify_verification_id");
 
-      if (!verificationId) {
-        throw new Error(
-          "No verification session found. Please go back and resend the code."
-        );
-      }
-
-      const response = await authService.verifyPhoneCode("verify_otp", {
+    authService
+      .verifyPhoneCode("verify_otp", {
         otp: otpCode,
         session_info: verificationId,
         provider: "firebase",
-      });
-      console.log({response});
-      // Check HTTP status code for success (200-299 range)
-      if (response !== "failed to verify") {
+      })
+      .then((response) => {
+        console.log({response});
         setValue("payment.phone_verified", true);
 
         toast({
@@ -103,37 +111,35 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
         if (onVerifySuccess) {
           onVerifySuccess();
         }
-      } else {
-        throw new Error("Verification failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Failed to verify OTP:", error);
+        setIsVerifying(false);
+      })
+      .catch((error) => {
+        console.error("Failed to verify OTP:", error);
 
-      let errorMessage = "Invalid verification code";
-      if (error?.code === "auth/invalid-verification-code") {
-        errorMessage = "Invalid verification code";
-      } else if (error?.code === "auth/code-expired") {
-        errorMessage = "Verification code expired. Please request a new one";
-      } else if (error?.code === "auth/session-expired") {
-        errorMessage = "Session expired. Please request a new code";
-      } else if (error?.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
+        let errorMessage = "Invalid verification code";
+        if (error?.code === "auth/invalid-verification-code") {
+          errorMessage = "Invalid verification code";
+        } else if (error?.code === "auth/code-expired") {
+          errorMessage = "Verification code expired. Please request a new one";
+        } else if (error?.code === "auth/session-expired") {
+          errorMessage = "Session expired. Please request a new code";
+        } else if (error?.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error?.message) {
+          errorMessage = error.message;
+        }
 
-      toast({
-        title: "Verification Failed",
-        description: errorMessage,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "top-right",
+        toast({
+          title: "Verification Failed",
+          description: errorMessage,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+        setOtpCode("");
+        setIsVerifying(false);
       });
-      setOtpCode("");
-    } finally {
-      setIsVerifying(false);
-    }
   };
 
   const handleResend = async () => {
