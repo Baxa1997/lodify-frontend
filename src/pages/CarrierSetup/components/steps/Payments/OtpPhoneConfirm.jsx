@@ -135,65 +135,20 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
     }
   };
 
-  // Normalize phone number to Firebase format (+1XXXXXXXXXX)
-  const normalizePhoneNumber = (phone) => {
-    if (!phone) return null;
-
-    // Remove all non-digit characters
-    const digitsOnly = phone.replace(/\D/g, "");
-
-    // If already starts with +, check if it has country code
-    if (phone.trim().startsWith("+")) {
-      // Extract digits after +
-      const afterPlus = phone.replace(/[^\d]/g, "");
-      // If starts with 1 and has 11 digits, it's already +1XXXXXXXXXX
-      if (afterPlus.startsWith("1") && afterPlus.length === 11) {
-        return `+${afterPlus}`;
-      }
-      // If has 10 digits after +, assume it's missing country code, add +1
-      if (afterPlus.length === 10) {
-        return `+1${afterPlus}`;
-      }
-      // Otherwise return as is if it's valid
-      if (afterPlus.length >= 10 && afterPlus.length <= 15) {
-        return `+${afterPlus}`;
-      }
-    }
-
-    // If no +, check if it's 10 digits (US number without country code)
-    if (digitsOnly.length === 10) {
-      return `+1${digitsOnly}`;
-    }
-
-    // If it's 11 digits and starts with 1, add +
-    if (digitsOnly.length === 11 && digitsOnly.startsWith("1")) {
-      return `+${digitsOnly}`;
-    }
-
-    // If it's already in correct format, return as is
-    if (phone.trim().startsWith("+") && /^\+\d{10,15}$/.test(phone.trim())) {
-      return phone.trim();
-    }
-
-    return null;
-  };
-
   const handleResend = async () => {
     setIsResending(true);
     try {
-      const rawPhone =
+      const phone =
         watch("payment.verify_phone") || watch("identity.telephone");
 
-      if (!rawPhone || rawPhone.trim() === "") {
+      if (!phone || phone.trim() === "") {
         throw new Error(
           "Missing phone information. Please go back and try again."
         );
       }
 
-      // Normalize phone number
-      const phone = normalizePhoneNumber(rawPhone);
-
-      if (!phone || !/^\+\d{10,15}$/.test(phone)) {
+      // Validate phone format (HFPhoneInput should already format with +1)
+      if (!/^\+\d{10,15}$/.test(phone.trim())) {
         throw new Error("Invalid phone number format.");
       }
 
@@ -205,7 +160,7 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
       // Use normalized phone number
       const confirmationResult = await signInWithPhoneNumber(
         auth,
-        phone,
+        phone.trim(),
         appVerifier
       );
 
@@ -213,7 +168,7 @@ const OtpPhoneConfirm = ({control, watch, setValue, onVerifySuccess}) => {
       const verificationId = confirmationResult?.verificationId;
 
       setValue("payment.verify_verification_id", verificationId);
-      setValue("payment.verify_phone", phone);
+      setValue("payment.verify_phone", phone.trim());
 
       toast({
         title: "Code Resent Successfully!",

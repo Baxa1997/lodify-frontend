@@ -56,39 +56,6 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
     };
   }, [isLocal, toast]);
 
-  const normalizePhoneNumber = (phone) => {
-    if (!phone) return null;
-
-    const digitsOnly = phone.replace(/\D/g, "");
-
-    if (phone.trim().startsWith("+")) {
-      const afterPlus = phone.replace(/[^\d]/g, "");
-      if (afterPlus.startsWith("1") && afterPlus.length === 11) {
-        return `+${afterPlus}`;
-      }
-      if (afterPlus.length === 10) {
-        return `+1${afterPlus}`;
-      }
-      if (afterPlus.length >= 10 && afterPlus.length <= 15) {
-        return `+${afterPlus}`;
-      }
-    }
-
-    if (digitsOnly.length === 10) {
-      return `+1${digitsOnly}`;
-    }
-
-    if (digitsOnly.length === 11 && digitsOnly.startsWith("1")) {
-      return `+${digitsOnly}`;
-    }
-
-    if (phone.trim().startsWith("+") && /^\+\d{10,15}$/.test(phone.trim())) {
-      return phone.trim();
-    }
-
-    return null;
-  };
-
   const handleSendOtp = async () => {
     const phone = watch("identity.telephone");
 
@@ -104,13 +71,11 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
       return;
     }
 
-    const normalizedPhone = normalizePhoneNumber(phone);
-
-    if (!normalizedPhone || !/^\+\d{10,15}$/.test(normalizedPhone)) {
+    // Validate phone format (HFPhoneInput should already format with +1)
+    if (!/^\+\d{10,15}$/.test(phone.trim())) {
       toast({
         title: "Invalid Phone Number",
-        description:
-          "Please enter a valid phone number. We'll automatically format it with country code.",
+        description: "Please enter a valid phone number with country code.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -128,7 +93,7 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
 
       const confirmationResult = await signInWithPhoneNumber(
         auth,
-        normalizedPhone,
+        phone.trim(),
         appVerifier
       );
 
@@ -136,7 +101,7 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
       const verificationId = confirmationResult?.verificationId;
 
       setValue("payment.verify_verification_id", verificationId);
-      setValue("payment.verify_phone", normalizedPhone);
+      setValue("payment.verify_phone", phone.trim());
 
       toast({
         title: "SMS sent!",

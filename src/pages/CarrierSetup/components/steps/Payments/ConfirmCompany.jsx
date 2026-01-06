@@ -1,8 +1,10 @@
 import React from "react";
 import {Box, Text, Input} from "@chakra-ui/react";
-import {Controller} from "react-hook-form";
+import {Controller, useWatch} from "react-hook-form";
 
 const ConfirmCompany = ({control}) => {
+  const values = useWatch({control});
+
   return (
     <Box>
       <Text fontSize="20px" fontWeight="bold" color="#1e293b" mb="8px">
@@ -30,11 +32,11 @@ const ConfirmCompany = ({control}) => {
             </Text>
             <Controller
               control={control}
-              name="factoring_company_name"
+              name="payment.factoring_company_name"
               render={({field}) => (
                 <Input
                   {...field}
-                  value={field.value}
+                  value={field.value || ""}
                   isReadOnly
                   bg="#F8F9FA"
                   border="1px solid #D5D7DA"
@@ -61,11 +63,11 @@ const ConfirmCompany = ({control}) => {
             </Text>
             <Controller
               control={control}
-              name="factoring_telephone"
+              name="payment.factoring_telephone"
               render={({field}) => (
                 <Input
                   {...field}
-                  value={field.value}
+                  value={field.value || values?.identity?.telephone || ""}
                   isReadOnly
                   bg="#F8F9FA"
                   border="1px solid #D5D7DA"
@@ -92,11 +94,11 @@ const ConfirmCompany = ({control}) => {
             </Text>
             <Controller
               control={control}
-              name="factoring_email"
+              name="payment.factoring_email"
               render={({field}) => (
                 <Input
                   {...field}
-                  value={field.value}
+                  value={field.value || values?.identity?.email || ""}
                   type="email"
                   isReadOnly
                   bg="#F8F9FA"
