@@ -9,7 +9,7 @@ import HFTextField from "@components/HFTextField";
 import carrierService from "@services/carrierService";
 import {InsightAddress} from "./InsightAddress";
 
-const ContractStep = ({control, subView = 1}) => {
+const ContractStep = ({control, subView = 1, isEditable = false}) => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
 

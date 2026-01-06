@@ -24,7 +24,7 @@ import HFCustomFilesUpload from "@components/HFCustomFilesUpload";
 import {getShortFileName} from "@utils/getFileName";
 import FilesReader from "@components/FileViewer/FilesReader";
 
-const CertificationsStep = ({control}) => {
+const CertificationsStep = ({control, isEditable = false}) => {
   const certificateFiles = useWatch({control, name: "insurance.certificate"});
   const {field} = useController({
     control,

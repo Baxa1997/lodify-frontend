@@ -48,6 +48,22 @@ const carrierService = {
 
   addInsuranceAgents: (data) =>
     httpRequest.post("v2/items/insurance_agents", {data}),
+
+  updateIdentity: (data) =>
+    httpRequest.put(`v1/object-slim/companies/${data.companies_id}`, {data}),
+
+  updateOperations: (data) =>
+    httpRequest.put(`v1/object-slim/companies/${data.companies_id}`, {data}),
+
+  updateCertifications: (data) =>
+    httpRequest.post("v2/items/certifications", {data}),
+
+  updatePayment: (data) => httpRequest.post("v2/items/payment_info", {data}),
+
+  updateQuestionnaire: (data) =>
+    httpRequest.post("v2/items/questionnaire", {data}),
+
+  updateContract: (data) => httpRequest.post("v2/items/contracts", {data}),
 };
 
 export default carrierService;

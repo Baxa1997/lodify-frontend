@@ -29,6 +29,9 @@ const SetupMain = ({
   isConnecting = false,
   onConfirmAddCarrier = () => {},
   onCancelAddCarrier = () => {},
+  isEditable = false,
+  canSkipSetup = false,
+  onSkipSetup = () => {},
 }) => {
   return (
     <Box className={styles.mainContent} position={"relative"}>
@@ -68,6 +71,7 @@ const SetupMain = ({
           insuranceSubView={insuranceSubView}
           paymentSubView={paymentSubView}
           contractSubView={contractSubView}
+          isEditable={isEditable}
         />
 
         <Flex
@@ -80,16 +84,32 @@ const SetupMain = ({
           borderTop={"1px solid #d6d7da"}
           justifyContent="space-between"
           alignItems="center">
-          <Flex
-            alignItems="center"
-            gap="8px"
-            cursor="pointer"
-            onClick={onBack}
-            color="#535862">
-            <img src="/img/backArrow.svg" alt="arrow-left" />
-            <Text fontSize="14px" fontWeight="400">
-              Back
-            </Text>
+          <Flex alignItems="center" gap="12px">
+            {canSkipSetup && (
+              <Button
+                variant="ghost"
+                color="#6B7280"
+                fontSize="14px"
+                fontWeight="500"
+                px="16px"
+                py="6px"
+                borderRadius="8px"
+                _hover={{bg: "#F9FAFB", color: "#374151"}}
+                onClick={onSkipSetup}>
+                Skip setup
+              </Button>
+            )}
+            <Flex
+              alignItems="center"
+              gap="8px"
+              cursor="pointer"
+              onClick={onBack}
+              color="#535862">
+              <img src="/img/backArrow.svg" alt="arrow-left" />
+              <Text fontSize="14px" fontWeight="400">
+                Back
+              </Text>
+            </Flex>
           </Flex>
 
           <Text fontSize="14px" color="#6B7280">

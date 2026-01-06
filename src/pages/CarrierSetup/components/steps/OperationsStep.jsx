@@ -5,7 +5,7 @@ import HFTextField from "@components/HFTextField";
 import HFSelect from "@components/HFSelect";
 import HFMultiSelect from "@components/HFMultiSelect";
 
-const OperationsStep = ({control}) => {
+const OperationsStep = ({control, isEditable = false}) => {
   const trailerTypes = [
     {label: "Van", value: "van"},
     {label: "Reefer", value: "reefer"},
@@ -26,10 +26,10 @@ const OperationsStep = ({control}) => {
 
       <Box display="grid" gridTemplateColumns="repeat(1, 1fr)" gap="16px">
         <HFTextField
-          disabled
+          disabled={!isEditable}
           label="Total power unites "
           control={control}
-          name="power_units"
+          name="operations.power_units"
           placeholder="Enter total power units"
           style={{
             border: "1px solid #D5D7DA",
@@ -42,10 +42,10 @@ const OperationsStep = ({control}) => {
         />
 
         <HFTextField
-          disabled
+          disabled={!isEditable}
           label="Total drives  "
           control={control}
-          name="total_drivers"
+          name="operations.total_drivers"
           placeholder="Enter total drives"
           style={{
             border: "1px solid #D5D7DA",
@@ -62,10 +62,10 @@ const OperationsStep = ({control}) => {
             Trailer types
           </Text>
           <HFMultiSelect
-            disabled
+            disabled={!isEditable}
             options={trailerTypes}
             control={control}
-            name="trailer_types"
+            name="operations.trailer_types"
             placeholder="Enter trailer types"
             style={{
               border: "1px solid #D5D7DA",
@@ -78,10 +78,10 @@ const OperationsStep = ({control}) => {
             Models
           </Text>
           <HFSelect
-            disabled
+            disabled={!isEditable}
             options={[]}
             control={control}
-            name="models"
+            name="operations.models"
             placeholder="Enter models"
             style={{
               border: "1px solid #D5D7DA",
@@ -90,10 +90,10 @@ const OperationsStep = ({control}) => {
         </Box>
 
         <HFTextField
-          disabled
+          disabled={!isEditable}
           label="Trailer count"
           control={control}
-          name="trailer_count"
+          name="operations.trailer_count"
           placeholder="Enter trailer count"
           style={{
             border: "1px solid #D5D7DA",
@@ -106,10 +106,10 @@ const OperationsStep = ({control}) => {
         />
 
         <HFTextField
-          disabled
+          disabled={!isEditable}
           label="Specialization"
           control={control}
-          name="specialization"
+          name="operations.specialization"
           placeholder="Enter specialization"
           style={{
             border: "1px solid #D5D7DA",

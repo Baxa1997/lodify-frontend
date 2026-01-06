@@ -4,7 +4,13 @@ import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
 import {useWatch} from "react-hook-form";
 
-const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
+const IdentityStep = ({
+  control,
+  onNext,
+  onBack,
+  subView = 1,
+  isEditable = false,
+}) => {
   const values = useWatch({control});
 
   if (subView === 2) {
@@ -18,15 +24,15 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
         </Text>
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
-          {values?.company_officer_1 && (
+          {values?.identity?.company_officer_1 && (
             <ContactsInfo
-              name={values?.company_officer_1}
+              name={values?.identity?.company_officer_1}
               src="/img/afterHours.svg"
             />
           )}
-          {values?.company_officer_2 && (
+          {values?.identity?.company_officer_2 && (
             <ContactsInfo
-              name={values?.company_officer_2}
+              name={values?.identity?.company_officer_2}
               src="/img/billing.svg"
             />
           )}
@@ -46,10 +52,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
 
       <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
         <HFTextField
-          disabled
+          disabled={!isEditable}
           label="Legal name"
           control={control}
-          name="legal_name"
+          name="identity.legal_name"
           placeholder="Enter carrier name"
           style={{
             border: "1px solid #D5D7DA",
@@ -62,10 +68,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
         />
 
         <HFTextField
-          disabled
+          disabled={!isEditable}
           label="Identifires"
           control={control}
-          name="us_dot_number"
+          name="identity.us_dot_number"
           placeholder="Enter carrier name"
           style={{
             border: "1px solid #D5D7DA",
@@ -85,10 +91,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="16px">
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="Address Line 1"
             control={control}
-            name="phy_street"
+            name="identity.phy_street"
             placeholder="Address Line 1"
             style={{
               border: "1px solid #D5D7DA",
@@ -101,7 +107,7 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="Address Line 2"
             control={control}
             name=""
@@ -117,10 +123,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="City"
             control={control}
-            name="phy_city"
+            name="identity.phy_city"
             placeholder="City"
             style={{
               border: "1px solid #D5D7DA",
@@ -133,10 +139,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="State"
             control={control}
-            name="phy_state"
+            name="identity.phy_state"
             placeholder="State"
             style={{
               border: "1px solid #D5D7DA",
@@ -149,10 +155,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="ZIP"
             control={control}
-            name="phy_zip"
+            name="identity.phy_zip"
             placeholder="ZIP"
             style={{
               border: "1px solid #D5D7DA",
@@ -165,10 +171,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="Country"
             control={control}
-            name="phy_country"
+            name="identity.phy_country"
             placeholder="Country"
             style={{
               border: "1px solid #D5D7DA",
@@ -181,10 +187,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="Phone(s)"
             control={control}
-            name="telephone"
+            name="identity.telephone"
             placeholder="Phones"
             style={{
               border: "1px solid #D5D7DA",
@@ -205,10 +211,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
 
         <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="12px">
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="Email address"
             control={control}
-            name="email"
+            name="identity.email"
             placeholder="Email address"
             style={{
               border: "1px solid #D5D7DA",
@@ -221,10 +227,10 @@ const IdentityStep = ({control, onNext, onBack, subView = 1}) => {
           />
 
           <HFTextField
-            disabled
+            disabled={!isEditable}
             label="Phone number"
             control={control}
-            name="telephone"
+            name="identity.telephone"
             placeholder="Phone number"
             style={{
               border: "1px solid #D5D7DA",

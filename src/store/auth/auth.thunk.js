@@ -18,7 +18,6 @@ const getCarrierStatus = (companies_id) => {
     })
     .then((res) => {
       localStorage.setItem("carrierStatus", res?.data?.response?.setup_skip);
-      console.log("resresres====>", res?.data?.response);
     });
 };
 

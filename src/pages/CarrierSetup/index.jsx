@@ -6,21 +6,24 @@ import {useCarrierSetupProps} from "./components/useCarrierSetupProps";
 
 const CarrierSetup = () => {
   const {
-    control,
     steps,
+    control,
     currentStep,
-    handleStepChange,
-    handleNext,
-    handleBack,
+    isConnecting,
+    paymentSubView,
     identitySubView,
     insuranceSubView,
-    paymentSubView,
     contractSubView,
     isInsuranceLoading,
     isConfirmModalOpen,
-    isConnecting,
+    handleNext,
+    handleBack,
+    handleStepChange,
     handleConfirmAddCarrier,
     handleCancelAddCarrier,
+    isEditable,
+    canSkipSetup,
+    handleSkipSetup,
   } = useCarrierSetupProps();
   return (
     <Flex className={styles.multiStepContainer} minHeight="100vh">
@@ -43,6 +46,9 @@ const CarrierSetup = () => {
         isConnecting={isConnecting}
         onConfirmAddCarrier={handleConfirmAddCarrier}
         onCancelAddCarrier={handleCancelAddCarrier}
+        isEditable={isEditable}
+        canSkipSetup={canSkipSetup}
+        onSkipSetup={handleSkipSetup}
       />
     </Flex>
   );

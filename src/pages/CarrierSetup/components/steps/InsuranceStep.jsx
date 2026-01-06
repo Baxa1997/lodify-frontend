@@ -29,7 +29,7 @@ import HFCustomFilesUpload from "@components/HFCustomFilesUpload";
 import {getShortFileName} from "@utils/getFileName";
 import FilesReader from "@components/FileViewer/FilesReader";
 
-const InsuranceStep = ({control, subView = 1}) => {
+const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
   const compensationInsurance = useWatch({
     control,
     name: "insurance.compensation_insurance",

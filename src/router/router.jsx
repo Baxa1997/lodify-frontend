@@ -54,10 +54,18 @@ const ProtectedRoute = ({children}) => {
 
 const PublicRoute = ({children}) => {
   const isAuth = useSelector((state) => state?.auth?.isAuth);
+  const companiesId = useSelector(
+    (state) => state?.auth?.user_data?.companies_id
+  );
   const location = useLocation();
 
   if (isAuth && Boolean(!localStorage.getItem("carrierStatus"))) {
-    return <Navigate to="/carrier-setup?carrier_setup=true" replace />;
+    return (
+      <Navigate
+        to={`/carrier-setup?id=${companiesId}&carrier_setup=true`}
+        replace
+      />
+    );
   } else if (isAuth) {
     const from = location.state?.from?.pathname || "/admin/dashboard";
     return <Navigate to={from} replace />;
