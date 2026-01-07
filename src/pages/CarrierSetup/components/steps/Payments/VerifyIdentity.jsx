@@ -5,7 +5,7 @@ import {RecaptchaVerifier, signInWithPhoneNumber} from "firebase/auth";
 import {auth} from "../../../../../config/firebase";
 import HFTextField from "@components/HFTextField";
 
-const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
+const VerifyIdentity = ({control, watch, setValue, onSendOtp, onSkipOtp}) => {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const recaptchaRef = useRef(null);
@@ -206,6 +206,22 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp}) => {
           loadingText="Sending code...">
           Send Verification Code
         </Button>
+
+        {onSkipOtp && (
+          <Button
+            variant="outline"
+            size="lg"
+            width="100%"
+            mt="12px"
+            borderColor="#D1D5DB"
+            color="#374151"
+            fontSize="14px"
+            fontWeight="500"
+            _hover={{bg: "#F9FAFB"}}
+            onClick={onSkipOtp}>
+            Skip OTP Verification
+          </Button>
+        )}
       </Box>
     </Box>
   );

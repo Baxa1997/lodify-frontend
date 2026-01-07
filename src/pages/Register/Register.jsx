@@ -195,8 +195,6 @@ const Register = () => {
   }, [location.state, navigate]);
 
   const handleNext = (skip = false) => {
-    console.log("currentStep", currentStep);
-
     if (currentStep < 4) {
       if (getStepValidation(currentStep)) {
         setCompletedSteps((prev) => new Set([...prev, currentStep]));
@@ -294,8 +292,6 @@ const Register = () => {
           console.log("errerr", err);
         });
     } catch (error) {
-      console.error("Registration failed:", error);
-
       toast({
         title: "Registration Failed",
         description:

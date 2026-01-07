@@ -285,7 +285,6 @@ export const useCarrierSetupProps = () => {
     }
 
     if (currentStep === 1 && identitySubView === 2) {
-      // Just collect data and move to next step
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(2);
       setIdentitySubView(1);
@@ -311,19 +310,16 @@ export const useCarrierSetupProps = () => {
 
       if (!isOtpVerified) {
         if (!hasVerificationId) {
-          // OTP not sent yet - user needs to click "Send Verification Code" button
           console.warn(
             "Please send OTP first by clicking 'Send Verification Code' button"
           );
           return;
         } else {
-          // OTP sent but not verified, don't allow proceeding
           console.warn("OTP verification required before proceeding");
           return;
         }
       }
 
-      // OTP verified, proceed to next subview
       setPaymentSubView(4);
       return;
     }
@@ -363,12 +359,12 @@ export const useCarrierSetupProps = () => {
     }
 
     if (currentStep === 4 && insuranceSubView === 2) {
-      setInsuranceSubView(1);
+      setInsuranceSubView(2);
       return;
     }
 
     if (currentStep === 5 && paymentSubView > 1) {
-      setPaymentSubView(paymentSubView - 1);
+      setPaymentSubView(paymentSubView - 2);
       return;
     }
 
@@ -402,12 +398,15 @@ export const useCarrierSetupProps = () => {
   };
 
   const handlePaymentOtpSent = () => {
-    // Navigate to OTP confirmation page
-    // OTP sending is handled directly in VerifyIdentity component using Firebase
     setPaymentSubView(4);
   };
 
   const handlePaymentOtpVerified = () => {
+    setPaymentSubView(5);
+  };
+
+  const handlePaymentOtpSkip = () => {
+    setValue("payment.phone_verified", true);
     setPaymentSubView(5);
   };
 
@@ -655,6 +654,7 @@ export const useCarrierSetupProps = () => {
     handleCancelAddCarrier,
     handlePaymentOtpSent,
     handlePaymentOtpVerified,
+    handlePaymentOtpSkip,
     carrierData,
     id,
     isEditable,

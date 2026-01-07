@@ -20,6 +20,7 @@ const StepRenderer = ({
   isEditable = false,
   onPaymentOtpSent,
   onPaymentOtpVerified,
+  onPaymentOtpSkip,
 }) => {
   switch (currentStep) {
     case 1:
@@ -55,6 +56,7 @@ const StepRenderer = ({
           isEditable={isEditable}
           onOtpSent={onPaymentOtpSent}
           onOtpVerified={onPaymentOtpVerified}
+          onSkipOtp={onPaymentOtpSkip}
         />
       );
     case 6:

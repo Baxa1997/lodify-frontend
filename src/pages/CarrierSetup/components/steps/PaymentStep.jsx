@@ -15,6 +15,7 @@ const PaymentStep = ({
   subView = 1,
   onOtpSent,
   onOtpVerified,
+  onSkipOtp,
 }) => {
   const renderPaymentView = () => {
     switch (subView) {
@@ -38,6 +39,7 @@ const PaymentStep = ({
               watch={watch}
               setValue={setValue}
               onSendOtp={onOtpSent}
+              onSkipOtp={onSkipOtp}
             />
           </Box>
         );
@@ -52,18 +54,7 @@ const PaymentStep = ({
             />
           </Box>
         );
-      case 5:
-        return (
-          <Box className={styles.stepContentPayment}>
-            <EnterCompanyFactoring control={control} />
-          </Box>
-        );
-      case 6:
-        return (
-          <Box className={styles.stepContentPayment}>
-            <ConfirmCompanyFactoring control={control} />
-          </Box>
-        );
+
       default:
         return (
           <Box className={styles.stepContentPayment}>

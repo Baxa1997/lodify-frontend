@@ -25,6 +25,7 @@ const CarrierSetup = () => {
     handleCancelAddCarrier,
     handlePaymentOtpSent,
     handlePaymentOtpVerified,
+    handlePaymentOtpSkip,
     isEditable,
     canSkipSetup,
     handleSkipSetup,
@@ -54,6 +55,7 @@ const CarrierSetup = () => {
         onCancelAddCarrier={handleCancelAddCarrier}
         onPaymentOtpSent={handlePaymentOtpSent}
         onPaymentOtpVerified={handlePaymentOtpVerified}
+        onPaymentOtpSkip={handlePaymentOtpSkip}
         isEditable={isEditable}
         canSkipSetup={canSkipSetup}
         onSkipSetup={handleSkipSetup}

@@ -43,7 +43,7 @@ function PhoneSendCode({
       });
 
       recaptchaRef.current = verifier;
-      console.log("recaptchaRef.current", recaptchaRef.current, auth);
+
       verifier
         .render()
         .then((widgetId) => {

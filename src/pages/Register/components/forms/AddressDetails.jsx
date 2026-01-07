@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import {
   Box,
   Flex,
@@ -6,10 +6,7 @@ import {
   VStack,
   Button,
   Link,
-  Input,
-  HStack,
   useToast,
-  Switch,
 } from "@chakra-ui/react";
 import OtpInput from "react-otp-input";
 import HFTextField from "../../../../components/HFTextField";
@@ -191,10 +188,8 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
             position: "top-right",
           });
 
-          // Set email verified flag in form data
           setValue("emailVerified", true);
 
-          // Proceed to next step (skip validation since email is verified)
           onNext && onNext(true);
         }
       } catch (error) {

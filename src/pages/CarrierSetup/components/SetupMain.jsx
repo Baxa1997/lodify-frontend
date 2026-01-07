@@ -34,6 +34,7 @@ const SetupMain = ({
   onCancelAddCarrier = () => {},
   onPaymentOtpSent = () => {},
   onPaymentOtpVerified = () => {},
+  onPaymentOtpSkip = () => {},
   isEditable = false,
   canSkipSetup = false,
   onSkipSetup = () => {},
@@ -91,6 +92,7 @@ const SetupMain = ({
           isEditable={isEditable}
           onPaymentOtpSent={onPaymentOtpSent}
           onPaymentOtpVerified={onPaymentOtpVerified}
+          onPaymentOtpSkip={onPaymentOtpSkip}
         />
 
         <Flex
