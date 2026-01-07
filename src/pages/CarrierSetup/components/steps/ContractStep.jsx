@@ -12,6 +12,8 @@ import {InsightAddress} from "./InsightAddress";
 const ContractStep = ({control, subView = 1, isEditable = false}) => {
   const [searchParams] = useSearchParams();
   const companies_id = searchParams.get("id");
+  const carrierSetup = searchParams.get("carrier_setup");
+  const isCarrierSetup = carrierSetup === "true";
 
   const {data: virtualAddressData} = useQuery({
     queryKey: ["VIRTUAL_ADDRESS_DATA", companies_id],
@@ -234,8 +236,9 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
           Failed Assesment
         </Text>
         <Text fontSize="14px" color="#414651" mb="18px">
-          We cannot connect {carrierName} to {brokerCompanyName} due to unmet
-          requirements.
+          {isCarrierSetup
+            ? `${carrierName} is setting up its information and needs to address the following requirements.`
+            : `We cannot connect ${carrierName} to ${brokerCompanyName} due to unmet requirements.`}
         </Text>
 
         <Box border="1px solid #E2E8F0" borderRadius="8px" p="12px" bg="white">
@@ -246,9 +249,9 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
                 Important
               </Text>
               <Text fontSize="14px" color="#414651">
-                {carrierName} does not meet {totalInsightsCount} of{" "}
-                {brokerCompanyName}
-                &apos;s requirements.
+                {isCarrierSetup
+                  ? `${carrierName} does not meet ${totalInsightsCount} requirement${totalInsightsCount !== 1 ? "s" : ""} that need to be addressed.`
+                  : `${carrierName} does not meet ${totalInsightsCount} of ${brokerCompanyName}'s requirements.`}
               </Text>
             </Box>
           </Flex>

@@ -38,6 +38,7 @@ const SetupMain = ({
   isEditable = false,
   canSkipSetup = false,
   onSkipSetup = () => {},
+  isCarrierSetup = false,
 }) => {
   // Watch OTP verification status for payment step
   const phoneVerified = useWatch({
@@ -176,11 +177,15 @@ const SetupMain = ({
         isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Confirm Add Carrier</ModalHeader>
+          <ModalHeader>
+            {isCarrierSetup ? "Confirm Save Changes" : "Confirm Add Carrier"}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="16px" color="#414651">
-              Are you sure you want to add this carrier to your list?
+              {isCarrierSetup
+                ? "Are you sure you want to save these changes? This data cannot be changed further."
+                : "Are you sure you want to add this carrier to your list?"}
             </Text>
           </ModalBody>
           <ModalFooter>
@@ -210,8 +215,8 @@ const SetupMain = ({
               _hover={{bg: "#DC5A1A"}}
               onClick={onConfirmAddCarrier}
               isLoading={isConnecting}
-              loadingText="Connecting...">
-              Yes, Add Carrier
+              loadingText={isCarrierSetup ? "Saving..." : "Connecting..."}>
+              {isCarrierSetup ? "Yes, Save Changes" : "Yes, Add Carrier"}
             </Button>
           </ModalFooter>
         </ModalContent>

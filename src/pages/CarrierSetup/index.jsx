@@ -29,6 +29,7 @@ const CarrierSetup = () => {
     isEditable,
     canSkipSetup,
     handleSkipSetup,
+    isCarrierSetup,
   } = useCarrierSetupProps();
   return (
     <Flex className={styles.multiStepContainer} minHeight="100vh">
@@ -59,6 +60,7 @@ const CarrierSetup = () => {
         isEditable={isEditable}
         canSkipSetup={canSkipSetup}
         onSkipSetup={handleSkipSetup}
+        isCarrierSetup={isCarrierSetup}
       />
     </Flex>
   );

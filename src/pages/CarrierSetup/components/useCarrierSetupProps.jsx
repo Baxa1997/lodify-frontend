@@ -616,19 +616,28 @@ export const useCarrierSetupProps = () => {
         throw new Error("Failed to submit contract data");
       }
 
-      const payload = {
-        joined_at: new Date().toISOString(),
-        brokers_id: brokersId,
-        companies_id: carrierData?.guid || id || "",
-      };
+      if (carrierSetup === "true") {
+        localStorage.setItem("carrierStatus", "true");
+        setIsConnecting(false);
+        setIsConfirmModalOpen(false);
+        setCompletedSteps((prev) => new Set([...prev, currentStep]));
+        setContractSubView(1);
+        navigate(`/admin/dashboard`);
+      } else {
+        const payload = {
+          joined_at: new Date().toISOString(),
+          brokers_id: brokersId,
+          companies_id: carrierData?.guid || id || "",
+        };
 
-      await carrierService.addCarrier(payload);
+        await carrierService.addCarrier(payload);
 
-      setIsConnecting(false);
-      setIsConfirmModalOpen(false);
-      setCompletedSteps((prev) => new Set([...prev, currentStep]));
-      setContractSubView(1);
-      navigate(`/admin/carriers`);
+        setIsConnecting(false);
+        setIsConfirmModalOpen(false);
+        setCompletedSteps((prev) => new Set([...prev, currentStep]));
+        setContractSubView(1);
+        navigate(`/admin/carriers`);
+      }
     } catch (error) {
       setIsConnecting(false);
       console.error("Failed to complete carrier setup:", error);
@@ -672,5 +681,6 @@ export const useCarrierSetupProps = () => {
     isEditable,
     canSkipSetup,
     handleSkipSetup,
+    isCarrierSetup: carrierSetup === "true",
   };
 };
