@@ -25,10 +25,13 @@ import {getShortFileName} from "@utils/getFileName";
 import FilesReader from "@components/FileViewer/FilesReader";
 
 const CertificationsStep = ({control, isEditable = false}) => {
-  const certificateFiles = useWatch({control, name: "insurance.certificate"});
+  const certificateFiles = useWatch({
+    control,
+    name: "certifications.certificate",
+  });
   const {field} = useController({
     control,
-    name: "insurance.certificate",
+    name: "certifications.certificate",
     defaultValue: [],
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -121,7 +124,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
         </Box>
         <HFCustomFilesUpload
           control={control}
-          name="insurance.certificate"
+          name="certifications.certificate"
           rules={{
             required: "Certificate is required",
           }}>
@@ -153,7 +156,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
           <HFTextField
             label="First Name"
             control={control}
-            name="insurance.first_name"
+            name="certifications.first_name"
             placeholder="First Name"
             style={{
               border: "1px solid #D5D7DA",
@@ -168,7 +171,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
           <HFTextField
             label="Last Name"
             control={control}
-            name="insurance.last_name"
+            name="certifications.last_name"
             placeholder="Last Name"
             style={{
               border: "1px solid #D5D7DA",
@@ -183,7 +186,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
           <HFTextField
             label="Email"
             control={control}
-            name="insurance.email"
+            name="certifications.email"
             placeholder="Email"
             type="email"
             style={{
@@ -201,7 +204,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
               Phone Number
             </Text>
             <Box className={styles.phoneInputWrapper}>
-              <HFPhoneInput control={control} name="insurance.phone" />
+              <HFPhoneInput control={control} name="certifications.phone" />
             </Box>
           </Box>
         </Box>

@@ -29,7 +29,6 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
     phone: "",
   });
 
-  // Disable fields in first subview if carrier_setup query param is "true"
   const shouldDisableFields = subView === 1 && carrierSetup === "true";
   const fieldDisabled = !isEditable || shouldDisableFields;
   const handleOpenModal = (contactType) => {
@@ -234,7 +233,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
           disabled={fieldDisabled}
           label="Legal name"
           control={control}
-          name="identity.legal_name"
+          name="legal_name"
           placeholder="Enter carrier name"
           style={{
             border: "1px solid #D5D7DA",

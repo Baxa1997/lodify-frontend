@@ -69,6 +69,8 @@ const carrierService = {
 
   createContactInfo: (data) =>
     httpRequest.post("v2/items/contact_information", {data}),
+
+  createItems: (slug, data) => httpRequest.post(`v2/items/${slug}`, {data}),
 };
 
 export default carrierService;

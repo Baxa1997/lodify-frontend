@@ -27,7 +27,7 @@ const GetPaid = ({control}) => {
     //   showInfo: false,
     // },
     {
-      value: "factoring",
+      value: "Factoring",
       title: "Factoring",
       details: "",
       showAch: false,
@@ -46,7 +46,7 @@ const GetPaid = ({control}) => {
 
       <Controller
         control={control}
-        name="payment_method"
+        name="payment_type"
         defaultValue="factoring"
         render={({field}) => (
           <RadioGroup {...field}>

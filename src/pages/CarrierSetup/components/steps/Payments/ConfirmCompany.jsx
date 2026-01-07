@@ -1,6 +1,7 @@
 import React from "react";
 import {Box, Text, Input} from "@chakra-ui/react";
 import {Controller, useWatch} from "react-hook-form";
+import HFTextField from "@components/HFTextField";
 
 const ConfirmCompany = ({control}) => {
   const values = useWatch({control});
@@ -30,22 +31,11 @@ const ConfirmCompany = ({control}) => {
               display="block">
               Factoring Company name
             </Text>
-            <Controller
+            <HFTextField
+              border="1px solid #D5D7DA"
               control={control}
               name="payment.factoring_company_name"
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={field.value || ""}
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                />
-              )}
+              placeholder="Enter factoring company name"
             />
           </Box>
 
@@ -59,24 +49,11 @@ const ConfirmCompany = ({control}) => {
               display="block">
               Telephone
             </Text>
-            <Controller
+            <HFTextField
+              border="1px solid #D5D7DA"
               control={control}
-              name="payment.factoring_telephone"
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={field.value || values?.identity?.telephone || ""}
-                  isReadOnly
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  cursor="not-allowed"
-                />
-              )}
+              name="payment.factoring_phone"
+              placeholder="Enter factoring company phone"
             />
           </Box>
 
@@ -90,25 +67,11 @@ const ConfirmCompany = ({control}) => {
               display="block">
               E-Mail
             </Text>
-            <Controller
+            <HFTextField
+              border="1px solid #D5D7DA"
               control={control}
               name="payment.factoring_email"
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={field.value || values?.identity?.email || ""}
-                  type="email"
-                  isReadOnly
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  cursor="not-allowed"
-                />
-              )}
+              placeholder="Enter factoring company email"
             />
           </Box>
         </Box>

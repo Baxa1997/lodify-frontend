@@ -40,6 +40,7 @@ export const useCarrierSetupProps = () => {
 
   const isSyncingRef = useRef(false);
 
+  // READY CREATE CONTACT INFO
   const handleContactInfo = async () => {
     try {
       const formData = watch();
@@ -68,21 +69,30 @@ export const useCarrierSetupProps = () => {
     }
   };
 
-  const handleOperationsSubmit = async () => {
+  // READY CREATE INSURANCE AGENTS
+  const handleAgentSubmit = async () => {
     try {
       const formData = watch();
-      const operationsData = formData.operations || {};
+      const certificationsData = formData.certifications || {};
+      const insuranceData = formData.insurance || {};
       const payload = {
         companies_id: id || "",
-        first_name: operationsData.first_name || "",
-        last_name: operationsData.last_name || "",
-        email: operationsData.email || "",
-        phone: operationsData.phone || "",
-        total_drivers: operationsData.total_drivers || "",
-        trailer_types: operationsData.trailer_types || [],
-        models: operationsData.models || "",
-        trailer_count: operationsData.trailer_count || "",
-        specialization: operationsData.specialization || "",
+        companies_id: id || "",
+        first_name: certificationsData.first_name || "",
+        last_name: certificationsData.last_name || "",
+        email: certificationsData.email || "",
+        phone: certificationsData.phone || "",
+        certificate: certificationsData.certificate || [],
+        commodity_type: insuranceData.commodity_type || [],
+        worker_compensation: insuranceData.worker_compensation || "",
+        compensation_insurance: insuranceData.compensation_insurance || "",
+        policy_number: insuranceData.policy_number || "",
+        effective_date: insuranceData.effective_date || "",
+        cancellation_date: insuranceData.cancellation_date || "",
+        issued_by: insuranceData.issued_by || "",
+        full_name: insuranceData.full_name || "",
+        phone_number: insuranceData.phone_number || "",
+        worker_email: insuranceData.worker_email || "",
       };
       await carrierService.addInsuranceAgents(payload);
 
@@ -93,20 +103,20 @@ export const useCarrierSetupProps = () => {
       return false;
     }
   };
-  console.log("watchchchchchchc", watch());
-  const handleCertificationsSubmit = async () => {
+
+  // READY CREATE COMPANY PAYMENT
+  const handlePaymentSubmit = async () => {
     try {
       const formData = watch();
-      const certificationsData = formData.insurance || {};
+      const paymentData = formData.payment || {};
       const payload = {
         companies_id: id || "",
-        first_name: certificationsData.first_name || "",
-        last_name: certificationsData.last_name || "",
-        email: certificationsData.email || "",
-        phone: certificationsData.phone || "",
-        certificate: certificationsData.certificate || [],
+        factoring_company_name: paymentData.factoring_company_name || "",
+        telephone: paymentData.factoring_phone || "",
+        email: paymentData.factoring_email || "",
+        payment_type: [paymentData.payment_type || "Factoring"],
       };
-      // await carrierService.updateCertifications(payload);
+      await carrierService.createItems("company_payment", payload);
 
       return true;
     } catch (error) {
@@ -115,94 +125,19 @@ export const useCarrierSetupProps = () => {
       return false;
     }
   };
-
-  const handleInsuranceSubmit = async () => {
-    try {
-      const formData = watch();
-      const insuranceData = formData.insurance || {};
-
-      const formatDate = (dateString) => {
-        if (!dateString) return "";
-        if (dateString.includes("T")) return dateString;
-        return dateString ? `${dateString}T00:00:00.000Z` : "";
-      };
-
-      const payload = {
-        first_name: insuranceData.first_name || "",
-        last_name: insuranceData.last_name || "",
-        email: insuranceData.email || "",
-        phone: insuranceData.phone || "",
-        certificate: insuranceData.certificate
-          ? Array.isArray(insuranceData.certificate)
-            ? insuranceData.certificate
-            : [insuranceData.certificate]
-          : [],
-        commodity_type: insuranceData.commodity_type || [],
-        worker_compensation:
-          insuranceData.worker_compensation === "yes" ? true : false,
-        compensation_insurance: insuranceData.compensation_insurance || "",
-        policy_number: insuranceData.policy_number || "",
-        effective_date: formatDate(insuranceData.effective_date),
-        cancellation_date: formatDate(insuranceData.cancellation_date),
-        issued_by: insuranceData.issued_by || "",
-        full_name: insuranceData.full_name || "",
-        phone_number: insuranceData.phone_number || "",
-        worker_email: insuranceData.worker_email || "",
-        companies_id: carrierData?.guid || id || "",
-      };
-
-      await carrierService.addInsuranceAgents(payload);
-      return true;
-    } catch (error) {
-      console.error("Insurance API error:", error);
-      return false;
-    }
-  };
-
-  const handlePaymentSubmit = async () => {
-    try {
-      const formData = watch();
-      const paymentData = formData.payment || {};
-      const payload = {
-        companies_id: carrierData?.guid || id || "",
-        ...paymentData,
-      };
-      await carrierService.updatePayment(payload);
-      return true;
-    } catch (error) {
-      console.error("Payment API error:", error);
-      return false;
-    }
-  };
-
+  console.log("questionnaireData", watch());
   const handleQuestionnaireSubmit = async () => {
     try {
       const formData = watch();
-      const questionnaireData = formData.questionnaire || {};
+      const questionnaireData = formData.questionnaire?.questions || [];
       const payload = {
         companies_id: carrierData?.guid || id || "",
-        ...questionnaireData,
+        objects: questionnaireData,
       };
-      await carrierService.updateQuestionnaire(payload);
+      await carrierService.createItems("questionnaire", payload);
       return true;
     } catch (error) {
       console.error("Questionnaire API error:", error);
-      return false;
-    }
-  };
-
-  const handleContractSubmit = async () => {
-    try {
-      const formData = watch();
-      const contractData = formData.contract || {};
-      const payload = {
-        companies_id: carrierData?.guid || id || "",
-        ...contractData,
-      };
-      await carrierService.updateContract(payload);
-      return true;
-    } catch (error) {
-      console.error("Contract API error:", error);
       return false;
     }
   };
@@ -453,13 +388,14 @@ export const useCarrierSetupProps = () => {
         trailer_count: data.trailer_count || "",
         specialization: data.specialization || "",
       },
-      certifications: {},
+      certifications: {
+        first_name: data.certifications?.first_name || "",
+        last_name: data.certifications?.last_name || "",
+        email: data.certifications?.email || "",
+        phone: data.certifications?.phone || "",
+        certificate: data.certifications?.certificate || [],
+      },
       insurance: {
-        first_name: data.insurance?.first_name || "",
-        last_name: data.insurance?.last_name || "",
-        email: data.insurance?.email || "",
-        phone: data.insurance?.phone || "",
-        certificate: data.insurance?.certificate || [],
         commodity_type: data.insurance?.commodity_type || [],
         worker_compensation: data.insurance?.worker_compensation || "",
         compensation_insurance: data.insurance?.compensation_insurance || "",
@@ -567,35 +503,35 @@ export const useCarrierSetupProps = () => {
         throw new Error("Failed to submit identity data");
       }
 
-      const operationsSuccess = await handleOperationsSubmit();
+      const operationsSuccess = await handleAgentSubmit();
       if (!operationsSuccess) {
         throw new Error("Failed to submit operations data");
       }
 
-      const certificationsSuccess = await handleCertificationsSubmit();
+      const certificationsSuccess = await handlePaymentSubmit();
       if (!certificationsSuccess) {
         throw new Error("Failed to submit certifications data");
       }
 
-      const insuranceSuccess = await handleInsuranceSubmit();
+      const insuranceSuccess = await handleQuestionnaireSubmit();
       if (!insuranceSuccess) {
         throw new Error("Failed to submit insurance data");
       }
 
-      const paymentSuccess = await handlePaymentSubmit();
-      if (!paymentSuccess) {
-        throw new Error("Failed to submit payment data");
-      }
+      // const paymentSuccess = await handlePaymentSubmit();
+      // if (!paymentSuccess) {
+      //   throw new Error("Failed to submit payment data");
+      // }
 
-      const questionnaireSuccess = await handleQuestionnaireSubmit();
-      if (!questionnaireSuccess) {
-        throw new Error("Failed to submit questionnaire data");
-      }
+      // const questionnaireSuccess = await handleQuestionnaireSubmit();
+      // if (!questionnaireSuccess) {
+      //   throw new Error("Failed to submit questionnaire data");
+      // }
 
-      const contractSuccess = await handleContractSubmit();
-      if (!contractSuccess) {
-        throw new Error("Failed to submit contract data");
-      }
+      // const contractSuccess = await handleContractSubmit();
+      // if (!contractSuccess) {
+      //   throw new Error("Failed to submit contract data");
+      // }
 
       if (carrierSetup === "true") {
         console.log("Carrier setup is true");

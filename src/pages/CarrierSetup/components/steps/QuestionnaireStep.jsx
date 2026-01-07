@@ -20,7 +20,7 @@ const QuestionSection = ({question, index, control}) => {
 
   const fileValue = useWatch({
     control,
-    name: `questionnaire.questions.${index}.file_name`,
+    name: `questionnaire.questions.${index}.document`,
     defaultValue: "",
   });
 
@@ -69,12 +69,12 @@ const QuestionSection = ({question, index, control}) => {
   return (
     <Box className={styles.questionSection} mb="24px">
       <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="16px">
-        {title} {index === 0}
+        {title}
       </Text>
 
       <Controller
         control={control}
-        name={`questionnaire.questions.${index}.radio_answer`}
+        name={`questionnaire.questions.${index}.answer`}
         defaultValue=""
         render={({field}) => (
           <RadioGroup {...field} value={field.value || ""} mb="16px">
@@ -82,14 +82,14 @@ const QuestionSection = ({question, index, control}) => {
               <Flex
                 border="1px solid #D5D7DA"
                 borderRadius="8px"
-                bg={field.value === "yes" ? "#FFF5ED" : "#FAFAFA"}
+                bg={field.value === "Yes" ? "#FFF5ED" : "#FAFAFA"}
                 p="10px 12px"
                 cursor="pointer"
-                onClick={() => field.onChange("yes")}>
+                onClick={() => field.onChange("Yes")}>
                 <Radio
-                  value="yes"
+                  value="Yes"
                   colorScheme="orange"
-                  isChecked={field.value === "yes"}
+                  isChecked={field.value === "Yes"}
                   border="1px solid #D5D7DA"
                 />
                 <Text fontSize="14px" color="#414651" ml="8px">
@@ -98,16 +98,16 @@ const QuestionSection = ({question, index, control}) => {
               </Flex>
 
               <Flex
-                bg={field.value === "no" ? "#FFF5ED" : "#FAFAFA"}
+                bg={field.value === "No" ? "#FFF5ED" : "#FAFAFA"}
                 border="1px solid #D5D7DA"
                 borderRadius="8px"
                 p="10px 12px"
                 cursor="pointer"
-                onClick={() => field.onChange("no")}>
+                onClick={() => field.onChange("No")}>
                 <Radio
-                  value="no"
+                  value="No"
                   colorScheme="orange"
-                  isChecked={field.value === "no"}
+                  isChecked={field.value === "No"}
                   border="1px solid #D5D7DA"
                 />
                 <Text fontSize="14px" color="#414651" ml="8px">
@@ -132,7 +132,7 @@ const QuestionSection = ({question, index, control}) => {
           </Box>
           <Controller
             control={control}
-            name={`questionnaire.questions.${index}.text_answer`}
+            name={`questionnaire.questions.${index}.other`}
             defaultValue=""
             render={({field}) => (
               <Input
@@ -165,7 +165,7 @@ const QuestionSection = ({question, index, control}) => {
         </Box>
         <HFCustomFilesUpload
           control={control}
-          name={`questionnaire.questions.${index}.file_name`}
+          name={`questionnaire.questions.${index}.document`}
           multiple={false}>
           <Button
             height="40px"
@@ -217,10 +217,10 @@ const QuestionnaireStep = ({control}) => {
 
     replace(
       questions.map((q) => ({
-        guid: q.guid,
-        radio_answer: "",
-        text_answer: "",
-        file_name: "",
+        questions_id: q.guid,
+        answer: "",
+        other: "",
+        document: "",
       }))
     );
   }, [questions, fields.length, replace]);
