@@ -19,6 +19,7 @@ const initialState = {
   currencies: [],
   access_type: "",
   user_data: null,
+  carrierStatusLoaded: false,
 };
 
 export const { actions: authActions, reducer: authReducer } = createSlice({
@@ -114,6 +115,9 @@ export const { actions: authActions, reducer: authReducer } = createSlice({
     logout: (state) => initialState,
     setStatus(state, payload) {
       state.access_type = payload;
+    },
+    setCarrierStatusLoaded(state, { payload }) {
+      state.carrierStatusLoaded = payload;
     },
   },
 });

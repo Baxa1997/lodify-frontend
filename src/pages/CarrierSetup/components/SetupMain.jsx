@@ -39,6 +39,7 @@ const SetupMain = ({
   canSkipSetup = false,
   onSkipSetup = () => {},
   isCarrierSetup = false,
+  showSuccess = false,
 }) => {
   // Watch OTP verification status for payment step
   const phoneVerified = useWatch({
@@ -88,33 +89,71 @@ const SetupMain = ({
         </Box>
       </Flex>
       <Box className={styles.formContainer}>
-        <StepRenderer
-          currentStep={currentStep}
-          control={control}
-          watch={watch}
-          setValue={setValue}
-          onNext={onNext}
-          onBack={onBack}
-          identitySubView={identitySubView}
-          insuranceSubView={insuranceSubView}
-          paymentSubView={paymentSubView}
-          contractSubView={contractSubView}
-          isEditable={isEditable}
-          onPaymentOtpSent={onPaymentOtpSent}
-          onPaymentOtpVerified={onPaymentOtpVerified}
-          onPaymentOtpSkip={onPaymentOtpSkip}
-        />
+        {showSuccess ? (
+          <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            minH="400px"
+            gap="24px">
+            <Box
+              w="80px"
+              h="80px"
+              borderRadius="50%"
+              bg="#10B981"
+              display="flex"
+              alignItems="center"
+              justifyContent="center">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+                  fill="white"
+                />
+              </svg>
+            </Box>
+            <Text fontSize="24px" fontWeight="bold" color="#1e293b">
+              Success!
+            </Text>
+            <Text fontSize="16px" color="#414651" textAlign="center" maxW="400px">
+              All your information has been saved successfully. You will be
+              redirected to the dashboard shortly.
+            </Text>
+          </Flex>
+        ) : (
+          <StepRenderer
+            currentStep={currentStep}
+            control={control}
+            watch={watch}
+            setValue={setValue}
+            onNext={onNext}
+            onBack={onBack}
+            identitySubView={identitySubView}
+            insuranceSubView={insuranceSubView}
+            paymentSubView={paymentSubView}
+            contractSubView={contractSubView}
+            isEditable={isEditable}
+            onPaymentOtpSent={onPaymentOtpSent}
+            onPaymentOtpVerified={onPaymentOtpVerified}
+            onPaymentOtpSkip={onPaymentOtpSkip}
+          />
+        )}
 
-        <Flex
-          position={"absolute"}
-          bottom={"0"}
-          left={"0"}
-          right={"0"}
-          bg={"#fff"}
-          p={"4px 12px"}
-          borderTop={"1px solid #d6d7da"}
-          justifyContent="space-between"
-          alignItems="center">
+        {!showSuccess && (
+          <Flex
+            position={"absolute"}
+            bottom={"0"}
+            left={"0"}
+            right={"0"}
+            bg={"#fff"}
+            p={"4px 12px"}
+            borderTop={"1px solid #d6d7da"}
+            justifyContent="space-between"
+            alignItems="center">
           <Flex alignItems="center" gap="12px">
             <Flex
               alignItems="center"
@@ -168,7 +207,8 @@ const SetupMain = ({
                 : "Yes, continue"}
             </Button>
           </Flex>
-        </Flex>
+          </Flex>
+        )}
       </Box>
 
       <Modal

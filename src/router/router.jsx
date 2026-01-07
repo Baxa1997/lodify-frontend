@@ -54,15 +54,23 @@ const ProtectedRoute = ({children}) => {
 
 const PublicRoute = ({children}) => {
   const isAuth = useSelector((state) => state?.auth?.isAuth);
+  const carrierStatusLoaded = useSelector(
+    (state) => state?.auth?.carrierStatusLoaded
+  );
   const companiesId = useSelector(
     (state) => state?.auth?.user_data?.companies_id
   );
   const location = useLocation();
 
   if (isAuth) {
+    if (!carrierStatusLoaded) {
+      return <LoadingSpinner />;
+    }
+
     const carrierStatus = localStorage.getItem("carrierStatus");
+
     if (
-      carrierStatus === "true" ||
+      carrierStatus === "false" ||
       carrierStatus === null ||
       carrierStatus === undefined
     ) {
@@ -72,10 +80,10 @@ const PublicRoute = ({children}) => {
           replace
         />
       );
+    } else {
+      const from = location.state?.from?.pathname || "/admin/dashboard";
+      return <Navigate to={from} replace />;
     }
-
-    const from = location.state?.from?.pathname || "/admin/dashboard";
-    return <Navigate to={from} replace />;
   }
 
   return children;

@@ -37,6 +37,7 @@ export const useCarrierSetupProps = () => {
   const [isInsuranceLoading, setIsInsuranceLoading] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const isSyncingRef = useRef(false);
 
@@ -578,8 +579,10 @@ export const useCarrierSetupProps = () => {
         },
         table: "company",
       });
+      return true;
     } catch (error) {
       console.error("Failed to update skip setup:", error);
+      throw error;
     }
   };
 
@@ -608,25 +611,29 @@ export const useCarrierSetupProps = () => {
       }
 
       if (carrierSetup === "true") {
-        carrierService
-          .updateCompanyAudit({
-            power_units: formData.operations?.power_units || 0,
-            total_drivers: formData.operations?.total_drivers || 0,
-            trailer_types: formData.operations?.trailer_types || [],
-            trailer_count: formData.operations?.trailer_count || 0,
-            models: formData.operations?.models || [],
-            specialization: formData.operations?.specialization || "",
-            guid: id || "",
-            tin: formData?.tin || "",
-            federal_tax_classification:
-              formData?.federal_tax_classification || "",
-          })
-          .then((res) => {
-            handleUpdateSkipSetup();
-          })
-          .catch((err) => {
-            console.error("Failed to update company audit:", err);
-          });
+        await carrierService.updateCompanyAudit({
+          power_units: formData.operations?.power_units || 0,
+          total_drivers: formData.operations?.total_drivers || 0,
+          trailer_types: formData.operations?.trailer_types || [],
+          trailer_count: formData.operations?.trailer_count || 0,
+          models: formData.operations?.models || [],
+          specialization: formData.operations?.specialization || "",
+          guid: id || "",
+          tin: formData?.tin || "",
+          federal_tax_classification:
+            formData?.federal_tax_classification || "",
+        });
+
+        await handleUpdateSkipSetup();
+
+        setIsConnecting(false);
+        setIsConfirmModalOpen(false);
+        setShowSuccess(true);
+
+        setTimeout(() => {
+          localStorage.setItem("carrierStatus", "true");
+          navigate("/admin/dashboard");
+        }, 2000);
       } else {
         const payload = {
           joined_at: new Date().toISOString(),
@@ -686,5 +693,6 @@ export const useCarrierSetupProps = () => {
     canSkipSetup,
     handleSkipSetup,
     isCarrierSetup: carrierSetup === "true",
+    showSuccess,
   };
 };
