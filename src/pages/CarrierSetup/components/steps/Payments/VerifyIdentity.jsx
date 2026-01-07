@@ -207,7 +207,7 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp, onSkipOtp}) => {
           Send Verification Code
         </Button>
 
-        {onSkipOtp && (
+        {/* {onSkipOtp && (
           <Button
             variant="outline"
             size="lg"
@@ -221,7 +221,7 @@ const VerifyIdentity = ({control, watch, setValue, onSendOtp, onSkipOtp}) => {
             onClick={onSkipOtp}>
             Skip OTP Verification
           </Button>
-        )}
+        )} */}
       </Box>
     </Box>
   );
