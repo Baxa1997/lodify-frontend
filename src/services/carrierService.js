@@ -66,6 +66,9 @@ const carrierService = {
   updateContract: (data) => httpRequest.post("v2/items/contracts", {data}),
 
   getQuestionnaire: (slug) => httpRequest.get(`v2/items/${slug}`),
+
+  createContactInfo: (data) =>
+    httpRequest.post("v2/items/contact_information", {data}),
 };
 
 export default carrierService;

@@ -40,92 +40,83 @@ export const useCarrierSetupProps = () => {
 
   const isSyncingRef = useRef(false);
 
-  const [stepLoadingStates, setStepLoadingStates] = useState({
-    identity: false,
-    operations: false,
-    certifications: false,
-    insurance: false,
-    payment: false,
-    questionnaire: false,
-    contract: false,
-  });
-
-  const handleIdentitySubmit = async () => {
-    setStepLoadingStates((prev) => ({...prev, identity: true}));
+  const handleContactInfo = async () => {
     try {
       const formData = watch();
-      const identityData = formData.identity || {};
       const contactInfo = formData.contact_information || {};
+
       const payload = {
-        companies_id: carrierData?.guid || id || "",
-        legal_name: identityData.legal_name || "",
-        us_dot_number: identityData.us_dot_number || "",
-        phy_street: identityData.phy_street || "",
-        phy_city: identityData.phy_city || "",
-        phy_state: identityData.phy_state || "",
-        phy_zip: identityData.phy_zip || "",
-        phy_country: identityData.phy_country || "",
-        telephone: identityData.telephone || "",
-        email: identityData.email || "",
-        company_officer_1: identityData.company_officer_1 || "",
-        company_officer_2: identityData.company_officer_2 || "",
-        contact_information: contactInfo,
+        companies_id: id || "",
+        dispatch_name: contactInfo.dispatch_name || "",
+        dispatch_email: contactInfo.dispatch_email || "",
+        dispatch_phone: contactInfo.dispatch_phone || "",
+        billing_name: contactInfo.billing_name || "",
+        billing_email: contactInfo.billing_email || "",
+        billing_phone: contactInfo.billing_phone || "",
+        claims_name: contactInfo.claims_name || "",
+        claims_email: contactInfo.claims_email || "",
+        claims_phone: contactInfo.claims_phone || "",
+        after_hours_name: contactInfo.after_hours_name || "",
+        after_hours_email: contactInfo.after_hours_email || "",
+        after_hours_phone: contactInfo.after_hours_phone || "",
       };
-      await carrierService.updateIdentity(payload);
-      setStepLoadingStates((prev) => ({...prev, identity: false}));
+      await carrierService.createContactInfo(payload);
       return true;
     } catch (error) {
       console.error("Identity API error:", error);
-      setStepLoadingStates((prev) => ({...prev, identity: false}));
       return false;
     }
   };
 
   const handleOperationsSubmit = async () => {
-    setStepLoadingStates((prev) => ({...prev, operations: true}));
     try {
       const formData = watch();
       const operationsData = formData.operations || {};
       const payload = {
-        companies_id: carrierData?.guid || id || "",
-        power_units: operationsData.power_units || "",
+        companies_id: id || "",
+        first_name: operationsData.first_name || "",
+        last_name: operationsData.last_name || "",
+        email: operationsData.email || "",
+        phone: operationsData.phone || "",
         total_drivers: operationsData.total_drivers || "",
         trailer_types: operationsData.trailer_types || [],
         models: operationsData.models || "",
         trailer_count: operationsData.trailer_count || "",
         specialization: operationsData.specialization || "",
       };
-      await carrierService.updateOperations(payload);
-      setStepLoadingStates((prev) => ({...prev, operations: false}));
+      await carrierService.addInsuranceAgents(payload);
+
       return true;
     } catch (error) {
       console.error("Operations API error:", error);
-      setStepLoadingStates((prev) => ({...prev, operations: false}));
+
       return false;
     }
   };
-
+  console.log("watchchchchchchc", watch());
   const handleCertificationsSubmit = async () => {
-    setStepLoadingStates((prev) => ({...prev, certifications: true}));
     try {
       const formData = watch();
-      const certificationsData = formData.certifications || {};
+      const certificationsData = formData.insurance || {};
       const payload = {
-        companies_id: carrierData?.guid || id || "",
-        ...certificationsData,
+        companies_id: id || "",
+        first_name: certificationsData.first_name || "",
+        last_name: certificationsData.last_name || "",
+        email: certificationsData.email || "",
+        phone: certificationsData.phone || "",
+        certificate: certificationsData.certificate || [],
       };
-      await carrierService.updateCertifications(payload);
-      setStepLoadingStates((prev) => ({...prev, certifications: false}));
+      // await carrierService.updateCertifications(payload);
+
       return true;
     } catch (error) {
       console.error("Certifications API error:", error);
-      setStepLoadingStates((prev) => ({...prev, certifications: false}));
+
       return false;
     }
   };
 
   const handleInsuranceSubmit = async () => {
-    setStepLoadingStates((prev) => ({...prev, insurance: true}));
     try {
       const formData = watch();
       const insuranceData = formData.insurance || {};
@@ -161,17 +152,14 @@ export const useCarrierSetupProps = () => {
       };
 
       await carrierService.addInsuranceAgents(payload);
-      setStepLoadingStates((prev) => ({...prev, insurance: false}));
       return true;
     } catch (error) {
       console.error("Insurance API error:", error);
-      setStepLoadingStates((prev) => ({...prev, insurance: false}));
       return false;
     }
   };
 
   const handlePaymentSubmit = async () => {
-    setStepLoadingStates((prev) => ({...prev, payment: true}));
     try {
       const formData = watch();
       const paymentData = formData.payment || {};
@@ -180,17 +168,14 @@ export const useCarrierSetupProps = () => {
         ...paymentData,
       };
       await carrierService.updatePayment(payload);
-      setStepLoadingStates((prev) => ({...prev, payment: false}));
       return true;
     } catch (error) {
       console.error("Payment API error:", error);
-      setStepLoadingStates((prev) => ({...prev, payment: false}));
       return false;
     }
   };
 
   const handleQuestionnaireSubmit = async () => {
-    setStepLoadingStates((prev) => ({...prev, questionnaire: true}));
     try {
       const formData = watch();
       const questionnaireData = formData.questionnaire || {};
@@ -199,17 +184,14 @@ export const useCarrierSetupProps = () => {
         ...questionnaireData,
       };
       await carrierService.updateQuestionnaire(payload);
-      setStepLoadingStates((prev) => ({...prev, questionnaire: false}));
       return true;
     } catch (error) {
       console.error("Questionnaire API error:", error);
-      setStepLoadingStates((prev) => ({...prev, questionnaire: false}));
       return false;
     }
   };
 
   const handleContractSubmit = async () => {
-    setStepLoadingStates((prev) => ({...prev, contract: true}));
     try {
       const formData = watch();
       const contractData = formData.contract || {};
@@ -218,11 +200,9 @@ export const useCarrierSetupProps = () => {
         ...contractData,
       };
       await carrierService.updateContract(payload);
-      setStepLoadingStates((prev) => ({...prev, contract: false}));
       return true;
     } catch (error) {
       console.error("Contract API error:", error);
-      setStepLoadingStates((prev) => ({...prev, contract: false}));
       return false;
     }
   };
@@ -452,17 +432,18 @@ export const useCarrierSetupProps = () => {
     return {
       ...data,
       identity: {
-        legal_name: data.legal_name || "",
-        us_dot_number: data.us_dot_number || "",
-        phy_street: data.phy_street || "",
-        phy_city: data.phy_city || "",
-        phy_state: data.phy_state || "",
-        phy_zip: data.phy_zip || "",
-        phy_country: data.phy_country || "",
-        telephone: `+1${data.telephone || ""}`,
-        email: data.email || "",
-        company_officer_1: data.company_officer_1 || "",
-        company_officer_2: data.company_officer_2 || "",
+        dispatch_name: data.dispatch_name || "",
+        dispatch_email: data.dispatch_email || "",
+        dispatch_phone: data.dispatch_phone || "",
+        billing_name: data.billing_name || "",
+        billing_email: data.billing_email || "",
+        billing_phone: data.billing_phone || "",
+        claims_name: data.claims_name || "",
+        claims_email: data.claims_email || "",
+        claims_phone: data.claims_phone || "",
+        after_hours_name: data.after_hours_name || "",
+        after_hours_email: data.after_hours_email || "",
+        after_hours_phone: data.after_hours_phone || "",
       },
       operations: {
         power_units: data.power_units || "",
@@ -573,15 +554,15 @@ export const useCarrierSetupProps = () => {
   }, [watch, setValue]);
 
   const handleConfirmAddCarrier = async () => {
-    if (!brokersId || !id) {
-      console.error("Missing broker ID or carrier ID");
-      return;
-    }
+    // if (!brokersId || !id) {
+    //   console.error("Missing broker ID or carrier ID");
+    //   return;
+    // }
 
     setIsConnecting(true);
 
     try {
-      const identitySuccess = await handleIdentitySubmit();
+      const identitySuccess = await handleContactInfo();
       if (!identitySuccess) {
         throw new Error("Failed to submit identity data");
       }
@@ -617,12 +598,13 @@ export const useCarrierSetupProps = () => {
       }
 
       if (carrierSetup === "true") {
-        localStorage.setItem("carrierStatus", "true");
-        setIsConnecting(false);
-        setIsConfirmModalOpen(false);
-        setCompletedSteps((prev) => new Set([...prev, currentStep]));
-        setContractSubView(1);
-        navigate(`/admin/dashboard`);
+        console.log("Carrier setup is true");
+        // localStorage.setItem("carrierStatus", "true");
+        // setIsConnecting(false);
+        // setIsConfirmModalOpen(false);
+        // setCompletedSteps((prev) => new Set([...prev, currentStep]));
+        // setContractSubView(1);
+        // navigate(`/admin/dashboard`);
       } else {
         const payload = {
           joined_at: new Date().toISOString(),
