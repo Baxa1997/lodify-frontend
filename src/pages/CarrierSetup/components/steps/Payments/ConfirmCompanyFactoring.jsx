@@ -42,7 +42,6 @@ const ConfirmCompanyFactoring = ({control}) => {
                 <Input
                   {...field}
                   value={field.value || defaultValues.factoring_company_name}
-                  isReadOnly
                   bg="#F8F9FA"
                   border="1px solid #D5D7DA"
                   borderRadius="8px"

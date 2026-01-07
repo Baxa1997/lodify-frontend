@@ -69,7 +69,7 @@ const QuestionSection = ({question, index, control}) => {
   return (
     <Box className={styles.questionSection} mb="24px">
       <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="16px">
-        {title} {index === 0 && "(Required)"}
+        {title} {index === 0}
       </Text>
 
       <Controller

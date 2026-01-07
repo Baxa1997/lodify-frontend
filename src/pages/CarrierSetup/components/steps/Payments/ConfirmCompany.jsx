@@ -37,7 +37,6 @@ const ConfirmCompany = ({control}) => {
                 <Input
                   {...field}
                   value={field.value || ""}
-                  isReadOnly
                   bg="#F8F9FA"
                   border="1px solid #D5D7DA"
                   borderRadius="8px"
@@ -45,7 +44,6 @@ const ConfirmCompany = ({control}) => {
                   fontSize="14px"
                   px="12px"
                   py="8px"
-                  cursor="not-allowed"
                 />
               )}
             />
