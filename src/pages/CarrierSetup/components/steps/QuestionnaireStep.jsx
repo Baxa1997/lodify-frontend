@@ -14,6 +14,7 @@ import carrierService from "@services/carrierService";
 import {useQuery} from "@tanstack/react-query";
 import HFCustomFilesUpload from "@components/HFCustomFilesUpload";
 import {Button} from "@chakra-ui/react";
+import {useSearchParams} from "react-router-dom";
 
 const QuestionSection = ({question, index, control}) => {
   const {title} = question;
@@ -196,6 +197,9 @@ const QuestionSection = ({question, index, control}) => {
 };
 
 const QuestionnaireStep = ({control}) => {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+
   const {data: questionnaireResponse} = useQuery({
     queryKey: ["GET_QUESTIONNAIRE"],
     queryFn: () => carrierService.getQuestionnaire("questions"),
@@ -218,6 +222,8 @@ const QuestionnaireStep = ({control}) => {
     replace(
       questions.map((q) => ({
         questions_id: q.guid,
+        is_new: true,
+        compnanies_id: id,
         answer: "",
         other: "",
         document: "",

@@ -1,3 +1,4 @@
+import httpRequestNoToken from "@utils/httpRequestNoToken";
 import httpRequest from "../utils/httpRequest";
 
 const carrierService = {
@@ -71,6 +72,21 @@ const carrierService = {
     httpRequest.post("v2/items/contact_information", {data}),
 
   createItems: (slug, data) => httpRequest.post(`v2/items/${slug}`, {data}),
+
+  createItemsPatch: (slug, data) =>
+    httpRequestNoToken.patch(
+      `v2/items/${slug}`,
+      {data},
+      {
+        headers: {
+          Authorization: "API-KEY",
+          "x-api-key": "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+          "Content-Type": "application/json",
+        },
+      }
+    ),
+
+  updateCompanyAudit: (data) => httpRequest.put("/v2/items/companies", {data}),
 };
 
 export default carrierService;

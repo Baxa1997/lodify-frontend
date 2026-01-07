@@ -131,10 +131,9 @@ export const useCarrierSetupProps = () => {
       const formData = watch();
       const questionnaireData = formData.questionnaire?.questions || [];
       const payload = {
-        companies_id: carrierData?.guid || id || "",
         objects: questionnaireData,
       };
-      await carrierService.createItems("questionnaire", payload);
+      await carrierService.createItemsPatch("questionnaire", payload);
       return true;
     } catch (error) {
       console.error("Questionnaire API error:", error);
@@ -364,65 +363,145 @@ export const useCarrierSetupProps = () => {
   const mapCarrierDataToForm = (data) => {
     if (!data) return {};
 
+    const normalizePhone = (phone) => {
+      if (!phone) return "";
+      if (phone.startsWith("+1")) return phone;
+      if (phone.startsWith("1")) return `+${phone}`;
+      const cleaned = phone.replace(/[^\d]/g, "");
+      if (cleaned.length === 10) return `+1${cleaned}`;
+      if (cleaned.length === 11 && cleaned.startsWith("1"))
+        return `+${cleaned}`;
+      return phone;
+    };
+
     return {
-      ...data,
+      legal_name: data.legal_name || "",
+      us_dot_number: data.us_dot_number || "",
+      tin: data.tin || "",
+      federal_tax_classification: data.federal_tax_classification || "",
+
       identity: {
-        dispatch_name: data.dispatch_name || "",
-        dispatch_email: data.dispatch_email || "",
-        dispatch_phone: data.dispatch_phone || "",
-        billing_name: data.billing_name || "",
-        billing_email: data.billing_email || "",
-        billing_phone: data.billing_phone || "",
-        claims_name: data.claims_name || "",
-        claims_email: data.claims_email || "",
-        claims_phone: data.claims_phone || "",
-        after_hours_name: data.after_hours_name || "",
-        after_hours_email: data.after_hours_email || "",
-        after_hours_phone: data.after_hours_phone || "",
+        us_dot_number: data.us_dot_number || "",
+        phy_street:
+          data.phy_street || data.physical_address?.split(",")[0] || "",
+        phy_city: data.phy_city || "",
+        phy_state: data.phy_state || "",
+        phy_zip: data.phy_zip || "",
+        phy_country: data.phy_country || "US",
+        telephone: normalizePhone(data.telephone || data.phone || ""),
+        email: data.email || data.company_email || "",
+        company_officer_1: data.company_officer_1 || "",
+        company_officer_2: data.company_officer_2 || "",
       },
+
       operations: {
-        power_units: data.power_units || "",
-        total_drivers: data.total_drivers || "",
-        trailer_types: data.trailer_types || [],
-        models: data.models || "",
-        trailer_count: data.trailer_count || "",
-        specialization: data.specialization || "",
+        power_units: data.power_units || data.operations?.power_units || "",
+        total_drivers:
+          data.total_drivers ||
+          data.operations?.total_drivers ||
+          data.drivers ||
+          "",
+        trailer_types:
+          data.trailer_types || data.operations?.trailer_types || [],
+        models: data.models || data.operations?.models || "",
+        trailer_count:
+          data.trailer_count || data.operations?.trailer_count || "",
+        specialization: data.operations?.specialization || "",
       },
+
       certifications: {
-        first_name: data.certifications?.first_name || "",
-        last_name: data.certifications?.last_name || "",
-        email: data.certifications?.email || "",
-        phone: data.certifications?.phone || "",
-        certificate: data.certifications?.certificate || [],
+        first_name:
+          data.certifications?.first_name || data.insurance?.first_name || "",
+        last_name:
+          data.certifications?.last_name || data.insurance?.last_name || "",
+        email: data.certifications?.email || data.insurance?.email || "",
+        phone: normalizePhone(
+          data.certifications?.phone || data.insurance?.phone || ""
+        ),
+        certificate:
+          data.certifications?.certificate || data.insurance?.certificate || [],
       },
+
       insurance: {
         commodity_type: data.insurance?.commodity_type || [],
-        worker_compensation: data.insurance?.worker_compensation || "",
+        worker_compensation: data.insurance?.worker_compensation
+          ? data.insurance.worker_compensation === true ||
+            data.insurance.worker_compensation === "yes"
+            ? "yes"
+            : "no"
+          : "",
         compensation_insurance: data.insurance?.compensation_insurance || "",
         policy_number: data.insurance?.policy_number || "",
         effective_date: data.insurance?.effective_date || "",
         cancellation_date: data.insurance?.cancellation_date || "",
         issued_by: data.insurance?.issued_by || "",
         full_name: data.insurance?.full_name || "",
-        phone_number: data.insurance?.phone_number || "",
-        worker_email: data.insurance?.worker_email || "",
+        phone_number: normalizePhone(data.insurance?.phone_number || ""),
+        worker_email: data.insurance?.worker_email || data?.worker_email || "",
       },
-      payment: {},
-      questionnaire: {},
+
+      payment: {
+        factoring_company_name: data.payment?.factoring_company_name || "",
+        factoring_phone: normalizePhone(
+          data.payment?.factoring_phone || data.payment?.telephone || ""
+        ),
+        factoring_email:
+          data.payment?.factoring_email || data.payment?.email || "",
+        payment_type: data.payment?.payment_type || "Factoring",
+        verify_email_or_phone:
+          data.payment?.verify_email_or_phone || data.email || "",
+        verify_mobile_phone: normalizePhone(
+          data.payment?.verify_mobile_phone ||
+            data.telephone ||
+            data.phone ||
+            ""
+        ),
+        phone_verified: data.payment?.phone_verified || false,
+        verify_verification_id: data.payment?.verify_verification_id || "",
+        verify_phone: normalizePhone(data.payment?.verify_phone || ""),
+      },
+
+      questionnaire: {
+        questions: Array.isArray(data.questionnaire?.questions)
+          ? data.questionnaire.questions.map((q) => ({
+              questions_id: q.questions_id || q.guid || q.questions_id || "",
+              answer: q.answer || q.radio_answer || "",
+              other: q.other || q.text_answer || "",
+              document: q.document || q.file_name || "",
+            }))
+          : Array.isArray(data.questionnaire?.objects)
+          ? data.questionnaire.objects.map((q) => ({
+              questions_id: q.questions_id || q.guid || "",
+              answer: q.answer || q.radio_answer || "",
+              other: q.other || q.text_answer || "",
+              document: q.document || q.file_name || "",
+            }))
+          : [],
+      },
+
       contract: {},
+
       contact_information: {
         dispatch_name: data.contact_information?.dispatch_name || "",
         dispatch_email: data.contact_information?.dispatch_email || "",
-        dispatch_phone: data.contact_information?.dispatch_phone || "",
+        dispatch_phone: normalizePhone(
+          data.contact_information?.dispatch_phone || ""
+        ),
         billing_name: data.contact_information?.billing_name || "",
         billing_email: data.contact_information?.billing_email || "",
-        billing_phone: data.contact_information?.billing_phone || "",
+        billing_phone: normalizePhone(
+          data.contact_information?.billing_phone || ""
+        ),
         claims_name: data.contact_information?.claims_name || "",
         claims_email: data.contact_information?.claims_email || "",
-        claims_phone: data.contact_information?.claims_phone || "",
+        claims_phone: normalizePhone(
+          data.contact_information?.claims_phone || ""
+        ),
         after_hours_name: data.contact_information?.after_hours_name || "",
         after_hours_email: data.contact_information?.after_hours_email || "",
-        after_hours_phone: data.contact_information?.after_hours_phone || "",
+        after_hours_phone: normalizePhone(
+          data.contact_information?.after_hours_phone || ""
+        ),
       },
     };
   };
@@ -488,15 +567,10 @@ export const useCarrierSetupProps = () => {
 
     return () => subscription.unsubscribe();
   }, [watch, setValue]);
-
+  console.log("formData=====>", watch());
   const handleConfirmAddCarrier = async () => {
-    // if (!brokersId || !id) {
-    //   console.error("Missing broker ID or carrier ID");
-    //   return;
-    // }
-
     setIsConnecting(true);
-
+    const formData = watch();
     try {
       const identitySuccess = await handleContactInfo();
       if (!identitySuccess) {
@@ -518,21 +592,6 @@ export const useCarrierSetupProps = () => {
         throw new Error("Failed to submit insurance data");
       }
 
-      // const paymentSuccess = await handlePaymentSubmit();
-      // if (!paymentSuccess) {
-      //   throw new Error("Failed to submit payment data");
-      // }
-
-      // const questionnaireSuccess = await handleQuestionnaireSubmit();
-      // if (!questionnaireSuccess) {
-      //   throw new Error("Failed to submit questionnaire data");
-      // }
-
-      // const contractSuccess = await handleContractSubmit();
-      // if (!contractSuccess) {
-      //   throw new Error("Failed to submit contract data");
-      // }
-
       if (carrierSetup === "true") {
         console.log("Carrier setup is true");
         // localStorage.setItem("carrierStatus", "true");
@@ -541,6 +600,26 @@ export const useCarrierSetupProps = () => {
         // setCompletedSteps((prev) => new Set([...prev, currentStep]));
         // setContractSubView(1);
         // navigate(`/admin/dashboard`);
+
+        carrierService
+          .updateCompanyAudit({
+            power_units: formData.operations?.power_units || 0,
+            total_drivers: formData.operations?.total_drivers || 0,
+            trailer_types: formData.operations?.trailer_types || [],
+            trailer_count: formData.operations?.trailer_count || 0,
+            models: formData.operations?.models || [],
+            specialization: formData.operations?.specialization || "",
+            guid: id || "",
+            tin: formData?.tin || "",
+            federal_tax_classification:
+              formData?.federal_tax_classification || "",
+          })
+          .then((res) => {
+            console.log("res=====>", res);
+          })
+          .catch((err) => {
+            console.error("Failed to update company audit:", err);
+          });
       } else {
         const payload = {
           joined_at: new Date().toISOString(),

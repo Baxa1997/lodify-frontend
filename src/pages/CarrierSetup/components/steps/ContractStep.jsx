@@ -168,67 +168,6 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
     carrierInfoData?.company_name ||
     "the carrier";
 
-  // const associationInsights = useMemo(() => {
-  //   return [
-  //     {
-  //       title: "Reused Equipment Scheduled Auto",
-  //       date: "Observed March, 2024",
-  //       filtered: equipmentData?.length > 0 ? false : true,
-  //     },
-  //     {
-  //       title: "Flagged Factor",
-  //       date: "Observed May, 2023",
-  //       filtered: true,
-  //     },
-  //   ];
-  // }, [equipmentData]);
-
-  // const locationInsights = useMemo(() => {
-  //   return virtualAddressData?.length > 0
-  //     ? virtualAddressData.map((item) => ({
-  //         title: "Virtual Office Address",
-  //         date: format(new Date(), "MMM dd, yyyy"),
-  //       }))
-  //     : [];
-  // }, [virtualAddressData]);
-
-  // const matchedAddressesCount = useMemo(() => {
-  //   return (
-  //     (addressMatchesBodyData?.physical_address?.length || 0) +
-  //     (addressMatchesBodyData?.mailing_address?.length || 0)
-  //   );
-  // }, [addressMatchesBodyData]);
-
-  // const changedFieldsCount = useMemo(() => {
-  //   return (
-  //     changedFields?.filter(
-  //       (field) =>
-  //         field.oldValue &&
-  //         field.oldValue !== "" &&
-  //         field.newValue &&
-  //         field.oldValue !== field.newValue &&
-  //         (field.key === "email" ||
-  //           field.key === "phone" ||
-  //           field.key === "physical_address" ||
-  //           field.key === "mailing_address")
-  //     ).length || 0
-  //   );
-  // }, [changedFields]);
-
-  // const locationCount = useMemo(() => {
-  //   return (
-  //     changedFields?.filter(
-  //       (field) =>
-  //         (field.key === "physical_address" ||
-  //           field.key === "mailing_address") &&
-  //         field.oldValue &&
-  //         field.oldValue !== "" &&
-  //         field.newValue &&
-  //         field.oldValue !== field.newValue
-  //     ).length || 0
-  //   );
-  // }, [changedFields]);
-
   if (subView === 2) {
     return (
       <Box className={styles.stepContentContract}>
@@ -250,7 +189,9 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
               </Text>
               <Text fontSize="14px" color="#414651">
                 {isCarrierSetup
-                  ? `${carrierName} does not meet ${totalInsightsCount} requirement${totalInsightsCount !== 1 ? "s" : ""} that need to be addressed.`
+                  ? `${carrierName} does not meet ${totalInsightsCount} requirement${
+                      totalInsightsCount !== 1 ? "s" : ""
+                    } that need to be addressed.`
                   : `${carrierName} does not meet ${totalInsightsCount} of ${brokerCompanyName}'s requirements.`}
               </Text>
             </Box>
@@ -261,10 +202,6 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
           {virtualAddressData?.map((item) => (
             <InsightAddress key={item.id} item={item} virtualAddress={true} />
           ))}
-
-          {/* {contactMatchesData?.map((item) => (
-            <InsightAddress key={item.id} item={item} contact={true} />
-          ))} */}
 
           {addressMatchesBodyData?.physical_address?.map((item) => (
             <InsightAddress key={item.id} item={item} physicalAddress={true} />
