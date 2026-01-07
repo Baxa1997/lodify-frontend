@@ -59,14 +59,21 @@ const PublicRoute = ({children}) => {
   );
   const location = useLocation();
 
-  if (isAuth && Boolean(localStorage.getItem("carrierStatus") !== "true")) {
-    return (
-      <Navigate
-        to={`/carrier-setup?id=${companiesId}&carrier_setup=true`}
-        replace
-      />
-    );
-  } else if (isAuth) {
+  if (isAuth) {
+    const carrierStatus = localStorage.getItem("carrierStatus");
+    if (
+      carrierStatus === "true" ||
+      carrierStatus === null ||
+      carrierStatus === undefined
+    ) {
+      return (
+        <Navigate
+          to={`/carrier-setup?id=${companiesId}&carrier_setup=true`}
+          replace
+        />
+      );
+    }
+
     const from = location.state?.from?.pathname || "/admin/dashboard";
     return <Navigate to={from} replace />;
   }

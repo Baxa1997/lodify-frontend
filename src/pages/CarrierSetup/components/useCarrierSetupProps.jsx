@@ -567,7 +567,22 @@ export const useCarrierSetupProps = () => {
 
     return () => subscription.unsubscribe();
   }, [watch, setValue]);
-  console.log("formData=====>", watch());
+
+  const handleUpdateSkipSetup = async () => {
+    try {
+      await carrierService.updateSkipSetup({
+        method: "update",
+        object_data: {
+          companies_id: id,
+          setup_skip: true,
+        },
+        table: "company",
+      });
+    } catch (error) {
+      console.error("Failed to update skip setup:", error);
+    }
+  };
+
   const handleConfirmAddCarrier = async () => {
     setIsConnecting(true);
     const formData = watch();
@@ -593,14 +608,6 @@ export const useCarrierSetupProps = () => {
       }
 
       if (carrierSetup === "true") {
-        console.log("Carrier setup is true");
-        // localStorage.setItem("carrierStatus", "true");
-        // setIsConnecting(false);
-        // setIsConfirmModalOpen(false);
-        // setCompletedSteps((prev) => new Set([...prev, currentStep]));
-        // setContractSubView(1);
-        // navigate(`/admin/dashboard`);
-
         carrierService
           .updateCompanyAudit({
             power_units: formData.operations?.power_units || 0,
@@ -615,7 +622,7 @@ export const useCarrierSetupProps = () => {
               formData?.federal_tax_classification || "",
           })
           .then((res) => {
-            console.log("res=====>", res);
+            handleUpdateSkipSetup();
           })
           .catch((err) => {
             console.error("Failed to update company audit:", err);

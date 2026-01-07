@@ -16,8 +16,17 @@ const getCarrierStatus = (companies_id) => {
       },
     })
     .then((res) => {
-      console.log("resssssss==========/??????????", res);
-      localStorage.setItem("carrierStatus", res?.data?.response?.setup_skip);
+      const setupSkip = res?.data?.response?.setup_skip;
+
+      localStorage.setItem(
+        "carrierStatus",
+        setupSkip === true ? "true" : "false"
+      );
+    })
+    .catch((err) => {
+      console.error("Failed to get carrier status:", err);
+
+      localStorage.setItem("carrierStatus", "false");
     });
 };
 
@@ -36,8 +45,9 @@ export const loginAction = createAsyncThunk(
       );
 
       if (Boolean(!res?.user_data?.brokers_id)) {
-        console.log("resssssss==========", res);
         getCarrierStatus(res?.user_data?.companies_id);
+      } else {
+        localStorage.setItem("carrierStatus", "false");
       }
 
       dispatch(companyActions.setCompanyId(res?.user?.company_id));

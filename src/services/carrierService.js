@@ -87,6 +87,9 @@ const carrierService = {
     ),
 
   updateCompanyAudit: (data) => httpRequest.put("/v2/items/companies", {data}),
+
+  updateSkipSetup: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-integrations", {data}),
 };
 
 export default carrierService;
