@@ -60,7 +60,13 @@ const StepRenderer = ({
         />
       );
     case 6:
-      return <QuestionnaireStep control={control} isEditable={isEditable} />;
+      return (
+        <QuestionnaireStep
+          control={control}
+          setValue={setValue}
+          isEditable={isEditable}
+        />
+      );
     case 7:
       return (
         <ContractStep

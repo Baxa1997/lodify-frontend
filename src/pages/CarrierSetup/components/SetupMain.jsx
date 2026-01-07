@@ -46,9 +46,18 @@ const SetupMain = ({
     defaultValue: false,
   });
   
+  const verificationId = useWatch({
+    control,
+    name: "payment.verify_verification_id",
+    defaultValue: "",
+  });
+  
   // Check if we're on payment step subView 3 and OTP is not verified
+  // Also check if there's a verification_id (meaning OTP was actually sent/verified, not skipped)
   const isPaymentOtpRequired =
-    currentStep === 5 && paymentSubView === 3 && !phoneVerified;
+    currentStep === 5 &&
+    paymentSubView === 3 &&
+    (!phoneVerified || !verificationId);
   return (
     <Box className={styles.mainContent} position={"relative"}>
       <Flex

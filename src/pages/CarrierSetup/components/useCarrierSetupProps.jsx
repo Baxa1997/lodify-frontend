@@ -359,12 +359,20 @@ export const useCarrierSetupProps = () => {
     }
 
     if (currentStep === 4 && insuranceSubView === 2) {
-      setInsuranceSubView(2);
+      setInsuranceSubView(1);
       return;
     }
 
     if (currentStep === 5 && paymentSubView > 1) {
-      setPaymentSubView(paymentSubView - 2);
+      const newSubView = paymentSubView - 1;
+      setPaymentSubView(newSubView);
+      if (newSubView === 3) {
+        const formData = watch();
+
+        if (!formData.payment?.verify_verification_id) {
+          setValue("payment.phone_verified", false);
+        }
+      }
       return;
     }
 
@@ -402,12 +410,16 @@ export const useCarrierSetupProps = () => {
   };
 
   const handlePaymentOtpVerified = () => {
-    setPaymentSubView(5);
+    setCompletedSteps((prev) => new Set([...prev, 5]));
+    setCurrentStep(6);
+    setPaymentSubView(1);
   };
 
   const handlePaymentOtpSkip = () => {
     setValue("payment.phone_verified", true);
-    setPaymentSubView(5);
+    setCompletedSteps((prev) => new Set([...prev, 5]));
+    setCurrentStep(6);
+    setPaymentSubView(1);
   };
 
   useEffect(() => {
