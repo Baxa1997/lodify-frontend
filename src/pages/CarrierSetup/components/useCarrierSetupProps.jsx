@@ -89,7 +89,6 @@ export const useCarrierSetupProps = () => {
       const insuranceData = formData.insurance || {};
       const payload = {
         companies_id: id || "",
-        companies_id: id || "",
         first_name: certificationsData.first_name || "",
         last_name: certificationsData.last_name || "",
         email: certificationsData.email || "",
@@ -388,6 +387,22 @@ export const useCarrierSetupProps = () => {
     select: (res) => res.data?.response || [],
   });
 
+  const {data: cerftificationData} = useQuery({
+    queryKey: ["CERTIFICATION_DATA", id],
+    queryFn: () =>
+      carrierService.getItemData("insurance_agents", {companies_id: id}),
+    enabled: Boolean(id) && carrierSetup !== "true",
+    select: (res) => res.data?.response?.[0] || {},
+  });
+
+  const {data: companyPaymentData} = useQuery({
+    queryKey: ["COMPANY_PAYMENT_DATA", id],
+    queryFn: () =>
+      carrierService.getItemData("company_payment", {companies_id: id}),
+    enabled: Boolean(id) && carrierSetup !== "true",
+    select: (res) => res.data?.response?.[0] || {},
+  });
+
   const mapCarrierDataToForm = (data) => {
     if (!data) return {};
 
@@ -443,9 +458,9 @@ export const useCarrierSetupProps = () => {
         commodity_type: data.insurance?.commodity_type || [],
         worker_compensation: data.insurance?.worker_compensation
           ? data.insurance.worker_compensation === true ||
-            data.insurance.worker_compensation === "yes"
-            ? "yes"
-            : "no"
+            data.insurance.worker_compensation === "Yes"
+            ? "Yes"
+            : "No"
           : "",
         compensation_insurance: data.insurance?.compensation_insurance || "",
         policy_number: data.insurance?.policy_number || "",
@@ -459,23 +474,9 @@ export const useCarrierSetupProps = () => {
 
       payment: {
         factoring_company_name: data.payment?.factoring_company_name || "",
-        factoring_phone: normalizePhone(
-          data.payment?.factoring_phone || data.payment?.telephone || ""
-        ),
-        factoring_email:
-          data.payment?.factoring_email || data.payment?.email || "",
+        factoring_phone: data.payment?.telephone || "",
+        factoring_email: data.payment?.email || data.payment?.email || "",
         payment_type: data.payment?.payment_type || "Factoring",
-        verify_email_or_phone:
-          data.payment?.verify_email_or_phone || data.email || "",
-        verify_mobile_phone: normalizePhone(
-          data.payment?.verify_mobile_phone ||
-            data.telephone ||
-            data.phone ||
-            ""
-        ),
-        phone_verified: data.payment?.phone_verified || false,
-        verify_verification_id: data.payment?.verify_verification_id || "",
-        verify_phone: normalizePhone(data.payment?.verify_phone || ""),
       },
 
       questionnaire: {
@@ -530,7 +531,6 @@ export const useCarrierSetupProps = () => {
     }
   }, [carrierData, reset]);
 
-  // Map itemData to contact_information format
   const mapItemDataToContactInfo = (data) => {
     if (!data || Object.keys(data).length === 0) return null;
 
@@ -576,10 +576,11 @@ export const useCarrierSetupProps = () => {
       questionnaireData.length > 0
     ) {
       const mappedQuestions = questionnaireData.map((q) => ({
-        questions_id: q.questions_id || q.guid || "",
-        answer: q.answer || q.radio_answer || "",
-        other: q.other || q.text_answer || "",
-        document: q.document || q.file_name || "",
+        questions_id: q.questions_id || q.questions_id_data || "",
+        answer: q.answer || "",
+        other: q.other || "",
+        document: q.document || "",
+        question_title: q.questions_id_data?.title || "",
       }));
 
       setValue("questionnaire.questions", mappedQuestions, {
@@ -587,6 +588,64 @@ export const useCarrierSetupProps = () => {
       });
     }
   }, [questionnaireData, carrierSetup, setValue]);
+
+  useEffect(() => {
+    if (
+      carrierSetup !== "true" &&
+      cerftificationData &&
+      Object.keys(cerftificationData).length > 0
+    ) {
+      const mappedAgents = {
+        first_name: cerftificationData.first_name || "",
+        last_name: cerftificationData.last_name || "",
+        email: cerftificationData.email || "",
+        phone: normalizePhone(cerftificationData.phone || ""),
+        certificate: cerftificationData.certificate || [],
+      };
+
+      const insurance = {
+        commodity_type: cerftificationData.commodity_type || [],
+        worker_compensation:
+          cerftificationData.worker_compensation === true ? "yes" : "no" || "",
+        compensation_insurance: cerftificationData.compensation_insurance || "",
+        policy_number: cerftificationData.policy_number || "",
+        effective_date: cerftificationData.effective_date || "",
+        cancellation_date: cerftificationData.cancellation_date || "",
+        issued_by: cerftificationData.issued_by || "",
+        full_name: cerftificationData.full_name || "",
+        phone_number: cerftificationData.phone_number || "",
+        worker_email: cerftificationData.worker_email || "",
+      };
+
+      setValue("certifications", mappedAgents, {
+        shouldValidate: false,
+      });
+
+      setValue("insurance", insurance, {
+        shouldValidate: false,
+      });
+    }
+  }, [cerftificationData, carrierSetup, setValue]);
+
+  useEffect(() => {
+    if (
+      carrierSetup !== "true" &&
+      companyPaymentData &&
+      Object.keys(companyPaymentData).length > 0
+    ) {
+      const mappedAgents = {
+        factoring_company_name: companyPaymentData.factoring_company_name || "",
+        factoring_email: companyPaymentData.email || "",
+        payment_type: companyPaymentData.payment_type?.[0] || "Factoring",
+        factoring_phone: normalizePhone(companyPaymentData.telephone || ""),
+        verify_verification_id: companyPaymentData.guid || "",
+      };
+
+      setValue("payment", mappedAgents, {
+        shouldValidate: false,
+      });
+    }
+  }, [companyPaymentData, carrierSetup, setValue]);
 
   useEffect(() => {
     if (isSyncingRef.current) return;

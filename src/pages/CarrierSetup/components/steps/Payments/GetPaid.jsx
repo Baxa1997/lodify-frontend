@@ -46,7 +46,7 @@ const GetPaid = ({control}) => {
 
       <Controller
         control={control}
-        name="payment_type"
+        name="payment.payment_type"
         defaultValue="factoring"
         render={({field}) => (
           <RadioGroup {...field}>
