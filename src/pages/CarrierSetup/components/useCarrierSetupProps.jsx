@@ -553,6 +553,8 @@ export const useCarrierSetupProps = () => {
         factoring_phone: data.payment?.telephone || "",
         factoring_email: data.payment?.email || data.payment?.email || "",
         payment_type: data.payment?.payment_type || "Factoring",
+        verify_email_or_phone: data?.email || "",
+        verify_mobile_phone: data?.telephone || "",
       },
 
       questionnaire: {

@@ -81,7 +81,7 @@ export const SafetyStatus = ({brokerSafetyData = []}) => {
         <Box>
           <Text fontSize="18px" fontWeight="400" color="#181D27" mb="4px">
             Monthly{" "}
-            <span style={{color: "#000", fontWeight: "700"}}>Carrier</span>{" "}
+            <span style={{color: "#000", fontWeight: "700"}}>Carriers</span>{" "}
             Safety Status
           </Text>
           <Text fontSize="14px" color="#6B7280" fontWeight="400">
