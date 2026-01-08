@@ -15,6 +15,19 @@ const OperationsStep = ({control, isEditable = false}) => {
     {label: "Drop Deck", value: "drop_deck"},
   ];
 
+  const modelTypes = [
+    {label: "Freightliner Cascadia", value: "Freightliner Cascadia"},
+    {label: "Volvo VNL 760 / VNL 860", value: "Volvo VNL 760 / VNL 860"},
+    {label: "Kenworth T680", value: "Kenworth T680"},
+    {label: "Kenworth T880", value: "Kenworth T880"},
+    {label: "Peterbilt 579", value: "Peterbilt 579"},
+    {label: "Peterbilt 389", value: "Peterbilt 389"},
+    {label: "International LT", value: "International LT"},
+    {label: "International ProStar", value: "International ProStar"},
+    {label: "Mack Anthem", value: "Mack Anthem"},
+    {label: "Western Star 5700XE", value: "Western Star 5700XE"},
+  ];
+
   return (
     <Box className={styles.stepContentOperation}>
       <Text fontSize="14x" fontWeight="600" color="#181D27">
@@ -77,9 +90,9 @@ const OperationsStep = ({control, isEditable = false}) => {
           <Text fontSize="14px" fontWeight="500" color="#414651" mb="8px">
             Models
           </Text>
-          <HFSelect
+          <HFMultiSelect
             disabled={!isEditable}
-            options={[]}
+            options={modelTypes}
             control={control}
             name="operations.models"
             placeholder="Enter models"
