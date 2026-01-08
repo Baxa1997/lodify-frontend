@@ -2,7 +2,6 @@ import React, {useMemo} from "react";
 import {Box, Text, Flex, VStack} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSearchParams} from "react-router-dom";
-import {format} from "date-fns";
 import {useSelector} from "react-redux";
 import styles from "../../CarrierSetup.module.scss";
 import HFTextField from "@components/HFTextField";
@@ -31,21 +30,21 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
     enabled: Boolean(companies_id),
   });
 
-  const {data: equipmentData} = useQuery({
-    queryKey: ["EQUIPMENT_DATA", companies_id],
-    queryFn: () =>
-      carrierService.getEquipmentData({
-        data: {
-          method: "vin",
-          object_data: {
-            companies_id: companies_id,
-          },
-          table: "matches",
-        },
-      }),
-    select: (res) => res?.data?.response ?? [],
-    enabled: Boolean(companies_id),
-  });
+  // const {data: equipmentData} = useQuery({
+  //   queryKey: ["EQUIPMENT_DATA", companies_id],
+  //   queryFn: () =>
+  //     carrierService.getEquipmentData({
+  //       data: {
+  //         method: "vin",
+  //         object_data: {
+  //           companies_id: companies_id,
+  //         },
+  //         table: "matches",
+  //       },
+  //     }),
+  //   select: (res) => res?.data?.response ?? [],
+  //   enabled: Boolean(companies_id),
+  // });
 
   const {data: carrierAuditData} = useQuery({
     queryKey: ["AUDIT_DATA", companies_id],
