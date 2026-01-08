@@ -12,20 +12,6 @@ import {Controller} from "react-hook-form";
 
 const GetPaid = ({control}) => {
   const paymentOptions = [
-    // {
-    //   value: "quickpay",
-    //   title: "QuickPay- 2",
-    //   details: "2 Days, 3% Free",
-    //   showAch: true,
-    //   showInfo: true,
-    // },
-    // {
-    //   value: "standard",
-    //   title: "Standard Pay",
-    //   details: "30 Days, 0% Free",
-    //   showAch: true,
-    //   showInfo: false,
-    // },
     {
       value: "Factoring",
       title: "Factoring",
@@ -75,8 +61,6 @@ const GetPaid = ({control}) => {
                       <Flex alignItems="center" gap="12px" flex="1">
                         <Radio
                           size="lg"
-                          //   width="28px"
-                          //   height="28px"
                           value={option.value}
                           colorScheme="orange"
                           border="1px solid #D5D7DA"

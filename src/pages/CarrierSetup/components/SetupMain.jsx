@@ -41,21 +41,18 @@ const SetupMain = ({
   isCarrierSetup = false,
   showSuccess = false,
 }) => {
-  // Watch OTP verification status for payment step
   const phoneVerified = useWatch({
     control,
     name: "payment.phone_verified",
     defaultValue: false,
   });
-  
+
   const verificationId = useWatch({
     control,
     name: "payment.verify_verification_id",
     defaultValue: "",
   });
-  
-  // Check if we're on payment step subView 3 and OTP is not verified
-  // Also check if there's a verification_id (meaning OTP was actually sent/verified, not skipped)
+
   const isPaymentOtpRequired =
     currentStep === 5 &&
     paymentSubView === 3 &&
@@ -119,7 +116,11 @@ const SetupMain = ({
             <Text fontSize="24px" fontWeight="bold" color="#1e293b">
               Success!
             </Text>
-            <Text fontSize="16px" color="#414651" textAlign="center" maxW="400px">
+            <Text
+              fontSize="16px"
+              color="#414651"
+              textAlign="center"
+              maxW="400px">
               All your information has been saved successfully. You will be
               redirected to the dashboard shortly.
             </Text>
@@ -154,59 +155,59 @@ const SetupMain = ({
             borderTop={"1px solid #d6d7da"}
             justifyContent="space-between"
             alignItems="center">
-          <Flex alignItems="center" gap="12px">
-            <Flex
-              alignItems="center"
-              gap="8px"
-              cursor="pointer"
-              onClick={onBack}
-              color="#535862">
-              <img src="/img/backArrow.svg" alt="arrow-left" />
-              <Text fontSize="14px" fontWeight="400">
-                Back
-              </Text>
+            <Flex alignItems="center" gap="12px">
+              <Flex
+                alignItems="center"
+                gap="8px"
+                cursor="pointer"
+                onClick={onBack}
+                color="#535862">
+                <img src="/img/backArrow.svg" alt="arrow-left" />
+                <Text fontSize="14px" fontWeight="400">
+                  Back
+                </Text>
+              </Flex>
             </Flex>
-          </Flex>
 
-          <Text fontSize="14px" color="#6B7280">
-            Is this information correct?
-          </Text>
+            <Text fontSize="14px" color="#6B7280">
+              Is this information correct?
+            </Text>
 
-          <Flex gap="12px">
-            {canSkipSetup && (
+            <Flex gap="12px">
+              {canSkipSetup && (
+                <Button
+                  variant="outline"
+                  borderColor="#D1D5DB"
+                  color="#374151"
+                  fontSize="14px"
+                  fontWeight="500"
+                  px="20px"
+                  py="6px"
+                  borderRadius="8px"
+                  _hover={{bg: "#F9FAFB"}}
+                  onClick={onSkipSetup}>
+                  Skip setup
+                </Button>
+              )}
               <Button
-                variant="outline"
-                borderColor="#D1D5DB"
-                color="#374151"
+                bg="#EF6820"
+                color="white"
                 fontSize="14px"
-                fontWeight="500"
+                fontWeight="600"
                 px="20px"
                 py="6px"
                 borderRadius="8px"
-                _hover={{bg: "#F9FAFB"}}
-                onClick={onSkipSetup}>
-                Skip setup
+                _hover={{bg: "#DC5A1A"}}
+                onClick={onNext}
+                isLoading={isInsuranceLoading}
+                loadingText="Loading..."
+                isDisabled={isInsuranceLoading || isPaymentOtpRequired}
+                opacity={isPaymentOtpRequired ? 0.5 : 1}>
+                {isPaymentOtpRequired
+                  ? "Verify OTP to continue"
+                  : "Yes, continue"}
               </Button>
-            )}
-            <Button
-              bg="#EF6820"
-              color="white"
-              fontSize="14px"
-              fontWeight="600"
-              px="20px"
-              py="6px"
-              borderRadius="8px"
-              _hover={{bg: "#DC5A1A"}}
-              onClick={onNext}
-              isLoading={isInsuranceLoading}
-              loadingText="Loading..."
-              isDisabled={isInsuranceLoading || isPaymentOtpRequired}
-              opacity={isPaymentOtpRequired ? 0.5 : 1}>
-              {isPaymentOtpRequired
-                ? "Verify OTP to continue"
-                : "Yes, continue"}
-            </Button>
-          </Flex>
+            </Flex>
           </Flex>
         )}
       </Box>

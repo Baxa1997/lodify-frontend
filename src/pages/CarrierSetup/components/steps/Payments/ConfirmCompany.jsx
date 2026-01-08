@@ -1,11 +1,8 @@
 import React from "react";
-import {Box, Text, Input} from "@chakra-ui/react";
-import {Controller, useWatch} from "react-hook-form";
+import {Box, Text} from "@chakra-ui/react";
 import HFTextField from "@components/HFTextField";
 
 const ConfirmCompany = ({control}) => {
-  const values = useWatch({control});
-
   return (
     <Box>
       <Text fontSize="20px" fontWeight="bold" color="#1e293b" mb="8px">

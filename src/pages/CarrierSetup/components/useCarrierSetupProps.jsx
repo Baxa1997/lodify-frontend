@@ -22,7 +22,6 @@ export const useCarrierSetupProps = () => {
 
   const {
     control,
-    handleSubmit,
     formState: {errors},
     watch,
     setValue,
@@ -41,7 +40,6 @@ export const useCarrierSetupProps = () => {
 
   const isSyncingRef = useRef(false);
 
-  // Helper function to normalize phone numbers
   const normalizePhone = (phone) => {
     if (!phone) return "";
     if (phone.startsWith("+1")) return phone;
@@ -375,7 +373,7 @@ export const useCarrierSetupProps = () => {
     queryKey: ["ITEM_DATA", id],
     queryFn: () =>
       carrierService.getItemData("contact_information", {companies_id: id}),
-    enabled: Boolean(id) && carrierSetup !== "true",
+    enabled: Boolean(id),
     select: (res) => res.data?.response?.[0] || {},
   });
 
@@ -383,7 +381,7 @@ export const useCarrierSetupProps = () => {
     queryKey: ["QUESTIONNAIRE_DATA", id],
     queryFn: () =>
       carrierService.getItemData("questionnaire", {companies_id: id}),
-    enabled: Boolean(id) && carrierSetup !== "true",
+    enabled: Boolean(id),
     select: (res) => res.data?.response || [],
   });
 
@@ -391,7 +389,7 @@ export const useCarrierSetupProps = () => {
     queryKey: ["CERTIFICATION_DATA", id],
     queryFn: () =>
       carrierService.getItemData("insurance_agents", {companies_id: id}),
-    enabled: Boolean(id) && carrierSetup !== "true",
+    enabled: Boolean(id),
     select: (res) => res.data?.response?.[0] || {},
   });
 
@@ -399,7 +397,7 @@ export const useCarrierSetupProps = () => {
     queryKey: ["COMPANY_PAYMENT_DATA", id],
     queryFn: () =>
       carrierService.getItemData("company_payment", {companies_id: id}),
-    enabled: Boolean(id) && carrierSetup !== "true",
+    enabled: Boolean(id),
     select: (res) => res.data?.response?.[0] || {},
   });
 
@@ -552,11 +550,7 @@ export const useCarrierSetupProps = () => {
   };
 
   useEffect(() => {
-    if (
-      carrierSetup !== "true" &&
-      itemData &&
-      Object.keys(itemData).length > 0
-    ) {
+    if (itemData && Object.keys(itemData).length > 0) {
       const contactInfo = mapItemDataToContactInfo(itemData);
       if (contactInfo) {
         Object.entries(contactInfo).forEach(([key, value]) => {
@@ -566,11 +560,10 @@ export const useCarrierSetupProps = () => {
         });
       }
     }
-  }, [itemData, carrierSetup, setValue]);
+  }, [itemData, setValue]);
 
   useEffect(() => {
     if (
-      carrierSetup !== "true" &&
       questionnaireData &&
       Array.isArray(questionnaireData) &&
       questionnaireData.length > 0
@@ -587,14 +580,10 @@ export const useCarrierSetupProps = () => {
         shouldValidate: false,
       });
     }
-  }, [questionnaireData, carrierSetup, setValue]);
+  }, [questionnaireData, setValue]);
 
   useEffect(() => {
-    if (
-      carrierSetup !== "true" &&
-      cerftificationData &&
-      Object.keys(cerftificationData).length > 0
-    ) {
+    if (cerftificationData && Object.keys(cerftificationData).length > 0) {
       const mappedAgents = {
         first_name: cerftificationData.first_name || "",
         last_name: cerftificationData.last_name || "",
@@ -625,14 +614,10 @@ export const useCarrierSetupProps = () => {
         shouldValidate: false,
       });
     }
-  }, [cerftificationData, carrierSetup, setValue]);
+  }, [cerftificationData, setValue]);
 
   useEffect(() => {
-    if (
-      carrierSetup !== "true" &&
-      companyPaymentData &&
-      Object.keys(companyPaymentData).length > 0
-    ) {
+    if (companyPaymentData && Object.keys(companyPaymentData).length > 0) {
       const mappedAgents = {
         factoring_company_name: companyPaymentData.factoring_company_name || "",
         factoring_email: companyPaymentData.email || "",
@@ -645,7 +630,7 @@ export const useCarrierSetupProps = () => {
         shouldValidate: false,
       });
     }
-  }, [companyPaymentData, carrierSetup, setValue]);
+  }, [companyPaymentData, setValue]);
 
   useEffect(() => {
     if (isSyncingRef.current) return;
