@@ -624,6 +624,8 @@ export const useCarrierSetupProps = () => {
         payment_type: companyPaymentData.payment_type?.[0] || "Factoring",
         factoring_phone: normalizePhone(companyPaymentData.telephone || ""),
         verify_verification_id: companyPaymentData.guid || "",
+        verify_email_or_phone: companyPaymentData.email || "",
+        verify_mobile_phone: normalizePhone(companyPaymentData.telephone || ""),
       };
 
       setValue("payment", mappedAgents, {
