@@ -79,13 +79,9 @@ const AllCarriers = () => {
     staleTime: 0,
   });
 
-  console.log("datadata", data);
-
   const carriersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
 
-  // When searchQuery exists, use API results directly (already filtered by API)
-  // When no searchQuery, use all carriers
   const filteredCarriers = useMemo(() => {
     return carriersData;
   }, [carriersData]);
@@ -279,6 +275,22 @@ const AllCarriers = () => {
                     mb="8px"
                     noOfLines={2}>
                     {companyName}
+                  </Text>
+
+                  <Text
+                    px="20px"
+                    fontSize="14px"
+                    fontWeight="400"
+                    color="#535862">
+                    US DOT: {carrier.us_dot_number || "N/A"}
+                  </Text>
+
+                  <Text
+                    px="20px"
+                    fontSize="14px"
+                    fontWeight="400"
+                    color="#535862">
+                    Phone: {carrier.telephone || "N/A"}
                   </Text>
 
                   <Text

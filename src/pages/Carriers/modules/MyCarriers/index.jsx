@@ -186,7 +186,7 @@ const MyCarriers = () => {
                 <Box
                   key={carrier.guid}
                   w="100%"
-                  h="250px"
+                  h="290px"
                   bg="white"
                   borderRadius="12px"
                   border="1px solid #E2E8F0"
@@ -250,6 +250,22 @@ const MyCarriers = () => {
                     mb="8px"
                     noOfLines={2}>
                     {companyName}
+                  </Text>
+
+                  <Text
+                    px="20px"
+                    fontSize="14px"
+                    fontWeight="400"
+                    color="#535862">
+                    US DOT: {carrier.us_dot_number || "N/A"}
+                  </Text>
+
+                  <Text
+                    px="20px"
+                    fontSize="14px"
+                    fontWeight="400"
+                    color="#535862">
+                    Phone: {carrier.telephone || "N/A"}
                   </Text>
 
                   <Text

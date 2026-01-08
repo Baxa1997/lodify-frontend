@@ -1,4 +1,4 @@
-import {Flex} from "@chakra-ui/react";
+import {Flex, Text} from "@chakra-ui/react";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import styles from "../../styles/tabs.module.scss";
 import HeadBreadCrumb from "@components/HeadBreadCrumb";
@@ -15,6 +15,7 @@ const Carriers = () => {
           <TabList>
             <Tab>My Carriers</Tab>
             <Tab>All Carriers</Tab>
+            <Tab>Invitations</Tab>
           </TabList>
 
           <TabPanel>
@@ -22,6 +23,11 @@ const Carriers = () => {
           </TabPanel>
           <TabPanel>
             <AllCarriers />
+          </TabPanel>
+          <TabPanel>
+            <Flex h={"calc(100vh - 200px)"} justify="center" align="center">
+              <Text>No Data Available</Text>
+            </Flex>
           </TabPanel>
         </Tabs>
       </Flex>
