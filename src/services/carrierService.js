@@ -90,6 +90,13 @@ const carrierService = {
 
   updateSkipSetup: (data) =>
     httpRequest.post("v2/invoke_function/lodify-integrations", {data}),
+
+  getItemData: (slug, params = {}) => {
+    const dataParam = JSON.stringify(params);
+    return httpRequest.get(
+      `v2/items/${slug}?data=${encodeURIComponent(dataParam)}`
+    );
+  },
 };
 
 export default carrierService;

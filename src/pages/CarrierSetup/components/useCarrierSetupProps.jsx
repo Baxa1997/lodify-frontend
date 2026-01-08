@@ -361,6 +361,16 @@ export const useCarrierSetupProps = () => {
     }
   }, [currentStep, paymentSubView, watch, setValue]);
 
+  const {data: itemData} = useQuery({
+    queryKey: ["ITEM_DATA", id],
+    queryFn: () =>
+      carrierService.getItemData("contact_information", {companies_id: id}),
+    enabled: Boolean(id),
+    select: (res) => res.data?.response?.[0] || {},
+  });
+
+  console.log("itemDataitemData", itemData);
+
   const mapCarrierDataToForm = (data) => {
     if (!data) return {};
 

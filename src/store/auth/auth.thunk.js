@@ -18,7 +18,7 @@ const getCarrierStatus = (companies_id, dispatch) => {
     })
     .then((res) => {
       const setupSkip = res?.data?.response[0]?.setup_skip;
-      console.log("setupSkip", setupSkip, res);
+
       localStorage.setItem(
         "carrierStatus",
         setupSkip === true ? "true" : "false"
