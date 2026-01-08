@@ -1,9 +1,9 @@
 import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
-import {CompanyCard} from "./CompanyCard";
 import {IoIosArrowForward} from "react-icons/io";
+import {CompanyCard} from "./CompanyCard";
 
-export const SafetyStatus = ({brokerSafetyData = []}) => {
+export const ShippersScore = ({shippersScoreData = []}) => {
   const getGaugeColor = (grade) => {
     switch (grade) {
       case ("A+", "A"):
@@ -22,9 +22,9 @@ export const SafetyStatus = ({brokerSafetyData = []}) => {
   };
 
   const companiesData = useMemo(() => {
-    return brokerSafetyData.map((item) => {
+    return shippersScoreData.map((item) => {
       return {
-        companyName: item.legal_name,
+        companyName: item?.name,
         logo: null,
         completedLoads: item?.total_orders,
         grade: item.grade,
@@ -33,7 +33,7 @@ export const SafetyStatus = ({brokerSafetyData = []}) => {
         profilePictures: [],
       };
     });
-  }, [brokerSafetyData]);
+  }, [shippersScoreData]);
 
   const currentDate = new Date();
   const monthNames = [
@@ -81,7 +81,7 @@ export const SafetyStatus = ({brokerSafetyData = []}) => {
         <Box>
           <Text fontSize="18px" fontWeight="400" color="#181D27" mb="4px">
             Monthly{" "}
-            <span style={{color: "#000", fontWeight: "700"}}>Carrier</span>{" "}
+            <span style={{color: "#000", fontWeight: "700"}}>Shippers</span>{" "}
             Safety Status
           </Text>
           <Text fontSize="14px" color="#6B7280" fontWeight="400">

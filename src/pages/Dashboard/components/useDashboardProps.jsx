@@ -67,6 +67,20 @@ const useDashboardProps = () => {
     enabled: Boolean(brokers_id),
   });
 
+  const {data: shippersScoreData = []} = useQuery({
+    queryKey: ["SHIPPERS_SCORE_DATA", brokers_id],
+    queryFn: () =>
+      dashboardService.getBrokerSafetyData({
+        method: "get",
+        object_data: {
+          brokers_id: brokers_id,
+        },
+        table: "broker_shippers",
+      }),
+    select: (res) => res?.data?.response || [],
+    enabled: Boolean(brokers_id),
+  });
+
   const {
     data: carrierInfoData = {},
     isLoading,
@@ -85,7 +99,7 @@ const useDashboardProps = () => {
         },
       }),
     select: (data) => data?.data?.response || {},
-    enabled: Boolean(isBroker ? brokers_id : companies_id),
+    enabled: isBroker ? Boolean(brokers_id) : Boolean(companies_id),
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
@@ -167,6 +181,7 @@ const useDashboardProps = () => {
     brokerSafetyData,
     carrierInfoData,
     nationalAverageData,
+    shippersScoreData,
   };
 };
 

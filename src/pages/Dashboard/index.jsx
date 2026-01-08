@@ -8,6 +8,7 @@ import {GoReadyTrucks} from "./components/GoReadyTrucks";
 import useDashboardProps from "./components/useDashboardProps";
 import SafetyCarrier from "./components/SafetyCarrier";
 import NationalAverage from "./components/SafetyCarrier/NationalAverage";
+import {ShippersScore} from "./components/ShippersScore/ShippersScore";
 
 const Dashboard = () => {
   const {
@@ -18,6 +19,7 @@ const Dashboard = () => {
     brokerSafetyData,
     carrierInfoData,
     nationalAverageData,
+    shippersScoreData,
   } = useDashboardProps();
 
   return (
@@ -42,6 +44,11 @@ const Dashboard = () => {
             safetyData={safetyData}
           />
         )}
+
+        {Boolean(isBroker) && (
+          <ShippersScore shippersScoreData={shippersScoreData} />
+        )}
+
         <NationalAverage nationalAverageData={nationalAverageData} />
 
         <GoReadyTrucks />
