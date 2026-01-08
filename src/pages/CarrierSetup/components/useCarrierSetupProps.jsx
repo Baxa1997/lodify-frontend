@@ -603,7 +603,10 @@ export const useCarrierSetupProps = () => {
   useEffect(() => {
     if (Boolean(carrierData?.guid)) {
       const mappedData = mapCarrierDataToForm(carrierData);
-      reset(mappedData);
+      reset(mappedData, {
+        keepDefaultValues: false,
+        keepValues: false,
+      });
     }
   }, [carrierData, reset]);
 
@@ -629,141 +632,281 @@ export const useCarrierSetupProps = () => {
 
   // Set contact information from itemData - this should run after carrierData resets the form
   useEffect(() => {
-    if (itemData && Object.keys(itemData).length > 0) {
-      const contactInfo = mapItemDataToContactInfo(itemData);
-      if (contactInfo) {
-        // Set all contact information fields explicitly
-        const fieldsToSet = [
-          "dispatch_name",
-          "dispatch_email",
-          "dispatch_phone",
-          "billing_name",
-          "billing_email",
-          "billing_phone",
-          "claims_name",
-          "claims_email",
-          "claims_phone",
-          "after_hours_name",
-          "after_hours_email",
-          "after_hours_phone",
-        ];
+    // Use a small delay to ensure this runs after carrierData reset
+    const timer = setTimeout(() => {
+      if (itemData && Object.keys(itemData).length > 0) {
+        const contactInfo = mapItemDataToContactInfo(itemData);
+        if (contactInfo) {
+          // Set all contact information fields explicitly
+          const fieldsToSet = [
+            "dispatch_name",
+            "dispatch_email",
+            "dispatch_phone",
+            "billing_name",
+            "billing_email",
+            "billing_phone",
+            "claims_name",
+            "claims_email",
+            "claims_phone",
+            "after_hours_name",
+            "after_hours_email",
+            "after_hours_phone",
+          ];
 
-        fieldsToSet.forEach((field) => {
-          const value = contactInfo[field];
-          if (value !== undefined && value !== null) {
-            setValue(`contact_information.${field}`, value, {
-              shouldValidate: false,
-            });
-          }
-        });
+          fieldsToSet.forEach((field) => {
+            const value = contactInfo[field];
+            // Set value even if it's an empty string to ensure form field is initialized
+            setValue(
+              `contact_information.${field}`,
+              value !== undefined ? value : "",
+              {
+                shouldValidate: false,
+                shouldDirty: false,
+              }
+            );
+          });
+        }
       }
-    }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [itemData, carrierData, setValue]);
 
   useEffect(() => {
-    if (itemData && Object.keys(itemData).length > 0) {
-      const mappedAgents = {
-        factoring_company_name: itemData.factoring_company_name || "",
-        factoring_phone: itemData.telephone || "",
-        factoring_email: itemData.email || "",
-        payment_type: itemData.payment_type?.[0] || "Factoring",
-      };
-
-      setValue("payment", mappedAgents, {
-        shouldValidate: false,
-      });
-    }
-  }, [itemData, setValue]);
-
-  useEffect(() => {
-    if (
-      questionnaireData &&
-      Array.isArray(questionnaireData) &&
-      questionnaireData.length > 0
-    ) {
-      const mappedQuestions = questionnaireData.map((q) => ({
-        questions_id: q.questions_id || q.questions_id_data || "",
-        answer: q.answer || "",
-        other: q.other || "",
-        document: q.document || "",
-        question_title: q.questions_id_data?.title || "",
-      }));
-
-      setValue("questionnaire.questions", mappedQuestions, {
-        shouldValidate: false,
-      });
-    }
-  }, [questionnaireData, setValue]);
-
-  useEffect(() => {
-    if (cerftificationData && Object.keys(cerftificationData).length > 0) {
-      const mappedAgents = {
-        first_name: cerftificationData.first_name || "",
-        last_name: cerftificationData.last_name || "",
-        email: cerftificationData.email || "",
-        phone: normalizePhone(cerftificationData.phone || ""),
-        certificate: cerftificationData.certificate || [],
-      };
-
-      const insurance = {
-        commodity_type: cerftificationData.commodity_type || [],
-        worker_compensation:
-          cerftificationData.worker_compensation === true ? "yes" : "no" || "",
-        compensation_insurance: cerftificationData.compensation_insurance || "",
-        policy_number: cerftificationData.policy_number || "",
-        effective_date: cerftificationData.effective_date || "",
-        cancellation_date: cerftificationData.cancellation_date || "",
-        issued_by: cerftificationData.issued_by || "",
-        full_name: cerftificationData.full_name || "",
-        phone_number: cerftificationData.phone_number || "",
-        worker_email: cerftificationData.worker_email || "",
-      };
-
-      setValue("certifications", mappedAgents, {
-        shouldValidate: false,
-      });
-
-      setValue("insurance", insurance, {
-        shouldValidate: false,
-      });
-    }
-  }, [cerftificationData, setValue]);
-
-  useEffect(() => {
-    if (companyPaymentData && Object.keys(companyPaymentData).length > 0) {
-      const mappedAgents = {
-        factoring_company_name: companyPaymentData.factoring_company_name || "",
-        factoring_email: companyPaymentData.email || "",
-        payment_type: companyPaymentData.payment_type?.[0] || "Factoring",
-        factoring_phone: normalizePhone(companyPaymentData.telephone || ""),
-        verify_verification_id: companyPaymentData.guid || "",
-      };
-
-      setValue(
-        "payment.factoring_company_name",
-        mappedAgents.factoring_company_name,
-        {
+    // Use a small delay to ensure this runs after carrierData reset
+    const timer = setTimeout(() => {
+      if (itemData && Object.keys(itemData).length > 0) {
+        // Set payment fields individually to ensure they're properly registered
+        setValue(
+          "payment.factoring_company_name",
+          itemData.factoring_company_name || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "payment.factoring_phone",
+          normalizePhone(itemData.telephone || ""),
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue("payment.factoring_email", itemData.email || "", {
           shouldValidate: false,
-        }
-      );
-      setValue("payment.factoring_email", mappedAgents.factoring_email, {
-        shouldValidate: false,
-      });
-      setValue("payment.factoring_phone", mappedAgents.factoring_phone, {
-        shouldValidate: false,
-      });
-      setValue("payment.payment_type", mappedAgents.payment_type, {
-        shouldValidate: false,
-      });
-      setValue(
-        "payment.verify_verification_id",
-        mappedAgents.verify_verification_id,
-        {
+          shouldDirty: false,
+        });
+        setValue(
+          "payment.payment_type",
+          itemData.payment_type?.[0] || "Factoring",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [itemData, carrierData, setValue]);
+
+  useEffect(() => {
+    // Use a small delay to ensure this runs after carrierData reset
+    const timer = setTimeout(() => {
+      if (
+        questionnaireData &&
+        Array.isArray(questionnaireData) &&
+        questionnaireData.length > 0
+      ) {
+        const mappedQuestions = questionnaireData.map((q) => ({
+          questions_id:
+            q.questions_id ||
+            q.questions_id_data?.guid ||
+            q.questions_id_data ||
+            "",
+          answer: q.answer || q.radio_answer || "",
+          other: q.other || q.text_answer || "",
+          document: q.document || q.file_name || "",
+          question_title: q.questions_id_data?.title || "",
+        }));
+
+        setValue("questionnaire.questions", mappedQuestions, {
           shouldValidate: false,
-        }
-      );
-    }
-  }, [companyPaymentData, setValue]);
+          shouldDirty: false,
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [questionnaireData, carrierData, setValue]);
+
+  useEffect(() => {
+    // Use a small delay to ensure this runs after carrierData reset
+    const timer = setTimeout(() => {
+      if (cerftificationData && Object.keys(cerftificationData).length > 0) {
+        // Set certifications fields individually
+        setValue(
+          "certifications.first_name",
+          cerftificationData.first_name || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "certifications.last_name",
+          cerftificationData.last_name || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue("certifications.email", cerftificationData.email || "", {
+          shouldValidate: false,
+          shouldDirty: false,
+        });
+        setValue(
+          "certifications.phone",
+          normalizePhone(cerftificationData.phone || ""),
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "certifications.certificate",
+          cerftificationData.certificate || [],
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+
+        // Set insurance fields individually
+        setValue(
+          "insurance.commodity_type",
+          cerftificationData.commodity_type || [],
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "insurance.worker_compensation",
+          cerftificationData.worker_compensation === true ? "yes" : "no",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "insurance.compensation_insurance",
+          cerftificationData.compensation_insurance || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "insurance.policy_number",
+          cerftificationData.policy_number || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "insurance.effective_date",
+          cerftificationData.effective_date || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "insurance.cancellation_date",
+          cerftificationData.cancellation_date || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue("insurance.issued_by", cerftificationData.issued_by || "", {
+          shouldValidate: false,
+          shouldDirty: false,
+        });
+        setValue("insurance.full_name", cerftificationData.full_name || "", {
+          shouldValidate: false,
+          shouldDirty: false,
+        });
+        setValue(
+          "insurance.phone_number",
+          normalizePhone(cerftificationData.phone_number || ""),
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "insurance.worker_email",
+          cerftificationData.worker_email || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [cerftificationData, carrierData, setValue]);
+
+  useEffect(() => {
+    // Use a small delay to ensure this runs after carrierData reset
+    const timer = setTimeout(() => {
+      if (companyPaymentData && Object.keys(companyPaymentData).length > 0) {
+        setValue(
+          "payment.factoring_company_name",
+          companyPaymentData.factoring_company_name || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue("payment.factoring_email", companyPaymentData.email || "", {
+          shouldValidate: false,
+          shouldDirty: false,
+        });
+        setValue(
+          "payment.factoring_phone",
+          normalizePhone(companyPaymentData.telephone || ""),
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "payment.payment_type",
+          companyPaymentData.payment_type?.[0] || "Factoring",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          "payment.verify_verification_id",
+          companyPaymentData.guid || "",
+          {
+            shouldValidate: false,
+            shouldDirty: false,
+          }
+        );
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [companyPaymentData, carrierData, setValue]);
 
   useEffect(() => {
     if (isSyncingRef.current) return;
@@ -884,7 +1027,10 @@ export const useCarrierSetupProps = () => {
         setShowSuccess(true);
 
         setTimeout(() => {
-          localStorage.setItem("carrierStatus", "true");
+          // Only set localStorage if brokersId doesn't exist
+          if (!brokersId) {
+            localStorage.setItem("carrierStatus", "true");
+          }
           navigate("/admin/dashboard");
         }, 2000);
       } else {
@@ -916,7 +1062,12 @@ export const useCarrierSetupProps = () => {
     carrierSetup === "true" || localStorage.getItem("carrierStatus") === "true";
 
   const handleSkipSetup = () => {
-    navigate("/admin/dashboard");
+    // If brokersId exists, navigate to dashboard without setting localStorage
+    if (brokersId) {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/admin/dashboard");
+    }
   };
 
   return {
