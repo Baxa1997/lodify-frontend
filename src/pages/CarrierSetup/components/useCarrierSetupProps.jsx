@@ -223,10 +223,32 @@ export const useCarrierSetupProps = () => {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(5);
       setInsuranceSubView(1);
+
+      // Skip VerifyIdentity (3) and OtpPhoneConfirm (4) if brokersId exists or carrier_setup !== "true"
+      if (brokersId || carrierSetup !== "true") {
+        setPaymentSubView(5); // Start at ConfirmCompanyFactoring
+      } else {
+        setPaymentSubView(1); // Start at GetPaid
+      }
+      return;
+    }
+
+    // Skip VerifyIdentity (3) and OtpPhoneConfirm (4) if brokersId exists or carrier_setup !== "true"
+    if (
+      currentStep === 5 &&
+      paymentSubView === 2 &&
+      (brokersId || carrierSetup !== "true")
+    ) {
+      setPaymentSubView(5);
       return;
     }
 
     if (currentStep === 5 && paymentSubView === 3) {
+      if (brokersId || carrierSetup !== "true") {
+        setPaymentSubView(5);
+        return;
+      }
+
       const formData = watch();
       const isOtpVerified = formData.payment?.phone_verified;
       const hasVerificationId = formData.payment?.verify_verification_id;
@@ -247,7 +269,33 @@ export const useCarrierSetupProps = () => {
       return;
     }
 
-    if (currentStep === 5 && paymentSubView < 6 && paymentSubView !== 3) {
+    if (
+      currentStep === 5 &&
+      paymentSubView === 4 &&
+      (brokersId || carrierSetup !== "true")
+    ) {
+      setPaymentSubView(5);
+      return;
+    }
+
+    // When at sub-view 5 and carrier_setup !== "true", go directly to next step
+    if (
+      currentStep === 5 &&
+      paymentSubView === 5 &&
+      (brokersId || carrierSetup !== "true")
+    ) {
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
+      setCurrentStep(6);
+      setPaymentSubView(1);
+      return;
+    }
+
+    if (
+      currentStep === 5 &&
+      paymentSubView < 6 &&
+      paymentSubView !== 3 &&
+      paymentSubView !== 4
+    ) {
       setPaymentSubView(paymentSubView + 1);
       return;
     }
@@ -287,15 +335,23 @@ export const useCarrierSetupProps = () => {
     }
 
     if (currentStep === 5 && paymentSubView > 1) {
-      const newSubView = paymentSubView - 1;
-      setPaymentSubView(newSubView);
-      if (newSubView === 3) {
-        const formData = watch();
+      let newSubView = paymentSubView - 1;
 
-        if (!formData.payment?.verify_verification_id) {
-          setValue("payment.phone_verified", false);
+      // Skip sub-views 3 and 4 when going back if brokersId exists or carrier_setup !== "true"
+      if (brokersId || carrierSetup !== "true") {
+        if (newSubView === 4 || newSubView === 3) {
+          newSubView = 2; // Skip directly to ConfirmCompany
+        }
+      } else {
+        if (newSubView === 3) {
+          const formData = watch();
+          if (!formData.payment?.verify_verification_id) {
+            setValue("payment.phone_verified", false);
+          }
         }
       }
+
+      setPaymentSubView(newSubView);
       return;
     }
 
@@ -325,6 +381,13 @@ export const useCarrierSetupProps = () => {
       (step === currentStep + 1 && completedSteps.has(currentStep))
     ) {
       setCurrentStep(step);
+
+      // When navigating to step 5, skip sub-views 3 and 4 if brokersId exists or carrier_setup !== "true"
+      if (step === 5 && (brokersId || carrierSetup !== "true")) {
+        setPaymentSubView(5); // Start at ConfirmCompanyFactoring
+      } else if (step === 5) {
+        setPaymentSubView(1); // Start at GetPaid
+      }
     }
   };
 
@@ -529,6 +592,7 @@ export const useCarrierSetupProps = () => {
     }
   }, [carrierData, reset]);
 
+  // Map itemData to contact_information format
   const mapItemDataToContactInfo = (data) => {
     if (!data || Object.keys(data).length === 0) return null;
 
@@ -559,6 +623,21 @@ export const useCarrierSetupProps = () => {
           });
         });
       }
+    }
+  }, [itemData, carrierData, setValue]);
+
+  useEffect(() => {
+    if (itemData && Object.keys(itemData).length > 0) {
+      const mappedAgents = {
+        factoring_company_name: itemData.factoring_company_name || "",
+        factoring_phone: itemData.telephone || "",
+        factoring_email: itemData.email || "",
+        payment_type: itemData.payment_type?.[0] || "Factoring",
+      };
+
+      setValue("payment", mappedAgents, {
+        shouldValidate: false,
+      });
     }
   }, [itemData, setValue]);
 
@@ -624,8 +703,6 @@ export const useCarrierSetupProps = () => {
         payment_type: companyPaymentData.payment_type?.[0] || "Factoring",
         factoring_phone: normalizePhone(companyPaymentData.telephone || ""),
         verify_verification_id: companyPaymentData.guid || "",
-        verify_email_or_phone: companyPaymentData.email || "",
-        verify_mobile_phone: normalizePhone(companyPaymentData.telephone || ""),
       };
 
       setValue("payment", mappedAgents, {
