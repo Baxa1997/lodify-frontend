@@ -41,6 +41,17 @@ export const useCarrierSetupProps = () => {
 
   const isSyncingRef = useRef(false);
 
+  // Helper function to normalize phone numbers
+  const normalizePhone = (phone) => {
+    if (!phone) return "";
+    if (phone.startsWith("+1")) return phone;
+    if (phone.startsWith("1")) return `+${phone}`;
+    const cleaned = phone.replace(/[^\d]/g, "");
+    if (cleaned.length === 10) return `+1${cleaned}`;
+    if (cleaned.length === 11 && cleaned.startsWith("1")) return `+${cleaned}`;
+    return phone;
+  };
+
   // READY CREATE CONTACT INFO
   const handleContactInfo = async () => {
     try {
@@ -126,7 +137,7 @@ export const useCarrierSetupProps = () => {
       return false;
     }
   };
-  console.log("questionnaireData", watch());
+
   const handleQuestionnaireSubmit = async () => {
     try {
       const formData = watch();
@@ -365,25 +376,20 @@ export const useCarrierSetupProps = () => {
     queryKey: ["ITEM_DATA", id],
     queryFn: () =>
       carrierService.getItemData("contact_information", {companies_id: id}),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && carrierSetup !== "true",
     select: (res) => res.data?.response?.[0] || {},
   });
 
-  console.log("itemDataitemData", itemData);
+  const {data: questionnaireData} = useQuery({
+    queryKey: ["QUESTIONNAIRE_DATA", id],
+    queryFn: () =>
+      carrierService.getItemData("questionnaire", {companies_id: id}),
+    enabled: Boolean(id) && carrierSetup !== "true",
+    select: (res) => res.data?.response || [],
+  });
 
   const mapCarrierDataToForm = (data) => {
     if (!data) return {};
-
-    const normalizePhone = (phone) => {
-      if (!phone) return "";
-      if (phone.startsWith("+1")) return phone;
-      if (phone.startsWith("1")) return `+${phone}`;
-      const cleaned = phone.replace(/[^\d]/g, "");
-      if (cleaned.length === 10) return `+1${cleaned}`;
-      if (cleaned.length === 11 && cleaned.startsWith("1"))
-        return `+${cleaned}`;
-      return phone;
-    };
 
     return {
       legal_name: data.legal_name || "",
@@ -523,6 +529,64 @@ export const useCarrierSetupProps = () => {
       reset(mappedData);
     }
   }, [carrierData, reset]);
+
+  // Map itemData to contact_information format
+  const mapItemDataToContactInfo = (data) => {
+    if (!data || Object.keys(data).length === 0) return null;
+
+    const phoneFields = [
+      "dispatch_phone",
+      "billing_phone",
+      "claims_phone",
+      "after_hours_phone",
+    ];
+    const contactInfo = {};
+
+    Object.entries(data).forEach(([key, value]) => {
+      contactInfo[key] = phoneFields.includes(key)
+        ? normalizePhone(value || "")
+        : value || "";
+    });
+
+    return contactInfo;
+  };
+
+  useEffect(() => {
+    if (
+      carrierSetup !== "true" &&
+      itemData &&
+      Object.keys(itemData).length > 0
+    ) {
+      const contactInfo = mapItemDataToContactInfo(itemData);
+      if (contactInfo) {
+        Object.entries(contactInfo).forEach(([key, value]) => {
+          setValue(`contact_information.${key}`, value, {
+            shouldValidate: false,
+          });
+        });
+      }
+    }
+  }, [itemData, carrierSetup, setValue]);
+
+  useEffect(() => {
+    if (
+      carrierSetup !== "true" &&
+      questionnaireData &&
+      Array.isArray(questionnaireData) &&
+      questionnaireData.length > 0
+    ) {
+      const mappedQuestions = questionnaireData.map((q) => ({
+        questions_id: q.questions_id || q.guid || "",
+        answer: q.answer || q.radio_answer || "",
+        other: q.other || q.text_answer || "",
+        document: q.document || q.file_name || "",
+      }));
+
+      setValue("questionnaire.questions", mappedQuestions, {
+        shouldValidate: false,
+      });
+    }
+  }, [questionnaireData, carrierSetup, setValue]);
 
   useEffect(() => {
     if (isSyncingRef.current) return;

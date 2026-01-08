@@ -223,7 +223,7 @@ const QuestionnaireStep = ({control}) => {
       questions.map((q) => ({
         questions_id: q.guid,
         is_new: true,
-        compnanies_id: id,
+        companies_id: id,
         answer: "",
         other: "",
         document: "",
