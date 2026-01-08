@@ -16,19 +16,20 @@ const PaymentStep = ({
   onOtpSent,
   onOtpVerified,
   onSkipOtp,
+  isEditable = false,
 }) => {
   const renderPaymentView = () => {
     switch (subView) {
       case 1:
         return (
           <Box className={styles.stepContentPayment}>
-            <GetPaid control={control} />
+            <GetPaid control={control} isEditable={isEditable} />
           </Box>
         );
       case 2:
         return (
           <Box className={styles.stepContentPayment}>
-            <ConfirmCompany control={control} />
+            <ConfirmCompany control={control} isEditable={isEditable} />
           </Box>
         );
       case 3:
@@ -58,7 +59,7 @@ const PaymentStep = ({
       default:
         return (
           <Box className={styles.stepContentPayment}>
-            <ConfirmCompanyFactoring control={control} />
+            <ConfirmCompanyFactoring control={control} watch={watch} />
           </Box>
         );
     }

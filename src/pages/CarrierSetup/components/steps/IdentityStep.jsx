@@ -29,8 +29,9 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
     phone: "",
   });
 
-  const shouldDisableFields = subView === 1 && carrierSetup === "true";
+  const shouldDisableFields = carrierSetup !== "true";
   const fieldDisabled = !isEditable || shouldDisableFields;
+  const isContactFieldsDisabled = carrierSetup !== "true";
   const handleOpenModal = (contactType) => {
     setCurrentContactType(contactType);
 
@@ -92,28 +93,44 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
               contactLabel="Dispatch"
               {...getContactData("Dispatch")}
               src="/img/dispatch.svg"
-              onClick={() => handleOpenModal("Dispatch")}
+              onClick={
+                isContactFieldsDisabled
+                  ? undefined
+                  : () => handleOpenModal("Dispatch")
+              }
             />
 
             <ContactsInfo
               contactLabel="Billing"
               {...getContactData("Billing")}
               src="/img/billing.svg"
-              onClick={() => handleOpenModal("Billing")}
+              onClick={
+                isContactFieldsDisabled
+                  ? undefined
+                  : () => handleOpenModal("Billing")
+              }
             />
 
             <ContactsInfo
               contactLabel="Claims"
               {...getContactData("Claims")}
               src="/img/claims.svg"
-              onClick={() => handleOpenModal("Claims")}
+              onClick={
+                isContactFieldsDisabled
+                  ? undefined
+                  : () => handleOpenModal("Claims")
+              }
             />
 
             <ContactsInfo
               contactLabel="After Hours"
               {...getContactData("After Hours")}
               src="/img/afterHours.svg"
-              onClick={() => handleOpenModal("After Hours")}
+              onClick={
+                isContactFieldsDisabled
+                  ? undefined
+                  : () => handleOpenModal("After Hours")
+              }
             />
           </Box>
         </Box>
@@ -137,6 +154,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
                   control={control}
                   name={`contact_information.${getCurrentFieldPrefix()}_name`}
                   placeholder="Enter full name"
+                  isReadOnly={isContactFieldsDisabled}
                   style={{
                     border: "1px solid #D5D7DA",
                   }}
@@ -156,6 +174,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
                   name={`contact_information.${getCurrentFieldPrefix()}_email`}
                   placeholder="name@example.com"
                   type="email"
+                  isReadOnly={isContactFieldsDisabled}
                   style={{
                     border: "1px solid #D5D7DA",
                   }}
@@ -174,6 +193,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
                   name={`contact_information.${getCurrentFieldPrefix()}_phone`}
                   placeholder="+1"
                   type="tel"
+                  isReadOnly={isContactFieldsDisabled}
                   style={{
                     border: "1px solid #D5D7DA",
                   }}

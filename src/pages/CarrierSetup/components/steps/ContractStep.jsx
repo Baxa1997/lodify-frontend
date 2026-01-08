@@ -289,6 +289,7 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
               borderColor="#d5d7da"
               control={control}
               name="tin"
+              isReadOnly={!isEditable}
             />
           </Box>
 
@@ -307,6 +308,7 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
               borderColor="#d5d7da"
               control={control}
               name="federal_tax_classification"
+              isReadOnly={!isEditable}
             />
           </Box>
         </Box>

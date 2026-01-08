@@ -16,7 +16,8 @@ import HFCustomFilesUpload from "@components/HFCustomFilesUpload";
 import {Button} from "@chakra-ui/react";
 import {useSearchParams} from "react-router-dom";
 
-const QuestionSection = ({question, index, control}) => {
+const QuestionSection = ({question, index, control, isEditable = false}) => {
+  const isFieldsDisabled = !isEditable;
   const {title} = question;
 
   const fileValue = useWatch({
@@ -85,13 +86,15 @@ const QuestionSection = ({question, index, control}) => {
                 borderRadius="8px"
                 bg={field.value === "Yes" ? "#FFF5ED" : "#FAFAFA"}
                 p="10px 12px"
-                cursor="pointer"
-                onClick={() => field.onChange("Yes")}>
+                cursor={isFieldsDisabled ? "not-allowed" : "pointer"}
+                onClick={isFieldsDisabled ? undefined : () => field.onChange("Yes")}
+                opacity={isFieldsDisabled ? 0.6 : 1}>
                 <Radio
                   value="Yes"
                   colorScheme="orange"
                   isChecked={field.value === "Yes"}
                   border="1px solid #D5D7DA"
+                  isDisabled={isFieldsDisabled}
                 />
                 <Text fontSize="14px" color="#414651" ml="8px">
                   Yes
@@ -103,13 +106,15 @@ const QuestionSection = ({question, index, control}) => {
                 border="1px solid #D5D7DA"
                 borderRadius="8px"
                 p="10px 12px"
-                cursor="pointer"
-                onClick={() => field.onChange("No")}>
+                cursor={isFieldsDisabled ? "not-allowed" : "pointer"}
+                onClick={isFieldsDisabled ? undefined : () => field.onChange("No")}
+                opacity={isFieldsDisabled ? 0.6 : 1}>
                 <Radio
                   value="No"
                   colorScheme="orange"
                   isChecked={field.value === "No"}
                   border="1px solid #D5D7DA"
+                  isDisabled={isFieldsDisabled}
                 />
                 <Text fontSize="14px" color="#414651" ml="8px">
                   No
@@ -143,6 +148,7 @@ const QuestionSection = ({question, index, control}) => {
                 py="8px"
                 borderRadius="8px"
                 border="1px solid #D5D7DA"
+                isReadOnly={isFieldsDisabled}
               />
             )}
           />
@@ -167,7 +173,8 @@ const QuestionSection = ({question, index, control}) => {
         <HFCustomFilesUpload
           control={control}
           name={`questionnaire.questions.${index}.document`}
-          multiple={false}>
+          multiple={false}
+          disabled={isFieldsDisabled}>
           <Button
             height="40px"
             variant="outline"
@@ -179,6 +186,7 @@ const QuestionSection = ({question, index, control}) => {
             py="6px"
             borderRadius="8px"
             bg="white"
+            disabled={isFieldsDisabled}
             leftIcon={
               <img
                 src="/img/upload.svg"
@@ -196,7 +204,7 @@ const QuestionSection = ({question, index, control}) => {
   );
 };
 
-const QuestionnaireStep = ({control}) => {
+const QuestionnaireStep = ({control, isEditable = false}) => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
 
@@ -248,6 +256,7 @@ const QuestionnaireStep = ({control}) => {
               question={question}
               index={index}
               control={control}
+              isEditable={isEditable}
             />
           );
         })

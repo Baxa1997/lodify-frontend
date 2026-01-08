@@ -1,14 +1,8 @@
 import React from "react";
-import {Box, Text, Input} from "@chakra-ui/react";
-import {Controller} from "react-hook-form";
+import {Box, Text} from "@chakra-ui/react";
+import HFTextField from "@components/HFTextField";
 
 const ConfirmCompanyFactoring = ({control}) => {
-  const defaultValues = {
-    factoring_company_name: "TBK BANK D/B/A TRIUMPH",
-    telephone: "(214) 513-9600",
-    email: "payments@tbcap.com",
-  };
-
   return (
     <Box>
       <Text fontSize="20px" fontWeight="bold" color="#1e293b" mb="8px">
@@ -34,24 +28,18 @@ const ConfirmCompanyFactoring = ({control}) => {
               display="block">
               Factoring Company name
             </Text>
-            <Controller
+            <HFTextField
               control={control}
-              name="factoring_company_name_confirm"
-              defaultValue={defaultValues.factoring_company_name}
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={field.value || defaultValues.factoring_company_name}
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  cursor="not-allowed"
-                />
-              )}
+              name="payment.factoring_company_name"
+              placeholder="Enter factoring company name"
+              isReadOnly
+              bg="#F8F9FA"
+              border="1px solid #D5D7DA"
+              borderRadius="8px"
+              color="#64748b"
+              fontSize="14px"
+              px="12px"
+              py="8px"
             />
           </Box>
 
@@ -65,25 +53,14 @@ const ConfirmCompanyFactoring = ({control}) => {
               display="block">
               Telephone
             </Text>
-            <Controller
+            <HFTextField
               control={control}
-              name="factoring_telephone_confirm"
-              defaultValue={defaultValues.telephone}
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={field.value || defaultValues.telephone}
-                  isReadOnly
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  cursor="not-allowed"
-                />
-              )}
+              name="payment.factoring_phone"
+              placeholder="Enter factoring company phone"
+              isReadOnly
+              bg="#F8F9FA"
+              border="1px solid #D5D7DA"
+              borderRadius="8px"
             />
           </Box>
 
@@ -97,26 +74,14 @@ const ConfirmCompanyFactoring = ({control}) => {
               display="block">
               E-Mail
             </Text>
-            <Controller
+            <HFTextField
               control={control}
-              name="factoring_email_confirm"
-              defaultValue={defaultValues.email}
-              render={({field}) => (
-                <Input
-                  {...field}
-                  value={field.value || defaultValues.email}
-                  type="email"
-                  isReadOnly
-                  bg="#F8F9FA"
-                  border="1px solid #D5D7DA"
-                  borderRadius="8px"
-                  color="#64748b"
-                  fontSize="14px"
-                  px="12px"
-                  py="8px"
-                  cursor="not-allowed"
-                />
-              )}
+              name="payment.factoring_email"
+              placeholder="Enter factoring company email"
+              isReadOnly
+              bg="#F8F9FA"
+              border="1px solid #D5D7DA"
+              borderRadius="8px"
             />
           </Box>
         </Box>

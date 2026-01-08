@@ -10,7 +10,8 @@ import {
 } from "@chakra-ui/react";
 import {Controller} from "react-hook-form";
 
-const GetPaid = ({control}) => {
+const GetPaid = ({control, isEditable = false}) => {
+  const isFieldsDisabled = !isEditable;
   const paymentOptions = [
     {
       value: "Factoring",
@@ -30,12 +31,12 @@ const GetPaid = ({control}) => {
         Enter the code we just sent to the mobile number you entered.
       </Text>
 
-      <Controller
+        <Controller
         control={control}
         name="payment.payment_type"
         defaultValue="factoring"
         render={({field}) => (
-          <RadioGroup {...field}>
+          <RadioGroup {...field} isDisabled={isFieldsDisabled}>
             <Stack spacing="12px">
               {paymentOptions.map((option) => {
                 const isSelected = field.value === option.value;
@@ -65,6 +66,7 @@ const GetPaid = ({control}) => {
                           colorScheme="orange"
                           border="1px solid #D5D7DA"
                           isChecked={isSelected}
+                          isDisabled={isFieldsDisabled}
                         />
                         <Box>
                           <Text

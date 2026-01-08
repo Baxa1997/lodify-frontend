@@ -25,6 +25,7 @@ import {getShortFileName} from "@utils/getFileName";
 import FilesReader from "@components/FileViewer/FilesReader";
 
 const CertificationsStep = ({control, isEditable = false}) => {
+  const isFieldsDisabled = !isEditable;
   const certificateFiles = useWatch({
     control,
     name: "certifications.certificate",
@@ -127,9 +128,11 @@ const CertificationsStep = ({control, isEditable = false}) => {
           name="certifications.certificate"
           rules={{
             required: "Certificate is required",
-          }}>
+          }}
+          disabled={isFieldsDisabled}>
           <Button
             className={styles.uploadButton}
+            disabled={isFieldsDisabled}
             leftIcon={
               <img
                 src="/img/upload.svg"
@@ -158,6 +161,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
             control={control}
             name="certifications.first_name"
             placeholder="First Name"
+            isReadOnly={isFieldsDisabled}
             style={{
               border: "1px solid #D5D7DA",
               bg: "#F8F9FA",
@@ -173,6 +177,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
             control={control}
             name="certifications.last_name"
             placeholder="Last Name"
+            isReadOnly={isFieldsDisabled}
             style={{
               border: "1px solid #D5D7DA",
               bg: "#F8F9FA",
@@ -189,6 +194,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
             name="certifications.email"
             placeholder="Email"
             type="email"
+            isReadOnly={isFieldsDisabled}
             style={{
               border: "1px solid #D5D7DA",
               bg: "#F8F9FA",
@@ -204,7 +210,7 @@ const CertificationsStep = ({control, isEditable = false}) => {
               Phone Number
             </Text>
             <Box className={styles.phoneInputWrapper}>
-              <HFPhoneInput control={control} name="certifications.phone" />
+              <HFPhoneInput control={control} name="certifications.phone" isReadOnly={isFieldsDisabled} />
             </Box>
           </Box>
         </Box>

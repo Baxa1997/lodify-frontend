@@ -2,7 +2,8 @@ import React from "react";
 import {Box, Text} from "@chakra-ui/react";
 import HFTextField from "@components/HFTextField";
 
-const ConfirmCompany = ({control}) => {
+const ConfirmCompany = ({control, isEditable = false}) => {
+  const isFieldsDisabled = !isEditable;
   return (
     <Box>
       <Text fontSize="20px" fontWeight="bold" color="#1e293b" mb="8px">
@@ -33,6 +34,7 @@ const ConfirmCompany = ({control}) => {
               control={control}
               name="payment.factoring_company_name"
               placeholder="Enter factoring company name"
+              isReadOnly={isFieldsDisabled}
             />
           </Box>
 
@@ -51,6 +53,7 @@ const ConfirmCompany = ({control}) => {
               control={control}
               name="payment.factoring_phone"
               placeholder="Enter factoring company phone"
+              isReadOnly={isFieldsDisabled}
             />
           </Box>
 
@@ -69,6 +72,7 @@ const ConfirmCompany = ({control}) => {
               control={control}
               name="payment.factoring_email"
               placeholder="Enter factoring company email"
+              isReadOnly={isFieldsDisabled}
             />
           </Box>
         </Box>

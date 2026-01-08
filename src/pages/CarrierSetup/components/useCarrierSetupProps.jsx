@@ -202,6 +202,19 @@ export const useCarrierSetupProps = () => {
   ];
 
   const handleNext = async () => {
+    // If brokersId is true and we're at step 5, always show only sub-view 5
+    if (currentStep === 5 && brokersId) {
+      if (paymentSubView !== 5) {
+        setPaymentSubView(5);
+        return;
+      }
+      // If already at sub-view 5, go to next step
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
+      setCurrentStep(6);
+      setPaymentSubView(1);
+      return;
+    }
+
     if (currentStep === 1 && identitySubView === 1) {
       setIdentitySubView(2);
       return;
@@ -224,27 +237,30 @@ export const useCarrierSetupProps = () => {
       setCurrentStep(5);
       setInsuranceSubView(1);
 
-      // Skip VerifyIdentity (3) and OtpPhoneConfirm (4) if brokersId exists or carrier_setup !== "true"
-      if (brokersId || carrierSetup !== "true") {
-        setPaymentSubView(5); // Start at ConfirmCompanyFactoring
+      // If brokersId is true, show only the last UI (sub-view 5)
+      if (brokersId) {
+        setPaymentSubView(5);
+      } else if (carrierSetup !== "true") {
+        setPaymentSubView(5);
       } else {
-        setPaymentSubView(1); // Start at GetPaid
+        setPaymentSubView(1);
       }
       return;
     }
 
-    // Skip VerifyIdentity (3) and OtpPhoneConfirm (4) if brokersId exists or carrier_setup !== "true"
+    // Skip to sub-view 5 if carrier_setup !== "true" (brokersId is already handled above)
     if (
       currentStep === 5 &&
       paymentSubView === 2 &&
-      (brokersId || carrierSetup !== "true")
+      carrierSetup !== "true" &&
+      !brokersId
     ) {
       setPaymentSubView(5);
       return;
     }
 
     if (currentStep === 5 && paymentSubView === 3) {
-      if (brokersId || carrierSetup !== "true") {
+      if (carrierSetup !== "true" && !brokersId) {
         setPaymentSubView(5);
         return;
       }
@@ -272,29 +288,27 @@ export const useCarrierSetupProps = () => {
     if (
       currentStep === 5 &&
       paymentSubView === 4 &&
-      (brokersId || carrierSetup !== "true")
+      carrierSetup !== "true" &&
+      !brokersId
     ) {
       setPaymentSubView(5);
       return;
     }
 
-    // When at sub-view 5 and carrier_setup !== "true", go directly to next step
-    if (
-      currentStep === 5 &&
-      paymentSubView === 5 &&
-      (brokersId || carrierSetup !== "true")
-    ) {
+    if (currentStep === 5 && paymentSubView === 5) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep(6);
       setPaymentSubView(1);
       return;
     }
 
+    // Normal progression for other sub-views (only if not brokersId)
     if (
       currentStep === 5 &&
       paymentSubView < 6 &&
       paymentSubView !== 3 &&
-      paymentSubView !== 4
+      paymentSubView !== 4 &&
+      !brokersId
     ) {
       setPaymentSubView(paymentSubView + 1);
       return;
@@ -337,10 +351,9 @@ export const useCarrierSetupProps = () => {
     if (currentStep === 5 && paymentSubView > 1) {
       let newSubView = paymentSubView - 1;
 
-      // Skip sub-views 3 and 4 when going back if brokersId exists or carrier_setup !== "true"
       if (brokersId || carrierSetup !== "true") {
         if (newSubView === 4 || newSubView === 3) {
-          newSubView = 2; // Skip directly to ConfirmCompany
+          newSubView = 2;
         }
       } else {
         if (newSubView === 3) {
@@ -382,11 +395,13 @@ export const useCarrierSetupProps = () => {
     ) {
       setCurrentStep(step);
 
-      // When navigating to step 5, skip sub-views 3 and 4 if brokersId exists or carrier_setup !== "true"
-      if (step === 5 && (brokersId || carrierSetup !== "true")) {
-        setPaymentSubView(5); // Start at ConfirmCompanyFactoring
+      // If brokersId is true, always show only the last UI (sub-view 5)
+      if (step === 5 && brokersId) {
+        setPaymentSubView(5);
+      } else if (step === 5 && carrierSetup !== "true") {
+        setPaymentSubView(5);
       } else if (step === 5) {
-        setPaymentSubView(1); // Start at GetPaid
+        setPaymentSubView(1);
       }
     }
   };
@@ -592,7 +607,6 @@ export const useCarrierSetupProps = () => {
     }
   }, [carrierData, reset]);
 
-  // Map itemData to contact_information format
   const mapItemDataToContactInfo = (data) => {
     if (!data || Object.keys(data).length === 0) return null;
 
@@ -613,14 +627,34 @@ export const useCarrierSetupProps = () => {
     return contactInfo;
   };
 
+  // Set contact information from itemData - this should run after carrierData resets the form
   useEffect(() => {
     if (itemData && Object.keys(itemData).length > 0) {
       const contactInfo = mapItemDataToContactInfo(itemData);
       if (contactInfo) {
-        Object.entries(contactInfo).forEach(([key, value]) => {
-          setValue(`contact_information.${key}`, value, {
-            shouldValidate: false,
-          });
+        // Set all contact information fields explicitly
+        const fieldsToSet = [
+          "dispatch_name",
+          "dispatch_email",
+          "dispatch_phone",
+          "billing_name",
+          "billing_email",
+          "billing_phone",
+          "claims_name",
+          "claims_email",
+          "claims_phone",
+          "after_hours_name",
+          "after_hours_email",
+          "after_hours_phone",
+        ];
+
+        fieldsToSet.forEach((field) => {
+          const value = contactInfo[field];
+          if (value !== undefined && value !== null) {
+            setValue(`contact_information.${field}`, value, {
+              shouldValidate: false,
+            });
+          }
         });
       }
     }
@@ -705,9 +739,29 @@ export const useCarrierSetupProps = () => {
         verify_verification_id: companyPaymentData.guid || "",
       };
 
-      setValue("payment", mappedAgents, {
+      setValue(
+        "payment.factoring_company_name",
+        mappedAgents.factoring_company_name,
+        {
+          shouldValidate: false,
+        }
+      );
+      setValue("payment.factoring_email", mappedAgents.factoring_email, {
         shouldValidate: false,
       });
+      setValue("payment.factoring_phone", mappedAgents.factoring_phone, {
+        shouldValidate: false,
+      });
+      setValue("payment.payment_type", mappedAgents.payment_type, {
+        shouldValidate: false,
+      });
+      setValue(
+        "payment.verify_verification_id",
+        mappedAgents.verify_verification_id,
+        {
+          shouldValidate: false,
+        }
+      );
     }
   }, [companyPaymentData, setValue]);
 
@@ -787,24 +841,26 @@ export const useCarrierSetupProps = () => {
     setIsConnecting(true);
     const formData = watch();
     try {
-      const identitySuccess = await handleContactInfo();
-      if (!identitySuccess) {
-        throw new Error("Failed to submit identity data");
-      }
+      if (carrierSetup === "true") {
+        const identitySuccess = await handleContactInfo();
+        if (!identitySuccess) {
+          throw new Error("Failed to submit identity data");
+        }
 
-      const operationsSuccess = await handleAgentSubmit();
-      if (!operationsSuccess) {
-        throw new Error("Failed to submit operations data");
-      }
+        const operationsSuccess = await handleAgentSubmit();
+        if (!operationsSuccess) {
+          throw new Error("Failed to submit operations data");
+        }
 
-      const certificationsSuccess = await handlePaymentSubmit();
-      if (!certificationsSuccess) {
-        throw new Error("Failed to submit certifications data");
-      }
+        const certificationsSuccess = await handlePaymentSubmit();
+        if (!certificationsSuccess) {
+          throw new Error("Failed to submit certifications data");
+        }
 
-      const insuranceSuccess = await handleQuestionnaireSubmit();
-      if (!insuranceSuccess) {
-        throw new Error("Failed to submit insurance data");
+        const insuranceSuccess = await handleQuestionnaireSubmit();
+        if (!insuranceSuccess) {
+          throw new Error("Failed to submit insurance data");
+        }
       }
 
       if (carrierSetup === "true") {

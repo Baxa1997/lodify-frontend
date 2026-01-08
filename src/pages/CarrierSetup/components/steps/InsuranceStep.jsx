@@ -30,6 +30,7 @@ import {getShortFileName} from "@utils/getFileName";
 import FilesReader from "@components/FileViewer/FilesReader";
 
 const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
+  const isFieldsDisabled = !isEditable;
   const compensationInsurance = useWatch({
     control,
     name: "insurance.compensation_insurance",
@@ -92,14 +93,14 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
           name="insurance.worker_compensation"
           defaultValue="yes"
           render={({field}) => (
-            <RadioGroup {...field} mb="24px">
+            <RadioGroup {...field} mb="24px" isDisabled={isFieldsDisabled}>
               <Stack direction="row" spacing="24px">
-                <Radio value="yes" colorScheme="orange">
+                <Radio value="yes" colorScheme="orange" isDisabled={isFieldsDisabled}>
                   <Text fontSize="14px" color="#414651">
                     Yes
                   </Text>
                 </Radio>
-                <Radio value="no" colorScheme="orange">
+                <Radio value="no" colorScheme="orange" isDisabled={isFieldsDisabled}>
                   <Text fontSize="14px" color="#414651">
                     No
                   </Text>
@@ -152,9 +153,11 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
               multiple={false}
               rules={{
                 required: "Worker's compensation insurance is required",
-              }}>
+              }}
+              disabled={isFieldsDisabled}>
               <Button
                 className={styles.uploadButton}
+                disabled={isFieldsDisabled}
                 leftIcon={
                   <img
                     src="/img/upload.svg"
@@ -176,6 +179,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
             label="Policy number"
             placeholder="Enter policy number"
             required
+            isReadOnly={isFieldsDisabled}
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -208,7 +212,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
                   fontSize: "14px",
                 },
               }}>
-              <HFDatePicker control={control} name="insurance.effective_date" />
+              <HFDatePicker control={control} name="insurance.effective_date" isReadOnly={isFieldsDisabled} />
             </Box>
           </Box>
 
@@ -237,6 +241,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
               <HFDatePicker
                 control={control}
                 name="insurance.cancellation_date"
+                isReadOnly={isFieldsDisabled}
               />
             </Box>
           </Box>
@@ -247,6 +252,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
             label="Issued by"
             placeholder="Enter issuer name"
             required
+            isReadOnly={isFieldsDisabled}
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -263,6 +269,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
             label="Full name"
             placeholder="Enter full name"
             required
+            isReadOnly={isFieldsDisabled}
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -286,7 +293,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
                 *
               </Box>
             </Text>
-            <HFPhoneInput control={control} name="insurance.phone_number" />
+            <HFPhoneInput control={control} name="insurance.phone_number" isReadOnly={isFieldsDisabled} />
           </Box>
 
           <HFTextField
@@ -296,6 +303,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
             placeholder="Enter email address"
             type="email"
             required
+            isReadOnly={isFieldsDisabled}
             style={{
               border: "1px solid #D5D7DA",
             }}
@@ -435,6 +443,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
           control={control}
           name="insurance.commodity_type"
           label="Commodity type"
+          disabled={isFieldsDisabled}
         />
       </Box>
     </Box>
