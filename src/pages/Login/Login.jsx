@@ -20,6 +20,7 @@ import {
   FormControl,
   FormLabel,
   Flex,
+  useToast,
 } from "@chakra-ui/react";
 import {MdEmail, MdLock, MdCheckCircle} from "react-icons/md";
 import {IoArrowBackOutline} from "react-icons/io5";
@@ -31,6 +32,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const {ip} = IPAddressFinder();
+  const toast = useToast();
   const isAuth = useSelector((state) => state?.auth?.isAuth);
   const [isLoading, setIsLoading] = useState(false);
   const [isUserId, setIsUserId] = useState();
@@ -230,7 +232,15 @@ const Login = () => {
         }
       })
       .catch((err) => {
-        dispatch(showAlert(err?.data?.data));
+        toast({
+          title: "Username or password is incorrect",
+          description: err?.data?.data || "Username or password is incorrect",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+
         setIsLoading(false);
       });
   };

@@ -3,6 +3,7 @@ import authService from "../../services/auth/authService";
 import {authActions} from "./auth.slice";
 import {store} from "..";
 import {companyActions} from "../company/company.slice";
+import {showAlert} from "../alert/alert.thunk";
 
 const getCarrierStatus = (companies_id, dispatch) => {
   authService
@@ -110,8 +111,8 @@ export const loginAction = createAsyncThunk(
 
       // dispatch(cashboxActions.setData(cashboxData))
     } catch (error) {
+      dispatch(showAlert("Username or password is incorrect"));
       throw new Error(error);
-      // dispatch(showAlert('Username or password is incorrect'))
     }
   }
 );
