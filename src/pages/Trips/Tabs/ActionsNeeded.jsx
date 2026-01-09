@@ -35,6 +35,7 @@ function ActionsNeeded() {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
 
   const {
     data: tripsData = [],
@@ -118,7 +119,7 @@ function ActionsNeeded() {
       <Box mt={6}>
         <CTable
           width="100%"
-          height="calc(100vh - 330px)"
+          height={isBroker ? "calc(100vh - 332px)" : "calc(100vh - 280px)"}
           overflow="auto"
           currentPage={currentPage}
           totalPages={totalPages}

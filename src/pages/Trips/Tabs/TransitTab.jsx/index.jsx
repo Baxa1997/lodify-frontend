@@ -157,6 +157,9 @@ function TransitTab({tripType = "", isActive = true}) {
     : 0;
   const trips = tripsData?.response || [];
 
+  // Check if any driver is NOT assigned (unassigned) - for carriers
+  const hasUnassignedDriver = trips.some(trip => !trip?.drivers?.first_name);
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -171,7 +174,7 @@ function TransitTab({tripType = "", isActive = true}) {
       <Box mt={6}>
         <CTable
           width="100%"
-          height="calc(100vh - 330px)"
+          height={isBroker ? "calc(100vh - 332px)" : "calc(100vh - 280px)"}
           overflow="auto"
           currentPage={currentPage}
           totalPages={totalPages}
@@ -199,7 +202,12 @@ function TransitTab({tripType = "", isActive = true}) {
                         : null
                     }
                     key={element.id}
-                    onSort={() => handleSort(element.key)}>
+                    onSort={() => handleSort(element.key)}
+                    position={element.key === "driver" && !isBroker && hasUnassignedDriver ? "sticky" : "static"}
+                    right={element.key === "driver" && !isBroker && hasUnassignedDriver ? "0" : "auto"}
+                    bg={element.key === "driver" && !isBroker && hasUnassignedDriver ? "gray.50" : "transparent"}
+                    boxShadow={element.key === "driver" && !isBroker && hasUnassignedDriver ? "-2px 0 4px rgba(0,0,0,0.05)" : "none"}
+                    zIndex={element.key === "driver" && !isBroker && hasUnassignedDriver ? 9 : -1}>
                     {element.name}
                   </CTableTh>
                 ))}
@@ -427,7 +435,12 @@ function TransitTab({tripType = "", isActive = true}) {
                       </CTableTd>
 
                       {Boolean(!isBroker) && (
-                        <CTableTd>
+                        <CTableTd
+                          position={hasUnassignedDriver ? "sticky" : "static"}
+                          right={hasUnassignedDriver ? "0" : "auto"}
+                          bg={hasUnassignedDriver ? "white" : "transparent"}
+                          boxShadow={hasUnassignedDriver ? "-2px 0 4px rgba(0,0,0,0.05)" : "none"}
+                          zIndex={hasUnassignedDriver ? 5 : "auto"}>
                           <DriverAssignmentMenu
                             trip={trip}
                             onAssignClick={(e) => {

@@ -191,6 +191,39 @@ function UpcomingTab({tripType = "", isActive = true}) {
     : 0;
   const trips = tripsData?.response || [];
 
+  const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
+
+  const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
+
+  const hasUnassignedTractor = trips.some(
+    (trip) => !trip?.tractors?.plate_number && !trip?.tractors?.licence_plate
+  );
+
+  const hasUnassignedTrailer = trips.some(
+    (trip) => !trip?.trailers?.plate_number
+  );
+
+  const COLUMN_WIDTH = 180;
+
+  const getDriverPosition = () => {
+    if (!hasUnassignedDriver) return "auto";
+    let offset = 0;
+    if (hasUnassignedTractor) offset += COLUMN_WIDTH;
+    if (hasUnassignedTrailer) offset += COLUMN_WIDTH;
+    return `${offset}px`;
+  };
+
+  const getTractorPosition = () => {
+    if (!hasUnassignedTractor) return "auto";
+    let offset = 0;
+    if (hasUnassignedTrailer) offset += COLUMN_WIDTH;
+    return `${offset}px`;
+  };
+
+  const getTrailerPosition = () => {
+    return hasUnassignedTrailer ? "0" : "auto";
+  };
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -206,7 +239,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
         <CTable
           scrollRef={tableScrollRef}
           width="100%"
-          height="calc(100vh - 330px)"
+          height={isBroker ? "calc(100vh - 332px)" : "calc(100vh - 280px)"}
           overflow="scroll"
           currentPage={currentPage}
           totalPages={totalPages}
@@ -217,14 +250,96 @@ function UpcomingTab({tripType = "", isActive = true}) {
             <Box as={"tr"}>
               {getOrderedColumns().map((element) => (
                 <CTableTh
-                  zIndex={-1}
                   maxW="334px"
                   sortable={element.sortable}
                   sortDirection={
                     sortConfig.key === element.key ? sortConfig.direction : null
                   }
                   key={element.id}
-                  onSort={() => handleSort(element.key)}>
+                  onSort={() => handleSort(element.key)}
+                  position={
+                    (element.key === "carrier" &&
+                      isBroker &&
+                      hasUnassignedCarrier) ||
+                    (element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTractor) ||
+                    (element.key === "trailer_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTrailer)
+                      ? "sticky"
+                      : "static"
+                  }
+                  right={
+                    element.key === "carrier" &&
+                    isBroker &&
+                    hasUnassignedCarrier
+                      ? "0"
+                      : element.key === "driver" &&
+                        !isBroker &&
+                        hasUnassignedDriver
+                      ? getDriverPosition()
+                      : element.key === "tracktor_unit_id" &&
+                        !isBroker &&
+                        hasUnassignedTractor
+                      ? getTractorPosition()
+                      : element.key === "trailer_unit_id" &&
+                        !isBroker &&
+                        hasUnassignedTrailer
+                      ? getTrailerPosition()
+                      : "auto"
+                  }
+                  bg={
+                    (element.key === "carrier" &&
+                      isBroker &&
+                      hasUnassignedCarrier) ||
+                    (element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTractor) ||
+                    (element.key === "trailer_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTrailer)
+                      ? "gray.50"
+                      : "transparent"
+                  }
+                  boxShadow={
+                    (element.key === "carrier" &&
+                      isBroker &&
+                      hasUnassignedCarrier) ||
+                    (element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTractor) ||
+                    (element.key === "trailer_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTrailer)
+                      ? "-2px 0 4px rgba(0,0,0,0.05)"
+                      : "none"
+                  }
+                  zIndex={
+                    (element.key === "carrier" &&
+                      isBroker &&
+                      hasUnassignedCarrier) ||
+                    (element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTractor) ||
+                    (element.key === "trailer_unit_id" &&
+                      !isBroker &&
+                      hasUnassignedTrailer)
+                      ? 9
+                      : -1
+                  }>
                   {element.name}
                 </CTableTh>
               ))}
@@ -380,7 +495,16 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       )}
 
                       {Boolean(!isBroker) && (
-                        <CTableTd>
+                        <CTableTd
+                          position={hasUnassignedTractor ? "sticky" : "static"}
+                          right={getTractorPosition()}
+                          bg={hasUnassignedTractor ? "white" : "transparent"}
+                          boxShadow={
+                            hasUnassignedTractor
+                              ? "-2px 0 4px rgba(0,0,0,0.05)"
+                              : "none"
+                          }
+                          zIndex={hasUnassignedTractor ? 5 : "auto"}>
                           <TractorAssignmentMenu
                             trip={trip}
                             onAssignClick={(e) => {
@@ -393,7 +517,16 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       )}
 
                       {Boolean(!isBroker) && (
-                        <CTableTd>
+                        <CTableTd
+                          position={hasUnassignedTrailer ? "sticky" : "static"}
+                          right={getTrailerPosition()}
+                          bg={hasUnassignedTrailer ? "white" : "transparent"}
+                          boxShadow={
+                            hasUnassignedTrailer
+                              ? "-2px 0 4px rgba(0,0,0,0.05)"
+                              : "none"
+                          }
+                          zIndex={hasUnassignedTrailer ? 5 : "auto"}>
                           <TrailerAssignmentMenu
                             trip={trip}
                             onAssignClick={(e) => {
@@ -443,7 +576,16 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       </CTableTd>
 
                       {Boolean(!isBroker) && (
-                        <CTableTd>
+                        <CTableTd
+                          position={hasUnassignedDriver ? "sticky" : "static"}
+                          right={getDriverPosition()}
+                          bg={hasUnassignedDriver ? "white" : "transparent"}
+                          boxShadow={
+                            hasUnassignedDriver
+                              ? "-2px 0 4px rgba(0,0,0,0.05)"
+                              : "none"
+                          }
+                          zIndex={hasUnassignedDriver ? 5 : "auto"}>
                           <DriverAssignmentMenu
                             trip={trip}
                             onAssignClick={(e) => {
@@ -456,7 +598,16 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       )}
 
                       {Boolean(isBroker) && (
-                        <CTableTd>
+                        <CTableTd
+                          position={hasUnassignedCarrier ? "sticky" : "static"}
+                          right={hasUnassignedCarrier ? "0" : "auto"}
+                          bg={hasUnassignedCarrier ? "white" : "transparent"}
+                          boxShadow={
+                            hasUnassignedCarrier
+                              ? "-2px 0 4px rgba(0,0,0,0.05)"
+                              : "none"
+                          }
+                          zIndex={hasUnassignedCarrier ? 5 : "auto"}>
                           {trip?.carrier?.legal_name ? (
                             <Flex alignItems="center" gap={2}>
                               <Flex alignItems="center" gap={2}>

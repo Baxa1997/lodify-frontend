@@ -146,6 +146,12 @@ function HistoryTab({tripType = ""}) {
     : 0;
   const trips = tripsData?.response || [];
 
+  // Check if any carrier is NOT assigned (unassigned) - for brokers
+  const hasUnassignedCarrier = trips.some(trip => !trip?.carrier?.legal_name);
+  
+  // Check if any driver is NOT assigned (unassigned) - for carriers
+  const hasUnassignedDriver = trips.some(trip => !trip?.drivers?.first_name);
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -161,7 +167,7 @@ function HistoryTab({tripType = ""}) {
         <CTable
           scrollRef={tableScrollRef}
           width="100%"
-          height="calc(100vh - 330px)"
+          height={isBroker ? "calc(100vh - 332px)" : "calc(100vh - 280px)"}
           overflow="scroll"
           currentPage={currentPage}
           totalPages={totalPages}
@@ -189,7 +195,37 @@ function HistoryTab({tripType = ""}) {
                         : null
                     }
                     key={element.id}
-                    onSort={() => handleSort(element.key)}>
+                    onSort={() => handleSort(element.key)}
+                    position={
+                      (element.key === "carrier" && isBroker && hasUnassignedCarrier) ||
+                      (element.key === "driver" && !isBroker && hasUnassignedDriver)
+                        ? "sticky"
+                        : "static"
+                    }
+                    right={
+                      (element.key === "carrier" && isBroker && hasUnassignedCarrier) ||
+                      (element.key === "driver" && !isBroker && hasUnassignedDriver)
+                        ? "0"
+                        : "auto"
+                    }
+                    bg={
+                      (element.key === "carrier" && isBroker && hasUnassignedCarrier) ||
+                      (element.key === "driver" && !isBroker && hasUnassignedDriver)
+                        ? "gray.50"
+                        : "transparent"
+                    }
+                    boxShadow={
+                      (element.key === "carrier" && isBroker && hasUnassignedCarrier) ||
+                      (element.key === "driver" && !isBroker && hasUnassignedDriver)
+                        ? "-2px 0 4px rgba(0,0,0,0.05)"
+                        : "none"
+                    }
+                    zIndex={
+                      (element.key === "carrier" && isBroker && hasUnassignedCarrier) ||
+                      (element.key === "driver" && !isBroker && hasUnassignedDriver)
+                        ? 9
+                        : -1
+                    }>
                     {element.name}
                   </CTableTh>
                 ))}
@@ -419,7 +455,12 @@ function HistoryTab({tripType = ""}) {
                       </CTableTd>
 
                       {Boolean(!isBroker) && (
-                        <CTableTd>
+                        <CTableTd
+                          position={hasUnassignedDriver ? "sticky" : "static"}
+                          right={hasUnassignedDriver ? "0" : "auto"}
+                          bg={hasUnassignedDriver ? "white" : "transparent"}
+                          boxShadow={hasUnassignedDriver ? "-2px 0 4px rgba(0,0,0,0.05)" : "none"}
+                          zIndex={hasUnassignedDriver ? 5 : "auto"}>
                           <Flex alignItems="center" gap={2}>
                             {trip?.drivers?.first_name ? (
                               <Tooltip
@@ -480,7 +521,12 @@ function HistoryTab({tripType = ""}) {
                       )}
 
                       {Boolean(isBroker) && (
-                        <CTableTd>
+                        <CTableTd
+                          position={hasUnassignedCarrier ? "sticky" : "static"}
+                          right={hasUnassignedCarrier ? "0" : "auto"}
+                          bg={hasUnassignedCarrier ? "white" : "transparent"}
+                          boxShadow={hasUnassignedCarrier ? "-2px 0 4px rgba(0,0,0,0.05)" : "none"}
+                          zIndex={hasUnassignedCarrier ? 5 : "auto"}>
                           {trip?.carrier?.legal_name && (
                             <Flex alignItems="center" gap={2}>
                               <Flex alignItems="center" gap={2}>
