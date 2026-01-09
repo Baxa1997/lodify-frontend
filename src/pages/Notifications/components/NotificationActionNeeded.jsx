@@ -25,6 +25,7 @@ function NotificationActionNeeded() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReadAllDialogOpen, setIsReadAllDialogOpen] = useState(false);
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
+  const [expandedRows, setExpandedRows] = useState(new Set());
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const cancelRef = useRef();
@@ -59,6 +60,18 @@ function NotificationActionNeeded() {
 
   const handleReadAllClick = () => {
     setIsReadAllDialogOpen(true);
+  };
+
+  const handleRowClick = (rowId, row) => {
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(rowId)) {
+        newSet.delete(rowId);
+      } else {
+        newSet.add(rowId);
+      }
+      return newSet;
+    });
   };
 
   const handleConfirmReadAll = async () => {
@@ -125,6 +138,7 @@ function NotificationActionNeeded() {
           setPage={setPage}
           count={count}
           isLoading={isNotificationsLoading}
+          onRowClick={handleRowClick}
           tableProps={{
             width: "100%",
           }}

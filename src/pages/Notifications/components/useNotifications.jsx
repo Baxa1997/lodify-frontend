@@ -113,24 +113,28 @@ export const useNotifications = ({
     },
     {
       label: "Load ID",
-      key: "type",
-      render: (value) => renderSeverityBadge(value?.[0]),
+      key: "trip_id_data",
+      render: (value, row) => (
+        <Text fontSize="14px" color="#374151" fontWeight="500">
+          {value?.id || row?.trip_id || "—"}
+        </Text>
+      ),
     },
     {
       label: "Origin",
-      key: "notifications_id_data",
+      key: "trip_id_data",
       render: (value) => (
         <Text fontSize="14px" color="#374151">
-          {formatDateTime(value?.created_at)}
+          {value?.origin?.address || "—"}
         </Text>
       ),
     },
     {
       label: "Destination",
-      key: "pickup_id_data",
+      key: "trip_id_data",
       render: (value) => (
         <Text fontSize="14px" color="#374151">
-          {formatDateTime(value?.arrive_by)}
+          {value?.stop?.address || "—"}
         </Text>
       ),
     },
@@ -145,19 +149,19 @@ export const useNotifications = ({
     },
     {
       label: "Reason",
-      key: "pickup_id_data",
+      key: "type",
       render: (value) => (
         <Text fontSize="14px" color="#374151">
-          {formatDateTime(value?.arrive_by)}
+          {Array.isArray(value) ? value[0] : value || "—"}
         </Text>
       ),
     },
     {
       label: "Total Miles",
-      key: "pickup_id_data",
+      key: "trip_id_data",
       render: (value) => (
         <Text fontSize="14px" color="#374151">
-          {formatDateTime(value?.arrive_by)}
+          {value?.total_miles ? `${value.total_miles.toFixed(0)} miles` : "—"}
         </Text>
       ),
     },
@@ -183,7 +187,10 @@ export const useNotifications = ({
           borderRadius="22px"
           border="none"
           px="12px"
-          onClick={() => onViewNotification?.(row)}>
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewNotification?.(row);
+          }}>
           View
         </Button>
       ),

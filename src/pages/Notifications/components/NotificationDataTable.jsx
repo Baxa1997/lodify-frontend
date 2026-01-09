@@ -1,215 +1,154 @@
+import {Box, Spinner, Center, Collapse} from "@chakra-ui/react";
 import {
-  Box,
-  Table,
-  TableCaption,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-  Spinner,
-  Center,
-  Button,
-} from "@chakra-ui/react";
-import {useState} from "react";
+  CTable,
+  CTableBody,
+  CTableHead,
+  CTableTd,
+  CTableTh,
+} from "@components/tableElements";
+import CTableRow from "@components/tableElements/CTableRow";
+import {EmptyState} from "@components/tableElements/EmptyState";
+import {FiAlertCircle} from "react-icons/fi";
+import React, {useState, useRef} from "react";
 import SimplePagination from "@components/SimplePagination";
-import {ChevronRightIcon, ChevronDownIcon} from "@chakra-ui/icons";
+import TripRowDetails from "../../Trips/components/TripRowDetails";
 
 export const NotificationDataTable = ({
   headData = [],
   data = [],
-  caption,
   limit,
   page,
   pagination,
   count = 0,
-  actionLabel = "Action",
   isLoading = false,
-  tableProps = {},
   setPage = () => {},
   setLimit = () => {},
+  onRowClick,
   ...props
 }) => {
   const [expandedRows, setExpandedRows] = useState(new Set());
+  const tableScrollRef = useRef(null);
 
-  const toggleRow = (rowIndex) => {
-    const newExpandedRows = new Set(expandedRows);
-    if (newExpandedRows.has(rowIndex)) {
-      newExpandedRows.delete(rowIndex);
-    } else {
-      newExpandedRows.add(rowIndex);
+  const handleRowClick = (rowId) => {
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(rowId)) {
+        newSet.delete(rowId);
+      } else {
+        newSet.add(rowId);
+      }
+      return newSet;
+    });
+
+    if (onRowClick) {
+      onRowClick(rowId);
     }
-    setExpandedRows(newExpandedRows);
   };
 
   return (
     <Box display="flex" flexDirection="column" h="100%" {...props}>
-      <Box flex="1" overflowX="auto" overflowY="auto" minH="0">
-        <Table variant="simple" {...tableProps}>
-          {caption && <TableCaption>{caption}</TableCaption>}
-          <Thead
-            bgColor="#F9FAFB"
-            borderBottom="1px solid"
-            borderColor="#E5E7EB"
-            position="sticky"
-            top="0"
-            zIndex="10">
-            <Tr>
-              {headData?.map((head, index) => (
-                <Th
-                  p="10px 16px"
-                  key={index}
-                  isNumeric={head.isNumeric}
-                  width={head.thProps?.width || "130px"}
-                  color="#374151"
-                  fontWeight={"600"}
-                  fontSize={"12px"}
-                  textTransform="capitalize"
-                  letterSpacing="0.5px"
-                  borderBottom="1px solid #E5E7EB"
-                  borderRight="none"
-                  {...head.thProps}>
-                  <Box display="flex" alignItems="center" gap="6px">
-                    {head.label}
-                    {head?.infoText && (
-                      <Tooltip
-                        placement="top"
-                        flexShrink="0"
-                        label={head.infoText}>
-                        <img
-                          src="/img/info.svg"
-                          width="14"
-                          height="14"
-                          alt="Info"
-                        />
-                      </Tooltip>
-                    )}
-                  </Box>
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {isLoading ? (
-              <Tr>
-                <Td colSpan={headData.length}>
-                  <Center h="calc(100vh - 420px)" py={8}>
-                    <Spinner size="lg" color="blue.500" />
-                  </Center>
-                </Td>
-              </Tr>
-            ) : (
-              data?.map((row, rowIndex) => (
-                <>
-                  <Tr
+      <CTable
+        ref={tableScrollRef}
+        width="100%"
+        height="calc(100vh - 290px)"
+        overflow="auto">
+        <CTableHead zIndex={1}>
+          <Box as={"tr"}>
+            {headData?.map((element, index) => (
+              <CTableTh zIndex={-1} maxW="334px" key={index}>
+                {element.label}
+              </CTableTh>
+            ))}
+          </Box>
+        </CTableHead>
+
+        <CTableBody>
+          {isLoading ? (
+            <CTableRow>
+              <CTableTd colSpan={headData.length} textAlign="center" py={8}>
+                <Center minH="400px">
+                  <Spinner size="lg" color="#FF5B04" thickness="4px" />
+                </Center>
+              </CTableTd>
+            </CTableRow>
+          ) : data.length === 0 ? (
+            <CTableRow>
+              <CTableTd
+                colSpan={headData.length}
+                textAlign="center"
+                p={0}
+                border="none">
+                <EmptyState
+                  icon={FiAlertCircle}
+                  title="No notifications"
+                  description="You don't have any notifications at the moment."
+                />
+              </CTableTd>
+            </CTableRow>
+          ) : (
+            data?.map((row, index) => {
+              const rowId = row?.guid || row?.id || index;
+              const isExpanded = expandedRows.has(rowId);
+
+              const tripId =
+                row?.trip_id ||
+                row?.trips_id ||
+                row?.trip_id_data?.guid ||
+                row?.pickup_id_data?.trips_id;
+              const hasTripData = Boolean(!tripId);
+
+              const tripData = hasTripData
+                ? {
+                    guid: tripId,
+                    id: row?.trip_id_data?.id || row?.id,
+                    ...row?.trip_id_data,
+                  }
+                : null;
+
+              return (
+                <React.Fragment key={rowId}>
+                  <CTableRow
+                    hover={false}
+                    onClick={() => hasTripData && handleRowClick(rowId)}
+                    style={{cursor: hasTripData ? "pointer" : "default"}}
                     bg={
                       row?.is_read === false || row?.is_read === 0
                         ? "#FEF2F2"
                         : "white"
-                    }
-                    borderBottom="1px solid #E5E7EB">
-                    {headData?.map((head, colIndex) => {
-                      if (colIndex === 0) {
-                        return (
-                          <Td
-                            key={colIndex}
-                            width={head.tdProps?.width || "180px"}
-                            fontWeight={"400"}
-                            fontSize={"14px"}
-                            color="#374151"
-                            borderBottom="none"
-                            borderRight="none"
-                            bg="transparent"
-                            px={head.tdProps?.px || "16px"}
-                            py={head.tdProps?.py || "16px"}
-                            {...head.tdProps}>
-                            {head?.key === "action" ? (
-                              <Box display="flex" alignItems="center" gap="6px">
-                                <Button
-                                  fontWeight="500"
-                                  variant="outline"
-                                  color="#535862"
-                                  h="28px"
-                                  w="100px"
-                                  fontSize="13px"
-                                  borderColor="#535862"
-                                  borderRadius="22px"
-                                  px="12px">
-                                  {actionLabel}
-                                </Button>
-                              </Box>
-                            ) : (
-                              <Box display="flex" alignItems="center" gap="6px">
-                                {head?.render
-                                  ? head.render(
-                                      row[head.key],
-                                      row,
-                                      head,
-                                      rowIndex
-                                    )
-                                  : row[head.key]}
-                                {row.children && (
-                                  <Box
-                                    onClick={() => toggleRow(rowIndex)}
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    width="20px"
-                                    height="20px">
-                                    {expandedRows.has(rowIndex) ? (
-                                      <ChevronDownIcon
-                                        width="20px"
-                                        height="20px"
-                                      />
-                                    ) : (
-                                      <ChevronRightIcon
-                                        width="20px"
-                                        height="20px"
-                                      />
-                                    )}
-                                  </Box>
-                                )}
-                              </Box>
-                            )}
-                          </Td>
-                        );
-                      }
+                    }>
+                    {headData?.map((head, colIndex) => (
+                      <CTableTd key={colIndex}>
+                        {head?.render
+                          ? head.render(row[head.key], row, head, index)
+                          : row[head.key]}
+                      </CTableTd>
+                    ))}
+                  </CTableRow>
 
-                      return (
-                        <Td
-                          key={colIndex}
-                          isNumeric={head.isNumeric}
-                          width={head.tdProps?.width || "180px"}
-                          fontWeight={"400"}
-                          fontSize={"14px"}
-                          color="#374151"
-                          borderBottom="none"
-                          borderRight="none"
-                          bg="transparent"
-                          px={head.tdProps?.px || "16px"}
-                          py={head.tdProps?.py || "16px"}
-                          {...head.tdProps}>
-                          {head?.render
-                            ? head.render(
-                                row[head.key],
-                                row,
-                                head,
-                                rowIndex,
-                                false,
-                                null
-                              )
-                            : row[head.key]}
-                        </Td>
-                      );
-                    })}
-                  </Tr>
-                </>
-              ))
-            )}
-          </Tbody>
-        </Table>
-      </Box>
+                  {hasTripData && (
+                    <CTableRow>
+                      <CTableTd colSpan={headData.length} p={0}>
+                        <Collapse
+                          position="relative"
+                          in={isExpanded}
+                          animateOpacity>
+                          <TripRowDetails
+                            handleRowClick={handleRowClick}
+                            trip={tripData}
+                            isExpanded={isExpanded}
+                            tableScrollRef={tableScrollRef}
+                          />
+                        </Collapse>
+                      </CTableTd>
+                    </CTableRow>
+                  )}
+                </React.Fragment>
+              );
+            })
+          )}
+        </CTableBody>
+      </CTable>
+      {/* 
       {pagination && (
         <Box
           width="100%"
@@ -227,7 +166,7 @@ export const NotificationDataTable = ({
             />
           </Box>
         </Box>
-      )}
+      )} */}
     </Box>
   );
 };

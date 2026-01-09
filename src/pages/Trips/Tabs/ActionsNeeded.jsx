@@ -280,12 +280,7 @@ function ActionsNeeded() {
                       </CTableTd>
 
                       <CTableTd>
-                        <TimeCounter
-                          arriveBy={trip?.stop?.arrive_by}
-                          onTimeUp={() => {
-                            console.log(`Timer finished for trip ${trip.id}`);
-                          }}
-                        />
+                        <TimeCounter arriveBy={trip?.stop?.arrive_by} />
                       </CTableTd>
 
                       <CTableTd>

@@ -172,7 +172,7 @@ const MyCarriers = () => {
                 <Box
                   key={carrier.guid}
                   w="100%"
-                  h="310px"
+                  h="340px"
                   bg="white"
                   borderRadius="12px"
                   border="1px solid #E2E8F0"

@@ -179,7 +179,7 @@ const AllCarriers = () => {
     }
     return name.substring(0, 2).toUpperCase();
   };
-  console.log("filteredCarriersfilteredCarriers", filteredCarriers);
+
   return (
     <Box>
       <Box mt="20px" mb="16px">
@@ -221,7 +221,7 @@ const AllCarriers = () => {
                 <Box
                   key={carrier.guid}
                   w="100%"
-                  h="320px"
+                  h="340px"
                   bg="white"
                   borderRadius="12px"
                   border="1px solid #E2E8F0"
