@@ -7,6 +7,8 @@ import {
   CTableTh,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
+import {EmptyState} from "@components/tableElements/EmptyState";
+import {FiAlertCircle} from "react-icons/fi";
 import tripsService from "@services/tripsService";
 import {useQuery} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
@@ -175,8 +177,13 @@ function ActionsNeeded() {
                 <CTableTd
                   colSpan={tableActionsNeeded.length}
                   textAlign="center"
-                  py={8}>
-                  No trips found
+                  p={0}
+                  border="none">
+                  <EmptyState
+                    icon={FiAlertCircle}
+                    title="No trips requiring action"
+                    description="All trips are up to date. New trips requiring attention will appear here."
+                  />
                 </CTableTd>
               </CTableRow>
             ) : (

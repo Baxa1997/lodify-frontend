@@ -15,8 +15,10 @@ import {
   CTableHead,
   CTableTd,
   CTableTh,
+  EmptyState,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
+import {FiCheckCircle} from "react-icons/fi";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
@@ -287,8 +289,13 @@ function ClosedTrips({selectedTabIndex}) {
                 <CTableTd
                   colSpan={tableElements.length}
                   textAlign="center"
-                  py={8}>
-                  No trips found
+                  p={0}
+                  border="none">
+                  <EmptyState
+                    icon={FiCheckCircle}
+                    title="No closed loads"
+                    description="You don't have any closed loads yet. Completed loads will appear here."
+                  />
                 </CTableTd>
               </CTableRow>
             ) : (

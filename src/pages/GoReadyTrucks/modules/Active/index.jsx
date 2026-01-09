@@ -14,8 +14,10 @@ import {
   CTableHead,
   CTableTd,
   CTableTh,
+  EmptyState,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
+import {FiTruck} from "react-icons/fi";
 import {formatDate} from "@utils/dateFormats";
 import {
   calculateTimeDifference,
@@ -42,8 +44,12 @@ function ActiveComponent({tabIndex = 0}) {
     (state) => state.auth.user_data?.companies_id
   );
   const isActive = tabIndex === 1;
-  
-  const {data: trucksData, isLoading, refetch} = useQuery({
+
+  const {
+    data: trucksData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["DASHBOARD_ACTIVE_TRUCKS_DATA", companiesId],
     queryFn: () => {
       return goReadyTrucksService.getTrucks({
@@ -159,8 +165,13 @@ function ActiveComponent({tabIndex = 0}) {
                 <CTableTd
                   colSpan={tableActionsNeeded.length}
                   textAlign="center"
-                  py={8}>
-                  No trips found
+                  p={0}
+                  border="none">
+                  <EmptyState
+                    icon={FiTruck}
+                    title="No ready trucks"
+                    description="You don't have any trucks ready at the moment. Ready trucks will appear here."
+                  />
                 </CTableTd>
               </CTableRow>
             ) : (

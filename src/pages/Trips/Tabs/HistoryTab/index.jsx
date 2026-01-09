@@ -25,6 +25,8 @@ import {
   CTableTh,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
+import {EmptyState} from "@components/tableElements/EmptyState";
+import {FiArchive} from "react-icons/fi";
 import {formatDate} from "@utils/dateFormats";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import {
@@ -274,8 +276,13 @@ function HistoryTab({tripType = ""}) {
                 <CTableTd
                   colSpan={tableElements.length}
                   textAlign="center"
-                  py={8}>
-                  No trips found
+                  p={0}
+                  border="none">
+                  <EmptyState
+                    icon={FiArchive}
+                    title="No trip history"
+                    description="You don't have any completed trips yet. Past trips will appear here."
+                  />
                 </CTableTd>
               </CTableRow>
             ) : (

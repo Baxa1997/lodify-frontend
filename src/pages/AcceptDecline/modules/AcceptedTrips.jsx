@@ -15,8 +15,10 @@ import {
   CTableHead,
   CTableTd,
   CTableTh,
+  EmptyState,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
+import {FiCheckSquare} from "react-icons/fi";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
@@ -210,8 +212,13 @@ function AcceptedTrips() {
                     ).length || tableElements.length
                   }
                   textAlign="center"
-                  py={8}>
-                  No trips found
+                  p={0}
+                  border="none">
+                  <EmptyState
+                    icon={FiCheckSquare}
+                    title="No accepted trips"
+                    description="You haven't accepted any trips yet. Accepted trips will appear here."
+                  />
                 </CTableTd>
               </CTableRow>
             ) : (

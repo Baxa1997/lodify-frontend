@@ -25,6 +25,8 @@ import {
   CTableTh,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
+import {EmptyState} from "@components/tableElements/EmptyState";
+import {FiTruck} from "react-icons/fi";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import {formatDate} from "@utils/dateFormats";
 import AssignCarrier from "./components/AssignCarrier";
@@ -267,8 +269,13 @@ function TransitTab({tripType = "", isActive = true}) {
                 <CTableTd
                   colSpan={tableElements.length}
                   textAlign="center"
-                  py={8}>
-                  No trips found
+                  p={0}
+                  border="none">
+                  <EmptyState
+                    icon={FiTruck}
+                    title="No trips in transit"
+                    description="You don't have any trips currently in transit. Active trips will appear here."
+                  />
                 </CTableTd>
               </CTableRow>
             ) : (

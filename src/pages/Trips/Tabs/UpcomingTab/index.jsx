@@ -25,6 +25,8 @@ import {
   CTableTh,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
+import {EmptyState} from "@components/tableElements/EmptyState";
+import {FiCalendar} from "react-icons/fi";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import {formatDate} from "@utils/dateFormats";
 import TripRowDetails from "../../components/TripRowDetails";
@@ -358,8 +360,13 @@ function UpcomingTab({tripType = "", isActive = true}) {
                 <CTableTd
                   colSpan={tableElements.length}
                   textAlign="center"
-                  py={8}>
-                  No trips found
+                  p={0}
+                  border="none">
+                  <EmptyState
+                    icon={FiCalendar}
+                    title="No upcoming trips"
+                    description="You don't have any upcoming trips scheduled. New trips will appear here."
+                  />
                 </CTableTd>
               </CTableRow>
             ) : (
