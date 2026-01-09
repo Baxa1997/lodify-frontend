@@ -9,7 +9,6 @@ export const CompanyCard = ({
   grade,
   percentage,
   gaugeColor,
-  profilePictures = [],
 }) => {
   const getGradeColor = (grade) => {
     if (grade === "A+" && grade === "A")

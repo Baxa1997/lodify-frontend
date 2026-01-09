@@ -82,9 +82,15 @@ const SafetyMetricCard = ({
           </>
         ) : (
           <>
-            <Text fontSize="24px" fontWeight="700" color="#181D27" mb="8px">
-              {value}
-            </Text>
+            {Boolean(value) ? (
+              <Text fontSize="24px" fontWeight="700" color="#181D27" mb="8px">
+                {value}
+              </Text>
+            ) : (
+              <Text fontSize="20px" fontWeight="700" color="#777">
+                No Data
+              </Text>
+            )}
             <Text fontSize="14px" fontWeight="400" color="#6B7280">
               {statusText}
             </Text>

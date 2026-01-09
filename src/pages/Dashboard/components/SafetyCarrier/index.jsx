@@ -1,38 +1,56 @@
 import React, {useMemo} from "react";
-import {Box, Text, Flex, Link, Progress} from "@chakra-ui/react";
+import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import SafetyMetricCard from "./SafetyMetricCard";
 
+const emptyData = [
+  {
+    title: "Driver Fitness",
+    value: "",
+    hasData: false,
+    progressValue: 0,
+    progressColor: "#6B7280",
+    icon: "/img/nodata.svg",
+    statusText: "",
+  },
+  {
+    title: "Hazardous Materials Compliance",
+    value: "",
+    hasData: false,
+    progressValue: 0,
+    progressColor: "#6B7280",
+    icon: "/img/nodata.svg",
+    statusText: "",
+  },
+  {
+    title: "Hours-of-Service Compliance",
+    value: "",
+    hasData: false,
+    progressValue: 0,
+    progressColor: "#6B7280",
+    icon: "/img/nodata.svg",
+    statusText: "",
+  },
+  {
+    title: "Unsafe Driving",
+    value: "",
+    hasData: false,
+    progressValue: 0,
+    progressColor: "#6B7280",
+    icon: "/img/nodata.svg",
+    statusText: "",
+  },
+  {
+    title: "Vehicle Maintenance",
+    value: "",
+    hasData: false,
+    progressValue: 0,
+    progressColor: "#6B7280",
+    icon: "/img/nodata.svg",
+    statusText: "",
+  },
+];
+
 const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
-  const currentDate = new Date();
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const getOrdinal = (n) => {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
-
-  const lastMonthIndex =
-    currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
-  const lastMonth = monthNames[lastMonthIndex];
-  const currentMonth = monthNames[currentDate.getMonth()];
-  const day = currentDate.getDate();
-  const ordinalDay = getOrdinal(day);
-  const year = currentDate.getFullYear();
-
   const progressColor = (percentage) => {
     if (percentage > 50) return "#EF4444";
     if (percentage > 30) return "#F97316";
@@ -55,15 +73,18 @@ const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
   };
 
   const safetyMetrics = useMemo(() => {
-    return safetyData.map((item) => ({
-      title: item.basic_desc,
-      value: item.percentage + "%",
-      hasData: true,
-      progressValue: item.percentage,
-      progressColor: progressColor(item.percentage),
-      icon: progressIcon(item.percentage),
-      statusText: progressStatus(item.percentage),
-    }));
+    if (safetyData?.length) {
+      return safetyData.map((item) => ({
+        title: item.basic_desc,
+        value: item.percentage + "%",
+        hasData: true,
+        progressValue: item.percentage,
+        progressColor: progressColor(item.percentage),
+        icon: progressIcon(item.percentage),
+        statusText: progressStatus(item.percentage),
+      }));
+    }
+    return emptyData;
   }, [safetyData]);
 
   const highRiskMetrics = useMemo(() => {
@@ -110,7 +131,6 @@ const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
           View FAQs
         </Link>
       </Flex>
-
       {hasHighRiskMetrics && (
         <Box
           w="100%"
@@ -135,7 +155,6 @@ const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
           </Flex>
         </Box>
       )}
-
       <Box
         display="grid"
         gridTemplateColumns={{

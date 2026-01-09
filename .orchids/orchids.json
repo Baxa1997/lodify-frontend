@@ -1,7 +1,0 @@
-{
-  "projectId": "b8f5f180-796b-4c9c-9c08-b513896c4630",
-  "createdAt": 1765337581094,
-  "startupCommands": [
-    "yarn install; yarn dev"
-  ]
-}

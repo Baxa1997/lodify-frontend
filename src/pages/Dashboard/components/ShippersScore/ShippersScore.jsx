@@ -62,8 +62,6 @@ export const ShippersScore = ({shippersScoreData = []}) => {
     currentDate.getMonth() - 1,
     1
   );
-  const lastMonth = monthNames[lastMonthDate.getMonth()];
-  const lastMonthYear = lastMonthDate.getFullYear();
 
   const currentMonth = monthNames[currentDate.getMonth()];
   const currentYear = currentDate.getFullYear();
