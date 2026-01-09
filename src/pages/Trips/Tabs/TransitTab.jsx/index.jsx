@@ -27,7 +27,6 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import {formatDate} from "@utils/dateFormats";
-
 import AssignCarrier from "./components/AssignCarrier";
 import {
   TripStatus,
@@ -156,9 +155,7 @@ function TransitTab({tripType = "", isActive = true}) {
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
   const trips = tripsData?.response || [];
-
-  // Check if any driver is NOT assigned (unassigned) - for carriers
-  const hasUnassignedDriver = trips.some(trip => !trip?.drivers?.first_name);
+  const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
 
   return (
     <Box mt={"26px"}>
@@ -193,7 +190,6 @@ function TransitTab({tripType = "", isActive = true}) {
                 )
                 .map((element) => (
                   <CTableTh
-                    zIndex={-1}
                     maxW="334px"
                     sortable={element.sortable}
                     sortDirection={
@@ -203,11 +199,41 @@ function TransitTab({tripType = "", isActive = true}) {
                     }
                     key={element.id}
                     onSort={() => handleSort(element.key)}
-                    position={element.key === "driver" && !isBroker && hasUnassignedDriver ? "sticky" : "static"}
-                    right={element.key === "driver" && !isBroker && hasUnassignedDriver ? "0" : "auto"}
-                    bg={element.key === "driver" && !isBroker && hasUnassignedDriver ? "gray.50" : "transparent"}
-                    boxShadow={element.key === "driver" && !isBroker && hasUnassignedDriver ? "-2px 0 4px rgba(0,0,0,0.05)" : "none"}
-                    zIndex={element.key === "driver" && !isBroker && hasUnassignedDriver ? 9 : -1}>
+                    position={
+                      element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver
+                        ? "sticky"
+                        : "static"
+                    }
+                    right={
+                      element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver
+                        ? "0"
+                        : "auto"
+                    }
+                    bg={
+                      element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver
+                        ? "gray.50"
+                        : "transparent"
+                    }
+                    boxShadow={
+                      element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver
+                        ? "-2px 0 4px rgba(0,0,0,0.05)"
+                        : "none"
+                    }
+                    zIndex={
+                      element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver
+                        ? 9
+                        : -1
+                    }>
                     {element.name}
                   </CTableTh>
                 ))}
@@ -439,7 +465,11 @@ function TransitTab({tripType = "", isActive = true}) {
                           position={hasUnassignedDriver ? "sticky" : "static"}
                           right={hasUnassignedDriver ? "0" : "auto"}
                           bg={hasUnassignedDriver ? "white" : "transparent"}
-                          boxShadow={hasUnassignedDriver ? "-2px 0 4px rgba(0,0,0,0.05)" : "none"}
+                          boxShadow={
+                            hasUnassignedDriver
+                              ? "-2px 0 4px rgba(0,0,0,0.05)"
+                              : "none"
+                          }
                           zIndex={hasUnassignedDriver ? 5 : "auto"}>
                           <DriverAssignmentMenu
                             trip={trip}

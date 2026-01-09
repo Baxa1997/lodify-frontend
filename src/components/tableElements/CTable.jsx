@@ -45,19 +45,23 @@ const CTable = ({
         position="relative"
         sx={{
           "&::-webkit-scrollbar": {
-            height: "3px",
+            height: "12px",
             width: "0px",
           },
           "&::-webkit-scrollbar-track": {
             background: "#f1f1f1",
-            borderRadius: "4px",
+            borderRadius: "6px",
           },
           "&::-webkit-scrollbar-thumb": {
             background: "#c1c1c1",
-            borderRadius: "4px",
+            borderRadius: "6px",
+            border: "2px solid #f1f1f1",
           },
           "&::-webkit-scrollbar-thumb:hover": {
             background: "#a8a8a8",
+          },
+          "&::-webkit-scrollbar-corner": {
+            background: "#f1f1f1",
           },
         }}>
         <Box as="table" borderCollapse="collapse" w="100%" tableLayout="fixed">

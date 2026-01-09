@@ -190,19 +190,14 @@ function UpcomingTab({tripType = "", isActive = true}) {
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
   const trips = tripsData?.response || [];
-
   const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
-
   const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
-
   const hasUnassignedTractor = trips.some(
     (trip) => !trip?.tractors?.plate_number && !trip?.tractors?.licence_plate
   );
-
   const hasUnassignedTrailer = trips.some(
     (trip) => !trip?.trailers?.plate_number
   );
-
   const COLUMN_WIDTH = 180;
 
   const getDriverPosition = () => {
