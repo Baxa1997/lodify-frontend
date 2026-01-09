@@ -131,20 +131,6 @@ const MyCarriers = () => {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <Flex justify="center" align="center" h="400px">
-  //       <Spinner
-  //         thickness="4px"
-  //         speed="0.65s"
-  //         emptyColor="#fff"
-  //         color="#EF6820"
-  //         size="lg"
-  //       />
-  //     </Flex>
-  //   );
-  // }
-
   return (
     <Box>
       <Box mt="20px" mb="16px">
@@ -186,7 +172,7 @@ const MyCarriers = () => {
                 <Box
                   key={carrier.guid}
                   w="100%"
-                  h="290px"
+                  h="310px"
                   bg="white"
                   borderRadius="12px"
                   border="1px solid #E2E8F0"
@@ -266,6 +252,15 @@ const MyCarriers = () => {
                     fontWeight="400"
                     color="#535862">
                     Phone: {carrier.telephone || "N/A"}
+                  </Text>
+
+                  <Text
+                    px="20px"
+                    fontSize="14px"
+                    fontWeight="400"
+                    color="#535862"
+                    h="44px">
+                    Address: {carrier.physical_address || "N/A"}
                   </Text>
 
                   <Text

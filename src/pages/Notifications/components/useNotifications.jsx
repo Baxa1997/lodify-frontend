@@ -89,7 +89,7 @@ export const useNotifications = ({
 
   const headData = [
     {
-      label: "Description",
+      label: "Customer",
       key: "title",
       render: (value, row) => {
         const isUnread = row?.is_read === false || row?.is_read === 0;
@@ -112,12 +112,12 @@ export const useNotifications = ({
       },
     },
     {
-      label: "Severity",
+      label: "Load ID",
       key: "type",
       render: (value) => renderSeverityBadge(value?.[0]),
     },
     {
-      label: "Received",
+      label: "Origin",
       key: "notifications_id_data",
       render: (value) => (
         <Text fontSize="14px" color="#374151">
@@ -126,7 +126,7 @@ export const useNotifications = ({
       ),
     },
     {
-      label: "Due",
+      label: "Destination",
       key: "pickup_id_data",
       render: (value) => (
         <Text fontSize="14px" color="#374151">
@@ -134,6 +134,34 @@ export const useNotifications = ({
         </Text>
       ),
     },
+    {
+      label: "Timer",
+      key: "pickup_id_data",
+      render: (value) => (
+        <Text fontSize="14px" color="#374151">
+          {formatDateTime(value?.arrive_by)}
+        </Text>
+      ),
+    },
+    {
+      label: "Reason",
+      key: "pickup_id_data",
+      render: (value) => (
+        <Text fontSize="14px" color="#374151">
+          {formatDateTime(value?.arrive_by)}
+        </Text>
+      ),
+    },
+    {
+      label: "Total Miles",
+      key: "pickup_id_data",
+      render: (value) => (
+        <Text fontSize="14px" color="#374151">
+          {formatDateTime(value?.arrive_by)}
+        </Text>
+      ),
+    },
+
     {
       label: "Actions",
       key: "actions",

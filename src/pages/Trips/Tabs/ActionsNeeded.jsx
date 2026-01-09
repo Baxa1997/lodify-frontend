@@ -1,4 +1,4 @@
-import {Box, Flex, Text, Spinner, Center} from "@chakra-ui/react";
+import {Box, Flex, Text, Spinner, Center, Collapse} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -18,12 +18,13 @@ import {
   getActionButtonText,
   getRowBackgroundColor,
 } from "@utils/timeUtils";
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
 import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {tableActionsNeeded} from "../components/mockElements";
 import TripsFiltersComponent from "../modules/TripsFiltersComponent";
 import TimeCounter from "@components/TimeCounter";
+import TripRowDetails from "../components/TripRowDetails";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
@@ -31,6 +32,9 @@ function ActionsNeeded() {
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedRows, setExpandedRows] = useState(new Set());
+  const [selectedRow, setSelectedRow] = useState(null);
+  const tableScrollRef = useRef(null);
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
@@ -107,6 +111,22 @@ function ActionsNeeded() {
     : 0;
   const trips = tripsData?.response || [];
 
+  const handleRowClick = (tripGuid) => {
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(tripGuid)) {
+        newSet.delete(tripGuid);
+        if (selectedRow === tripGuid) {
+          setSelectedRow(null);
+        }
+      } else {
+        newSet.add(tripGuid);
+        setSelectedRow(tripGuid);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -120,6 +140,7 @@ function ActionsNeeded() {
 
       <Box mt={6}>
         <CTable
+          ref={tableScrollRef}
           width="100%"
           height={isBroker ? "calc(100vh - 332px)" : "calc(100vh - 280px)"}
           overflow="auto"
@@ -188,10 +209,13 @@ function ActionsNeeded() {
               </CTableRow>
             ) : (
               trips?.map((trip, index) => {
+                const isExpanded = expandedRows.has(trip.guid);
                 return (
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
                       hover={false}
+                      onClick={() => handleRowClick(trip.guid)}
+                      style={{cursor: "pointer"}}
                       bg={getRowBackgroundColor(
                         calculateTimeDifference(trip?.origin?.[0]?.arrive_by)
                       )}>
@@ -266,13 +290,13 @@ function ActionsNeeded() {
 
                       <CTableTd>
                         <Text color="#181D27">
-                          {trip?.pickup_reason ?? "---"}
+                          {trip?.pickup_reason ?? "-"}
                         </Text>
                       </CTableTd>
 
                       <CTableTd>
                         <Text color="#181D27">
-                          {trip?.total_miles?.toFixed(0) ?? "---"} miles
+                          {trip?.total_miles?.toFixed(0) ?? "-"} miles
                         </Text>
                       </CTableTd>
 
@@ -298,6 +322,23 @@ function ActionsNeeded() {
                             )}
                           </Text>
                         </Flex>
+                      </CTableTd>
+                    </CTableRow>
+
+                    <CTableRow>
+                      <CTableTd colSpan={tableActionsNeeded.length} p={0}>
+                        <Collapse
+                          position="relative"
+                          in={isExpanded}
+                          animateOpacity>
+                          <TripRowDetails
+                            handleRowClick={handleRowClick}
+                            trip={trip}
+                            isExpanded={isExpanded}
+                            tableScrollRef={tableScrollRef}
+                            navigate={navigate}
+                          />
+                        </Collapse>
                       </CTableTd>
                     </CTableRow>
                   </React.Fragment>

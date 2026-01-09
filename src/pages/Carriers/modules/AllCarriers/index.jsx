@@ -179,7 +179,7 @@ const AllCarriers = () => {
     }
     return name.substring(0, 2).toUpperCase();
   };
-
+  console.log("filteredCarriersfilteredCarriers", filteredCarriers);
   return (
     <Box>
       <Box mt="20px" mb="16px">
@@ -221,7 +221,7 @@ const AllCarriers = () => {
                 <Box
                   key={carrier.guid}
                   w="100%"
-                  h="250px"
+                  h="320px"
                   bg="white"
                   borderRadius="12px"
                   border="1px solid #E2E8F0"
@@ -291,6 +291,15 @@ const AllCarriers = () => {
                     fontWeight="400"
                     color="#535862">
                     Phone: {carrier.telephone || "N/A"}
+                  </Text>
+
+                  <Text
+                    px="20px"
+                    fontSize="14px"
+                    fontWeight="400"
+                    color="#535862"
+                    h="44px">
+                    Address: {carrier.physical_address || "N/A"}
                   </Text>
 
                   <Text

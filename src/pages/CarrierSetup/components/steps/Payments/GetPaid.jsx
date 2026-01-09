@@ -31,7 +31,7 @@ const GetPaid = ({control, isEditable = false}) => {
         Enter the code we just sent to the mobile number you entered.
       </Text>
 
-        <Controller
+      <Controller
         control={control}
         name="payment.payment_type"
         defaultValue="factoring"
