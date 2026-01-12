@@ -1,7 +1,6 @@
 import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import NationalCard from "./NationalCard";
-import {format} from "date-fns";
 import LoadingState from "@components/LoadingState";
 import EmptyState from "@components/EmptyState";
 import {RiBarChartBoxLine} from "react-icons/ri";
@@ -10,17 +9,44 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
   const nationalAverage = [
     {
       title: "Driver",
-      value: (nationalAverageData?.driver || 0) + "%",
+      value:
+        (
+          nationalAverageData?.us_driver_inspections?.out_of_service_pct *
+            100 || 0
+        ).toFixed(2) + "%",
+      secondValue:
+        (
+          nationalAverageData?.us_driver_inspections?.national_average * 100 ||
+          0
+        ).toFixed(2) + "%",
     },
 
     {
       title: "Vehicle",
-      value: (nationalAverageData?.vehicle || 0) + "%",
+      value:
+        (
+          nationalAverageData?.us_vehicle_inspections?.national_average * 100 ||
+          0
+        ).toFixed(2) + "%",
+      secondValue:
+        (
+          nationalAverageData?.us_vehicle_inspections?.out_of_service_pct *
+            100 || 0
+        ).toFixed(2) + "%",
     },
 
     {
       title: "Hazmat",
-      value: (nationalAverageData?.hazmat || 0) + "%",
+      value:
+        (
+          nationalAverageData?.us_hazmat_inspections?.national_average * 100 ||
+          0
+        ).toFixed(2) + "%",
+      secondValue:
+        (
+          nationalAverageData?.us_hazmat_inspections?.out_of_service_pct *
+            100 || 0
+        ).toFixed(2) + "%",
     },
   ];
 
@@ -28,6 +54,7 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
     return nationalAverage.map((item) => ({
       title: item.title,
       value: item.value,
+      secondValue: item.secondValue,
     }));
   }, [nationalAverage]);
 
@@ -40,9 +67,9 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
     : "N/A";
 
   const hasData =
-    nationalAverageData?.driver ||
-    nationalAverageData?.vehicle ||
-    nationalAverageData?.hazmat;
+    nationalAverageData?.us_driver_inspections ||
+    nationalAverageData?.us_hazmat_inspections ||
+    nationalAverageData?.us_vehicle_inspections;
 
   return (
     <Box bg="#fff" p="24px" borderRadius="12px" mt="32px">
@@ -104,6 +131,7 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
               percentage={metric.percentage}
               title={metric.title}
               value={metric.value}
+              secondValue={metric.secondValue}
             />
           ))}
         </Box>

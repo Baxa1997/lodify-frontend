@@ -28,7 +28,7 @@ const Dashboard = () => {
     isNationalAverageLoading,
     isShippersLoading,
   } = useDashboardProps();
-
+  console.log("nationalAverageDatanationalAverageData", nationalAverageData);
   return (
     <>
       <HeadBreadCrumb />

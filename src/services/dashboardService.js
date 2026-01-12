@@ -9,8 +9,8 @@ const dashboardService = {
     httpRequest.post("v2/invoke_function/lodify-dashboard", {data}),
   getBrokerSafetyData: (data) =>
     httpRequest.post("v2/invoke_function/lodify-dashboard", {data}),
-  getNationalAverage: () =>
-    httpRequest.get("v2/invoke_function/lodify-dashboard"),
+  getNationalAverage: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-dashboard", data),
 };
 
 export default dashboardService;

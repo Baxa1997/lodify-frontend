@@ -1,7 +1,7 @@
 import React from "react";
 import {Box, Text, Flex} from "@chakra-ui/react";
 
-const NationalCard = ({title, value}) => {
+const NationalCard = ({title, value, secondValue}) => {
   return (
     <Box
       bg="white"
@@ -21,10 +21,24 @@ const NationalCard = ({title, value}) => {
           {title}
         </Text>
       </Flex>
-      <Flex>
-        <Text fontSize="20px" fontWeight="600" color="#6B7280">
-          {value}
-        </Text>
+      <Flex flexDirection="column" gap="4px">
+        <Flex gap="6px">
+          <Text fontSize="16px" fontWeight="600" color="#000">
+            Out of Service:
+          </Text>
+          <Text fontSize="16px" fontWeight="500" color="#6B7280">
+            {value}
+          </Text>
+        </Flex>
+
+        <Flex gap="6px">
+          <Text fontSize="16px" fontWeight="600" color="#000">
+            National Average:
+          </Text>
+          <Text fontSize="16px" fontWeight="500" color="#6B7280">
+            {secondValue}
+          </Text>
+        </Flex>
       </Flex>
     </Box>
   );

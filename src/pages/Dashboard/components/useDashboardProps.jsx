@@ -122,7 +122,7 @@ const useDashboardProps = () => {
             table: "national_average",
           },
         }),
-      select: (res) => res?.data?.response?.[0] || {},
+      select: (res) => res?.data || {},
     });
 
   const calculateGaugeLabel = (total, lateCount) => {
