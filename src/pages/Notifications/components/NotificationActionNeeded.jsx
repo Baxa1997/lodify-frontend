@@ -33,7 +33,8 @@ function NotificationActionNeeded() {
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const clientTypeValue = isBroker ? "broker" : "carrier";
 
-  const handleViewNotification = (notification) => {
+  const handleViewNotification = (notification, rowId) => {
+    console.log("notification", notification, rowId);
     setSelectedNotification(notification);
     setIsModalOpen(true);
 
@@ -60,18 +61,6 @@ function NotificationActionNeeded() {
 
   const handleReadAllClick = () => {
     setIsReadAllDialogOpen(true);
-  };
-
-  const handleRowClick = (rowId, row) => {
-    setExpandedRows((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(rowId)) {
-        newSet.delete(rowId);
-      } else {
-        newSet.add(rowId);
-      }
-      return newSet;
-    });
   };
 
   const handleConfirmReadAll = async () => {
@@ -138,7 +127,7 @@ function NotificationActionNeeded() {
           setPage={setPage}
           count={count}
           isLoading={isNotificationsLoading}
-          onRowClick={handleRowClick}
+          onRowClick={handleViewNotification}
           tableProps={{
             width: "100%",
           }}

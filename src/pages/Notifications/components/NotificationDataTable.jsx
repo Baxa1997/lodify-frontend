@@ -1,4 +1,4 @@
-import {Box, Spinner, Center, Collapse} from "@chakra-ui/react";
+import {Box, Spinner, Center} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -10,8 +10,6 @@ import CTableRow from "@components/tableElements/CTableRow";
 import {EmptyState} from "@components/tableElements/EmptyState";
 import {FiAlertCircle} from "react-icons/fi";
 import React, {useState, useRef} from "react";
-import SimplePagination from "@components/SimplePagination";
-import TripRowDetails from "../../Trips/components/TripRowDetails";
 
 export const NotificationDataTable = ({
   headData = [],
@@ -109,7 +107,7 @@ export const NotificationDataTable = ({
                 <React.Fragment key={rowId}>
                   <CTableRow
                     hover={false}
-                    onClick={() => hasTripData && handleRowClick(rowId)}
+                    onClick={() => handleRowClick(row, rowId)}
                     style={{cursor: hasTripData ? "pointer" : "default"}}
                     bg={
                       row?.is_read === false || row?.is_read === 0
@@ -124,49 +122,12 @@ export const NotificationDataTable = ({
                       </CTableTd>
                     ))}
                   </CTableRow>
-
-                  {/* {hasTripData && (
-                    <CTableRow>
-                      <CTableTd colSpan={headData.length} p={0}>
-                        <Collapse
-                          position="relative"
-                          in={isExpanded}
-                          animateOpacity>
-                          <TripRowDetails
-                            handleRowClick={handleRowClick}
-                            trip={tripData}
-                            isExpanded={isExpanded}
-                            tableScrollRef={tableScrollRef}
-                          />
-                        </Collapse>
-                      </CTableTd>
-                    </CTableRow>
-                  )} */}
                 </React.Fragment>
               );
             })
           )}
         </CTableBody>
       </CTable>
-      {/* 
-      {pagination && (
-        <Box
-          width="100%"
-          borderTop="1px solid"
-          borderColor="#E5E7EB"
-          bg="white"
-          flexShrink={0}>
-          <Box padding="12px 24px" width="100%">
-            <SimplePagination
-              limit={limit}
-              setLimit={setLimit}
-              page={page}
-              setPage={setPage}
-              pageCount={Math.ceil(count / limit) || 1}
-            />
-          </Box>
-        </Box>
-      )} */}
     </Box>
   );
 };

@@ -37,6 +37,10 @@ const notificationService = {
       },
     });
   },
+
+  getNotificationList: (data) => {
+    return httpRequest.post(`v2/invoke_function/lodify-integrations`, data);
+  },
 };
 
 export default notificationService;

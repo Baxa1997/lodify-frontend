@@ -1,23 +1,27 @@
 import {useQuery} from "@tanstack/react-query";
 import notificationService from "@services/notificationService";
 import {useSelector} from "react-redux";
-import {Box, Text, Button} from "@chakra-ui/react";
+import {Box, Text, Button, Flex} from "@chakra-ui/react";
 import {format, parseISO, isValid} from "date-fns";
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {formatDate} from "@utils/dateFormats";
+import TimeCounter from "@components/TimeCounter";
 
 export const useNotifications = ({
   type = "Action Needed",
-  onViewNotification,
+  onViewNotification = () => {},
 }) => {
+  const navigate = useNavigate();
   const clientType = useSelector((state) => state.auth.clientType);
   const userId = useSelector((state) => state.auth.userId);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const companyType = isBroker ? "broker_users_id" : "users_id";
 
   const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
 
-  const offset = page === 1 ? 1 : (page - 1) * limit;
+  const offset = page * limit;
 
   const formatDateTime = (dateString) => {
     if (!dateString || dateString === "undefined" || dateString === "null") {
@@ -87,11 +91,14 @@ export const useNotifications = ({
     );
   };
 
+  const roleType = Boolean(isBroker) ? "broker" : "carrier";
+
   const headData = [
     {
       label: "Customer",
-      key: "title",
+      key: [roleType],
       render: (value, row) => {
+        console.log("row", row, value);
         const isUnread = row?.is_read === false || row?.is_read === 0;
         return (
           <Box display="flex" alignItems="center" gap="8px">
@@ -105,7 +112,7 @@ export const useNotifications = ({
               />
             )}
             <Text fontSize="14px" color="#374151">
-              {value || "—"}
+              {value?.legal_name || "—"}
             </Text>
           </Box>
         );
@@ -113,62 +120,75 @@ export const useNotifications = ({
     },
     {
       label: "Load ID",
-      key: "trip_id_data",
+      key: "load_id",
       render: (value, row) => (
         <Text fontSize="14px" color="#374151" fontWeight="500">
-          {value?.id || row?.trip_id || "—"}
+          {value || "—"}
         </Text>
       ),
     },
     {
       label: "Origin",
-      key: "trip_id_data",
+      key: "origin",
       render: (value) => (
-        <Text fontSize="14px" color="#374151">
-          {value?.origin?.address || "—"}
-        </Text>
+        <Flex alignItems="center" gap="16px" justifyContent="space-between">
+          <Box>
+            <>
+              {" "}
+              <Text h="20px" fontSize="14px" fontWeight="500" color="#181D27">
+                {`${value?.address ?? ""}` || ""}
+              </Text>
+              <Text h="20px">{formatDate(value?.arrive_by ?? "")}</Text>
+            </>
+          </Box>
+        </Flex>
       ),
     },
     {
       label: "Destination",
-      key: "trip_id_data",
+      key: "stop",
       render: (value) => (
-        <Text fontSize="14px" color="#374151">
-          {value?.stop?.address || "—"}
-        </Text>
+        <Flex gap="16px" alignItems="center" justifyContent="space-between">
+          <Box>
+            <Text h="20px" fontSize="14px" fontWeight="500" color="#181D27">
+              {`${value?.address ?? ""}` || ""}
+            </Text>
+            <Text h="20px">{formatDate(value?.arrive_by ?? "")}</Text>
+          </Box>
+        </Flex>
       ),
     },
     {
       label: "Timer",
-      key: "pickup_id_data",
+      key: "stop",
       render: (value) => (
         <Text fontSize="14px" color="#374151">
-          {formatDateTime(value?.arrive_by)}
+          <TimeCounter arriveBy={value?.arrive_by} />
         </Text>
       ),
     },
-    {
-      label: "Reason",
-      key: "type",
-      render: (value) => (
-        <Text fontSize="14px" color="#374151">
-          {Array.isArray(value) ? value[0] : value || "—"}
-        </Text>
-      ),
-    },
-    {
-      label: "Total Miles",
-      key: "trip_id_data",
-      render: (value) => (
-        <Text fontSize="14px" color="#374151">
-          {value?.total_miles ? `${value.total_miles.toFixed(0)} miles` : "—"}
-        </Text>
-      ),
-    },
+    // {
+    //   label: "Reason",
+    //   key: "type",
+    //   render: (value) => (
+    //     <Text fontSize="14px" color="#374151">
+    //       {Array.isArray(value) ? value[0] : value || "—"}
+    //     </Text>
+    //   ),
+    // },
+    // {
+    //   label: "Total Miles",
+    //   key: "trip_id_data",
+    //   render: (value) => (
+    //     <Text fontSize="14px" color="#374151">
+    //       {value?.total_miles ? `${value.total_miles.toFixed(0)} miles` : "—"}
+    //     </Text>
+    //   ),
+    // },
 
     {
       label: "Actions",
-      key: "actions",
+      key: "guid",
       thProps: {
         width: "150px",
       },
@@ -189,7 +209,13 @@ export const useNotifications = ({
           px="12px"
           onClick={(e) => {
             e.stopPropagation();
-            onViewNotification?.(row);
+            navigate(`/admin/trips/${row?.orders_id}`, {
+              state: {
+                label: `${row?.driver_1?.first_name}.${row?.driver_1?.last_name}`,
+                tripType: "upcoming",
+              },
+            });
+            // onViewNotification?.(row);
           }}>
           View
         </Button>
@@ -197,32 +223,41 @@ export const useNotifications = ({
     },
   ];
 
-  const {data: notificationsData = {}, isLoading: isNotificationsLoading} =
-    useQuery({
-      queryKey: ["NOTIFICATIONS", page, limit, offset],
-      queryFn: () =>
-        notificationService.getList({
-          [companyType]: userId,
-          notification_type: [type],
-          offset: offset,
-          limit: limit,
-        }),
-      select: (res) => res?.data || {},
-      enabled: true,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      staleTime: 0,
-    });
+  const {
+    data: notificationsListData = {},
+    isLoading: isNotificationsListLoading,
+  } = useQuery({
+    queryKey: ["NOTIFICATIONS_LIST", page, limit, offset],
+    queryFn: () =>
+      notificationService.getNotificationList({
+        data: {
+          method: "list",
+          object_data: {
+            users_id: userId,
+            notification_type: ["Action Needed"],
+            offset: offset,
+            limit: limit,
+          },
+          table: "user_notifications",
+        },
+      }),
+    select: (res) => res?.data || {},
+    enabled: true,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+  });
 
   return {
     headData,
-    data: notificationsData?.response || [],
-    isNotificationsLoading,
+    data: notificationsListData?.response || [],
+    isNotificationsLoading: isNotificationsListLoading,
     setLimit,
     limit,
     page,
     setPage,
     offset,
-    count: notificationsData?.count || 0,
+    count: notificationsListData?.total_count || 0,
+    onViewNotification,
   };
 };
