@@ -12,6 +12,8 @@ const CustomTooltip = ({
   data,
   isAcceptance,
   isDisruptionFree,
+  isOnTime,
+  isAppUsage,
 }) => {
   return (
     <Box
@@ -27,8 +29,8 @@ const CustomTooltip = ({
       <Flex alignItems="center" gap="6px">
         <Box w="8px" h="8px" borderRadius="50%" bg={color} />
         <Text fontSize="12px" color="#6B7280">
-          {isAcceptance || isDisruptionFree
-            ? `${Math.round(value)} units`
+          {isAcceptance || isDisruptionFree || isOnTime || isAppUsage
+            ? `${Math.round(value)}`
             : `${Math.round(value)}%`}
         </Text>
       </Flex>
@@ -189,12 +191,14 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
   const hasDetails = detailsArray.length > 0;
   const isAcceptance = title === "Acceptance";
   const isDisruptionFree = title === "Disruption Free";
+  const isOnTime = title === "On Time";
+  const isAppUsage = title === "App Usage";
   const totalUnits = 300;
 
   const chartData = hasDetails
     ? detailsArray.map((detail, index) => {
         let value = 0;
-        if (isAcceptance || isDisruptionFree) {
+        if (isAcceptance || isDisruptionFree || isOnTime || isAppUsage) {
           value = parseFloat(detail?.value) || 0;
         } else {
           const valueStr = String(detail?.value || "0").replace(/%/g, "");
@@ -236,8 +240,8 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
   const chartKeys = hasDetails ? ["value"] : ["value"];
 
   const maxValue = hasDetails
-    ? isAcceptance || isDisruptionFree
-      ? totalUnits
+    ? isAcceptance || isDisruptionFree || isOnTime || isAppUsage
+      ? Math.max(...chartData.map((d) => d.value), 10)
       : Math.max(...chartData.map((d) => d.value), 100)
     : 100;
 
@@ -262,11 +266,13 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
             {...props}
             isAcceptance={isAcceptance}
             isDisruptionFree={isDisruptionFree}
+            isOnTime={isOnTime}
+            isAppUsage={isAppUsage}
           />
         )}
         label={(d) => {
           const value = d.value;
-          if (isAcceptance || isDisruptionFree) {
+          if (isAcceptance || isDisruptionFree || isOnTime || isAppUsage) {
             return Math.round(value);
           }
           return `${Math.round(value)}%`;
@@ -279,8 +285,8 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
           type: "linear",
           min: 0,
           max:
-            isAcceptance || isDisruptionFree
-              ? totalUnits
+            isAcceptance || isDisruptionFree || isOnTime || isAppUsage
+              ? Math.max(maxValue * 1.1, 10)
               : Math.max(maxValue * 1.1, 100),
         }}
         indexScale={{type: "band", round: true}}
@@ -295,7 +301,7 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
           legendPosition: "middle",
           legendOffset: -45,
           format: (value) =>
-            isAcceptance || isDisruptionFree
+            isAcceptance || isDisruptionFree || isOnTime || isAppUsage
               ? `${Math.round(value)}`
               : `${Math.round(value)}%`,
           tickValues: 5,

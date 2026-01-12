@@ -33,11 +33,11 @@ const Performance = ({
       details: [
         {
           label: "On time to pickup",
-          value: `${performanceData?.on_time_data?.on_time_to_pickup || 0}%`,
+          value: performanceData?.on_time_data?.on_time_to_pickup || 0,
         },
         {
           label: "On time to Delivery",
-          value: `${performanceData?.on_time_data?.on_time_delivery || 0}%`,
+          value: performanceData?.on_time_data?.on_time_delivery || 0,
         },
       ],
     },
@@ -67,12 +67,12 @@ const Performance = ({
       details: [
         {
           label: "On time to origin",
-          value: "100.0%",
+          value: performanceData?.app_usage_data?.on_time_to_origin || 0,
           contribution: "37.5% of score",
         },
         {
           label: "Location availability",
-          value: "99.8%",
+          value: performanceData?.app_usage_data?.location_availability || 0,
           contribution: "62.5% of score",
         },
       ],
@@ -84,8 +84,15 @@ const Performance = ({
       description:
         "Reflects the share of loads completed without service issues.",
       details: [
-        {label: "Loads with disruption across", value: "0"},
-        {label: "Completed loads", value: "119"},
+        {
+          label: "Loads with disruption",
+          value:
+            performanceData?.disruption_free_data?.loads_with_disruption || 0,
+        },
+        {
+          label: "Completed loads",
+          value: performanceData?.disruption_free_data?.completed_loads || 0,
+        },
       ],
     },
   };

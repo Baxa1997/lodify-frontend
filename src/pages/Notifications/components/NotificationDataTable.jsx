@@ -125,7 +125,7 @@ export const NotificationDataTable = ({
                     ))}
                   </CTableRow>
 
-                  {hasTripData && (
+                  {/* {hasTripData && (
                     <CTableRow>
                       <CTableTd colSpan={headData.length} p={0}>
                         <Collapse
@@ -141,7 +141,7 @@ export const NotificationDataTable = ({
                         </Collapse>
                       </CTableTd>
                     </CTableRow>
-                  )}
+                  )} */}
                 </React.Fragment>
               );
             })
