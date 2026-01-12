@@ -33,7 +33,7 @@ const Performance = ({
       details: [
         {
           label: "On time to pickup",
-          value: performanceData?.on_time_data?.on_time_to_pickup || 0,
+          value: performanceData?.on_time_data?.on_time_pickup || 0,
         },
         {
           label: "On time to Delivery",
