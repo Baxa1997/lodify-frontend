@@ -2,6 +2,37 @@ import {Flex, Text, Box, VStack, Link} from "@chakra-ui/react";
 import {MdKeyboardArrowRight} from "react-icons/md";
 import {ResponsiveBar} from "@nivo/bar";
 
+const CustomTooltip = ({
+  id,
+  value,
+  color,
+  data,
+  isAcceptance,
+  isDisruptionFree,
+}) => {
+  return (
+    <Box
+      minW="200px"
+      bg="white"
+      p="8px 12px"
+      borderRadius="6px"
+      boxShadow="0 2px 8px rgba(0,0,0,0.15)"
+      border="1px solid #E5E7EB">
+      <Text fontSize="12px" fontWeight="600" color="#181D27" mb="2px">
+        {data.label || id}
+      </Text>
+      <Flex alignItems="center" gap="6px">
+        <Box w="8px" h="8px" borderRadius="50%" bg={color} />
+        <Text fontSize="12px" color="#6B7280">
+          {isAcceptance || isDisruptionFree
+            ? `${Math.round(value)} units`
+            : `${Math.round(value)}%`}
+        </Text>
+      </Flex>
+    </Box>
+  );
+};
+
 const DetailedMetricCard = ({title = "Overall", data = {}}) => {
   return (
     <Flex
@@ -196,35 +227,31 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
         layout={layout}
         margin={{top: 20, right: 20, bottom: 10, left: 50}}
         padding={hasDetails ? 0.5 : 0.6}
-        barComponent={({bar}) => {
-          const barWidth = 40;
-          return (
-            <g transform={`translate(${bar.x},${bar.y})`}>
-              <rect
-                x={-barWidth / 2}
-                y={0}
-                width={barWidth}
-                height={bar.height}
-                fill={bar.color}
-                rx={4}
-              />
-              {bar.height > 20 && (
-                <text
-                  x={0}
-                  y={bar.height / 2}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="#FFFFFF"
-                  fontSize={12}
-                  fontWeight={600}>
-                  {isAcceptance || isDisruptionFree
-                    ? Math.round(bar.data.value)
-                    : `${Math.round(bar.data.value)}%`}
-                </text>
-              )}
-            </g>
-          );
+        colors={(bar) => {
+          if (hasDetails) {
+            const label = chartData[bar.index]?.label || "";
+            return getColorForLabel(label, bar.index);
+          }
+          return color || "#1570EF";
         }}
+        tooltip={(props) => (
+          <CustomTooltip
+            {...props}
+            isAcceptance={isAcceptance}
+            isDisruptionFree={isDisruptionFree}
+          />
+        )}
+        label={(d) => {
+          const value = d.value;
+          if (isAcceptance || isDisruptionFree) {
+            return Math.round(value);
+          }
+          return `${Math.round(value)}%`;
+        }}
+        enableLabel={true}
+        labelTextColor="#FFFFFF"
+        labelSkipWidth={0}
+        labelSkipHeight={20}
         valueScale={{
           type: "linear",
           min: 0,
@@ -234,13 +261,6 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
               : Math.max(maxValue * 1.1, 100),
         }}
         indexScale={{type: "band", round: true}}
-        colors={(bar) => {
-          if (hasDetails) {
-            const label = chartData[bar.index]?.label || "";
-            return getColorForLabel(label, bar.index);
-          }
-          return color || "#1570EF";
-        }}
         axisTop={null}
         axisRight={null}
         axisBottom={null}
@@ -257,7 +277,6 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
               : `${Math.round(value)}%`,
           tickValues: 5,
         }}
-        enableLabel={false}
         enableGridY={true}
         enableGridX={false}
         gridYValues={5}
@@ -266,6 +285,7 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
         animate={true}
         motionConfig="gentle"
         borderRadius={4}
+        isInteractive={true}
         theme={{
           axis: {
             ticks: {
