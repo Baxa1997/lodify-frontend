@@ -95,12 +95,18 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
           render={({field}) => (
             <RadioGroup {...field} mb="24px" isDisabled={isFieldsDisabled}>
               <Stack direction="row" spacing="24px">
-                <Radio value="yes" colorScheme="orange" isDisabled={isFieldsDisabled}>
+                <Radio
+                  value="yes"
+                  colorScheme="orange"
+                  isDisabled={isFieldsDisabled}>
                   <Text fontSize="14px" color="#414651">
                     Yes
                   </Text>
                 </Radio>
-                <Radio value="no" colorScheme="orange" isDisabled={isFieldsDisabled}>
+                <Radio
+                  value="no"
+                  colorScheme="orange"
+                  isDisabled={isFieldsDisabled}>
                   <Text fontSize="14px" color="#414651">
                     No
                   </Text>
@@ -212,7 +218,11 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
                   fontSize: "14px",
                 },
               }}>
-              <HFDatePicker control={control} name="insurance.effective_date" isReadOnly={isFieldsDisabled} />
+              <HFDatePicker
+                control={control}
+                name="insurance.effective_date"
+                disabled={isFieldsDisabled}
+              />
             </Box>
           </Box>
 
@@ -241,7 +251,7 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
               <HFDatePicker
                 control={control}
                 name="insurance.cancellation_date"
-                isReadOnly={isFieldsDisabled}
+                disabled={isFieldsDisabled}
               />
             </Box>
           </Box>
@@ -293,7 +303,11 @@ const InsuranceStep = ({control, subView = 1, isEditable = false}) => {
                 *
               </Box>
             </Text>
-            <HFPhoneInput control={control} name="insurance.phone_number" isReadOnly={isFieldsDisabled} />
+            <HFPhoneInput
+              control={control}
+              name="insurance.phone_number"
+              disabled={isFieldsDisabled}
+            />
           </Box>
 
           <HFTextField

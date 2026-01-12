@@ -30,22 +30,6 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
     enabled: Boolean(companies_id),
   });
 
-  // const {data: equipmentData} = useQuery({
-  //   queryKey: ["EQUIPMENT_DATA", companies_id],
-  //   queryFn: () =>
-  //     carrierService.getEquipmentData({
-  //       data: {
-  //         method: "vin",
-  //         object_data: {
-  //           companies_id: companies_id,
-  //         },
-  //         table: "matches",
-  //       },
-  //     }),
-  //   select: (res) => res?.data?.response ?? [],
-  //   enabled: Boolean(companies_id),
-  // });
-
   const {data: carrierAuditData} = useQuery({
     queryKey: ["AUDIT_DATA", companies_id],
     queryFn: () =>
@@ -167,11 +151,11 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
     carrierInfoData?.company_name ||
     "the carrier";
 
-  if (subView === 2) {
+  if (subView === 2 && totalInsightsCount > 0) {
     return (
       <Box className={styles.stepContentContract}>
         <Text fontSize="20px" fontWeight="bold" color="#1e293b" mb="8px">
-          Failed Assesment
+          Failed Assessment
         </Text>
         <Text fontSize="14px" color="#414651" mb="18px">
           {isCarrierSetup
@@ -254,6 +238,61 @@ const ContractStep = ({control, subView = 1, isEditable = false}) => {
             />
           ))}
         </VStack>
+      </Box>
+    );
+  }
+
+  if (subView === 2 && totalInsightsCount === 0) {
+    return (
+      <Box className={styles.stepContentContract}>
+        <Text fontSize="20px" fontWeight="bold" color="#1e293b" mb="8px">
+          Assessment Passed
+        </Text>
+        <Text fontSize="14px" color="#414651" mb="18px">
+          {isCarrierSetup
+            ? `${carrierName} has successfully met all requirements.`
+            : `${carrierName} meets all of ${brokerCompanyName}'s requirements and is ready to be connected.`}
+        </Text>
+
+        <Box
+          border="1px solid #10B981"
+          borderRadius="8px"
+          p="12px"
+          bg="#F0FDF4">
+          <Flex alignItems="flex-start" gap="12px">
+            <Box
+              w="24px"
+              h="24px"
+              borderRadius="50%"
+              bg="#10B981"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              flexShrink={0}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+                  fill="white"
+                />
+              </svg>
+            </Box>
+            <Box>
+              <Text fontSize="16px" fontWeight="600" color="#1e293b" mb="4px">
+                All Requirements Met
+              </Text>
+              <Text fontSize="14px" color="#414651">
+                {isCarrierSetup
+                  ? `${carrierName} has completed all necessary requirements and can proceed.`
+                  : `${carrierName} has passed all verification checks and can be added to your carrier list.`}
+              </Text>
+            </Box>
+          </Flex>
+        </Box>
       </Box>
     );
   }

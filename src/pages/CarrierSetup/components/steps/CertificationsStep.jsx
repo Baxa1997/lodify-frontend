@@ -210,7 +210,11 @@ const CertificationsStep = ({control, isEditable = false}) => {
               Phone Number
             </Text>
             <Box className={styles.phoneInputWrapper}>
-              <HFPhoneInput control={control} name="certifications.phone" isReadOnly={isFieldsDisabled} />
+              <HFPhoneInput
+                control={control}
+                name="certifications.phone"
+                disabled={isFieldsDisabled}
+              />
             </Box>
           </Box>
         </Box>
