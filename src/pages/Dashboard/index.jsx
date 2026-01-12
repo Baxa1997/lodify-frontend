@@ -20,6 +20,13 @@ const Dashboard = () => {
     carrierInfoData,
     nationalAverageData,
     shippersScoreData,
+    isTripsLoading,
+    isPerformanceLoading,
+    isSafetyLoading,
+    isBrokerSafetyLoading,
+    isCarrierInfoLoading,
+    isNationalAverageLoading,
+    isShippersLoading,
   } = useDashboardProps();
 
   return (
@@ -34,22 +41,40 @@ const Dashboard = () => {
         Dashboard
       </Text>
       <Box py="20px" pb="32px" bg="#f5f5f5" minH="calc(100vh - 80px)">
-        <TripsNeedingAttention tripsData={tripsData} />
-        {!isBroker && <PerformanceGrade performanceData={performanceData} />}
+        <TripsNeedingAttention
+          tripsData={tripsData}
+          isLoading={isTripsLoading}
+        />
+        {!isBroker && (
+          <PerformanceGrade
+            performanceData={performanceData}
+            isLoading={isPerformanceLoading}
+          />
+        )}
         {isBroker ? (
-          <SafetyStatus brokerSafetyData={brokerSafetyData} />
+          <SafetyStatus
+            brokerSafetyData={brokerSafetyData}
+            isLoading={isBrokerSafetyLoading}
+          />
         ) : (
           <SafetyCarrier
             carrierInfoData={carrierInfoData}
             safetyData={safetyData}
+            isLoading={isSafetyLoading || isCarrierInfoLoading}
           />
         )}
 
         {Boolean(isBroker) && (
-          <ShippersScore shippersScoreData={shippersScoreData} />
+          <ShippersScore
+            shippersScoreData={shippersScoreData}
+            isLoading={isShippersLoading}
+          />
         )}
 
-        <NationalAverage nationalAverageData={nationalAverageData} />
+        <NationalAverage
+          nationalAverageData={nationalAverageData}
+          isLoading={isNationalAverageLoading}
+        />
 
         <GoReadyTrucks />
       </Box>

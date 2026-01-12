@@ -52,7 +52,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
   }, [isProfileOpen]);
 
   return (
-    <div className={styles.sidebarFooter}>
+    <div className={styles.sidebarFooter} data-tour="profile">
       {sidebarOpen ? (
         <>
           {/* <Button

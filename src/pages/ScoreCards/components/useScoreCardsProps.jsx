@@ -55,7 +55,10 @@ const useScoreCardsProps = () => {
     return {from, to};
   }, [filterRange]);
 
-  const {data: brokerSafetyData = []} = useQuery({
+  const {
+    data: brokerSafetyData = [],
+    isLoading: isBrokerSafetyLoading,
+  } = useQuery({
     queryKey: ["GET_BROKER_SAFETY_DATA", brokers_id],
     queryFn: () =>
       dashboardService.getBrokerSafetyData({
@@ -69,7 +72,10 @@ const useScoreCardsProps = () => {
     enabled: Boolean(brokers_id),
   });
 
-  const {data: driversData = {}} = useQuery({
+  const {
+    data: driversData = {},
+    isLoading: isDriversLoading,
+  } = useQuery({
     queryKey: ["GET_DRIVERS_DATA", brokers_id, limit, offset, companies_id],
     queryFn: () =>
       dashboardService.getPerformanceData({
@@ -85,7 +91,10 @@ const useScoreCardsProps = () => {
     enabled: Boolean(brokers_id || companies_id),
   });
 
-  const {data: performanceData = {}} = useQuery({
+  const {
+    data: performanceData = {},
+    isLoading: isPerformanceLoading,
+  } = useQuery({
     queryKey: [
       "PERFORMANCE_GRADE",
       brokers_id,
@@ -107,7 +116,10 @@ const useScoreCardsProps = () => {
     enabled: Boolean(companies_id),
   });
 
-  const {data: safetyData = []} = useQuery({
+  const {
+    data: safetyData = [],
+    isLoading: isSafetyLoading,
+  } = useQuery({
     queryKey: ["GET_SAFETY_DATA", companies_id],
     queryFn: () =>
       dashboardService.getSafetyData({
@@ -134,6 +146,10 @@ const useScoreCardsProps = () => {
     performanceData,
     dateRange,
     safetyData,
+    isBrokerSafetyLoading,
+    isDriversLoading,
+    isPerformanceLoading,
+    isSafetyLoading,
   };
 };
 

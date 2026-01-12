@@ -19,6 +19,9 @@ const Performance = ({
   brokerSafetyData = [],
   setFilterRange = () => {},
   dateRange = {from: "", to: ""},
+  isPerformanceLoading = false,
+  isBrokerSafetyLoading = false,
+  isDriversLoading = false,
 }) => {
   const detailedData = {
     onTime: {
@@ -96,6 +99,7 @@ const Performance = ({
           performanceData={performanceData}
           filterRange={filterRange}
           dateRange={dateRange}
+          isLoading={isPerformanceLoading}
         />
       )}
       <PerformanceFilter
@@ -109,21 +113,34 @@ const Performance = ({
           display="grid"
           gridTemplateColumns="repeat(2, 1fr)"
           gap="24px">
-          <DetailedMetricCard title="On Time" data={detailedData.onTime} />
+          <DetailedMetricCard
+            title="On Time"
+            data={detailedData.onTime}
+            isLoading={isPerformanceLoading}
+          />
           <DetailedMetricCard
             title="Acceptance"
             data={detailedData.acceptance}
+            isLoading={isPerformanceLoading}
           />
 
-          <DetailedMetricCard title="App Usage" data={detailedData.appUsage} />
+          <DetailedMetricCard
+            title="App Usage"
+            data={detailedData.appUsage}
+            isLoading={isPerformanceLoading}
+          />
           <DetailedMetricCard
             title="Disruption Free"
             data={detailedData.disruptionFree}
+            isLoading={isPerformanceLoading}
           />
         </Box>
       )}
 
-      <ScoreCardsPerformance brokerSafetyData={brokerSafetyData} />
+      <ScoreCardsPerformance
+        brokerSafetyData={brokerSafetyData}
+        isLoading={isBrokerSafetyLoading}
+      />
       <PerformanceByDrivers
         driversData={driversData}
         limit={limit}
@@ -131,6 +148,7 @@ const Performance = ({
         page={page}
         setPage={setPage}
         count={count}
+        isLoading={isDriversLoading}
       />
     </>
   );

@@ -24,7 +24,9 @@ const Trips = () => {
         <HeadBreadCrumb />
 
         {isBroker && (
-          <AddTripMenu setIsAutomatedAddTrip={setIsAutomatedAddTrip} />
+          <div data-tour="add-trip">
+            <AddTripMenu setIsAutomatedAddTrip={setIsAutomatedAddTrip} />
+          </div>
         )}
 
         <Tabs
@@ -39,7 +41,7 @@ const Trips = () => {
               setTripType("completed");
             }
           }}>
-          <TabList>
+          <TabList data-tour="trips-tabs">
             <Tab>Actions Needed</Tab>
             <Tab>Upcoming</Tab>
             <Tab>In Transit</Tab>

@@ -2,9 +2,11 @@ import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import NationalCard from "./NationalCard";
 import {format} from "date-fns";
+import LoadingState from "@components/LoadingState";
+import EmptyState from "@components/EmptyState";
+import {RiBarChartBoxLine} from "react-icons/ri";
 
-const NationalAverage = ({nationalAverageData = {}}) => {
-  console.log("nationalAverageData", nationalAverageData);
+const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
   const nationalAverage = [
     {
       title: "Driver",
@@ -29,14 +31,18 @@ const NationalAverage = ({nationalAverageData = {}}) => {
     }));
   }, [nationalAverage]);
 
-  const formattedDate = new Date(nationalAverageData?.date).toLocaleDateString(
-    "en-US",
-    {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
-    }
-  );
+  const formattedDate = nationalAverageData?.date
+    ? new Date(nationalAverageData.date).toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      })
+    : "N/A";
+
+  const hasData =
+    nationalAverageData?.driver ||
+    nationalAverageData?.vehicle ||
+    nationalAverageData?.hazmat;
 
   return (
     <Box bg="#fff" p="24px" borderRadius="12px" mt="32px">
@@ -81,23 +87,34 @@ const NationalAverage = ({nationalAverageData = {}}) => {
         </Link>
       </Flex>
 
-      <Box
-        display="grid"
-        gridTemplateColumns={{
-          base: "1fr",
-          md: "repeat(4, 1fr)",
-          lg: "repeat(4, 1fr)",
-        }}
-        gap="24px">
-        {nationalAverageMetrics?.map((metric, index) => (
-          <NationalCard
-            key={index}
-            percentage={metric.percentage}
-            title={metric.title}
-            value={metric.value}
-          />
-        ))}
-      </Box>
+      {isLoading ? (
+        <LoadingState height="200px" size="lg" />
+      ) : hasData ? (
+        <Box
+          display="grid"
+          gridTemplateColumns={{
+            base: "1fr",
+            md: "repeat(4, 1fr)",
+            lg: "repeat(4, 1fr)",
+          }}
+          gap="24px">
+          {nationalAverageMetrics?.map((metric, index) => (
+            <NationalCard
+              key={index}
+              percentage={metric.percentage}
+              title={metric.title}
+              value={metric.value}
+            />
+          ))}
+        </Box>
+      ) : (
+        <EmptyState
+          icon={RiBarChartBoxLine}
+          message="No National Average Data Available"
+          description="National average statistics will be displayed here once available."
+          height="200px"
+        />
+      )}
     </Box>
   );
 };

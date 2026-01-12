@@ -2,8 +2,11 @@ import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {IoIosArrowForward} from "react-icons/io";
 import {CompanyCard} from "./CompanyCard";
+import LoadingState from "@components/LoadingState";
+import EmptyState from "@components/EmptyState";
+import {RiShipLine} from "react-icons/ri";
 
-export const ShippersScore = ({shippersScoreData = []}) => {
+export const ShippersScore = ({shippersScoreData = [], isLoading = false}) => {
   const getGaugeColor = (grade) => {
     switch (grade) {
       case ("A+", "A"):
@@ -101,18 +104,29 @@ export const ShippersScore = ({shippersScoreData = []}) => {
         </Link>
       </Flex>
 
-      <Box
-        display="grid"
-        gridTemplateColumns={{
-          base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-        }}
-        gap="24px">
-        {companiesData.map((company, index) => (
-          <CompanyCard key={index} {...company} />
-        ))}
-      </Box>
+      {isLoading ? (
+        <LoadingState height="300px" size="lg" />
+      ) : companiesData?.length > 0 ? (
+        <Box
+          display="grid"
+          gridTemplateColumns={{
+            base: "1fr",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          }}
+          gap="24px">
+          {companiesData.map((company, index) => (
+            <CompanyCard key={index} {...company} />
+          ))}
+        </Box>
+      ) : (
+        <EmptyState
+          icon={RiShipLine}
+          message="No Shipper Data Available"
+          description="Shipper information will appear here once you have active shippers."
+          height="300px"
+        />
+      )}
     </Box>
   );
 };

@@ -2,8 +2,11 @@ import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {SafetyPercentileCard} from "./components/SafetyPercentileCard";
 import {UnderReviewSection} from "./components/UnderReviewSection";
+import LoadingState from "@components/LoadingState";
+import EmptyState from "@components/EmptyState";
+import {RiShieldCheckLine} from "react-icons/ri";
 
-const Safety = ({safetyData = []}) => {
+const Safety = ({safetyData = [], isLoading = false}) => {
   const currentDate = new Date();
   const monthNames = [
     "January",
@@ -86,18 +89,29 @@ const Safety = ({safetyData = []}) => {
 
       <UnderReviewSection />
 
-      <Box
-        display="grid"
-        gridTemplateColumns={{
-          base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-        }}
-        gap="24px">
-        {percentileData.map((item, index) => (
-          <SafetyPercentileCard key={index} {...item} />
-        ))}
-      </Box>
+      {isLoading ? (
+        <LoadingState height="300px" size="lg" />
+      ) : percentileData.length > 0 ? (
+        <Box
+          display="grid"
+          gridTemplateColumns={{
+            base: "1fr",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          }}
+          gap="24px">
+          {percentileData.map((item, index) => (
+            <SafetyPercentileCard key={index} {...item} />
+          ))}
+        </Box>
+      ) : (
+        <EmptyState
+          icon={RiShieldCheckLine}
+          message="No Safety Data Available"
+          description="Safety metrics will be displayed here once data is available."
+          height="300px"
+        />
+      )}
     </Box>
   );
 };

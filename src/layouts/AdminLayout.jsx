@@ -8,6 +8,7 @@ import Sidebar from "./Sidebar";
 import ContentLoader from "../components/ContentLoader";
 import {useSelector, useDispatch} from "react-redux";
 import {sidebarActions} from "../store/sidebar";
+import TourGuide from "../components/TourGuide";
 
 const AdminLayout = () => {
   const dispatch = useDispatch();
@@ -43,6 +44,7 @@ const AdminLayout = () => {
 
   return (
     <div className={styles.adminLayout}>
+      {/* <TourGuide /> */}
       <div
         className={`${styles.sidebar} ${
           sidebarOpen ? styles.open : styles.closed

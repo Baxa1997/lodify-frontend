@@ -3,12 +3,12 @@ import {Box, Text, Flex, Badge} from "@chakra-ui/react";
 import {SemiCircularGauge} from "../TripsNeedingAttention/SemiCircularGauge";
 
 export const CompanyCard = ({
-  companyName,
+  companyName = "Unknown Company",
   logo,
-  completedLoads,
-  grade,
-  percentage,
-  gaugeColor,
+  completedLoads = 0,
+  grade = "N/A",
+  percentage = 0,
+  gaugeColor = "#6B7280",
   profilePictures = [],
 }) => {
   const getGradeColor = (grade) => {
@@ -90,7 +90,7 @@ export const CompanyCard = ({
               Completed Loads:
             </Text>
             <Text mb="4px" fontSize="16px" fontWeight="600" color="#181D27">
-              {completedLoads.toLocaleString()}
+              {(completedLoads ?? 0).toLocaleString()}
             </Text>
             <Badge
               bg={gradeColors.bg}
@@ -126,7 +126,7 @@ export const CompanyCard = ({
               textAlign="center"
               w="100%">
               <Text fontSize="20px" fontWeight="700" color="#181D27">
-                {percentage}%
+                {percentage ?? 0}%
               </Text>
             </Box>
           </Box>

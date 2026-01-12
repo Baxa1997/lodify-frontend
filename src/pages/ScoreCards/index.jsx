@@ -23,6 +23,10 @@ const ScoreCards = () => {
     performanceData,
     dateRange,
     safetyData,
+    isBrokerSafetyLoading,
+    isDriversLoading,
+    isPerformanceLoading,
+    isSafetyLoading,
   } = useScoreCardsProps();
   return (
     <>
@@ -57,10 +61,13 @@ const ScoreCards = () => {
             filterRange={filterRange}
             setFilterRange={setFilterRange}
             dateRange={dateRange}
+            isPerformanceLoading={isPerformanceLoading}
+            isBrokerSafetyLoading={isBrokerSafetyLoading}
+            isDriversLoading={isDriversLoading}
           />
         </TabPanel>
         <TabPanel>
-          <Safety safetyData={safetyData} />
+          <Safety safetyData={safetyData} isLoading={isSafetyLoading} />
         </TabPanel>
         <TabPanel>
           <CompanyExecution />

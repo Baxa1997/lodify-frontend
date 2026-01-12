@@ -2,8 +2,14 @@ import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {ScoreCardCompanyCard} from "./ScoreCardCompanyCard";
 import {IoIosArrowForward} from "react-icons/io";
+import LoadingState from "@components/LoadingState";
+import EmptyState from "@components/EmptyState";
+import {RiShieldCheckLine} from "react-icons/ri";
 
-export const ScoreCardsPerformance = ({brokerSafetyData = []}) => {
+export const ScoreCardsPerformance = ({
+  brokerSafetyData = [],
+  isLoading = false,
+}) => {
   const getGaugeColor = (grade) => {
     switch (grade) {
       case ("A+", "A"):
@@ -93,18 +99,29 @@ export const ScoreCardsPerformance = ({brokerSafetyData = []}) => {
         </Link>
       </Flex>
 
-      <Box
-        display="grid"
-        gridTemplateColumns={{
-          base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-        }}
-        gap="24px">
-        {companiesData.map((company, index) => (
-          <ScoreCardCompanyCard key={index} {...company} />
-        ))}
-      </Box>
+      {isLoading ? (
+        <LoadingState height="300px" size="lg" />
+      ) : companiesData.length > 0 ? (
+        <Box
+          display="grid"
+          gridTemplateColumns={{
+            base: "1fr",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          }}
+          gap="24px">
+          {companiesData.map((company, index) => (
+            <ScoreCardCompanyCard key={index} {...company} />
+          ))}
+        </Box>
+      ) : (
+        <EmptyState
+          icon={RiShieldCheckLine}
+          message="No Carrier Data Available"
+          description="Carrier safety information will appear here once you have active carriers."
+          height="300px"
+        />
+      )}
     </Box>
   );
 };

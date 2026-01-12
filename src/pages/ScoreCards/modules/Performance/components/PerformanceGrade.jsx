@@ -1,11 +1,15 @@
 import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import {PerformanceCard} from "./PerformanceCard";
+import LoadingState from "@components/LoadingState";
+import EmptyState from "@components/EmptyState";
+import {RiLineChartLine} from "react-icons/ri";
 
 export const PerformanceGrade = ({
   performanceData = {},
   filterRange = "last_6_active_weeks",
   dateRange = {from: "", to: ""},
+  isLoading = false,
 }) => {
   const getFilterLabel = (range) => {
     switch (range) {
@@ -93,6 +97,12 @@ export const PerformanceGrade = ({
     // },
   };
 
+  const hasData =
+    performanceData?.overall ||
+    performanceData?.on_time ||
+    performanceData?.acceptance ||
+    performanceData?.app_usage;
+
   return (
     <Box bg="#fff" p="24px 0" borderRadius="12px">
       <Flex
@@ -137,17 +147,28 @@ export const PerformanceGrade = ({
         </Link>
       </Flex>
 
-      <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
-        <PerformanceCard
-          width="300px"
-          {...performanceDataValue.overall}
-          showGrade={true}
+      {isLoading ? (
+        <LoadingState height="200px" size="lg" />
+      ) : hasData ? (
+        <Flex gap="16px" flexWrap={{base: "wrap", md: "nowrap"}}>
+          <PerformanceCard
+            width="300px"
+            {...performanceDataValue.overall}
+            showGrade={true}
+          />
+          <PerformanceCard {...performanceDataValue.onTime} />
+          <PerformanceCard {...performanceDataValue.acceptance} />
+          <PerformanceCard {...performanceDataValue.appUsage} />
+          {/* <PerformanceCard {...performanceData.disruptionFree} /> */}
+        </Flex>
+      ) : (
+        <EmptyState
+          icon={RiLineChartLine}
+          message="No Performance Data Available"
+          description="Start completing trips to see your performance metrics here."
+          height="200px"
         />
-        <PerformanceCard {...performanceDataValue.onTime} />
-        <PerformanceCard {...performanceDataValue.acceptance} />
-        <PerformanceCard {...performanceDataValue.appUsage} />
-        {/* <PerformanceCard {...performanceData.disruptionFree} /> */}
-      </Flex>
+      )}
     </Box>
   );
 };

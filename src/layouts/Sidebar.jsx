@@ -61,9 +61,19 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
                 item.children.some((child) => isActiveRoute(child.path)));
 
             const showBadge = item.id === "notifications" && unreadCount > 0;
+            
+            // Add data-tour attributes for tour guide
+            const getTourAttr = (itemId) => {
+              const tourMap = {
+                dashboard: "dashboard",
+                trips: "trips",
+                notifications: "notifications",
+              };
+              return tourMap[itemId] ? {"data-tour": tourMap[itemId]} : {};
+            };
 
             return (
-              <li key={item.id} className={styles.navItem}>
+              <li key={item.id} className={styles.navItem} {...getTourAttr(item.id)}>
                 {!sidebarOpen ? (
                   hasChildren ? (
                     <Menu placement="right-start">

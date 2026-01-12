@@ -5,6 +5,9 @@ import SearchInput from "@components/SearchInput";
 import {DataTable} from "@components/DataTable";
 import {LuChevronUp, LuChevronDown} from "react-icons/lu";
 import {useSelector} from "react-redux";
+import LoadingState from "@components/LoadingState";
+import EmptyState from "@components/EmptyState";
+import {RiUserLine} from "react-icons/ri";
 
 export const PerformanceByDrivers = ({
   driversData = [],
@@ -13,6 +16,7 @@ export const PerformanceByDrivers = ({
   page,
   setPage = () => {},
   count,
+  isLoading = false,
 }) => {
   const client_type = useSelector((state) => state.auth.client_type);
   const [searchQuery, setSearchQuery] = useState("");
@@ -256,23 +260,34 @@ export const PerformanceByDrivers = ({
         </Button>
       </Flex>
 
-      <DataTable
-        headData={headData}
-        data={filteredData}
-        pagination={true}
-        page={page}
-        setPage={setPage}
-        limit={limit}
-        setLimit={setLimit}
-        count={count}
-        border="1px solid #E5E7EB"
-        borderRadius="12px"
-        overflow="hidden"
-        tableProps={{
-          variant: "simple",
-          size: "md",
-        }}
-      />
+      {isLoading ? (
+        <LoadingState height="300px" size="lg" />
+      ) : filteredData.length > 0 ? (
+        <DataTable
+          headData={headData}
+          data={filteredData}
+          pagination={true}
+          page={page}
+          setPage={setPage}
+          limit={limit}
+          setLimit={setLimit}
+          count={count}
+          border="1px solid #E5E7EB"
+          borderRadius="12px"
+          overflow="hidden"
+          tableProps={{
+            variant: "simple",
+            size: "md",
+          }}
+        />
+      ) : (
+        <EmptyState
+          icon={RiUserLine}
+          message="No Driver Data Available"
+          description="Driver performance data will be displayed here once drivers complete trips."
+          height="300px"
+        />
+      )}
     </Box>
   );
 };

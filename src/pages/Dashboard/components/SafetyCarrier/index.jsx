@@ -1,6 +1,9 @@
 import React, {useMemo} from "react";
 import {Box, Text, Flex, Link} from "@chakra-ui/react";
 import SafetyMetricCard from "./SafetyMetricCard";
+import LoadingState from "@components/LoadingState";
+import EmptyState from "@components/EmptyState";
+import {RiShieldCheckLine} from "react-icons/ri";
 
 const emptyData = [
   {
@@ -50,7 +53,11 @@ const emptyData = [
   },
 ];
 
-const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
+const SafetyCarrier = ({
+  carrierInfoData = {},
+  safetyData = [],
+  isLoading = false,
+}) => {
   const progressColor = (percentage) => {
     if (percentage > 50) return "#EF4444";
     if (percentage > 30) return "#F97316";
@@ -74,21 +81,29 @@ const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
 
   const safetyMetrics = useMemo(() => {
     if (safetyData?.length) {
-      return safetyData.map((item) => ({
-        title: item.basic_desc,
-        value: item.percentage + "%",
-        hasData: true,
-        progressValue: item.percentage,
-        progressColor: progressColor(item.percentage),
-        icon: progressIcon(item.percentage),
-        statusText: progressStatus(item.percentage),
-      }));
+      return safetyData.map((item) => {
+        const percentage = item.percentage ?? 0;
+        const hasValidData = percentage !== null && percentage !== undefined;
+
+        return {
+          title: item.basic_desc || "",
+          value: hasValidData ? `${percentage}%` : "0%",
+          hasData: hasValidData,
+          progressValue: percentage,
+          progressColor: progressColor(percentage),
+          icon: progressIcon(percentage),
+          statusText: progressStatus(percentage),
+        };
+      });
     }
     return emptyData;
   }, [safetyData]);
 
   const highRiskMetrics = useMemo(() => {
-    return safetyData.filter((item) => item.percentage > 70);
+    return safetyData.filter((item) => {
+      const percentage = item.percentage ?? 0;
+      return percentage > 70;
+    });
   }, [safetyData]);
 
   const hasHighRiskMetrics = highRiskMetrics.length > 0;
@@ -104,7 +119,7 @@ const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
         mb="24px"
         gap="12px">
         <Text fontSize="20px" fontWeight="700" color="#181D27" mb="4px">
-          {carrierInfoData?.legal_name || ""}
+          {carrierInfoData?.legal_name || "Lodify safety status"}
         </Text>
         <Link
           href="#"
@@ -131,42 +146,59 @@ const SafetyCarrier = ({carrierInfoData = {}, safetyData = []}) => {
           View FAQs
         </Link>
       </Flex>
-      {hasHighRiskMetrics && (
-        <Box
-          w="100%"
-          bg="#FFFAEB"
-          border="1px solid #FEDF89"
-          borderRadius="8px"
-          p="12px 16px"
-          mb="24px">
-          <Flex alignItems="flex-start" gap="8px">
-            <Box>
-              <Text fontSize="14px" fontWeight="600" color="#B54708" mb="4px">
-                ⚠️ Warning: {highRiskCount}{" "}
-                {highRiskCount === 1 ? "metric" : "metrics"}{" "}
-                {highRiskCount === 1 ? "is" : "are"} higher than 70% {}
-              </Text>
-              {highRiskTitles.map((title, index) => (
-                <Text key={index} fontSize="13px" color="#92400E" mb="2px">
-                  • {title}
-                </Text>
-              ))}
+      {isLoading ? (
+        <LoadingState height="300px" size="lg" />
+      ) : safetyData?.length > 0 ? (
+        <>
+          {hasHighRiskMetrics && (
+            <Box
+              w="100%"
+              bg="#FFFAEB"
+              border="1px solid #FEDF89"
+              borderRadius="8px"
+              p="12px 16px"
+              mb="24px">
+              <Flex alignItems="flex-start" gap="8px">
+                <Box>
+                  <Text
+                    fontSize="14px"
+                    fontWeight="600"
+                    color="#B54708"
+                    mb="4px">
+                    ⚠️ Warning: {highRiskCount}{" "}
+                    {highRiskCount === 1 ? "metric" : "metrics"}{" "}
+                    {highRiskCount === 1 ? "is" : "are"} higher than 70% {}
+                  </Text>
+                  {highRiskTitles.map((title, index) => (
+                    <Text key={index} fontSize="13px" color="#92400E" mb="2px">
+                      • {title}
+                    </Text>
+                  ))}
+                </Box>
+              </Flex>
             </Box>
-          </Flex>
-        </Box>
+          )}
+          <Box
+            display="grid"
+            gridTemplateColumns={{
+              base: "1fr",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(3, 1fr)",
+            }}
+            gap="24px">
+            {safetyMetrics.map((metric, index) => (
+              <SafetyMetricCard key={index} {...metric} />
+            ))}
+          </Box>
+        </>
+      ) : (
+        <EmptyState
+          icon={RiShieldCheckLine}
+          message="No Safety Data Available"
+          description="Safety metrics will appear here once data is collected from your operations."
+          height="300px"
+        />
       )}
-      <Box
-        display="grid"
-        gridTemplateColumns={{
-          base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-        }}
-        gap="24px">
-        {safetyMetrics.map((metric, index) => (
-          <SafetyMetricCard key={index} {...metric} />
-        ))}
-      </Box>
     </Box>
   );
 };
