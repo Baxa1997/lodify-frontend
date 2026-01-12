@@ -11,10 +11,7 @@ const useDashboardProps = () => {
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const companyType = isBroker ? "brokers_id" : "companies_id";
 
-  const {
-    data: tripsCountData = {},
-    isLoading: isTripsLoading,
-  } = useQuery({
+  const {data: tripsCountData = {}, isLoading: isTripsLoading} = useQuery({
     queryKey: ["TRIPS_COUNT", companies_id],
     queryFn: () =>
       dashboardService.getTripsCount({
@@ -28,27 +25,22 @@ const useDashboardProps = () => {
     select: (res) => res?.data || {},
   });
 
-  const {
-    data: performanceData = {},
-    isLoading: isPerformanceLoading,
-  } = useQuery({
-    queryKey: ["PERFORMANCE_DATA", companies_id],
-    queryFn: () =>
-      dashboardService.getPerformanceData({
-        method: "grade",
-        object_data: {
-          companies_id: companies_id,
-        },
-        table: "calculate",
-      }),
-    select: (res) => res?.data || {},
-    enabled: Boolean(companies_id),
-  });
+  const {data: performanceData = {}, isLoading: isPerformanceLoading} =
+    useQuery({
+      queryKey: ["PERFORMANCE_DATA", companies_id],
+      queryFn: () =>
+        dashboardService.getPerformanceData({
+          method: "grade",
+          object_data: {
+            companies_id: companies_id,
+          },
+          table: "calculate",
+        }),
+      select: (res) => res?.data || {},
+      enabled: Boolean(companies_id),
+    });
 
-  const {
-    data: safetyData = [],
-    isLoading: isSafetyLoading,
-  } = useQuery({
+  const {data: safetyData = [], isLoading: isSafetyLoading} = useQuery({
     queryKey: ["SAFETY_DATA", companies_id],
     queryFn: () =>
       dashboardService.getSafetyData({
@@ -62,39 +54,36 @@ const useDashboardProps = () => {
     enabled: Boolean(!brokers_id && companies_id),
   });
 
-  const {
-    data: brokerSafetyData = [],
-    isLoading: isBrokerSafetyLoading,
-  } = useQuery({
-    queryKey: ["BROKER_SAFETY_DATA", brokers_id],
-    queryFn: () =>
-      dashboardService.getBrokerSafetyData({
-        method: "get",
-        object_data: {
-          brokers_id: brokers_id,
-        },
-        table: "broker_carriers",
-      }),
-    select: (res) => res?.data?.response || [],
-    enabled: Boolean(brokers_id),
-  });
+  const {data: brokerSafetyData = [], isLoading: isBrokerSafetyLoading} =
+    useQuery({
+      queryKey: ["BROKER_SAFETY_DATA", brokers_id],
+      queryFn: () =>
+        dashboardService.getBrokerSafetyData({
+          method: "get",
+          object_data: {
+            brokers_id: brokers_id,
+          },
+          table: "broker_carriers",
+        }),
+      select: (res) => res?.data?.response || [],
+      enabled: Boolean(brokers_id),
+    });
 
-  const {
-    data: shippersScoreData = [],
-    isLoading: isShippersLoading,
-  } = useQuery({
-    queryKey: ["SHIPPERS_SCORE_DATA", brokers_id],
-    queryFn: () =>
-      dashboardService.getBrokerSafetyData({
-        method: "get",
-        object_data: {
-          brokers_id: brokers_id,
-        },
-        table: "broker_shippers",
-      }),
-    select: (res) => res?.data?.response || [],
-    enabled: Boolean(brokers_id),
-  });
+  const {data: shippersScoreData = [], isLoading: isShippersLoading} = useQuery(
+    {
+      queryKey: ["SHIPPERS_SCORE_DATA", brokers_id],
+      queryFn: () =>
+        dashboardService.getBrokerSafetyData({
+          method: "get",
+          object_data: {
+            brokers_id: brokers_id,
+          },
+          table: "broker_shippers",
+        }),
+      select: (res) => res?.data?.response || [],
+      enabled: Boolean(brokers_id),
+    }
+  );
 
   const {
     data: carrierInfoData = {},
@@ -120,14 +109,21 @@ const useDashboardProps = () => {
     staleTime: 0,
   });
 
-  const {
-    data: nationalAverageData = {},
-    isLoading: isNationalAverageLoading,
-  } = useQuery({
-    queryKey: ["NATIONAL_AVERAGE"],
-    queryFn: () => dashboardService.getNationalAverage(),
-    select: (res) => res?.data?.response?.[0] || {},
-  });
+  const {data: nationalAverageData = {}, isLoading: isNationalAverageLoading} =
+    useQuery({
+      queryKey: ["NATIONAL_AVERAGE"],
+      queryFn: () =>
+        dashboardService.getNationalAverage({
+          data: {
+            method: "get",
+            object_data: {
+              companies_id: companies_id,
+            },
+            table: "national_average",
+          },
+        }),
+      select: (res) => res?.data?.response?.[0] || {},
+    });
 
   const calculateGaugeLabel = (total, lateCount) => {
     if (lateCount / total > 0.5) {

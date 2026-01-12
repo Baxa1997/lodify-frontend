@@ -56,9 +56,9 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
           <Text fontSize="20px" fontWeight="700" color="#181D27" mb="0px">
             National Average
           </Text>
-          <Text fontSize="12px" fontWeight="500" color="red" mb="4px">
+          {/* <Text fontSize="12px" fontWeight="500" color="red" mb="4px">
             as of Date {formattedDate}
-          </Text>
+          </Text> */}
         </Box>
 
         <Link
