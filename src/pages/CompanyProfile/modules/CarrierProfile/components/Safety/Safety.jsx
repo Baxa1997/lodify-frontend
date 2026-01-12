@@ -232,7 +232,7 @@ export const Safety = () => {
                     inset="0"
                     bg="whiteAlpha.70"
                     borderRadius="12px">
-                    <Spinner color="#EF6820" />
+                    <Spinner color="#ff5b04" />
                   </Center>
                 )}
               </Box>

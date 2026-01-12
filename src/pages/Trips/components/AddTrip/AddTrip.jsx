@@ -306,7 +306,7 @@ function AddTrip({tripData = {}, locationStatus = {}}) {
           gap="10px"
           flexDirection="column"
           alignItems="center">
-          <Spinner size="xl" />
+          <Spinner size="xl" color="#ff5b04" />
           <Text fontSize="16px" fontWeight="600" color="white">
             Loading Data...
           </Text>

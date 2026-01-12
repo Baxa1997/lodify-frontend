@@ -19,7 +19,7 @@ const ContentLoader = ({ message = "Loading..." }) => {
           thickness="4px"
           speed="0.65s"
           emptyColor="gray.200"
-          color="blue.500"
+          color="#ff5b04"
           size="xl"
         />
         <Text

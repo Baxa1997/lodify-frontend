@@ -800,7 +800,7 @@ function ClosedTrips({selectedTabIndex}) {
                             }
                             onClick={() => handleRejectTrip(trip)}>
                             {loadingTripId === `reject-${trip.guid}` ? (
-                              <Spinner size="sm" />
+                              <Spinner size="sm" color="#ff5b04" />
                             ) : (
                               "Reject"
                             )}

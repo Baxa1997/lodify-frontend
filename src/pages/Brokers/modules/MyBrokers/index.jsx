@@ -217,7 +217,7 @@ const MyBrokers = () => {
                   <Td textAlign="left" py="14px" borderBottom="none">
                     <Button
                       size="sm"
-                      color="#EF6820"
+                      color="#ff5b04"
                       variant="ghost"
                       fontWeight="500"
                       _hover={{bg: "#FEF3EE"}}
@@ -236,7 +236,7 @@ const MyBrokers = () => {
               thickness="4px"
               speed="0.65s"
               emptyColor="#fff"
-              color="#EF6820"
+              color="#ff5b04"
               size="md"
             />
           </Flex>

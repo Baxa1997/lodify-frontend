@@ -69,7 +69,7 @@ export const CarrierProfile = () => {
             thickness="4px"
             speed="0.65s"
             emptyColor="gray.200"
-            color="#EF6820"
+            color="#ff5b04"
             size="xl"
           />
         </Box>

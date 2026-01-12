@@ -464,7 +464,7 @@ function GoogleLiveComponent({
         display="flex"
         justifyContent="center"
         alignItems="center">
-        <Spinner size="lg" color="blue.500" />
+        <Spinner size="lg" color="#ff5b04" />
       </Box>
     );
   }

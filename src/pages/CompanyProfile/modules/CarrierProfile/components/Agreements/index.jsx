@@ -13,7 +13,7 @@ export const Agreements = () => {
           thickness="4px"
           speed="0.65s"
           emptyColor="#fff"
-          color="#EF6820"
+          color="#ff5b04"
           size="lg"
         />
       </Flex>

@@ -153,7 +153,7 @@ const ReviewElement = ({
           }}>
           {allCarriers ? (
             loading?.id === review?.guid ? (
-              <Spinner size="sm" color="#EF6820" />
+              <Spinner size="sm" color="#ff5b04" />
             ) : (
               "Add"
             )

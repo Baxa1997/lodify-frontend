@@ -22,7 +22,7 @@ const LoadingState = ({
         thickness="3px"
         speed="0.65s"
         emptyColor="gray.200"
-        color="#EF6820"
+        color="#ff5b04"
         size={size}
       />
       {showMessage && (
