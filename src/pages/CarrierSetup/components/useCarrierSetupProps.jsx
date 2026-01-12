@@ -389,19 +389,36 @@ export const useCarrierSetupProps = () => {
   };
 
   const handleStepChange = (step) => {
+    const targetStepCompleted = completedSteps.has(step);
+    const currentStepCompleted = completedSteps.has(currentStep);
+    
+    // Allow navigation to:
+    // 1. Any completed step
+    // 2. The current step
+    // 3. The next step if current step is completed
     if (
-      step <= currentStep ||
-      (step === currentStep + 1 && completedSteps.has(currentStep))
+      targetStepCompleted ||
+      step === currentStep ||
+      (step === currentStep + 1 && currentStepCompleted)
     ) {
       setCurrentStep(step);
 
-      // If brokersId is true, always show only the last UI (sub-view 5)
-      if (step === 5 && brokersId) {
-        setPaymentSubView(5);
-      } else if (step === 5 && carrierSetup !== "true") {
-        setPaymentSubView(5);
+      // Reset sub-views when navigating to different steps
+      if (step === 1) {
+        setIdentitySubView(completedSteps.has(1) ? 2 : 1);
+      } else if (step === 4) {
+        setInsuranceSubView(completedSteps.has(4) ? 2 : 1);
       } else if (step === 5) {
-        setPaymentSubView(1);
+        // If brokersId is true, always show only the last UI (sub-view 5)
+        if (brokersId) {
+          setPaymentSubView(5);
+        } else if (carrierSetup !== "true") {
+          setPaymentSubView(5);
+        } else {
+          setPaymentSubView(1);
+        }
+      } else if (step === 7) {
+        setContractSubView(completedSteps.has(7) ? 2 : 1);
       }
     }
   };

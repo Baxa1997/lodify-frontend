@@ -5,10 +5,10 @@ import carrierService from "@services/carrierService";
 
 const useDashboardProps = () => {
   const clientType = useSelector((state) => state.auth.clientType);
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const {companies_id} = useSelector((state) => state.auth.user_data);
   const {brokers_id} = useSelector((state) => state.auth.user_data);
 
+  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
   const companyType = isBroker ? "brokers_id" : "companies_id";
 
   const {data: tripsCountData = {}} = useQuery({
@@ -87,19 +87,19 @@ const useDashboardProps = () => {
     isFetching,
     error,
   } = useQuery({
-    queryKey: ["CARRIER_INFO", isBroker ? brokers_id : companies_id],
+    queryKey: ["CARRIER_INFO", companies_id],
     queryFn: () =>
       carrierService.getCarrierInfo({
         data: {
           method: "get",
           object_data: {
-            [companyType]: isBroker ? brokers_id : companies_id,
+            companies_id: companies_id,
           },
           table: "carrier_info",
         },
       }),
     select: (data) => data?.data?.response || {},
-    enabled: isBroker ? Boolean(brokers_id) : Boolean(companies_id),
+    enabled: Boolean(companies_id),
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,

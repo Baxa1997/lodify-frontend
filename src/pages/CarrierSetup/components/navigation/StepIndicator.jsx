@@ -6,10 +6,17 @@ import styles from "../../CarrierSetup.module.scss";
 const StepIndicator = ({steps, currentStep, handleStepChange = () => {}}) => {
   const navigate = useNavigate();
   const canNavigateToStep = (stepId) => {
+    const targetStep = steps.find((s) => s.id === stepId);
+    const currentStepData = steps.find((s) => s.id === currentStep);
+    
+    // Can navigate to:
+    // 1. Any completed step
+    // 2. The current step
+    // 3. The next step if current step is completed
     return (
-      stepId <= currentStep ||
-      (stepId === currentStep + 1 &&
-        steps.find((s) => s.id === currentStep)?.completed)
+      targetStep?.completed ||
+      stepId === currentStep ||
+      (stepId === currentStep + 1 && currentStepData?.completed)
     );
   };
 
