@@ -46,7 +46,7 @@ const QRVerification = () => {
         },
       }),
     select: (res) => res?.data || {},
-    enabled: Boolean(userId),
+    enabled: Boolean(userId && clientTypeId && roleInfo?.id),
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
