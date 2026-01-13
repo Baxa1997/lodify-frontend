@@ -25,7 +25,13 @@ import HFPhoneInput from "./HFPhoneInput";
 import usersService from "../services/usersService";
 import IPAddressFinder from "../utils/getIpAddress";
 
-const AddUserModal = ({isOpen, onClose}) => {
+const AddUserModal = ({
+  isOpen,
+  onClose,
+  roleType = "",
+  roleTypeFilter = "",
+  roleTypeValue = "",
+}) => {
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState("dispatcher");
   const queryClient = useQueryClient();
@@ -73,11 +79,11 @@ const AddUserModal = ({isOpen, onClose}) => {
             clientTypeId || "706337d3-80dc-4aca-80b3-67fad16cd0d6",
           role_id: roleMapping[selectedRole],
           notes: "",
-          companies_id: userInfo?.user_data?.companies_id,
+          [roleTypeFilter]: roleTypeValue,
         },
       };
 
-      await usersService.addUser(payload);
+      await usersService.addUser(payload, roleType);
 
       toast({
         title: "User Added Successfully",

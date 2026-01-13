@@ -29,6 +29,14 @@ const Users = () => {
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
 
+  const userData = useSelector((state) => state?.auth?.user_data);
+
+  const roleType = userData?.brokers_id ? "broker_users" : "users";
+  const roleTypeFilter = userData?.brokers_id ? "brokers_id" : "companies_id";
+  const roleTypeValue = userData?.brokers_id
+    ? userData?.brokers_id
+    : userData?.companies_id;
+
   const offset = (currentPage - 1) * pageSize;
 
   const {data: usersData, isLoading} = useQuery({
@@ -44,8 +52,9 @@ const Users = () => {
         limit: pageSize,
         offset: searchText ? 0 : offset,
         with_relations: false,
+        [roleTypeFilter]: roleTypeValue,
       };
-      return usersService.getList(params);
+      return usersService.getList(params, roleType);
     },
     enabled: true,
     refetchOnMount: true,
@@ -69,8 +78,6 @@ const Users = () => {
     staleTime: 0,
     select: (res) => res?.data?.response ?? [],
   });
-
-  console.log("rolesData", rolesData);
 
   const users = usersData?.users || [];
   const totalUsers = usersData?.total || 0;
@@ -120,8 +127,6 @@ const Users = () => {
       return acc;
     });
   }, [rolesData]);
-
-  console.log("rolesMaprolesMap", rolesMap);
 
   if (isLoading) {
     return (
@@ -239,6 +244,9 @@ const Users = () => {
       </Box>
 
       <AddUserModal
+        roleTypeValue={roleTypeValue}
+        roleTypeFilter={roleTypeFilter}
+        roleType={roleType}
         rolesData={rolesData}
         isOpen={isAddUserModalOpen}
         onClose={() => setIsAddUserModalOpen(false)}
