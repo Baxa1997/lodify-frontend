@@ -33,6 +33,9 @@ const Register = lazy(() => import("../pages/Register/Register"));
 const PhoneVerification = lazy(() =>
   import("../pages/PhoneVerification/PhoneVerification")
 );
+const QRVerification = lazy(() =>
+  import("../pages/QRVerification/QRVerification")
+);
 const Users = lazy(() => import("../pages/Users"));
 const SingleUser = lazy(() => import("../pages/Users/SingleUser"));
 const Drivers = lazy(() => import("../pages/Drivers"));
@@ -43,10 +46,15 @@ const AllLoads = lazy(() => import("../pages/AllLoads"));
 
 const ProtectedRoute = ({children}) => {
   const isAuth = useSelector((state) => state?.auth?.isAuth);
+  const qrVerified = useSelector((state) => state?.auth?.qrVerified);
   const location = useLocation();
 
   if (!isAuth) {
     return <Navigate to="/login" state={{from: location}} replace />;
+  }
+
+  if (isAuth && !qrVerified && location.pathname !== "/qr-verification") {
+    return <Navigate to="/qr-verification" state={{from: location}} replace />;
   }
 
   return children;
@@ -54,6 +62,7 @@ const ProtectedRoute = ({children}) => {
 
 const PublicRoute = ({children}) => {
   const isAuth = useSelector((state) => state?.auth?.isAuth);
+  const qrVerified = useSelector((state) => state?.auth?.qrVerified);
   const carrierStatusLoaded = useSelector(
     (state) => state?.auth?.carrierStatusLoaded
   );
@@ -63,6 +72,10 @@ const PublicRoute = ({children}) => {
   const location = useLocation();
 
   if (isAuth) {
+    if (!qrVerified) {
+      return <Navigate to="/qr-verification" replace />;
+    }
+
     if (!carrierStatusLoaded) {
       return <LoadingSpinner />;
     }
@@ -132,6 +145,14 @@ const Router = () => {
               <PhoneVerification />
             </Suspense>
           </PublicRoute>
+        }
+      />
+      <Route
+        path="/qr-verification"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <QRVerification />
+          </Suspense>
         }
       />
 

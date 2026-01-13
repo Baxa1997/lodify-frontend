@@ -1,0 +1,338 @@
+.verificationContainer {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(239, 104, 32, 0.05) 0%,
+      transparent 70%
+    );
+    animation: pulse 15s ease-in-out infinite;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(21, 112, 239, 0.05) 0%,
+      transparent 70%
+    );
+    animation: pulse 20s ease-in-out infinite reverse;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.verificationCard {
+  border-radius: 24px;
+  padding: 48px;
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s ease-out;
+
+  @media (max-width: 768px) {
+    padding: 32px 24px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.iconWrapper {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f8e6dc 0%, #fde8dc 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  box-shadow: 0 8px 16px rgba(239, 104, 32, 0.15);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #181d27;
+  text-align: center;
+  margin-bottom: 8px;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 26px;
+  }
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.qrSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.qrWrapper {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  border: 2px solid #f3f4f6;
+  transition: all 0.3s ease;
+  animation: scaleIn 0.5s ease-out 0.3s both;
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.instructionsSection {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+  border: 1px solid #e5e7eb;
+
+  @media (max-width: 768px) {
+    padding: 24px 20px;
+  }
+}
+
+.instructionsTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #181d27;
+  margin-bottom: 4px;
+}
+
+.instructionItem {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+
+  &:hover {
+    border-color: #ef6820;
+    box-shadow: 0 4px 12px rgba(239, 104, 32, 0.1);
+    transform: translateX(4px);
+  }
+}
+
+.stepNumber {
+  min-width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #ef6820 0%, #d85a1a 100%);
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(239, 104, 32, 0.3);
+}
+
+.stepContent {
+  flex: 1;
+}
+
+.stepTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #181d27;
+  margin-bottom: 4px;
+}
+
+.stepDescription {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.actionSection {
+  width: 330px;
+  margin-top: 32px;
+  margin: 0 auto;
+}
+
+.verifyButton {
+  transition: all 0.3s ease !important;
+
+  &:disabled {
+    background: #9ca3af !important;
+    cursor: not-allowed !important;
+  }
+}
+
+.helpText {
+  text-align: center;
+  font-size: 14px;
+  color: #9ca3af;
+  margin-top: 16px;
+}
+
+.downloadSection {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.downloadTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #181d27;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.downloadButtons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.downloadLink {
+  transition: all 0.3s ease;
+  display: inline-block;
+
+  &:hover {
+    transform: translateY(-4px);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+}
+
+.storeBadge {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .verificationCard {
+    border-radius: 16px;
+  }
+
+  .qrWrapper {
+    padding: 16px;
+
+    svg {
+      width: 220px !important;
+      height: 220px !important;
+    }
+  }
+
+  .instructionItem {
+    padding: 12px;
+  }
+
+  .stepNumber {
+    min-width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .stepTitle {
+    font-size: 15px;
+  }
+
+  .stepDescription {
+    font-size: 13px;
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -20,6 +20,7 @@ const initialState = {
   access_type: "",
   user_data: null,
   carrierStatusLoaded: false,
+  qrVerified: false,
 };
 
 export const { actions: authActions, reducer: authReducer } = createSlice({
@@ -118,6 +119,9 @@ export const { actions: authActions, reducer: authReducer } = createSlice({
     },
     setCarrierStatusLoaded(state, { payload }) {
       state.carrierStatusLoaded = payload;
+    },
+    setQRVerified(state, { payload }) {
+      state.qrVerified = payload;
     },
   },
 });

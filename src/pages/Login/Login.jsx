@@ -80,12 +80,18 @@ const Login = () => {
   const selectedEnvID = watch("environment_id");
   const getFormValue = watch();
 
+  const qrVerified = useSelector((state) => state?.auth?.qrVerified);
+
   useEffect(() => {
     if (isAuth) {
-      const from = location.state?.from?.pathname || "/admin/dashboard";
-      navigate(from, {replace: true});
+      if (!qrVerified) {
+        navigate("/qr-verification", {replace: true});
+      } else {
+        const from = location.state?.from?.pathname || "/admin/dashboard";
+        navigate(from, {replace: true});
+      }
     }
-  }, [isAuth, navigate, location.state]);
+  }, [isAuth, qrVerified, navigate, location.state]);
 
   //=======COMPUTE COMPANIES
   const computedCompanies = useMemo(() => {
