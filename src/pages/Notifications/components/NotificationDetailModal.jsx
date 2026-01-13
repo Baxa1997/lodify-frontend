@@ -14,8 +14,14 @@ import {
   Link,
 } from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {formatDate} from "@utils/dateFormats";
 
 const NotificationDetailModal = ({isOpen, onClose, notification}) => {
+  const brokerId = useSelector((state) => state.auth?.user_data?.brokers_id);
+
+  const roleType = brokerId ? "broker" : "carrier";
+
   const navigate = useNavigate();
 
   const renderSeverityBadge = (severity) => {
@@ -119,69 +125,122 @@ const NotificationDetailModal = ({isOpen, onClose, notification}) => {
           </Flex>
         </ModalHeader>
 
-        <ModalBody px="20px" pb="20px">
+        <ModalBody px="24px" pb="12px">
           <Box mb="24px">
-            <Text fontSize="14px" fontWeight="600" color="#181D27" mb="8px">
+            <Text fontSize="14px" fontWeight="600" color="#181D27" mb="12px">
               Severity
             </Text>
             {renderSeverityBadge(severity)}
           </Box>
 
-          <Box mb="24px">
+          <Flex gap="8px" alignItems="center" mb="8px">
+            <Text fontSize="14px" fontWeight="600" color="#181D27">
+              Customer:
+            </Text>
+            <Text fontSize="14px" fontWeight="400" color="#6B7280">
+              {notification?.[roleType]?.legal_name || "N/A"}
+            </Text>
+          </Flex>
+
+          <Flex gap="8px" alignItems="center" mb="10px">
+            <Text fontSize="14px" fontWeight="600" color="#181D27">
+              Load ID:
+            </Text>
+            <Text fontSize="14px" fontWeight="400" color="#6B7280">
+              #{notification?.load_id || "N/A"}
+            </Text>
+          </Flex>
+
+          <Box mb="8px">
+            <Text fontSize="14px" fontWeight="600" color="#181D27" mb="4px">
+              Origin:
+            </Text>
+            <Text fontSize="14px" fontWeight="400" color="#6B7280" mb="2px">
+              {notification?.origin?.address || "N/A"}
+            </Text>
+            <Text fontSize="14px" fontWeight="400" color="#6B7280">
+              {formatDate(notification?.origin?.arrive_by ?? "")}
+            </Text>
+          </Box>
+
+          <Box mb="14px">
+            <Text fontSize="14px" fontWeight="600" color="#181D27" mb="4px">
+              Destination:
+            </Text>
+            <Text fontSize="14px" fontWeight="400" color="#6B7280" mb="2px">
+              {notification?.destination?.address || "N/A"}
+            </Text>
+            <Text fontSize="14px" fontWeight="400" color="#6B7280">
+              {formatDate(notification?.destination?.arrive_by ?? "")}
+            </Text>
+          </Box>
+
+          <Box mb="10px">
             <Text fontSize="14px" fontWeight="600" color="#181D27" mb="8px">
               Description
             </Text>
             <Text
               fontSize="14px"
-              color="#374151"
+              fontWeight="400"
+              color="#6B7280"
               lineHeight="1.6"
               whiteSpace="pre-wrap">
               {description}
             </Text>
           </Box>
-
-          {links && links.length > 0 && (
-            <Box>
-              {links.map((link, index) => (
-                <Link
-                  key={index}
-                  href={link.url}
-                  color="#EF6820"
-                  fontSize="14px"
-                  textDecoration="underline"
-                  _hover={{color: "#DC5A1A"}}
-                  onClick={() => {
-                    if (link.key === "assets_link") {
-                      navigate(
-                        `/admin/trips/${notification?.pickup_id_data?.guid}`
-                      );
-                    }
-                  }}
-                  display="block"
-                  mb={index < links.length - 1 ? "8px" : "0"}>
-                  {link.text}
-                </Link>
-              ))}
-            </Box>
-          )}
         </ModalBody>
 
-        <ModalFooter pt="10px" justifyContent="flex-end">
+        <ModalFooter
+          pt="8px"
+          px="24px"
+          pb="12px"
+          justifyContent="flex-end"
+          gap="12px">
           <Button
             onClick={onClose}
             bg="#fff"
-            color="#374151"
+            color="#6B7280"
             fontSize="14px"
             fontWeight="500"
-            h="36px"
-            px="16px"
-            border="1px solid #D5D7DA"
+            h="40px"
+            px="20px"
+            border="1px solid #D1D5DB"
             borderRadius="8px"
             _hover={{
-              bg: "#E5E7EB",
+              bg: "#F9FAFB",
+              borderColor: "#9CA3AF",
             }}>
             Close
           </Button>
+          {notification?.orders_id && (
+            <Button
+              onClick={() => {
+                navigate(`/admin/trips/${notification?.orders_id}`, {
+                  state: {
+                    label: `${notification?.driver_1?.first_name || ""}.${
+                      notification?.driver_1?.last_name || ""
+                    }`,
+                    tripType: "upcoming",
+                  },
+                });
+                onClose();
+              }}
+              bg="#EF6820"
+              color="#fff"
+              fontSize="14px"
+              fontWeight="600"
+              h="40px"
+              px="20px"
+              borderRadius="8px"
+              _hover={{
+                bg: "#DC5A1A",
+              }}
+              _active={{
+                bg: "#C94F15",
+              }}>
+              View Trip
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

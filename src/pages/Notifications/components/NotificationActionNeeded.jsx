@@ -25,7 +25,6 @@ function NotificationActionNeeded() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReadAllDialogOpen, setIsReadAllDialogOpen] = useState(false);
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
-  const [expandedRows, setExpandedRows] = useState(new Set());
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const cancelRef = useRef();
@@ -34,7 +33,6 @@ function NotificationActionNeeded() {
   const clientTypeValue = isBroker ? "broker" : "carrier";
 
   const handleViewNotification = (notification, rowId) => {
-    console.log("notification", notification, rowId);
     setSelectedNotification(notification);
     setIsModalOpen(true);
 
