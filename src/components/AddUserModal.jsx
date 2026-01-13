@@ -35,14 +35,18 @@ const AddUserModal = ({
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState("dispatcher");
   const queryClient = useQueryClient();
-  const userInfo = useSelector((state) => state.auth);
+  const userData = useSelector((state) => state.auth.user_data);
   const clientTypeId = useSelector((state) => state?.auth?.clientType?.id);
   const {ip} = IPAddressFinder();
   const toast = useToast();
 
   const roleMapping = {
-    dispatcher: "9414bcae-405e-44e2-a25c-2456061bcdf0",
-    administrator: "1a4bd0a7-8ee9-4cd3-850a-c2db84a2d00c",
+    dispatcher: userData?.brokers_id
+      ? "fce7d0b3-ad55-49d2-aae7-8de13fdaa2c9"
+      : "9414bcae-405e-44e2-a25c-2456061bcdf0",
+    administrator: userData?.brokers_id
+      ? "b509a5e4-5148-46cb-9b53-167b66c3f7e4"
+      : "4aa7f264-010c-4c95-b55c-4f119c4d3bb5",
   };
 
   const {
