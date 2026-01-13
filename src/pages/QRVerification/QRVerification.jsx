@@ -17,6 +17,8 @@ import {authActions} from "../../store/auth/auth.slice";
 import styles from "./QRVerification.module.scss";
 import {useQuery} from "@tanstack/react-query";
 import qrVerificationService from "@services/qrVerificationService";
+import {MdOutlineErrorOutline} from "react-icons/md";
+import {MdOutlineRefresh} from "react-icons/md";
 
 const QRVerification = () => {
   const clientType = useSelector((state) => state);
@@ -25,13 +27,19 @@ const QRVerification = () => {
   const toast = useToast();
   const [isVerifying, setIsVerifying] = useState(false);
   const [qrValue, setQrValue] = useState("");
-  const userInfo = useSelector((state) => state?.auth?.userInfo);
   const roleInfo = useSelector((state) => state?.auth?.roleInfo);
   const clientTypeId = useSelector((state) => state?.auth?.clientType?.id);
 
   const userId = useSelector((state) => state?.auth?.userId);
 
-  const {data: qrVerificationLinkData} = useQuery({
+  const {
+    data: qrVerificationLinkData,
+    isLoading: isLoadingQR,
+    isError: isQRError,
+    error: qrError,
+    isFetching: isFetchingQR,
+    refetch: refetchQR,
+  } = useQuery({
     queryKey: ["QR_VERIFICATION_LINK_URL", userId, clientTypeId, roleInfo?.id],
     queryFn: () =>
       qrVerificationService.getQRVerificationLink({
@@ -50,17 +58,48 @@ const QRVerification = () => {
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   useEffect(() => {
-    const qrData = {
-      action: "mobile_verification",
-      appDownloadUrl: qrVerificationLinkData?.url || "",
-    };
-    setQrValue(JSON.stringify(qrData));
-  }, [userId, userInfo, qrVerificationLinkData]);
+    if (qrVerificationLinkData?.url) {
+      const qrData = {
+        action: "mobile_verification",
+        appDownloadUrl: qrVerificationLinkData?.url || "",
+      };
+      setQrValue(JSON.stringify(qrData));
+    }
+  }, [qrVerificationLinkData]);
+
+  useEffect(() => {
+    if (isQRError) {
+      toast({
+        title: "Failed to Generate QR Code",
+        description:
+          qrError?.message ||
+          "Unable to generate verification link. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+  }, [isQRError, qrError, toast]);
 
   const handleVerification = () => {
+    if (!qrVerificationLinkData?.vendor_data) {
+      toast({
+        title: "QR Code Not Ready",
+        description: "Please wait for the QR code to load before verifying",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
     setIsVerifying(true);
     const splittedVal = qrVerificationLinkData?.vendor_data?.split(":")?.[1];
 
@@ -102,15 +141,26 @@ const QRVerification = () => {
           setIsVerifying(false);
           toast({
             title: "Verification Failed",
-            description: "Invalid QR code",
+            description:
+              err?.response?.data?.message ||
+              "Invalid QR code or verification error",
             status: "error",
             duration: 3000,
             isClosable: true,
             position: "top-right",
           });
-          console.log("err", err);
-        })
-        .finally(() => {});
+          console.error("Verification error:", err);
+        });
+    } else {
+      setIsVerifying(false);
+      toast({
+        title: "Invalid QR Data",
+        description: "Unable to verify. Please refresh and try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
     }
   };
 
@@ -133,9 +183,13 @@ const QRVerification = () => {
     <div className={styles.verificationContainer}>
       <Container maxW="container.md" centerContent>
         <Box className={styles.verificationCard}>
-          <VStack spacing={4} mb={6}>
+          <VStack spacing={3} mb={6}>
             <Box className={styles.iconWrapper}>
-              <Icon as={MdQrCodeScanner} boxSize={12} color="#ef6820" />
+              <Icon
+                as={MdQrCodeScanner}
+                boxSize={{base: 8, md: 10, lg: 12}}
+                color="#ef6820"
+              />
             </Box>
             <Text className={styles.title}>Mobile Verification Required</Text>
             <Text className={styles.subtitle}>
@@ -145,25 +199,115 @@ const QRVerification = () => {
 
           <Box className={styles.qrSection}>
             <Box className={styles.qrWrapper}>
-              {qrValue ? (
-                <QRCodeSVG
-                  value={qrValue}
-                  size={280}
-                  level="H"
-                  includeMargin={true}
-                  bgColor="#ffffff"
-                  fgColor="#181D27"
-                  imageSettings={{
-                    src: "/img/singleLogo.svg",
-                    x: undefined,
-                    y: undefined,
-                    height: 40,
-                    width: 40,
-                    excavate: true,
-                  }}
-                />
+              {isLoadingQR ? (
+                <VStack
+                  spacing={4}
+                  w={{base: "220px", md: "240px", lg: "280px"}}
+                  h={{base: "220px", md: "240px", lg: "280px"}}
+                  justify="center">
+                  <Spinner
+                    size={{base: "lg", md: "xl"}}
+                    color="#ef6820"
+                    thickness="4px"
+                  />
+                  <Text
+                    fontSize={{base: "13px", md: "14px"}}
+                    color="#6b7280"
+                    fontWeight="500">
+                    Generating QR Code...
+                  </Text>
+                </VStack>
+              ) : isQRError ? (
+                <VStack
+                  spacing={3}
+                  className={styles.errorContainer}
+                  justify="center">
+                  <MdOutlineErrorOutline size={100} color="#ef4444" />
+                  <Text
+                    fontSize={{base: "16px", md: "17px", lg: "18px"}}
+                    color="#181d27"
+                    fontWeight="700"
+                    textAlign="center"
+                    px={3}>
+                    Failed to Generate QR Code
+                  </Text>
+                  <Text
+                    fontSize={{base: "12px", md: "13px", lg: "14px"}}
+                    color="#6b7280"
+                    textAlign="center"
+                    px={3}
+                    maxW={{base: "180px", md: "200px", lg: "240px"}}>
+                    Unable to create verification link. Please try again.
+                  </Text>
+                  <Button
+                    isLoading={isFetchingQR}
+                    onClick={() => refetchQR()}
+                    bg="#ef6820"
+                    color="white"
+                    fontWeight="600"
+                    w={{base: "90px", md: "90px", lg: "90px"}}
+                    h={{base: "40px", md: "40px", lg: "40px"}}
+                    borderRadius="10px"
+                    mt={1}
+                    _hover={{
+                      bg: "#d85a1a",
+                      transform: "translateY(-1px)",
+                    }}
+                    _active={{
+                      transform: "translateY(0)",
+                    }}
+                    transition="all 0.2s ease">
+                    <MdOutlineRefresh mr="6px" size={100} />
+                    Retry
+                  </Button>
+                </VStack>
+              ) : qrValue ? (
+                <Box
+                  w={{base: "220px", md: "240px", lg: "280px"}}
+                  h={{base: "220px", md: "240px", lg: "280px"}}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center">
+                  <QRCodeSVG
+                    value={qrValue}
+                    size={
+                      window.innerWidth < 480
+                        ? 220
+                        : window.innerWidth < 768
+                        ? 240
+                        : 280
+                    }
+                    level="H"
+                    includeMargin={true}
+                    bgColor="#ffffff"
+                    fgColor="#181D27"
+                    imageSettings={{
+                      src: "/img/singleLogo.svg",
+                      x: undefined,
+                      y: undefined,
+                      height:
+                        window.innerWidth < 480
+                          ? 30
+                          : window.innerWidth < 768
+                          ? 35
+                          : 40,
+                      width:
+                        window.innerWidth < 480
+                          ? 30
+                          : window.innerWidth < 768
+                          ? 35
+                          : 40,
+                      excavate: true,
+                    }}
+                  />
+                </Box>
               ) : (
-                <Spinner size="xl" color="#ef6820" thickness="4px" />
+                <VStack spacing={4} w="280px" h="280px" justify="center">
+                  <Spinner size="xl" color="#ef6820" thickness="4px" />
+                  <Text fontSize="14px" color="#6b7280" fontWeight="500">
+                    Loading...
+                  </Text>
+                </VStack>
               )}
             </Box>
           </Box>
@@ -173,6 +317,7 @@ const QRVerification = () => {
               className={styles.verifyButton}
               onClick={handleVerification}
               isLoading={isVerifying}
+              isDisabled={isLoadingQR || isQRError || !qrValue}
               loadingText="Verifying..."
               leftIcon={<MdCheckCircle />}
               size="lg"
@@ -194,6 +339,7 @@ const QRVerification = () => {
               _disabled={{
                 bg: "#9ca3af",
                 cursor: "not-allowed",
+                opacity: 0.6,
               }}
               transition="all 0.3s ease">
               I Am Verified
@@ -221,80 +367,6 @@ const QRVerification = () => {
               Back to Login
             </Button>
           </Box>
-
-          {/* <Box className={styles.instructionsSection}>
-            <Text className={styles.instructionsTitle}>How to verify:</Text>
-            <VStack spacing={3} align="stretch" mt={4}>
-              <Box className={styles.instructionItem}>
-                <Box className={styles.stepNumber}>1</Box>
-                <Box className={styles.stepContent}>
-                  <Text className={styles.stepTitle}>Download the App</Text>
-                  <Text className={styles.stepDescription}>
-                    Download Lodify mobile app from App Store or Google Play
-                  </Text>
-                </Box>
-              </Box>
-
-              <Box className={styles.instructionItem}>
-                <Box className={styles.stepNumber}>2</Box>
-                <Box className={styles.stepContent}>
-                  <Text className={styles.stepTitle}>Scan QR Code</Text>
-                  <Text className={styles.stepDescription}>
-                    Open the app and scan this QR code with your camera
-                  </Text>
-                </Box>
-              </Box>
-
-              <Box className={styles.instructionItem}>
-                <Box className={styles.stepNumber}>3</Box>
-                <Box className={styles.stepContent}>
-                  <Text className={styles.stepTitle}>Verify Identity</Text>
-                  <Text className={styles.stepDescription}>
-                    Complete the verification process on your mobile device
-                  </Text>
-                </Box>
-              </Box>
-            </VStack>
-          </Box>
-
-        
-
-          <Box className={styles.downloadSection}>
-            <Text className={styles.downloadTitle}>
-              <Icon as={MdSmartphone} mr={2} />
-              Download Mobile App
-            </Text>
-            <Box className={styles.downloadButtons}>
-              <a
-                href="https://apps.apple.com/app/lodify"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.downloadLink}>
-                <img
-                  src="/img/app-store-badge.svg"
-                  alt="Download on App Store"
-                  className={styles.storeBadge}
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </a>
-              <a
-                href="https://play.google.com/store/apps/details?id=com.lodify"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.downloadLink}>
-                <img
-                  src="/img/google-play-badge.svg"
-                  alt="Get it on Google Play"
-                  className={styles.storeBadge}
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </a>
-            </Box>
-          </Box> */}
         </Box>
       </Container>
     </div>

@@ -61,7 +61,8 @@
   animation: slideUp 0.6s ease-out;
 
   @media (max-width: 768px) {
-    padding: 32px 24px;
+    padding: 20px 16px;
+    max-width: 100%;
   }
 }
 
@@ -87,6 +88,16 @@
   margin-bottom: 8px;
   box-shadow: 0 8px 16px rgba(239, 104, 32, 0.15);
   animation: float 3s ease-in-out infinite;
+
+  @media (max-width: 768px) {
+    width: 64px;
+    height: 64px;
+  }
+
+  @media (max-width: 480px) {
+    width: 56px;
+    height: 56px;
+  }
 }
 
 @keyframes float {
@@ -108,7 +119,11 @@
   line-height: 1.2;
 
   @media (max-width: 768px) {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 20px;
   }
 }
 
@@ -118,6 +133,14 @@
   text-align: center;
   line-height: 1.5;
   max-width: 400px;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 }
 
 .qrSection {
@@ -125,6 +148,14 @@
   justify-content: center;
   align-items: center;
   margin: 32px 0;
+
+  @media (max-width: 768px) {
+    margin: 24px 0;
+  }
+
+  @media (max-width: 480px) {
+    margin: 20px 0;
+  }
 }
 
 .qrWrapper {
@@ -135,6 +166,11 @@
   border: 2px solid #f3f4f6;
   transition: all 0.3s ease;
   animation: scaleIn 0.5s ease-out 0.3s both;
+  width: 328px;
+  height: 328px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     transform: scale(1.02);
@@ -143,6 +179,32 @@
 
   svg {
     display: block;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    min-height: 280px;
+    padding: 20px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 260px;
+    min-height: 260px;
+    padding: 16px;
+  }
+}
+
+.errorContainer {
+  @media (max-width: 768px) {
+    width: 240px !important;
+    height: 240px !important;
+  }
+
+  @media (max-width: 480px) {
+    width: 220px !important;
+    height: 220px !important;
   }
 }
 
@@ -228,6 +290,15 @@
   width: 100%;
   max-width: 400px;
   margin: 32px auto 0;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    margin: 24px auto 0;
+  }
+
+  @media (max-width: 480px) {
+    margin: 20px auto 0;
+  }
 }
 
 .verifyButton {
