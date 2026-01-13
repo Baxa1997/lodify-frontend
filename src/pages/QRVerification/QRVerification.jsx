@@ -115,16 +115,9 @@ const QRVerification = () => {
   };
 
   const handleBackToLogin = () => {
-    // Clear Redux state
     dispatch(authActions.logout());
-
-    // Clear local storage
     localStorage.clear();
-
-    // Clear session storage
     sessionStorage.clear();
-
-    // Show logout message
     toast({
       title: "Logged Out",
       description: "You have been logged out successfully",
@@ -133,8 +126,6 @@ const QRVerification = () => {
       isClosable: true,
       position: "top-right",
     });
-
-    // Navigate to login
     navigate("/login", {replace: true});
   };
 
