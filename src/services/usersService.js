@@ -4,13 +4,19 @@ const usersService = {
   getList: (params = {}) => {
     const dataParam = JSON.stringify(params);
     return httpRequest.get(
-      `v2/items/users?data=${encodeURIComponent(dataParam)}`,
+      `v2/items/users?data=${encodeURIComponent(dataParam)}`
+    );
+  },
+  getRolesList: (params = {}) => {
+    const dataParam = JSON.stringify(params);
+    return httpRequest.get(
+      `v2/items/role?data=${encodeURIComponent(dataParam)}`
     );
   },
   addUser: (data) => httpRequest.post("v2/items/users", data),
   updateUser: (id, data) => httpRequest.put(`v2/items/users/${id}`, data),
   getUserById: (id) => httpRequest.get(`v2/items/users/${id}`, {}),
-  deleteUser: (id, data) => httpRequest.delete(`v2/items/users/${id}`, { data }),
+  deleteUser: (id, data) => httpRequest.delete(`v2/items/users/${id}`, {data}),
 };
 
 export default usersService;

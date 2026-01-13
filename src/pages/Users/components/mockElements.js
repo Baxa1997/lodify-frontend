@@ -1,9 +1,14 @@
-import { USER_STATUS } from "../../../constants";
+import {USER_STATUS} from "../../../constants";
 
 export const tableHeading = [
   {
-    label: "Full Name",
-    key: "full_name",
+    label: "First Name",
+    key: "first_name",
+    sortable: true,
+  },
+  {
+    label: "Last Name",
+    key: "last_name",
     sortable: true,
   },
   {
@@ -21,11 +26,11 @@ export const tableHeading = [
     key: "roles",
     sortable: true,
   },
-  {
-    label: "Domiciles",
-    key: "domiciles",
-    sortable: true,
-  },
+  // {
+  //   label: "Domiciles",
+  //   key: "domiciles",
+  //   sortable: true,
+  // },
   {
     label: "Status",
     key: "status",
@@ -35,15 +40,15 @@ export const tableHeading = [
 
 export const getStatusColor = (status) => {
   switch (status) {
-  case USER_STATUS.ACTIVE:
-    return "green";
-  case USER_STATUS.INVITE_EXPIRED:
-    return "orange";
-  case USER_STATUS.PENDING:
-    return "yellow";
-  case USER_STATUS.INACTIVE:
-    return "red";
-  default:
-    return "gray";
+    case USER_STATUS.ACTIVE:
+      return "green";
+    case USER_STATUS.INVITE_EXPIRED:
+      return "orange";
+    case USER_STATUS.PENDING:
+      return "yellow";
+    case USER_STATUS.INACTIVE:
+      return "red";
+    default:
+      return "gray";
   }
 };

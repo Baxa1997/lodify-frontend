@@ -1,7 +1,7 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useMemo} from "react";
 import {Box, Flex, Text, Badge} from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {sidebarActions} from "../../store/sidebar";
 import {
   CTable,
@@ -20,6 +20,7 @@ import {tableHeading, getStatusColor} from "./components/mockElements";
 import useDebounce from "../../hooks/useDebounce";
 
 const Users = () => {
+  const clientTypeId = useSelector((state) => state?.auth?.clientType?.id);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [sortConfig, setSortConfig] = useState({key: null, direction: "asc"});
@@ -55,6 +56,21 @@ const Users = () => {
       total: res?.data?.count ?? 0,
     }),
   });
+
+  const {data: rolesData, isLoading: isLoadingRoles} = useQuery({
+    queryKey: ["GET_ROLES_LIST"],
+    queryFn: () =>
+      usersService.getRolesList({
+        client_type_id: clientTypeId,
+      }),
+    enabled: true,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+    select: (res) => res?.data?.response ?? [],
+  });
+
+  console.log("rolesData", rolesData);
 
   const users = usersData?.users || [];
   const totalUsers = usersData?.total || 0;
@@ -97,6 +113,15 @@ const Users = () => {
   const handleAddUserClick = useCallback(() => {
     setIsAddUserModalOpen(true);
   }, []);
+
+  const rolesMap = useMemo(() => {
+    return rolesData?.reduce((acc, role) => {
+      acc[role.guid] = role.name;
+      return acc;
+    });
+  }, [rolesData]);
+
+  console.log("rolesMaprolesMap", rolesMap);
 
   if (isLoading) {
     return (
@@ -189,11 +214,12 @@ const Users = () => {
                 _hover={{
                   backgroundColor: "gray.50",
                 }}>
-                <CTableTd>{user?.full_name}</CTableTd>
+                <CTableTd>{user?.first_name}</CTableTd>
+                <CTableTd>{user?.last_name}</CTableTd>
                 <CTableTd>{user?.email}</CTableTd>
                 <CTableTd>{user?.phone}</CTableTd>
-                <CTableTd>{user?.role_id_data?.name}</CTableTd>
-                <CTableTd>{user?.domiciles}</CTableTd>
+                <CTableTd>{rolesMap[user?.role_id]}</CTableTd>
+
                 <CTableTd>
                   <Badge
                     colorScheme={getStatusColor(user?.status?.[0])}
@@ -213,6 +239,7 @@ const Users = () => {
       </Box>
 
       <AddUserModal
+        rolesData={rolesData}
         isOpen={isAddUserModalOpen}
         onClose={() => setIsAddUserModalOpen(false)}
       />

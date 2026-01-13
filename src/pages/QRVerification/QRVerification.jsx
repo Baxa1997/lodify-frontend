@@ -126,14 +126,25 @@ const QRVerification = () => {
               setIsVerifying(false);
             }, 1000);
           } else {
-            toast({
-              title: "Verification Failed",
-              description: "You must verify your identity to continue",
-              status: "error",
-              duration: 3000,
-              isClosable: true,
-              position: "top-right",
-            });
+            if (Boolean(!is_verified)) {
+              toast({
+                title: "Verification Failed",
+                description: "You must verify your identity to continue",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+              });
+            } else if (Boolean(!name_detected)) {
+              toast({
+                title: "Verification Failed",
+                description: "Passport details are not matched",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+              });
+            }
             setIsVerifying(false);
           }
         })
