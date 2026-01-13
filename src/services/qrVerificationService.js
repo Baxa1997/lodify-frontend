@@ -1,14 +1,12 @@
 import httpRequest from "../utils/httpRequest";
 
 const qrVerificationService = {
-  getQRVerificationLink: (data) =>
-    httpRequest.post("v2/invoke_function/lodify-integrations", data),
+  getQRVerificationLink: (data) => {
+    return httpRequest.post("verify-identity", data);
+  },
 
-  checkForVerification: (data) => {
-    const dataParam = JSON.stringify(data);
-    return httpRequest.get(
-      `v2/items/sessions?data=${encodeURIComponent(dataParam)}`
-    );
+  checkForVerification: (params) => {
+    return httpRequest.get("verify-identity", {params});
   },
 };
 

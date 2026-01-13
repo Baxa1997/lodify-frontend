@@ -12,7 +12,7 @@ import {
   Spinner,
   Icon,
 } from "@chakra-ui/react";
-import {MdCheckCircle, MdQrCodeScanner} from "react-icons/md";
+import {MdCheckCircle, MdQrCodeScanner, MdLogout} from "react-icons/md";
 import {authActions} from "../../store/auth/auth.slice";
 import styles from "./QRVerification.module.scss";
 import {useQuery} from "@tanstack/react-query";
@@ -114,14 +114,39 @@ const QRVerification = () => {
     }
   };
 
+  const handleBackToLogin = () => {
+    // Clear Redux state
+    dispatch(authActions.logout());
+
+    // Clear local storage
+    localStorage.clear();
+
+    // Clear session storage
+    sessionStorage.clear();
+
+    // Show logout message
+    toast({
+      title: "Logged Out",
+      description: "You have been logged out successfully",
+      status: "info",
+      duration: 2000,
+      isClosable: true,
+      position: "top-right",
+    });
+
+    // Navigate to login
+    navigate("/login", {replace: true});
+  };
+
   return (
     <div className={styles.verificationContainer}>
       <Container maxW="container.md" centerContent>
         <Box className={styles.verificationCard}>
-          <VStack spacing={4} mb={8}>
+          <VStack spacing={4} mb={6}>
             <Box className={styles.iconWrapper}>
               <Icon as={MdQrCodeScanner} boxSize={12} color="#ef6820" />
             </Box>
+            <Text className={styles.title}>Mobile Verification Required</Text>
             <Text className={styles.subtitle}>
               Scan the QR code below with your mobile device to continue
             </Text>
@@ -161,7 +186,7 @@ const QRVerification = () => {
               leftIcon={<MdCheckCircle />}
               size="lg"
               w="100%"
-              h="56px"
+              h="44px"
               bg="#ef6820"
               color="white"
               fontSize="16px"
@@ -175,8 +200,34 @@ const QRVerification = () => {
               _active={{
                 transform: "translateY(0)",
               }}
+              _disabled={{
+                bg: "#9ca3af",
+                cursor: "not-allowed",
+              }}
               transition="all 0.3s ease">
               I Am Verified
+            </Button>
+
+            <Button
+              mt="16px"
+              className={styles.backButton}
+              onClick={handleBackToLogin}
+              leftIcon={<MdLogout />}
+              size="lg"
+              w="100%"
+              h="44px"
+              bg="#f3f4f6"
+              color="#374151"
+              border="2px solid #d1d5db"
+              fontSize="16px"
+              fontWeight="600"
+              borderRadius="12px"
+              _active={{
+                transform: "translateY(0)",
+                bg: "#d85a1a",
+              }}
+              transition="all 0.3s ease">
+              Back to Login
             </Button>
           </Box>
 

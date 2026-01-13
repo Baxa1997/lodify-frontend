@@ -53,7 +53,7 @@
 
 .verificationCard {
   border-radius: 24px;
-  padding: 48px;
+  padding: 24px;
   max-width: 600px;
   width: 100%;
   position: relative;
@@ -100,7 +100,7 @@
 }
 
 .title {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   color: #181d27;
   text-align: center;
@@ -108,7 +108,7 @@
   line-height: 1.2;
 
   @media (max-width: 768px) {
-    font-size: 26px;
+    font-size: 24px;
   }
 }
 
@@ -124,7 +124,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 40px 0;
+  margin: 32px 0;
 }
 
 .qrWrapper {
@@ -225,9 +225,9 @@
 }
 
 .actionSection {
-  width: 330px;
-  margin-top: 32px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 400px;
+  margin: 32px auto 0;
 }
 
 .verifyButton {
@@ -236,6 +236,24 @@
   &:disabled {
     background: #9ca3af !important;
     cursor: not-allowed !important;
+    opacity: 0.6 !important;
+  }
+}
+
+.backButton {
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  font-weight: 600 !important;
+
+  &:hover {
+    svg {
+      transform: translateX(-2px);
+      transition: transform 0.3s ease;
+    }
+  }
+
+  svg {
+    font-size: 20px;
   }
 }
 
