@@ -18,7 +18,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import HFTextField from "@components/HFTextField";
 import tripsService from "@services/tripsService";
 
-const DeclineDetentionModal = ({isOpen, onClose, trip}) => {
+const DeclineDetentionModal = ({isOpen, onClose, trip, tabType, isBroker}) => {
   const [declineLoading, setDeclineLoading] = useState(false);
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -40,7 +40,10 @@ const DeclineDetentionModal = ({isOpen, onClose, trip}) => {
     try {
       await tripsService.createItems("detention_notes", {
         data: {
-          status: ["Dispute"],
+          status:
+            tabType === "Dispute" && Boolean(!isBroker)
+              ? ["Request"]
+              : ["Resolution"],
           trip_detention_id: trip?.detention_guid,
           amount: parseFloat(data.amount),
           note: data.note,

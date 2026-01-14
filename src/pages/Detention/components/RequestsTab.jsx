@@ -223,7 +223,7 @@ function RequestsTab({tabType = "Request", isActive = true}) {
     : 0;
   const trips = tripsData?.response || [];
   const allSelected = trips.length > 0 && selectedTrips.size === trips.length;
-  console.log("tripstrips", trips);
+
   return (
     <Box mt={"26px"}>
       <DetentionFilter onSearch={handleSearch} searchValue={searchTerm} />

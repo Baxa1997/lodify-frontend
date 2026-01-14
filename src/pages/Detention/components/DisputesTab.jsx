@@ -15,6 +15,7 @@ import {
   Spinner,
   Collapse,
   Checkbox,
+  Button,
 } from "@chakra-ui/react";
 import {
   CTable,
@@ -30,6 +31,7 @@ import useDetentionProps from "./useDetentionProps";
 import {TripStatus, TripDriverVerification} from "./TableElements";
 import {formatDate} from "@utils/dateFormats";
 import {TripProgress} from "../../Trips/components/TabsElements";
+import DeclineDetentionModal from "./DeclineDetentionModal";
 
 function DisputesTab({tabType = "Dispute", isActive = true}) {
   const navigate = useNavigate();
@@ -49,6 +51,9 @@ function DisputesTab({tabType = "Dispute", isActive = true}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const [acceptLoading, setAcceptLoading] = useState(null);
+  const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
+  const [selectedTripForDecline, setSelectedTripForDecline] = useState(null);
 
   const getOrderedColumns = () => {
     return tableElementsRequests;
@@ -158,6 +163,50 @@ function DisputesTab({tabType = "Dispute", isActive = true}) {
     } else {
       setSelectedTrips(new Set());
     }
+  };
+
+  const handleAcceptDetention = async (trip) => {
+    setAcceptLoading(`accept-${trip.detention_guid}`);
+    try {
+      await tripsService.createItems("detention_notes", {
+        data: {
+          status: ["Resolution"],
+          trip_detention_id: trip?.detention_guid,
+        },
+      });
+
+      toast({
+        title: "Success",
+        description: "Detention request accepted successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+
+      queryClient.invalidateQueries(["DETENTION_REQUESTS"]);
+      setAcceptLoading(null);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to accept detention request",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } finally {
+      setAcceptLoading(null);
+    }
+  };
+
+  const handleDeclineClick = (trip, event) => {
+    event.stopPropagation();
+    setSelectedTripForDecline(trip);
+    setIsDeclineModalOpen(true);
   };
 
   const totalPages = tripsData?.total_count
@@ -412,6 +461,55 @@ function DisputesTab({tabType = "Dispute", isActive = true}) {
                           </Text>
                         </Flex>
                       </CTableTd>
+
+                      {!isBroker && (
+                        <CTableTd>
+                          <Flex gap="8px" alignItems="center">
+                            <Button
+                              isLoading={
+                                acceptLoading ===
+                                `accept-${trip.detention_guid}`
+                              }
+                              size="sm"
+                              h="32px"
+                              px="16px"
+                              fontSize="13px"
+                              fontWeight="600"
+                              bg="#10B981"
+                              color="white"
+                              borderRadius="6px"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAcceptDetention(trip);
+                              }}
+                              _hover={{bg: "#059669"}}
+                              _active={{bg: "#047857"}}>
+                              Accept
+                            </Button>
+                            <Button
+                              isLoading={
+                                acceptLoading ===
+                                `accept-${trip.detention_guid}`
+                              }
+                              size="sm"
+                              h="32px"
+                              px="16px"
+                              fontSize="13px"
+                              fontWeight="600"
+                              bg="#EF4444"
+                              color="white"
+                              borderRadius="6px"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeclineClick(trip, e);
+                              }}
+                              _hover={{bg: "#DC2626"}}
+                              _active={{bg: "#B91C1C"}}>
+                              Decline
+                            </Button>
+                          </Flex>
+                        </CTableTd>
+                      )}
                     </CTableRow>
 
                     <CTableRow>
@@ -439,6 +537,17 @@ function DisputesTab({tabType = "Dispute", isActive = true}) {
           </CTableBody>
         </CTable>
       </Box>
+
+      <DeclineDetentionModal
+        isBroker={isBroker}
+        tabType={tabType}
+        isOpen={isDeclineModalOpen}
+        onClose={() => {
+          setIsDeclineModalOpen(false);
+          setSelectedTripForDecline(null);
+        }}
+        trip={selectedTripForDecline}
+      />
     </Box>
   );
 }

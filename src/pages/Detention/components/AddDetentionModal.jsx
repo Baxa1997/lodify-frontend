@@ -63,7 +63,6 @@ const AddDetentionModal = ({isOpen, onClose}) => {
   });
 
   const onSubmit = async (data) => {
-    console.log({data});
     try {
       await tripsService.createDetentionRequest({
         data: {
