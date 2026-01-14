@@ -1,12 +1,9 @@
-import React, {useMemo, useState} from "react";
+import React, {useMemo} from "react";
 import {Box, Button, Flex, Text, Tooltip} from "@chakra-ui/react";
 import GoogleLiveComponent from "./GoogleLiveComponent";
 import ChatMessage from "./ChatMessage";
 
 function LiveMapComponent({tripData = {}, locationStatus = {}}) {
-  const [latitude, setLatitude] = useState(37.422);
-  const [longitude, setLongitude] = useState(-122.0862);
-
   const timelineEvents = useMemo(() => {
     const stopsWithStatus = tripData?.trips_logs?.filter((s) => s.status?.[0]);
     if (!stopsWithStatus?.length) return [];
@@ -70,7 +67,10 @@ function LiveMapComponent({tripData = {}, locationStatus = {}}) {
         height="410px"
         borderRadius="12px"
         border="1px solid #E2E8F0">
-        <GoogleLiveComponent locationStatus={locationStatus} />
+        <GoogleLiveComponent
+          tripData={tripData}
+          locationStatus={locationStatus}
+        />
       </Box>
 
       <Flex justifyContent="space-between" alignItems="center" mt="12px">

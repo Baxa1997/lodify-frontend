@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Box, Flex, Text, Badge, Icon, Button } from "@chakra-ui/react";
 import GoogleMapReact from "google-map-react";
 import { FaTachometerAlt, FaCar, FaCrosshairs } from "react-icons/fa";
@@ -85,6 +85,7 @@ const LocationTab = () => {
   const asset = location.state?.asset;
   const [showInfoPopup, setShowInfoPopup] = useState(true);
   const mapRef = useRef(null);
+  const polylineRef = useRef(null);
 
   const { data: mapData, isLoading: mapLoading } = useQuery({
     queryKey: ["MAP_INVOKE", location.state?.asset?.guid],
@@ -108,9 +109,67 @@ const LocationTab = () => {
   const latitude = parseCoordinate(mapData?.[0]?.lat);
   const longitude = parseCoordinate(mapData?.[0]?.lon);
 
-  const onMapLoad = useCallback((map) => {
+  const onMapLoad = useCallback((map, maps) => {
     mapRef.current = map;
+    
+    // Draw polylines if response coordinates exist
+    if (mapData?.response && Array.isArray(mapData.response)) {
+      drawPolylines(map, maps, mapData.response);
+    }
+  }, [mapData]);
+
+  // Function to draw polylines from coordinate arrays
+  const drawPolylines = useCallback((map, maps, coordinateArrays) => {
+    // Clear existing polyline if any
+    if (polylineRef.current) {
+      polylineRef.current.setMap(null);
+    }
+
+    // Flatten and convert coordinates
+    const allCoordinates = [];
+    
+    coordinateArrays.forEach((coordArray) => {
+      if (Array.isArray(coordArray)) {
+        coordArray.forEach((coord) => {
+          if (Array.isArray(coord) && coord.length === 2) {
+            // Coordinates are in format [lng, lat], convert to {lat, lng}
+            allCoordinates.push({
+              lat: coord[1],
+              lng: coord[0]
+            });
+          }
+        });
+      }
+    });
+
+    if (allCoordinates.length > 0) {
+      // Create polyline
+      const polyline = new maps.Polyline({
+        path: allCoordinates,
+        geodesic: true,
+        strokeColor: "#007BFF",
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
+      });
+
+      polyline.setMap(map);
+      polylineRef.current = polyline;
+
+      // Fit map bounds to show all coordinates
+      const bounds = new maps.LatLngBounds();
+      allCoordinates.forEach((coord) => {
+        bounds.extend(new maps.LatLng(coord.lat, coord.lng));
+      });
+      map.fitBounds(bounds);
+    }
   }, []);
+
+  // Redraw polylines when mapData changes
+  useEffect(() => {
+    if (mapRef.current && mapData?.response) {
+      drawPolylines(mapRef.current, window.google.maps, mapData.response);
+    }
+  }, [mapData, drawPolylines]);
 
   const focusOnAssetLocation = useCallback(() => {
     if (
@@ -167,7 +226,8 @@ const LocationTab = () => {
           lng: longitude,
         }}
         defaultZoom={11}
-        onGoogleApiLoaded={({ map }) => onMapLoad(map)}
+        yesIWantToUseGoogleMapApiInternals
+        onGoogleApiLoaded={({ map, maps }) => onMapLoad(map, maps)}
         options={{
           mapTypeControl: true,
           streetViewControl: true,

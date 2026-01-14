@@ -4,7 +4,7 @@ import tripsService from "@services/tripsService";
 import {useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {useQuery} from "@tanstack/react-query";
-import {Box, Spinner, Text, Flex, Button} from "@chakra-ui/react";
+import {Box, Spinner, Text, Flex} from "@chakra-ui/react";
 import ReactDOMServer from "react-dom/server";
 
 const StopPoint = ({index}) => {
@@ -32,7 +32,6 @@ const StopPoint = ({index}) => {
   );
 };
 
-// Location Info Popup Component
 const LocationInfoPopup = ({
   isOpen,
   onClose,
@@ -83,13 +82,6 @@ const LocationInfoPopup = ({
       </Box>
 
       <Box p="16px">
-        {/* <Flex align="center" gap="8px" mb="12px">
-          <img src="/img/mapTruck.svg" alt="location" width="20" height="20" />
-          <Text fontWeight="600" color="#414651" fontSize="14px">
-            Coordinates: {locationData}
-          </Text>
-        </Flex> */}
-
         {coordinates && (
           <>
             <Flex align="center" gap="8px" mb="12px">
@@ -122,49 +114,12 @@ const LocationInfoPopup = ({
   );
 };
 
-const TruckMarker = ({lat, lng, label}) => {
-  return (
-    <Box
-      position="absolute"
-      transform="translate(-50%, -100%)"
-      textAlign="center">
-      {label && (
-        <Box
-          mb="4px"
-          bg="#fff"
-          minW="70px"
-          h="30px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius="6px"
-          border="1px solid #E2E8F0"
-          px="6px"
-          fontSize="12px"
-          fontWeight="600"
-          boxShadow="0 2px 4px rgba(0,0,0,0.2)">
-          {label}
-        </Box>
-      )}
-      <img
-        src="/img/TruckMarker.svg"
-        alt="truck marker"
-        style={{
-          width: "40px",
-          height: "auto",
-          filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
-        }}
-      />
-    </Box>
-  );
-};
-
 function GoogleLiveComponent({
+  tripData = {},
   latitude,
   longitude,
   showMarkers = true,
   showAllStops = false,
-  lineColor = "#007BFF",
   startIcon = "/img/map-point.svg",
   endIcon = "/img/map-point-red.svg",
   stopIcon = "/img/point.svg",
@@ -297,7 +252,7 @@ function GoogleLiveComponent({
   );
 
   const {data: mapData = {}, isLoading} = useQuery({
-    queryKey: ["TRIP_BY_MAP", id],
+    queryKey: ["TRIP_BY_MAP", id, tripData],
     queryFn: () =>
       tripsService.createTrip({
         data: {
@@ -306,10 +261,12 @@ function GoogleLiveComponent({
           method: "location",
           object_data: {
             trip_id: id,
+            trip_pickups: tripData?.pickups,
           },
           table: "trip",
         },
       }),
+    enabled: !!tripData?.pickups?.length,
     select: (data) => data?.data || {},
   });
 
@@ -318,8 +275,8 @@ function GoogleLiveComponent({
       return {lat: latitude, lng: longitude};
     }
 
-    if (mapData?.geometry?.coordinates?.length > 0) {
-      const allCoords = mapData.geometry.coordinates.flat();
+    if (mapData?.response?.[0]?.length > 0) {
+      const allCoords = mapData?.response?.flat();
       const totalLat = allCoords.reduce((sum, coord) => sum + coord[1], 0);
       const totalLng = allCoords.reduce((sum, coord) => sum + coord[0], 0);
 
@@ -332,62 +289,21 @@ function GoogleLiveComponent({
     return {lat: 40.7128, lng: -74.006};
   }, [latitude, longitude, mapData]);
 
-  const getMarkerType = ({lineIndex, maps, stops, stopIndex}) => {
-    const stopLength = stops.length;
-
-    const svgString = ReactDOMServer.renderToStaticMarkup(
-      <StopPoint index={stopIndex} />
-    );
-    const svgUrl =
-      "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svgString);
-
-    const markerTypes = {
-      start: {
-        title: `START - Line ${lineIndex + 1}`,
-        icon: {
-          url: startIcon,
-          scaledSize: new maps.Size(32, 32),
-          anchor: new maps.Point(16, 16),
-        },
-      },
-      stop: {
-        title: `STOP - Line ${lineIndex + 1}`,
-        icon: {
-          url: svgUrl,
-          scaledSize: new maps.Size(24, 24),
-          anchor: new maps.Point(16, 16),
-        },
-      },
-      finish: {
-        title: `FINISH - Line ${lineIndex + 1}`,
-        icon: {
-          url: endIcon,
-          scaledSize: new maps.Size(32, 32),
-          anchor: new maps.Point(16, 16),
-        },
-      },
-    };
-
-    if (stopIndex === 0) return markerTypes.start;
-    if (stopIndex === stopLength - 1) return markerTypes.finish;
-    return markerTypes.stop;
-  };
-
   const handleApiLoaded = ({map, maps}) => {
-    if (!mapData?.geometry?.coordinates?.length) return;
+    if (!mapData?.response?.length) return;
 
     if (map.markers) {
       map.markers.forEach((marker) => marker.setMap(null));
     }
     map.markers = [];
 
-    const existingPolylines = map
-      .getDiv()
-      .querySelectorAll(".coordinate-polyline");
-    existingPolylines.forEach((polyline) => polyline.remove());
+    if (map.polylines) {
+      map.polylines.forEach((polyline) => polyline.setMap(null));
+    }
+    map.polylines = [];
 
-    const coordinates = mapData.geometry.coordinates;
-    const stops = mapData.stops;
+    const coordinates = mapData.response;
+    const stops = tripData?.pickups || [];
     const allCoords = [];
 
     coordinates.forEach((line, lineIndex) => {
@@ -398,51 +314,103 @@ function GoogleLiveComponent({
         return {lat, lng};
       });
 
+      const segmentColor = "#007BFF";
       const polyline = new maps.Polyline({
         path,
         geodesic: true,
-        strokeColor: lineColor,
+        strokeColor: segmentColor,
         strokeOpacity: 0.8,
-        strokeWeight: 3,
-        className: "coordinate-polyline",
+        strokeWeight: 4,
       });
       polyline.setMap(map);
+      map.polylines.push(polyline);
 
-      if (showMarkers) {
-        stops.forEach((stop, stopIndex) => {
-          const latLong = stop?.location?.split(",");
-
-          const lat = Number(latLong[1]);
-          const lng = Number(latLong[0]);
-
-          const marketType = getMarkerType({lineIndex, maps, stopIndex, stops});
-
-          const newMarker = new maps.Marker({
-            position: {lat, lng},
-            map: map,
-            title: marketType.title,
-            icon: {...marketType.icon},
-          });
-
-          map.markers.push(newMarker);
+      if (showMarkers && line.length > 0) {
+        const startCoord = line[0];
+        const startMarker = new maps.Marker({
+          position: {lat: startCoord[1], lng: startCoord[0]},
+          map: map,
+          title: `Start - Segment ${lineIndex + 1}`,
+          label: {
+            text: `${lineIndex + 1}`,
+            color: "white",
+            fontSize: "14px",
+            fontWeight: "bold",
+          },
+          icon: {
+            url: startIcon,
+            scaledSize: new maps.Size(36, 36),
+            anchor: new maps.Point(18, 18),
+          },
         });
+        map.markers.push(startMarker);
+
+        const endCoord = line[line.length - 1];
+        const endMarker = new maps.Marker({
+          position: {lat: endCoord[1], lng: endCoord[0]},
+          map: map,
+          title: `End - Segment ${lineIndex + 1}`,
+          label: {
+            text: `${lineIndex + 1}`,
+            color: "white",
+            fontSize: "14px",
+            fontWeight: "bold",
+          },
+          icon: {
+            url: endIcon,
+            scaledSize: new maps.Size(36, 36),
+            anchor: new maps.Point(18, 18),
+          },
+        });
+        map.markers.push(endMarker);
 
         if (showAllStops && line.length > 2) {
-          line.forEach((coord, index) => {
-            if (index === 0 || index === line.length - 1) return;
+          line.forEach((coord, coordIndex) => {
+            if (coordIndex === 0 || coordIndex === line.length - 1) return;
+
+            const svgString = ReactDOMServer.renderToStaticMarkup(
+              <StopPoint index={coordIndex} />
+            );
+            const svgUrl =
+              "data:image/svg+xml;charset=UTF-8," +
+              encodeURIComponent(svgString);
 
             const stopMarker = new maps.Marker({
               position: {lat: coord[1], lng: coord[0]},
               map: map,
-              title: `STOP ${index} - Line ${lineIndex + 1}`,
+              title: `Stop ${coordIndex} - Segment ${lineIndex + 1}`,
               icon: {
-                url: stopIcon,
+                url: svgUrl,
                 scaledSize: new maps.Size(24, 24),
                 anchor: new maps.Point(12, 12),
               },
             });
             map.markers.push(stopMarker);
           });
+        }
+      }
+
+      if (showMarkers && stops[lineIndex]) {
+        const stop = stops[lineIndex];
+        const latLong = stop?.location?.split(",");
+
+        if (latLong && latLong.length === 2) {
+          const lat = Number(latLong[1]);
+          const lng = Number(latLong[0]);
+
+          if (!isNaN(lat) && !isNaN(lng)) {
+            const addressMarker = new maps.Marker({
+              position: {lat, lng},
+              map: map,
+              title: stop?.address || `Address ${lineIndex + 1}`,
+              icon: {
+                url: stopIcon,
+                scaledSize: new maps.Size(32, 32),
+                anchor: new maps.Point(16, 16),
+              },
+            });
+            map.markers.push(addressMarker);
+          }
         }
       }
     });
@@ -453,6 +421,9 @@ function GoogleLiveComponent({
         bounds.extend(new maps.LatLng(coord[1], coord[0]));
       });
       map.fitBounds(bounds);
+
+      const padding = 50;
+      map.fitBounds(bounds, padding);
     }
   };
 

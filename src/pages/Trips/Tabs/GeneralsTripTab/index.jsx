@@ -33,7 +33,7 @@ function GeneralTripsTab({isLoading = false, locationStatus = {}}) {
     enabled: true,
     select: (res) => res?.data || {},
   });
-  console.log("tripDetailstripDetails", tripDetails);
+
   return (
     <Box>
       <Button

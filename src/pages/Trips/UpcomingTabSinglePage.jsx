@@ -1,4 +1,4 @@
-import {Box, Text, Flex} from "@chakra-ui/react";
+import {Box, Text} from "@chakra-ui/react";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import styles from "../../styles/tabs.module.scss";
 import HeadBreadCrumb from "@components/HeadBreadCrumb";
@@ -9,7 +9,6 @@ import {useQuery} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {useState} from "react";
-import {AiOutlineExclamationCircle} from "react-icons/ai";
 
 function UpcomingTabSinglePage() {
   const {id} = useParams();
@@ -34,6 +33,8 @@ function UpcomingTabSinglePage() {
     staleTime: 0,
     select: (data) => data?.data || {},
   });
+
+  console.log("tripDatatripData", tripData);
 
   return (
     <Box>
