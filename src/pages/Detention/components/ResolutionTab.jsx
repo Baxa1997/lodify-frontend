@@ -27,7 +27,7 @@ import CTableRow from "@components/tableElements/CTableRow";
 import {EmptyState} from "@components/tableElements/EmptyState";
 import {FiCalendar} from "react-icons/fi";
 import useDetentionProps from "./useDetentionProps";
-import {TripStatus} from "./TableElements";
+import {TripStatus, TripDriverVerification} from "./TableElements";
 import {formatDate} from "@utils/dateFormats";
 import {TripProgress} from "../../Trips/components/TabsElements";
 
@@ -358,38 +358,7 @@ function ResolutionTab({tabType = "Resolution", isActive = true}) {
                               {formatDate(trip?.stop?.[0]?.arrive_by ?? "")}
                             </Text>
                           </Box>
-                          <Flex alignItems="center" gap="8px">
-                            <Box
-                              w="32px"
-                              h="32px"
-                              borderRadius="50%"
-                              bg="#E8F4FD"
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center">
-                              <img
-                                src="/img/mapTruck.svg"
-                                alt="truck"
-                                width="16"
-                                height="16"
-                              />
-                            </Box>
-                            <Box
-                              w="32px"
-                              h="32px"
-                              borderRadius="50%"
-                              bg="#E8F4FD"
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center">
-                              <img
-                                src="/img/mapTruck.svg"
-                                alt="trailer"
-                                width="16"
-                                height="16"
-                              />
-                            </Box>
-                          </Flex>
+                          <TripDriverVerification trip={trip} />
                         </Flex>
                       </CTableTd>
 
