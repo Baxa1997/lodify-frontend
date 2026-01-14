@@ -4,7 +4,8 @@ import SearchInput from "@components/SearchInput";
 import Select from "@components/Select";
 
 const DetentionFilter = ({
-  onSearchChange = () => {},
+  onSearch = () => {},
+  searchValue = "",
   onActionButtonClick = () => {},
 }) => {
   return (
@@ -30,7 +31,8 @@ const DetentionFilter = ({
           <SearchInput
             placeholder="Search"
             width="100%"
-            onSearch={onSearchChange}
+            onSearch={onSearch}
+            value={searchValue}
             bg="#fff"
             focusBorderColor="#D5D7DA"
             borderColor="#D5D7DA"
