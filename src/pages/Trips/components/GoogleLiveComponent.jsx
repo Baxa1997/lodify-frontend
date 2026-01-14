@@ -327,12 +327,21 @@ function GoogleLiveComponent({
 
       if (showMarkers && line.length > 0) {
         const startCoord = line[0];
+
+        // Calculate the actual pickup index
+        // For first segment, start is pickup 1, end is pickup 2
+        // For second segment, start is pickup 2, end is pickup 3, etc.
+        const startPickupIndex = lineIndex + 1;
+        const endPickupIndex = lineIndex + 2;
+
         const startMarker = new maps.Marker({
           position: {lat: startCoord[1], lng: startCoord[0]},
           map: map,
-          title: `Start - Segment ${lineIndex + 1}`,
+          title: `Pickup ${startPickupIndex}${
+            stops[lineIndex]?.address ? ` - ${stops[lineIndex]?.address}` : ""
+          }`,
           label: {
-            text: `${lineIndex + 1}`,
+            text: `${startPickupIndex}`,
             color: "white",
             fontSize: "14px",
             fontWeight: "bold",
@@ -349,9 +358,13 @@ function GoogleLiveComponent({
         const endMarker = new maps.Marker({
           position: {lat: endCoord[1], lng: endCoord[0]},
           map: map,
-          title: `End - Segment ${lineIndex + 1}`,
+          title: `Pickup ${endPickupIndex}${
+            stops[lineIndex + 1]?.address
+              ? ` - ${stops[lineIndex + 1]?.address}`
+              : ""
+          }`,
           label: {
-            text: `${lineIndex + 1}`,
+            text: `${endPickupIndex}`,
             color: "white",
             fontSize: "14px",
             fontWeight: "bold",
