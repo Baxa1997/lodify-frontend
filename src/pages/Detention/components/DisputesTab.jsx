@@ -398,17 +398,17 @@ function DisputesTab({tabType = "Dispute", isActive = true}) {
 
                       <CTableTd>
                         <Text color="#181D27">
-                          {trip?.total_waited_time || "N/A"}
+                          {trip?.total_wait_time || "0"} min
                         </Text>
                       </CTableTd>
 
                       <CTableTd>
                         <Flex flexDirection="column">
                           <Text fontWeight="600" color="#181D27">
-                            ${trip?.requested_rate || 0}
+                            ${trip?.detention_requested_rate || 0}
                           </Text>
                           <Text fontSize="12px" color="#535862">
-                            ${trip?.rate_per_mile || 0}/mi
+                            ${trip?.rate_per_mile?.toFixed(2) || 0}/mi
                           </Text>
                         </Flex>
                       </CTableTd>
