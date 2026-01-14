@@ -18,6 +18,7 @@ import CTableRow from "@components/tableElements/CTableRow";
 import {getLoadEligibilityColor} from "../../components/mockElements";
 import AddDriverModal from "../../components/AddDriverModal";
 import AddDriverCode from "../../components/AddDriverCode";
+import FileViewer from "@components/FileViewer";
 
 export const DriversTab = () => {
   const navigate = useNavigate();
@@ -32,6 +33,8 @@ export const DriversTab = () => {
   const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
   const [isAddDriverCodeModalOpen, setIsAddDriverCodeModalOpen] =
     useState(false);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  const [selectedDriverImage, setSelectedDriverImage] = useState(null);
   const offset = (currentPage - 1) * pageSize;
 
   const {data: driversData, isLoading} = useQuery({
@@ -231,7 +234,23 @@ export const DriversTab = () => {
                 </CTableTd>
 
                 <CTableTd>
-                  <Flex w="26px" h="26px" borderRadius="4px" overflow="hidden">
+                  <Flex
+                    w="26px"
+                    h="26px"
+                    borderRadius="4px"
+                    overflow="hidden"
+                    cursor={driver.image ? "pointer" : "default"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (driver.image) {
+                        setSelectedDriverImage(driver.image);
+                        setIsImageViewerOpen(true);
+                      }
+                    }}
+                    _hover={{
+                      opacity: driver.image ? 0.8 : 1,
+                      transition: "opacity 0.2s",
+                    }}>
                     <Image
                       src={driver.image || "N/A"}
                       alt="driver image"
@@ -254,6 +273,16 @@ export const DriversTab = () => {
       <AddDriverModal
         isOpen={isAddDriverModalOpen}
         onClose={() => setIsAddDriverModalOpen(false)}
+      />
+
+      <FileViewer
+        isOpen={isImageViewerOpen}
+        onClose={() => {
+          setIsImageViewerOpen(false);
+          setSelectedDriverImage(null);
+        }}
+        startIndex={0}
+        images={selectedDriverImage ? [selectedDriverImage] : []}
       />
     </Box>
   );

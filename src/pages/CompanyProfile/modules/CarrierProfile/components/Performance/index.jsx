@@ -7,14 +7,13 @@ import {
   InfoAccordionTitle,
 } from "../../../../components/InfoAccordion";
 import Chart from "react-google-charts";
-import {MdKeyboardArrowRight} from "react-icons/md";
 import DetailedMetricCard from "./DetailMetricCard";
 
 export const Performance = ({performanceData}) => {
   const summaryData = {
     overall: {
       score: `${performanceData?.overall || 0}%`,
-      grade: "A",
+      grade: performanceData?.grade,
       gradeColor: "#10B981",
     },
     onTime: {
@@ -33,7 +32,9 @@ export const Performance = ({performanceData}) => {
       period: "1 week",
     },
     disruptionFree: {
-      percentage: `${performanceData?.disruption_free || 0}%`,
+      percentage: `${
+        performanceData?.disruption_free?.disruption_percentage || 0
+      }%`,
       change: "0.0%",
       period: "1 week",
     },
@@ -49,18 +50,11 @@ export const Performance = ({performanceData}) => {
       details: [
         {
           label: "On time to pickup",
-          value: `${performanceData?.on_time_data?.on_time_to_pickup || 0}%`,
+          value: performanceData?.on_time_data?.on_time_pickup || 0,
         },
         {
           label: "On time to Delivery",
-          value: `${performanceData?.on_time_data?.on_time_delivery || 0}%`,
-        },
-
-        {
-          label: "On time to Delivery and Pickup",
-          value: `${
-            performanceData?.on_time_data?.on_time_deliver_and_pickup || 0
-          }%`,
+          value: performanceData?.on_time_data?.on_time_delivery || 0,
         },
       ],
     },
@@ -72,11 +66,11 @@ export const Performance = ({performanceData}) => {
         "Measures the percentage of loads and blocks accepted without rejecti...",
       details: [
         {
-          label: "Accepted trips",
+          label: "Accepted loads",
           value: performanceData?.acceptance_data?.accepted_trips || 0,
         },
         {
-          label: "Rejected trips",
+          label: "Rejected loads",
           value: performanceData?.acceptance_data?.rejected_trips || 0,
         },
       ],
@@ -89,14 +83,12 @@ export const Performance = ({performanceData}) => {
         "Shows how consistently the Lodify app is used during trips.",
       details: [
         {
-          label: "On time to origin",
-          value: "100.0%",
-          contribution: "37.5% of score",
+          label: "Location available",
+          value: performanceData?.location_availability?.available || 0,
         },
         {
-          label: "Location availability",
-          value: "99.8%",
-          contribution: "62.5% of score",
+          label: "Location unavailable",
+          value: performanceData?.location_availability?.not_available || 0,
         },
       ],
     },
@@ -107,8 +99,18 @@ export const Performance = ({performanceData}) => {
       description:
         "Reflects the share of loads completed without service issues.",
       details: [
-        {label: "Loads with disruption across", value: "0"},
-        {label: "Completed loads", value: "119"},
+        {
+          label: "Loads",
+          value: performanceData?.disruption_free?.completed_orders_count || 0,
+        },
+        {
+          label: "Stop time disruption",
+          value: performanceData?.disruption_free?.stop_time_lt_100_count || 0,
+        },
+        {
+          label: "Team change disruption",
+          value: performanceData?.disruption_free?.team_change_100_count || 0,
+        },
       ],
     },
   };

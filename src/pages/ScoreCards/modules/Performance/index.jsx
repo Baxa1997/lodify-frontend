@@ -23,7 +23,6 @@ const Performance = ({
   isBrokerSafetyLoading = false,
   isDriversLoading = false,
 }) => {
-  console.log("performanceDataperformanceData", performanceData);
   const detailedData = {
     onTime: {
       percentage: performanceData?.on_time || 0,

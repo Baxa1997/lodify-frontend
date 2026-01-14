@@ -5,9 +5,19 @@ import LoadingState from "@components/LoadingState";
 import EmptyState from "@components/EmptyState";
 import {RiBarChartBoxLine} from "react-icons/ri";
 
-const CustomTooltip = ({id, value, color, data, isAcceptance, isDisruptionFree}) => {
+const CustomTooltip = ({
+  id,
+  value,
+  color,
+  data,
+  isAcceptance,
+  isDisruptionFree,
+  isOnTime,
+  isAppUsage,
+}) => {
   return (
     <Box
+      minW="200px"
       bg="white"
       p="8px 12px"
       borderRadius="6px"
@@ -19,8 +29,8 @@ const CustomTooltip = ({id, value, color, data, isAcceptance, isDisruptionFree})
       <Flex alignItems="center" gap="6px">
         <Box w="8px" h="8px" borderRadius="50%" bg={color} />
         <Text fontSize="12px" color="#6B7280">
-          {isAcceptance || isDisruptionFree
-            ? `${Math.round(value)} units`
+          {isAcceptance || isDisruptionFree || isOnTime || isAppUsage
+            ? `${Math.round(value)}`
             : `${Math.round(value)}%`}
         </Text>
       </Flex>
@@ -33,7 +43,9 @@ const DetailedMetricCard = ({
   data = {},
   isLoading = false,
 }) => {
-  const hasData = data?.percentage || (data?.details && data.details.length > 0);
+  const hasData =
+    data?.percentage || (data?.details && data.details.length > 0);
+
   return (
     <Flex
       bg="white"
@@ -48,7 +60,7 @@ const DetailedMetricCard = ({
           color="#181D27"
           mb="4px"
           p="12px 20px">
-          {title}
+          {title || ""}
         </Text>
 
         {isLoading ? (
@@ -56,15 +68,15 @@ const DetailedMetricCard = ({
         ) : hasData ? (
           <>
             <Box px="20px">
-              <Text fontSize="14px" color="#181D27" fontWeight="600">
-                {data?.subtitle}
+              <Text fontSize="16px" color="#181D27" fontWeight="600">
+                {data?.subtitle || ""}
               </Text>
-              <Text fontSize="12px" color="#6B7280" lineHeight="1.5">
+              <Text fontSize="14px" color="#6B7280" lineHeight="1.5">
                 {data?.description}
               </Text>
             </Box>
 
-            <Flex p="10px" pb="0" gap="24px">
+            <Flex p="20px" pb="0" gap="24px">
               <Box position="relative" width="55%" flexShrink={0}>
                 <BarChart data={data} layout="vertical" title={title} />
               </Box>
@@ -78,78 +90,69 @@ const DetailedMetricCard = ({
                 {(Array.isArray(data?.details) ? data.details : [data?.details])
                   .filter(Boolean)
                   .map((detail, index) => {
-                const getItemColor = (label, index) => {
-                  if (label?.toLowerCase().includes("accepted")) {
-                    return "#10B981";
-                  }
-                  if (label?.toLowerCase().includes("rejected")) {
-                    return "#EF4444";
-                  }
+                    const getItemColor = (label, index) => {
+                      if (label?.toLowerCase().includes("accepted")) {
+                        return "#10B981";
+                      }
+                      if (label?.toLowerCase().includes("rejected")) {
+                        return "#EF4444";
+                      }
 
-                  const colors = [
-                    data?.color || "#1570EF",
-                    "#9333EA",
-                    "#EC4899",
-                    "#1E40AF",
-                    "#10B981",
-                    "#F59E0B",
-                  ];
-                  return colors[index % colors.length];
-                };
-                const itemColor = getItemColor(detail?.label, index);
+                      const colors = [
+                        data?.color || "#1570EF",
+                        "#9333EA",
+                        "#EC4899",
+                        "#1E40AF",
+                        "#10B981",
+                        "#F59E0B",
+                      ];
+                      return colors[index % colors.length];
+                    };
+                    const itemColor = getItemColor(detail?.label, index);
 
-                let displayValue = detail?.value;
-                if (title === "Acceptance" || title === "Disruption Free") {
-                  displayValue = parseFloat(detail?.value) || 0;
-                }
+                    let displayValue = detail?.value;
+                    if (title === "Acceptance" || title === "Disruption Free") {
+                      displayValue = parseFloat(detail?.value) || 0;
+                    }
 
-                return (
-                  <Flex key={index} alignItems="center" gap="12px">
-                    <Box
-                      w="12px"
-                      h="12px"
-                      borderRadius="50%"
-                      bg={itemColor}
-                      flexShrink={0}
-                    />
-                    <Box flex="1">
-                      <Text
-                        fontSize="12px"
-                        fontWeight="600"
-                        color="#181D27"
-                        mb="4px">
-                        {displayValue}
-                        {detail?.contribution && (
+                    return (
+                      <Flex key={index} alignItems="center" gap="12px">
+                        <Box
+                          w="12px"
+                          h="12px"
+                          borderRadius="50%"
+                          bg={itemColor}
+                          flexShrink={0}
+                        />
+                        <Box flex="1">
                           <Text
-                            as="span"
-                            fontSize="12px"
-                            color="#6B7280"
-                            fontWeight="400"
-                            ml="4px">
-                            ({detail.contribution})
+                            fontSize="14px"
+                            fontWeight="600"
+                            color="#181D27"
+                            mb="4px">
+                            {displayValue}
+                            {detail?.contribution && (
+                              <Text
+                                as="span"
+                                fontSize="12px"
+                                color="#6B7280"
+                                fontWeight="400"
+                                ml="4px">
+                                ({detail.contribution})
+                              </Text>
+                            )}
                           </Text>
-                        )}
-                      </Text>
-                      <Text fontSize="11px" color="#6B7280" fontWeight="400">
-                        {detail?.label}
-                      </Text>
-                    </Box>
-                  </Flex>
+                          <Text
+                            fontSize="13px"
+                            color="#6B7280"
+                            fontWeight="400">
+                            {detail?.label}
+                          </Text>
+                        </Box>
+                      </Flex>
                     );
                   })}
               </VStack>
-
-              {/* <Box
-                width="40px"
-                w="72px"
-                h="24px"
-                flexShrink={0}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                mt="8px">
-                <img src="/img/chartView.svg" alt="" />
-              </Box> */}
             </Flex>
 
             <Flex
@@ -192,12 +195,13 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
   const hasDetails = detailsArray.length > 0;
   const isAcceptance = title === "Acceptance";
   const isDisruptionFree = title === "Disruption Free";
-  const totalUnits = 300;
+  const isOnTime = title === "On Time";
+  const isAppUsage = title === "App Usage";
 
   const chartData = hasDetails
     ? detailsArray.map((detail, index) => {
         let value = 0;
-        if (isAcceptance || isDisruptionFree) {
+        if (isAcceptance || isDisruptionFree || isOnTime || isAppUsage) {
           value = parseFloat(detail?.value) || 0;
         } else {
           const valueStr = String(detail?.value || "0").replace(/%/g, "");
@@ -239,8 +243,8 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
   const chartKeys = hasDetails ? ["value"] : ["value"];
 
   const maxValue = hasDetails
-    ? isAcceptance || isDisruptionFree
-      ? totalUnits
+    ? isAcceptance || isDisruptionFree || isOnTime || isAppUsage
+      ? Math.max(...chartData.map((d) => d.value), 10)
       : Math.max(...chartData.map((d) => d.value), 100)
     : 100;
 
@@ -261,15 +265,17 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
           return color || "#1570EF";
         }}
         tooltip={(props) => (
-          <CustomTooltip 
-            {...props} 
-            isAcceptance={isAcceptance} 
-            isDisruptionFree={isDisruptionFree} 
+          <CustomTooltip
+            {...props}
+            isAcceptance={isAcceptance}
+            isDisruptionFree={isDisruptionFree}
+            isOnTime={isOnTime}
+            isAppUsage={isAppUsage}
           />
         )}
         label={(d) => {
           const value = d.value;
-          if (isAcceptance || isDisruptionFree) {
+          if (isAcceptance || isDisruptionFree || isOnTime || isAppUsage) {
             return Math.round(value);
           }
           return `${Math.round(value)}%`;
@@ -282,18 +288,11 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
           type: "linear",
           min: 0,
           max:
-            isAcceptance || isDisruptionFree
-              ? totalUnits
+            isAcceptance || isDisruptionFree || isOnTime || isAppUsage
+              ? Math.max(maxValue * 1.1, 10)
               : Math.max(maxValue * 1.1, 100),
         }}
         indexScale={{type: "band", round: true}}
-        colors={(bar) => {
-          if (hasDetails) {
-            const label = chartData[bar.index]?.label || "";
-            return getColorForLabel(label, bar.index);
-          }
-          return color || "#1570EF";
-        }}
         axisTop={null}
         axisRight={null}
         axisBottom={null}
@@ -305,12 +304,11 @@ const BarChart = ({data, layout = "vertical", title = ""}) => {
           legendPosition: "middle",
           legendOffset: -45,
           format: (value) =>
-            isAcceptance || isDisruptionFree
+            isAcceptance || isDisruptionFree || isOnTime || isAppUsage
               ? `${Math.round(value)}`
               : `${Math.round(value)}%`,
           tickValues: 5,
         }}
-        enableLabel={false}
         enableGridY={true}
         enableGridX={false}
         gridYValues={5}

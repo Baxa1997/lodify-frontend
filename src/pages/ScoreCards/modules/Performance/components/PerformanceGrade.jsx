@@ -88,13 +88,17 @@ export const PerformanceGrade = ({
       period: "1 week",
       tooltipLabel: "App usage percentage",
     },
-    // disruptionFree: {
-    //   label: "Disruption free",
-    //   value: "100.0%",
-    //   change: "0.0%",
-    //   period: "1 week",
-    //   tooltipLabel: "Disruption free percentage",
-    // },
+    disruptionFree: {
+      label: "Disruption free",
+      value:
+        performanceData?.disruption_free?.disruption_percentage + "%" ||
+        0 + "%",
+      change:
+        performanceData?.disruption_free?.disruption_percentage + "%" ||
+        0 + "%",
+      period: "1 week",
+      tooltipLabel: "Disruption free percentage",
+    },
   };
 
   const hasData =
@@ -159,7 +163,7 @@ export const PerformanceGrade = ({
           <PerformanceCard {...performanceDataValue.onTime} />
           <PerformanceCard {...performanceDataValue.acceptance} />
           <PerformanceCard {...performanceDataValue.appUsage} />
-          {/* <PerformanceCard {...performanceData.disruptionFree} /> */}
+          <PerformanceCard {...performanceDataValue.disruptionFree} />
         </Flex>
       ) : (
         <EmptyState
