@@ -43,6 +43,8 @@ const DeclineDetentionModal = ({isOpen, onClose, trip, tabType, isBroker}) => {
           status:
             tabType === "Dispute" && Boolean(!isBroker)
               ? ["Request"]
+              : tabType === "Request" && Boolean(isBroker)
+              ? ["Dispute"]
               : ["Resolution"],
           trip_detention_id: trip?.detention_guid,
           amount: parseFloat(data.amount),

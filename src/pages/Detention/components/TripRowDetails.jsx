@@ -809,7 +809,7 @@ const TripRowDetails = ({
 
                   {Boolean(!isBroker) && (
                     <CTableTd py="12px" px="20px">
-                      <Flex>
+                      <Flex flexDirection="column">
                         <Text>
                           {item?.drivers_1?.first_name ?? " "}{" "}
                           {item?.drivers_1?.last_name ?? " "}

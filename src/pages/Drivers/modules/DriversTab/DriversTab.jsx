@@ -1,4 +1,4 @@
-import {Badge, Box} from "@chakra-ui/react";
+import {Badge, Box, Flex, Image} from "@chakra-ui/react";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
@@ -167,10 +167,10 @@ export const DriversTab = () => {
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "cdlClass" ? sortConfig.direction : null
+                  sortConfig.key === "phone" ? sortConfig.direction : null
                 }
                 onSort={() => handleSort("cdlClass")}>
-                CDL Class
+                Phone
               </CTableTh>
               <CTableTh
                 sortable={true}
@@ -180,16 +180,9 @@ export const DriversTab = () => {
                     : null
                 }
                 onSort={() => handleSort("licenseNumber")}>
-                License #
+                Email Address #
               </CTableTh>
-              <CTableTh
-                sortable={true}
-                sortDirection={
-                  sortConfig.key === "region" ? sortConfig.direction : null
-                }
-                onSort={() => handleSort("region")}>
-                Region
-              </CTableTh>
+
               <CTableTh
                 sortable={true}
                 sortDirection={
@@ -201,20 +194,10 @@ export const DriversTab = () => {
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "loadEligibility"
-                    ? sortConfig.direction
-                    : null
+                  sortConfig.key === "image" ? sortConfig.direction : null
                 }
-                onSort={() => handleSort("loadEligibility")}>
-                Load eligibility
-              </CTableTh>
-              <CTableTh
-                sortable={true}
-                sortDirection={
-                  sortConfig.key === "medicalCard" ? sortConfig.direction : null
-                }
-                onSort={() => handleSort("medicalCard")}>
-                Medical card
+                onSort={() => handleSort("image")}>
+                Image
               </CTableTh>
             </Box>
           </CTableHead>
@@ -228,14 +211,12 @@ export const DriversTab = () => {
                   cursor: "pointer",
                 }}
                 onClick={() => handleRowClick(driver.id || driver.guid)}>
-                <CTableTd>{driver.full_name || driver.name || "N/A"}</CTableTd>
                 <CTableTd>
-                  {driver.cdl_class || driver.cdlClass || "N/A"}
+                  {`${driver.first_name || ""} ${driver.last_name || ""}` ||
+                    "N/A"}
                 </CTableTd>
-                <CTableTd>
-                  {driver.license_number || driver.licenseNumber || "N/A"}
-                </CTableTd>
-                <CTableTd>{driver.region || "N/A"}</CTableTd>
+                <CTableTd>{driver.phone || "N/A"}</CTableTd>
+                <CTableTd>{driver.email || "N/A"}</CTableTd>
                 <CTableTd>
                   <Badge
                     colorScheme={getStatusColor(driver.status)}
@@ -248,29 +229,17 @@ export const DriversTab = () => {
                     {driver.status || "N/A"}
                   </Badge>
                 </CTableTd>
+
                 <CTableTd>
-                  <Badge
-                    colorScheme={getLoadEligibilityColor(
-                      driver.load_eligibility || driver.loadEligibility
-                    )}
-                    variant="subtle"
-                    px={3}
-                    py={1}
-                    borderRadius="full"
-                    fontSize="12px"
-                    fontWeight="500">
-                    {Array.isArray(
-                      driver.load_eligibility || driver.loadEligibility
-                    )
-                      ? (driver.load_eligibility ||
-                          driver.loadEligibility)[0] || "N/A"
-                      : driver.load_eligibility ||
-                        driver.loadEligibility ||
-                        "N/A"}
-                  </Badge>
-                </CTableTd>
-                <CTableTd>
-                  {driver.medical_card || driver.medicalCard || "N/A"}
+                  <Flex w="26px" h="26px" borderRadius="4px" overflow="hidden">
+                    <Image
+                      src={driver.image || "N/A"}
+                      alt="driver image"
+                      w="100%"
+                      h="100%"
+                      objectFit="cover"
+                    />
+                  </Flex>
                 </CTableTd>
               </CTableRow>
             ))}
