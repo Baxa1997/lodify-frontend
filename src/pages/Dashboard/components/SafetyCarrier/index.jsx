@@ -58,6 +58,7 @@ const SafetyCarrier = ({
   safetyData = [],
   isLoading = false,
 }) => {
+  console.log("carrierInfoDatacarrierInfoDatacarrierInfoData", safetyData);
   const progressColor = (percentage) => {
     if (percentage > 50) return "#EF4444";
     if (percentage > 30) return "#F97316";
@@ -82,7 +83,7 @@ const SafetyCarrier = ({
   const safetyMetrics = useMemo(() => {
     if (safetyData?.length) {
       return safetyData.map((item) => {
-        const percentage = item.percentage ?? 0;
+        const percentage = item.count || item.percentage || 0;
         const hasValidData = percentage !== null && percentage !== undefined;
 
         return {
