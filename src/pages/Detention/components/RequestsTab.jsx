@@ -541,6 +541,7 @@ function RequestsTab({tabType = "Request", isActive = true}) {
       </Box>
 
       <DeclineDetentionModal
+        tabType={tabType}
         isOpen={isDeclineModalOpen}
         onClose={() => {
           setIsDeclineModalOpen(false);

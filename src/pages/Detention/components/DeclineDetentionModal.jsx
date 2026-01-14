@@ -17,8 +17,11 @@ import {useForm, Controller} from "react-hook-form";
 import {useQueryClient} from "@tanstack/react-query";
 import HFTextField from "@components/HFTextField";
 import tripsService from "@services/tripsService";
+import {useSelector} from "react-redux";
 
-const DeclineDetentionModal = ({isOpen, onClose, trip, tabType, isBroker}) => {
+const DeclineDetentionModal = ({isOpen, onClose, trip, tabType}) => {
+  const userData = useSelector((state) => state.auth.user_data);
+  const isBroker = Boolean(userData?.brokers_id);
   const [declineLoading, setDeclineLoading] = useState(false);
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -34,7 +37,7 @@ const DeclineDetentionModal = ({isOpen, onClose, trip, tabType, isBroker}) => {
       note: "",
     },
   });
-
+  console.log("tabTypetabType", tabType);
   const onSubmit = async (data) => {
     setDeclineLoading(true);
     try {
