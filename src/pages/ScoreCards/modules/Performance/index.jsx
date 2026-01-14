@@ -23,6 +23,7 @@ const Performance = ({
   isBrokerSafetyLoading = false,
   isDriversLoading = false,
 }) => {
+  console.log("performanceDataperformanceData", performanceData);
   const detailedData = {
     onTime: {
       percentage: performanceData?.on_time || 0,
@@ -66,14 +67,12 @@ const Performance = ({
         "Shows how consistently the Lodify app is used during trips.",
       details: [
         {
-          label: "On time to origin",
-          value: performanceData?.app_usage_data?.on_time_to_origin || 0,
-          contribution: "37.5% of score",
+          label: "Location available",
+          value: performanceData?.location_availability?.available || 0,
         },
         {
-          label: "Location availability",
-          value: performanceData?.app_usage_data?.location_availability || 0,
-          contribution: "62.5% of score",
+          label: "Location unavailable",
+          value: performanceData?.location_availability?.not_available || 0,
         },
       ],
     },
@@ -85,13 +84,16 @@ const Performance = ({
         "Reflects the share of loads completed without service issues.",
       details: [
         {
-          label: "Loads with disruption",
-          value:
-            performanceData?.disruption_free_data?.loads_with_disruption || 0,
+          label: "Loads",
+          value: performanceData?.disruption_free?.completed_orders_count || 0,
         },
         {
-          label: "Completed loads",
-          value: performanceData?.disruption_free_data?.completed_loads || 0,
+          label: "Stop time disruption",
+          value: performanceData?.disruption_free?.stop_time_lt_100_count || 0,
+        },
+        {
+          label: "Team change disruption",
+          value: performanceData?.disruption_free?.team_change_100_count || 0,
         },
       ],
     },
