@@ -46,6 +46,7 @@ const tripsService = {
   updatePickup: (data) => httpRequest.put("v2/items/pickup", data),
   createDetentionRequest: (data) =>
     httpRequest.post("v2/items/trip_detention", data),
+  createItems: (slug, data) => httpRequest.post(`v2/items/${slug}`, data),
 };
 
 export default tripsService;

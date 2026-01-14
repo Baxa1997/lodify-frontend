@@ -35,7 +35,7 @@ const Detention = () => {
         onSelect={(index) => {
           setActiveTabIndex(index);
           setTabType(
-            index === 0 ? "Request" : index === 1 ? "Resolution" : "Disputes"
+            index === 0 ? "Request" : index === 1 ? "Resolution" : "Dispute"
           );
         }}>
         <Flex alignItems="center" justifyContent="space-between" mb="0px">
@@ -68,7 +68,7 @@ const Detention = () => {
           <ResolutionTab tabType="Resolution" isActive={activeTabIndex === 1} />
         </TabPanel>
         <TabPanel>
-          <DisputesTab tabType="Disputes" isActive={activeTabIndex === 2} />
+          <DisputesTab tabType="Dispute" isActive={activeTabIndex === 2} />
         </TabPanel>
       </Tabs>
 

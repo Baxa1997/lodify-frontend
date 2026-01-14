@@ -45,6 +45,11 @@ const useDetentionProps = () => {
       key: "requested_rate",
       sortable: true,
     },
+    {
+      label: "Action",
+      key: "action",
+      sortable: false,
+    },
   ];
 
   const getLoadTypeColor = (loadType) => {

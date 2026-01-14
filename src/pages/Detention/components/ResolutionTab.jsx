@@ -86,7 +86,6 @@ function ResolutionTab({tabType = "Resolution", isActive = true}) {
           detention_status: tabType,
         },
         table: "detention",
-        trip_type: "in_transit",
       }),
     select: (data) => data?.data || [],
     enabled: !!envId,
@@ -277,7 +276,9 @@ function ResolutionTab({tabType = "Resolution", isActive = true}) {
                       <CTableTd onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           isChecked={isSelected}
-                          onChange={(e) => handleSelectTrip(trip.id || trip.guid, e)}
+                          onChange={(e) =>
+                            handleSelectTrip(trip.id || trip.guid, e)
+                          }
                           sx={{
                             "& .chakra-checkbox__control": {
                               borderColor: "#E0E0E0",
@@ -414,7 +415,9 @@ function ResolutionTab({tabType = "Resolution", isActive = true}) {
                     </CTableRow>
 
                     <CTableRow>
-                      <CTableTd colSpan={tableElementsRequests.length + 1} p={0}>
+                      <CTableTd
+                        colSpan={tableElementsRequests.length + 1}
+                        p={0}>
                         <Collapse
                           position="relative"
                           in={isExpanded}
