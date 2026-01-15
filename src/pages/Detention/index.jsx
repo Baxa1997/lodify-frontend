@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Box, Text, Button, Flex} from "@chakra-ui/react";
+import {Text, Button, Flex} from "@chakra-ui/react";
 import HeadBreadCrumb from "../../components/HeadBreadCrumb";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import styles from "../../styles/tabs.module.scss";

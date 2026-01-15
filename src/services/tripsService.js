@@ -47,6 +47,13 @@ const tripsService = {
   createDetentionRequest: (data) =>
     httpRequest.post("v2/items/trip_detention", data),
   createItems: (slug, data) => httpRequest.post(`v2/items/${slug}`, data),
+
+  getTripDetailsByTripId: (slug, data) => {
+    const dataParam = JSON.stringify(data);
+    return httpRequest.get(
+      `v2/items/${slug}?data=${encodeURIComponent(dataParam)}`
+    );
+  },
 };
 
 export default tripsService;

@@ -1,13 +1,5 @@
-import React, {useState, useEffect, useRef} from "react";
-import {
-  Box,
-  Text,
-  Flex,
-  Badge,
-  Button,
-  Tooltip,
-  VStack,
-} from "@chakra-ui/react";
+import React, {useEffect, useRef} from "react";
+import {Box, Text, Flex, Badge, Button} from "@chakra-ui/react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
 import {
@@ -19,50 +11,7 @@ import {
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
-import {parseISO, format} from "date-fns";
 import {useNavigate} from "react-router-dom";
-// import ReportDelay from "./ReportDelay/ReportDelay";
-
-const calculateExpiredTime = (apiTime) => {
-  try {
-    if (!apiTime) return 0;
-
-    let targetTime;
-
-    if (typeof apiTime === "string" && apiTime.includes("T")) {
-      targetTime = new Date(apiTime);
-    } else {
-      targetTime = new Date(Date.now() + apiTime * 1000);
-    }
-
-    const now = new Date();
-    const differenceMs = now.getTime() - targetTime.getTime();
-    const differenceSeconds = Math.floor(differenceMs / 1000);
-
-    return Math.max(0, differenceSeconds);
-  } catch (error) {
-    console.error("Error calculating expired time:", error);
-    return 0;
-  }
-};
-
-const formatExpiredTime = (seconds) => {
-  if (seconds === 0) return "0:00 minutes";
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-
-  if (hours > 0) {
-    return `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  } else {
-    return `${minutes.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")} minutes`;
-  }
-};
 
 const StickyButtons = ({
   trip,
@@ -330,71 +279,37 @@ const TripRowDetails = ({
 }) => {
   const navigateHook = useNavigate();
   const navigate = navigateProp || navigateHook;
-  const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const sidebarOpen = useSelector((state) => state.sidebar.sidebar);
   const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
-  const [isReportDelayOpen, setIsReportDelayOpen] = useState(false);
-  const [selectedPickup, setSelectedPickup] = useState(null);
   const tripRowDetailsRef = useRef(null);
 
   const {
-    data: detailedTripData = {},
+    data: detentionNotes = [],
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["TRIP_DETAILS", trip.guid, envId],
+    queryKey: ["TRIP_DETAILS", trip.detention_guid, isExpanded],
     queryFn: () => {
-      return tripsService.getTripById({
-        app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
-        environment_id: envId,
-        method: "single",
-        object_data: {
-          trip_id: trip.guid,
-        },
-        table: "trips_dashboard",
+      return tripsService.getTripDetailsByTripId("detention_notes", {
+        trip_detention_id: trip.detention_guid,
       });
     },
-    enabled: !!trip.guid && !!envId && isExpanded,
+    enabled: !!trip.detention_guid && isExpanded,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     staleTime: 0,
-    select: (res) => res?.data?.response?.[0] || {},
+    select: (res) => res?.data?.response || [],
   });
-
-  function formatScheduleDate(isoString) {
-    try {
-      const date = parseISO(isoString);
-      return `${format(date, "dd MMM, HH:mm")}`;
-    } catch (error) {
-      return "";
-    }
-  }
-
-  function formatDateWithTimezone(isoString) {
-    try {
-      if (!isoString) return "";
-      const date = parseISO(isoString);
-      return `${format(date, "dd MMM, HH:mm zzz")}`;
-    } catch (error) {
-      return "";
-    }
-  }
 
   function getLoadTypeColor(loadType) {
     switch (loadType) {
-      case "Dry":
-        return "#FF5B04";
-      case "Refrigerated":
-        return "#003B63";
-      case "Temperature Controlled":
-        return "#00707A";
-      case "Other":
-        return "#6B7280";
-      case "Preloaded":
-        return "#00707A";
-      case "Drop":
-        return "#6B7280";
+      case "Resolution":
+        return "#16A34A";
+      case "Request":
+        return "#d9ab06";
+      case "Dispute":
+        return "#DC2626";
       default:
         return "#6B7280";
     }
@@ -430,38 +345,23 @@ const TripRowDetails = ({
     );
   }
 
-  const tripData = detailedTripData?.data?.response || detailedTripData || trip;
+  const tripData = detentionNotes;
 
   const getTableHeads = (sectionType) => [
     {
       index: 0,
-      label: sectionType === "Pickup" ? "Pick Up" : "Delivery",
-      key: sectionType === "Pickup" ? "Pick Up" : "delivery",
+      label: "Amount",
+      key: "amount",
     },
     {
       index: 1,
-      label: "Equipment",
-      key: "equipment",
+      label: "Status",
+      key: "status",
     },
     {
       index: 2,
-      label: "Load Type",
-      key: "load_type",
-    },
-    {
-      index: 3,
-      label: sectionType === "Pickup" ? "Arrival" : "Arrival",
-      key: "schedule",
-    },
-    {
-      index: 4,
-      label: "ETA",
-      key: "eta",
-    },
-    {
-      index: 5,
-      label: "Driver 1",
-      key: "driver",
+      label: "Note",
+      key: "note",
     },
   ];
 
@@ -502,7 +402,7 @@ const TripRowDetails = ({
             background: "#a8a8a8",
           },
         }}>
-        {(tripData?.pickups || []).map((item, index) => (
+        {(detentionNotes || []).map((item, index) => (
           <Box key={item?.guid || index} mb={6}>
             <CTable
               zIndex={2}
@@ -538,290 +438,32 @@ const TripRowDetails = ({
               <CTableBody>
                 <CTableRow hover={false}>
                   <CTableTd py="12px" px="20px">
-                    <Box>
-                      <TripStatus status={item?.index} />
-                      <Text
-                        wordBreak="break-word"
-                        whiteSpace="normal"
-                        my="8px"
-                        fontSize="16px"
-                        fontWeight="400"
-                        color="#181d27">
-                        {`${item?.address}, ${item?.state}, ${item?.zip_code}`}
-                      </Text>
-                      <Text mb="6px" fontSize="12px" color="#6b7280">
-                        {formatScheduleDate(item?.arrive_by)}
-                      </Text>
-                      {item?.type?.[0] === "Pickup" && (
-                        <>
-                          <Text color="#000" fontWeight="500">
-                            PO #{tripData?.reference_po ?? "---"}
-                          </Text>
-                          <Text color="#000" fontWeight="500">
-                            BOL #{item?.bol ?? "---"}
-                          </Text>
-                        </>
-                      )}
-                    </Box>
-                  </CTableTd>
-
-                  <CTableTd py="12px" px="20px">
-                    <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
-                      <Text color={"#414651"} fontWeight={"500"}>
-                        Tractor Unit #
-                      </Text>
-                      <Text>{trip?.tractors?.plate_number ?? "---"}</Text>
-                    </Flex>
-
-                    <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
-                      <Text color={"#414651"} fontWeight={"500"}>
-                        Tractor ID
-                      </Text>
-                      <Text>{trip?.tractors?.external_id ?? "---"}</Text>
-                    </Flex>
-
-                    <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
-                      <Text color={"#414651"} fontWeight={"500"}>
-                        Trailer Unit #
-                      </Text>
-                      <Text>{trip?.trailers?.plate_number ?? "---"}</Text>
-                    </Flex>
-
-                    <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
-                      <Text color={"#414651"} fontWeight={"500"}>
-                        Trailer ID
-                      </Text>
-                      <Text>{trip?.trailers?.external_id ?? "---"}</Text>
-                    </Flex>
-
-                    <Flex alignItems={"center"} gap={"16px"}>
-                      <Text color={"#414651"} fontWeight={"500"}>
-                        {item?.equipment_type?.label || "---"}
-                      </Text>
-                      <TripDriverVerification
-                        tripData={tripData}
-                        trip={trip}
-                        pickUpindex={index}
-                      />
-                    </Flex>
+                    <Text fontSize="14px" color="#181d27">
+                      {item?.amoun || 0}
+                    </Text>
                   </CTableTd>
 
                   <CTableTd py="12px" px="20px">
                     <Box>
                       <Badge
-                        bg={getLoadTypeColor(item?.load_type?.label)}
+                        bg={getLoadTypeColor(item?.status?.[0])}
                         color="white"
                         px={3}
                         py={1}
                         borderRadius="full"
                         fontSize="12px"
                         fontWeight="500">
-                        {item?.load_type?.label || "N/A"}
+                        {item?.status?.[0] || "N/A"}
                       </Badge>
                     </Box>
                   </CTableTd>
 
                   <CTableTd py="12px" px="20px">
-                    <Box mb="24px">
-                      <Text fontSize="12px" color="#181D27">
-                        Check in:
-                      </Text>
-                      <Tooltip
-                        bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                        color="white"
-                        borderRadius="md"
-                        p="6px 10px"
-                        hasArrow
-                        label={
-                          <Box minW="180px">
-                            <VStack spacing={2} align="start">
-                              <Text
-                                fontSize="14px"
-                                fontWeight="600"
-                                color="white">
-                                {Boolean(item?.check_in) && ""}
-                                {item?.address || "Location"}
-                              </Text>
-                              <Text
-                                fontSize="12px"
-                                fontWeight="500"
-                                color="white"
-                                width="100%">
-                                Actuals
-                              </Text>
-                              <Text
-                                fontSize="14px"
-                                fontWeight="400"
-                                color="white">
-                                Facility check-in/out -{" "}
-                                {formatDateWithTimezone(item?.check_in) ||
-                                  "---"}
-                              </Text>
-                            </VStack>
-                          </Box>
-                        }
-                        placement="bottom-start"
-                        openDelay={300}>
-                        <Flex alignItems="center" gap="8px">
-                          <Text fontSize="12px" color="#181D27">
-                            {Boolean(item?.check_in)
-                              ? formatScheduleDate(item?.check_in)
-                              : "---"}
-                          </Text>
-                          {Boolean(item?.check_in) && (
-                            <Text
-                              fontSize="14px"
-                              fontWeight="700"
-                              color="#175CD3">
-                              M
-                            </Text>
-                          )}
-                        </Flex>
-                      </Tooltip>
-                    </Box>
-                    <Box>
-                      <Text fontSize="12px" color="#181D27">
-                        Check out:
-                      </Text>
-                      <Tooltip
-                        bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                        color="white"
-                        borderRadius="md"
-                        p="6px 10px"
-                        hasArrow
-                        label={
-                          <Box minW="180px">
-                            <VStack spacing={2} align="start">
-                              <Text
-                                fontSize="14px"
-                                fontWeight="600"
-                                color="white">
-                                {Boolean(item?.check_out) && ""}
-                                {item?.address || "Location"}
-                              </Text>
-                              <Text
-                                fontSize="12px"
-                                fontWeight="500"
-                                color="white"
-                                width="100%">
-                                Actuals
-                              </Text>
-                              <Text
-                                fontSize="14px"
-                                fontWeight="400"
-                                color="white">
-                                Facility check-in/out -{" "}
-                                {formatDateWithTimezone(item?.check_out) ||
-                                  "---"}
-                              </Text>
-                            </VStack>
-                          </Box>
-                        }
-                        placement="bottom-start"
-                        openDelay={300}>
-                        <Flex alignItems="center" gap="8px">
-                          <Text fontSize="12px" color="#181D27">
-                            {Boolean(item?.check_out)
-                              ? formatScheduleDate(item?.check_out)
-                              : "---"}
-                          </Text>
-                          {Boolean(item?.check_out) && (
-                            <Text
-                              fontSize="14px"
-                              fontWeight="700"
-                              color="#175CD3">
-                              M
-                            </Text>
-                          )}
-                        </Flex>
-                      </Tooltip>
-                    </Box>
+                    {" "}
+                    <Text fontSize="14px" color="#181d27">
+                      {item?.note}
+                    </Text>
                   </CTableTd>
-
-                  <CTableTd py="12px" px="20px">
-                    {(() => {
-                      const expiredTime = calculateExpiredTime(item?.arrive_by);
-                      const isExpired = expiredTime > 0;
-
-                      return (
-                        <Tooltip
-                          bg="linear-gradient(to bottom, #1a365d, #2d3748)"
-                          color="white"
-                          borderRadius="md"
-                          p="6px 10px"
-                          hasArrow
-                          label={
-                            isExpired ? (
-                              <Box minW="180px">
-                                <VStack spacing={1} align="start">
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="white">
-                                    This task has been expired for
-                                  </Text>
-                                  <Text
-                                    fontSize="14px"
-                                    fontWeight="600"
-                                    color="#FF4444">
-                                    {formatExpiredTime(expiredTime)}
-                                  </Text>
-                                </VStack>
-                              </Box>
-                            ) : null
-                          }
-                          placement="bottom-start"
-                          openDelay={300}
-                          isDisabled={!isExpired}>
-                          <Box>
-                            <Flex gap="6px">
-                              <Text fontSize="14px" color={"#181d27"}>
-                                {formatScheduleDate(item?.arrive_by)}
-                              </Text>
-                              {isExpired && (
-                                <img src="/img/delayIcon.svg" alt="" />
-                              )}
-                            </Flex>
-                            {Boolean(!isBroker) && (
-                              <Button
-                                mt="8px"
-                                h="20px"
-                                p="0"
-                                bg="none"
-                                color="#EF6820"
-                                borderRadius="8px"
-                                fontSize="14px"
-                                fontWeight="600"
-                                _hover={{bg: "none"}}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedPickup(item);
-                                  setIsReportDelayOpen(true);
-                                }}>
-                                Report delay
-                              </Button>
-                            )}
-                          </Box>
-                        </Tooltip>
-                      );
-                    })()}
-                  </CTableTd>
-
-                  {Boolean(!isBroker) && (
-                    <CTableTd py="12px" px="20px">
-                      <Flex flexDirection="column">
-                        <Text>
-                          {item?.drivers_1?.first_name ?? " "}{" "}
-                          {item?.drivers_1?.last_name ?? " "}
-                        </Text>
-                        <Text>
-                          {" "}
-                          {item?.drivers_2?.first_name ?? " "}{" "}
-                          {item?.drivers_2?.last_name ?? " "}
-                        </Text>
-                      </Flex>
-                    </CTableTd>
-                  )}
                 </CTableRow>
               </CTableBody>
             </CTable>
