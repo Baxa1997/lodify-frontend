@@ -207,18 +207,18 @@ function UpcomingTab({tripType = "", isActive = true}) {
     let offset = 0;
     if (hasUnassignedTractor) offset += COLUMN_WIDTH;
     if (hasUnassignedTrailer) offset += COLUMN_WIDTH;
-    return `${offset}px`;
+    return `${offset - 360}px`;
   };
 
   const getTractorPosition = () => {
     if (!hasUnassignedTractor) return "auto";
     let offset = 0;
     if (hasUnassignedTrailer) offset += COLUMN_WIDTH;
-    return `${offset}px`;
+    return `${offset + 200}px`;
   };
 
   const getTrailerPosition = () => {
-    return hasUnassignedTrailer ? "0" : "auto";
+    return hasUnassignedTrailer ? "220px" : "auto";
   };
 
   return (
