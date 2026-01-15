@@ -214,42 +214,9 @@ const StickyButtons = ({
           gap="12px"
           justifyContent="space-between"
           alignItems="center">
-          {/* <Button
-            bg="#fff"
-            color="#EF6820"
-            border="1px solid #f7b27a"
-            borderRadius="8px"
-            fontSize="14px"
-            fontWeight="600"
-            px="16px"
-            py="8px">
-            View Shipment Details
-          </Button> */}
           <Box></Box>
 
           <Flex gap="8px">
-            {/* <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/admin/collabrations`, {
-                  state: {
-                    tripId: trip?.guid,
-                    tripName: trip?.id,
-                    tab: 1,
-                  },
-                });
-              }}
-              h="40px"
-              variant="outline"
-              leftIcon={
-                <img src="/img/collab.svg" alt="" width="16" height="16" />
-              }
-              fontSize="14px"
-              border="1px solid #f2b27a"
-              color="#EF6820"
-              fontWeight="600">
-              Collaboration
-            </Button> */}
             <Button
               _hover={{bg: "#EF6820"}}
               onClick={(e) => {
@@ -346,9 +313,7 @@ const TripRowDetails = ({
     );
   }
 
-  const tripData = detentionNotes;
-
-  const getTableHeads = (sectionType) => [
+  const getTableHeads = () => [
     {
       index: 0,
       label: "Amount",
@@ -470,25 +435,7 @@ const TripRowDetails = ({
             </CTable>
           </Box>
         ))}
-
-        {(!tripData?.pickups || tripData?.pickups?.length === 0) && (
-          <Box p="20px" textAlign="center">
-            <Text fontSize="14px" color="#6b7280">
-              No pickup or delivery data available
-            </Text>
-          </Box>
-        )}
       </Box>
-
-      {/* <ReportDelay
-        isOpen={isReportDelayOpen}
-        onClose={() => {
-          setIsReportDelayOpen(false);
-          setSelectedPickup(null);
-        }}
-        trip={trip}
-        pickup={selectedPickup}
-      /> */}
 
       <StickyButtons
         trip={trip}
