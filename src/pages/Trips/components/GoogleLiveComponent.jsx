@@ -270,6 +270,26 @@ function GoogleLiveComponent({
     select: (data) => data?.data || {},
   });
 
+  const {data: tripLocationData = [], isLoading: isTripLocationLoading} =
+    useQuery({
+      queryKey: ["TRIP_LOCATION", id],
+      queryFn: () =>
+        tripsService.getTripLocation({
+          data: {
+            method: "actual",
+            object_data: {
+              trip_id: id,
+            },
+            table: "route",
+          },
+        }),
+      enabled: !!id,
+      select: (data) => data?.data?.response || [],
+      staleTime: 0,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    });
+
   const mapCenter = useMemo(() => {
     if (latitude && longitude) {
       return {lat: latitude, lng: longitude};
@@ -290,7 +310,31 @@ function GoogleLiveComponent({
   }, [latitude, longitude, mapData]);
 
   const handleApiLoaded = ({map, maps}) => {
-    if (!mapData?.response?.length) return;
+    const coordinates = Array.isArray(mapData?.response)
+      ? mapData.response.filter(Boolean)
+      : [];
+    const tripLocationLine = Array.isArray(tripLocationData)
+      ? tripLocationData
+          .map((point) => {
+            const lat = Number(point?.lat);
+            const lng = Number(point?.lng ?? point?.lon ?? point?.long);
+
+            if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+            return [lng, lat];
+          })
+          .filter(Boolean)
+      : [];
+    const combinedCoordinates = [...coordinates];
+
+    if (tripLocationLine.length > 0) {
+      if (combinedCoordinates.length >= 1) {
+        combinedCoordinates.splice(1, 0, tripLocationLine);
+      } else {
+        combinedCoordinates.push(tripLocationLine);
+      }
+    }
+
+    if (!combinedCoordinates.length) return;
 
     if (map.markers) {
       map.markers.forEach((marker) => marker.setMap(null));
@@ -302,19 +346,19 @@ function GoogleLiveComponent({
     }
     map.polylines = [];
 
-    const coordinates = mapData.response;
     const stops = tripData?.pickups || [];
     const allCoords = [];
 
-    coordinates.forEach((line, lineIndex) => {
+    combinedCoordinates.forEach((line, lineIndex) => {
       if (!line || line.length === 0) return;
 
+      const isTripLocationLine = line === tripLocationLine;
       const path = line.map(([lng, lat]) => {
         allCoords.push([lng, lat]);
         return {lat, lng};
       });
 
-      const segmentColor = "#007BFF";
+      const segmentColor = isTripLocationLine ? "#16A34A" : "#007BFF";
       const polyline = new maps.Polyline({
         path,
         geodesic: true,
@@ -325,12 +369,35 @@ function GoogleLiveComponent({
       polyline.setMap(map);
       map.polylines.push(polyline);
 
-      if (showMarkers && line.length > 0) {
+      if (isTripLocationLine && line.length > 0) {
+        const startCoord = line[0];
+        const endCoord = line[line.length - 1];
+        const markerIcon = {
+          path: maps.SymbolPath.CIRCLE,
+          scale: 6,
+          fillColor: "#16A34A",
+          fillOpacity: 1,
+          strokeColor: "#15803D",
+          strokeWeight: 2,
+        };
+        const startMarker = new maps.Marker({
+          position: {lat: startCoord[1], lng: startCoord[0]},
+          map: map,
+          title: "Driver Start",
+          icon: markerIcon,
+        });
+        const endMarker = new maps.Marker({
+          position: {lat: endCoord[1], lng: endCoord[0]},
+          map: map,
+          title: "Driver End",
+          icon: markerIcon,
+        });
+        map.markers.push(startMarker, endMarker);
+      }
+
+      if (showMarkers && !isTripLocationLine && line.length > 0) {
         const startCoord = line[0];
 
-        // Calculate the actual pickup index
-        // For first segment, start is pickup 1, end is pickup 2
-        // For second segment, start is pickup 2, end is pickup 3, etc.
         const startPickupIndex = lineIndex + 1;
         const endPickupIndex = lineIndex + 2;
 

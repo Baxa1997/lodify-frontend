@@ -73,8 +73,6 @@ const BrokerTab = () => {
     },
   });
 
-  console.log("datadata", data);
-
   const brokersData =
     data?.pages.flatMap((page) => page?.data?.response || []) || [];
 
@@ -98,7 +96,7 @@ const BrokerTab = () => {
       );
     });
   }, [brokersData, searchQuery]);
-  console.log("filteredBrokersfilteredBrokers", filteredBrokers);
+
   const handleViewBroker = (broker) => {
     console.log("View broker:", broker);
   };

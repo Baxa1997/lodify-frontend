@@ -54,6 +54,9 @@ const tripsService = {
       `v2/items/${slug}?data=${encodeURIComponent(dataParam)}`
     );
   },
+
+  getTripLocation: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
 };
 
 export default tripsService;
