@@ -214,7 +214,7 @@ const StickyButtons = ({
           gap="12px"
           justifyContent="space-between"
           alignItems="center">
-          <Button
+          {/* <Button
             bg="#fff"
             color="#EF6820"
             border="1px solid #f7b27a"
@@ -224,10 +224,11 @@ const StickyButtons = ({
             px="16px"
             py="8px">
             View Shipment Details
-          </Button>
+          </Button> */}
+          <Box></Box>
 
           <Flex gap="8px">
-            <Button
+            {/* <Button
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(`/admin/collabrations`, {
@@ -248,7 +249,7 @@ const StickyButtons = ({
               color="#EF6820"
               fontWeight="600">
               Collaboration
-            </Button>
+            </Button> */}
             <Button
               _hover={{bg: "#EF6820"}}
               onClick={(e) => {
@@ -498,123 +499,6 @@ const TripRowDetails = ({
         parentContainerRef={tripRowDetailsRef}
       />
     </Box>
-  );
-};
-
-const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
-  return (
-    <Flex
-      onClick={(e) => {
-        e.stopPropagation();
-        onExpand(tripId, e);
-      }}
-      alignItems="center"
-      justifyContent="center"
-      flexDirection="row-reverse"
-      w="36px"
-      gap="4px"
-      p="2px 8px"
-      borderRadius="100px"
-      border="1px solid #B2DDFF"
-      cursor="pointer">
-      <Text fontSize="12px" fontWeight="500" color="#175CD3">
-        {status || 1}
-      </Text>
-      {status !== 0 && <img src="/img/statusArrow.svg" alt="" />}
-    </Flex>
-  );
-};
-
-const TripDriverVerification = ({
-  trip = {},
-  tripData = {},
-  pickUpindex = 0,
-}) => {
-  const getTruckImage = () => {
-    let isVerified = false;
-
-    if (tripData?.current_index === pickUpindex) {
-      isVerified = trip?.is_truck_verified;
-    } else if (tripData?.current_index > pickUpindex) {
-      isVerified = true;
-    } else {
-      isVerified = false;
-    }
-
-    const isRequired = trip?.equipment_availability?.[0] === "Required";
-
-    if (isRequired) {
-      return isVerified
-        ? "/img/verifiedFullTruck.svg"
-        : "/img/unverifiedFullTruck.svg";
-    } else {
-      return isVerified
-        ? "/img/verifiedEmptyTruck.svg"
-        : "/img/unverifiedEmptyTruck.svg";
-    }
-  };
-
-  const getDriverVerifiedStatus = () => {
-    if (tripData?.current_index === pickUpindex) {
-      return trip?.is_driver_verified;
-    } else if (tripData?.current_index > pickUpindex) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const isDriverVerified = getDriverVerifiedStatus();
-
-  return (
-    <Flex gap="14px" alignItems="center">
-      <Box w="22px" h="22px">
-        <img
-          src={getTruckImage()}
-          alt="truck"
-          style={{width: "100%", height: "100%"}}
-        />
-      </Box>
-
-      <Flex
-        alignItems="center"
-        justifyContent="center"
-        w="44px"
-        h="27px"
-        p="5px"
-        gap="4px"
-        bg={isDriverVerified ? "#DEFFEE" : "#EDEDED"}
-        borderRadius="16px">
-        <Box w="17px" h="17px">
-          {trip?.driver_type?.[0].toLowerCase() === "team" &&
-            (isDriverVerified ? (
-              <img
-                src="/img/unverifiedSecondDriver.svg"
-                alt="driver"
-                style={{width: "100%", height: "100%"}}
-              />
-            ) : (
-              <img
-                src="/img/unvSecondDriver.svg"
-                alt="driver"
-                style={{width: "100%", height: "100%"}}
-              />
-            ))}
-        </Box>
-
-        <Box w="17px" h="17px">
-          <img
-            src={
-              isDriverVerified
-                ? "/img/driverVerified.svg"
-                : "/img/unverifiedDriver.svg"
-            }
-            alt="driver"
-            style={{width: "100%", height: "100%"}}
-          />
-        </Box>
-      </Flex>
-    </Flex>
   );
 };
 

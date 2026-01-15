@@ -18,7 +18,7 @@ function GeneralTripsTab({isLoading = false, locationStatus = {}}) {
   const {data: tripDetails} = useQuery({
     queryKey: ["TRIP_DETAILS", id],
     queryFn: () =>
-      tripsService.getTripDetailsByTripId({
+      tripsService.getTripById({
         app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
         environment_id: envId,
         method: "single",

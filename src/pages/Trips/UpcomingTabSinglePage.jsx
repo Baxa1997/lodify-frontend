@@ -34,8 +34,6 @@ function UpcomingTabSinglePage() {
     select: (data) => data?.data || {},
   });
 
-  console.log("tripDatatripData", tripData);
-
   return (
     <Box>
       <HeadBreadCrumb />
