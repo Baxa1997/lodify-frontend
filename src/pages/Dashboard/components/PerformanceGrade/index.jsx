@@ -6,6 +6,7 @@ import EmptyState from "@components/EmptyState";
 import {RiLineChartLine} from "react-icons/ri";
 
 export const PerformanceGrade = ({performanceData = {}, isLoading = false}) => {
+  console.log("performanceDataperformanceData", performanceData);
   const performanceDataObj = {
     overall: {
       label: "Overall",
@@ -35,13 +36,13 @@ export const PerformanceGrade = ({performanceData = {}, isLoading = false}) => {
       period: "1 week",
       tooltipLabel: "App usage percentage",
     },
-    // disruptionFree: {
-    //   label: "Disruption free",
-    //   value: "100.0%",
-    //   change: "0.0%",
-    //   period: "1 week",
-    //   tooltipLabel: "Disruption free percentage",
-    // },
+    disruptionFree: {
+      label: "Disruption free",
+      value: `${performanceData?.disruption_free?.disruption_percentage || 0}%`,
+      change: "0.0%",
+      period: "1 week",
+      tooltipLabel: "Disruption free percentage",
+    },
   };
 
   const hasData =
@@ -104,7 +105,7 @@ export const PerformanceGrade = ({performanceData = {}, isLoading = false}) => {
           <PerformanceCard {...performanceDataObj.onTime} />
           <PerformanceCard {...performanceDataObj.acceptance} />
           <PerformanceCard {...performanceDataObj.appUsage} />
-          {/* <PerformanceCard {...performanceDataObj.disruptionFree} /> */}
+          <PerformanceCard {...performanceDataObj.disruptionFree} />
         </Flex>
       ) : (
         <EmptyState
