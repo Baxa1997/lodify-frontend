@@ -316,18 +316,18 @@ const TripRowDetails = ({
   const getTableHeads = () => [
     {
       index: 0,
+      label: "Note",
+      key: "note",
+    },
+    {
+      index: 1,
       label: "Amount",
       key: "amount",
     },
     {
-      index: 1,
+      index: 2,
       label: "Status",
       key: "status",
-    },
-    {
-      index: 2,
-      label: "Note",
-      key: "note",
     },
   ];
 
@@ -368,73 +368,75 @@ const TripRowDetails = ({
             background: "#a8a8a8",
           },
         }}>
-        {(detentionNotes || []).map((item, index) => (
-          <Box key={item?.guid || index} mb={6}>
-            <CTable
-              zIndex={2}
-              minHeight={getMinHeight()}
-              isPagination={false}
-              width="100%"
-              overflow="visible"
-              borderColor="#fff"
-              borderRadius="8px"
-              bg="white">
-              <CTableHead zIndex={2} borderRadius="8px 8px 0 0" bg="#fff">
-                <CTableRow>
-                  {getTableHeads(item?.type?.[0])
-                    ?.filter((head) => !isBroker || head.index !== 5)
-                    ?.map((head) => (
-                      <CTableTh
-                        zIndex={-1}
-                        maxW="334px"
-                        width="334px"
-                        key={head.index}
-                        bg="#fff"
-                        py="6px"
-                        px="20px"
-                        fontSize="16px"
-                        fontWeight="600"
-                        color="#181d27"
-                        borderBottom="1px solid #e5e7eb">
-                        {head.label}
-                      </CTableTh>
-                    ))}
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                <CTableRow hover={false}>
+        {/* {(detentionNotes || []).map((item, index) => ( */}
+        <Box mb={6}>
+          <CTable
+            zIndex={2}
+            minHeight={getMinHeight()}
+            isPagination={false}
+            width="100vw"
+            overflow="visible"
+            borderColor="#fff"
+            borderRadius="8px"
+            bg="white">
+            <CTableHead zIndex={2} borderRadius="8px 8px 0 0" bg="#fff">
+              <CTableRow>
+                {getTableHeads()
+                  ?.filter((head) => !isBroker || head.index !== 5)
+                  ?.map((head) => (
+                    <CTableTh
+                      zIndex={-1}
+                      maxW="134px"
+                      width="134px"
+                      key={head.index}
+                      bg="#fff"
+                      py="6px"
+                      px="20px"
+                      fontSize="16px"
+                      fontWeight="600"
+                      color="#181d27"
+                      borderBottom="1px solid #e5e7eb">
+                      {head.label}
+                    </CTableTh>
+                  ))}
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {detentionNotes.map((note) => (
+                <CTableRow key={note?.guid} hover={false}>
                   <CTableTd py="12px" px="20px">
                     <Text fontSize="14px" color="#181d27">
-                      {item?.amoun || 0}
+                      {note?.note || "N/A"}
+                    </Text>
+                  </CTableTd>
+
+                  <CTableTd py="12px" px="20px">
+                    {" "}
+                    <Text fontSize="14px" color="#181d27">
+                      {note?.amount || 0}
                     </Text>
                   </CTableTd>
 
                   <CTableTd py="12px" px="20px">
                     <Box>
                       <Badge
-                        bg={getLoadTypeColor(item?.status?.[0])}
+                        bg={getLoadTypeColor(note?.status?.[0])}
                         color="white"
                         px={3}
                         py={1}
                         borderRadius="full"
                         fontSize="12px"
                         fontWeight="500">
-                        {item?.status?.[0] || "N/A"}
+                        {note?.status?.[0] || "N/A"}
                       </Badge>
                     </Box>
                   </CTableTd>
-
-                  <CTableTd py="12px" px="20px">
-                    {" "}
-                    <Text fontSize="14px" color="#181d27">
-                      {item?.note}
-                    </Text>
-                  </CTableTd>
                 </CTableRow>
-              </CTableBody>
-            </CTable>
-          </Box>
-        ))}
+              ))}
+            </CTableBody>
+          </CTable>
+        </Box>
+        {/* ))} */}
       </Box>
 
       <StickyButtons
