@@ -1,17 +1,16 @@
 import React, {useEffect, useRef, useMemo, useCallback, useState} from "react";
 import {Box, VStack, Text, Button, Flex, useToast} from "@chakra-ui/react";
 import HFPhoneInput from "@components/HFPhoneInput";
-import {
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  connectAuthEmulator,
-} from "firebase/auth";
+import {RecaptchaVerifier, signInWithPhoneNumber} from "firebase/auth";
 import {auth} from "../../../../config/firebase";
 
 function PhoneSendCode({
   control,
   setCurrentSubStep = () => {},
   setSessionInfo = () => {},
+  onCodeSent = () => {},
+  onAutoSendComplete = () => {},
+  autoSend = false,
   formData = {},
 }) {
   const toast = useToast();
@@ -61,13 +60,6 @@ function PhoneSendCode({
     };
   }, [isLocal, toast]);
 
-  function getRandomPhone() {
-    const phoneNumbers = ["+16289002850"];
-
-    const randomIndex = Math.floor(Math.random() * phoneNumbers.length);
-    return phoneNumbers[randomIndex];
-  }
-
   const getPhone = useCallback(() => {
     const raw = formData?.phone;
 
@@ -76,7 +68,7 @@ function PhoneSendCode({
 
   const handleSendPhoneCode = useCallback(
     async (event) => {
-      event.preventDefault();
+      event?.preventDefault?.();
 
       const phone = getPhone();
       if (!phone || !/^\+\d{10,15}$/.test(phone)) {
@@ -104,6 +96,7 @@ function PhoneSendCode({
         );
         window.confirmationResult = confirmationResult;
         setSessionInfo(confirmationResult?.verificationId);
+        onCodeSent();
         toast({
           title: "SMS sent!",
           description: "Verification code sent successfully.",
@@ -125,10 +118,17 @@ function PhoneSendCode({
         });
       } finally {
         setIsLoading(false);
+        onAutoSendComplete();
       }
     },
-    [getPhone, toast, setCurrentSubStep]
+    [getPhone, onAutoSendComplete, onCodeSent, setCurrentSubStep, setSessionInfo, toast]
   );
+
+  useEffect(() => {
+    if (!autoSend) return;
+
+    handleSendPhoneCode();
+  }, [autoSend, handleSendPhoneCode]);
 
   return (
     <Box borderRadius="12px" bg="white">

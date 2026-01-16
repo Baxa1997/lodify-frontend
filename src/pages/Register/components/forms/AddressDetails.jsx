@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   Flex,
@@ -21,8 +21,10 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [emailSmsId, setEmailSmsId] = useState(null);
-  const [confirmationResult, setConfirmationResult] = useState(null);
   const [skipPhoneVerification, setSkipPhoneVerification] = useState(false);
+  const [phoneResendSeconds, setPhoneResendSeconds] = useState(0);
+  const [emailResendSeconds, setEmailResendSeconds] = useState(0);
+  const [autoSendPhoneCode, setAutoSendPhoneCode] = useState(false);
 
   const [sessionInfo, setSessionInfo] = useState(null);
   const toast = useToast();
@@ -38,7 +40,33 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
     setValue("emailCode", value);
   };
 
-  const handleSendPhoneCode = () => {};
+  useEffect(() => {
+    if (phoneResendSeconds <= 0) return;
+
+    const timerId = setInterval(() => {
+      setPhoneResendSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [phoneResendSeconds]);
+
+  useEffect(() => {
+    if (emailResendSeconds <= 0) return;
+
+    const timerId = setInterval(() => {
+      setEmailResendSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [emailResendSeconds]);
+
+  const formatCountdown = (seconds) => {
+    const safeSeconds = Math.max(0, Number(seconds) || 0);
+    const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, "0");
+    const remainingSeconds = String(safeSeconds % 60).padStart(2, "0");
+
+    return `${minutes}:${remainingSeconds}`;
+  };
 
   const handleSendEmailCode = async () => {
     setIsLoading(true);
@@ -60,6 +88,7 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         setEmailSmsId(response.sms_id);
         setValue("emailSmsId", response.sms_id);
         setCurrentSubStep("email-verify");
+        setEmailResendSeconds(60);
 
         toast({
           title: "Code Sent Successfully!",
@@ -136,23 +165,11 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
   };
 
   const handleResendPhoneCode = async () => {
-    setIsLoading(true);
-    try {
-      setPhoneCode("");
-      setConfirmationResult(null);
-      await handleSendPhoneCode();
-    } catch (error) {
-      console.error("Failed to resend phone code:", error);
-      toast({
-        title: "Failed to Resend Code",
-        description: "Please try again later",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    if (phoneResendSeconds > 0 || isLoading) return;
+
+    setPhoneCode("");
+    setAutoSendPhoneCode(true);
+    setCurrentSubStep("phone");
   };
 
   const handleVerifyEmail = async () => {
@@ -209,6 +226,8 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
   };
 
   const handleResendEmailCode = async () => {
+    if (emailResendSeconds > 0 || isResending) return;
+
     setIsResending(true);
     try {
       const response = await authService.sendCode(
@@ -228,6 +247,7 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         setEmailSmsId(response?.data?.sms_id);
         setValue("emailSmsId", response?.data?.sms_id);
         setCurrentSubStep("email-verify");
+        setEmailResendSeconds(60);
         toast({
           title: "Code Resent Successfully!",
           description: "New verification code has been sent to your email.",
@@ -268,7 +288,12 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         control={control}
         formData={formData}
         setSessionInfo={setSessionInfo}
-        handleSendPhoneCode={handleSendPhoneCode}
+        autoSend={autoSendPhoneCode}
+        onCodeSent={() => {
+          setPhoneResendSeconds(60);
+          setAutoSendPhoneCode(false);
+        }}
+        onAutoSendComplete={() => setAutoSendPhoneCode(false)}
         setCurrentSubStep={setCurrentSubStep}
       />
     );
@@ -380,8 +405,14 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         <VStack spacing={2} w="100%">
           <Text fontSize="16px" color="#6B7280" textAlign="center">
             Code didn't send?{" "}
-            <Link color="#EF6820" onClick={handleResendPhoneCode}>
-              Click to resend
+            <Link
+              color="#EF6820"
+              onClick={handleResendPhoneCode}
+              cursor={phoneResendSeconds > 0 ? "not-allowed" : "pointer"}
+              opacity={phoneResendSeconds > 0 ? 0.6 : 1}>
+              {phoneResendSeconds > 0
+                ? `Resend in ${formatCountdown(phoneResendSeconds)}`
+                : "Click to resend"}
             </Link>
           </Text>
           <Flex align="center" gap="8px" justify="center">
@@ -554,9 +585,17 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
             <Link
               color="#EF6820"
               onClick={handleResendEmailCode}
-              cursor={isResending ? "not-allowed" : "pointer"}
-              opacity={isResending ? 0.6 : 1}>
-              {isResending ? "Resending..." : "Click to resend"}
+              cursor={
+                isResending || emailResendSeconds > 0
+                  ? "not-allowed"
+                  : "pointer"
+              }
+              opacity={isResending || emailResendSeconds > 0 ? 0.6 : 1}>
+              {isResending
+                ? "Resending..."
+                : emailResendSeconds > 0
+                ? `Resend in ${formatCountdown(emailResendSeconds)}`
+                : "Click to resend"}
             </Link>
           </Text>
           <Flex align="center" gap="8px" justify="center">

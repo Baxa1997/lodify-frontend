@@ -49,6 +49,7 @@ const Login = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [emailGuid, setEmailGuid] = useState("");
+  const [otpResendSeconds, setOtpResendSeconds] = useState(0);
 
   const {
     register,
@@ -92,6 +93,16 @@ const Login = () => {
       }
     }
   }, [isAuth, qrVerified, navigate, location.state]);
+
+  useEffect(() => {
+    if (otpResendSeconds <= 0) return;
+
+    const timerId = setInterval(() => {
+      setOtpResendSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [otpResendSeconds]);
 
   //=======COMPUTE COMPANIES
   const computedCompanies = useMemo(() => {
@@ -518,6 +529,7 @@ const Login = () => {
 
       if (response?.sms_id) {
         setSmsId(response?.sms_id);
+        setOtpResendSeconds(60);
         dispatch(showAlert("OTP sent to your email", "success"));
       } else {
         dispatch(showAlert("Failed to send OTP. Please try again.", "error"));
@@ -629,6 +641,8 @@ const Login = () => {
   };
 
   const handleResendOtp = async () => {
+    if (otpResendSeconds > 0 || isSendingOtp) return;
+
     if (userEmail) {
       await handleSendOtp(userEmail);
     }
@@ -641,7 +655,16 @@ const Login = () => {
     setOtpCode("");
     setSmsId("");
     setEmailGuid("");
+    setOtpResendSeconds(0);
     forgotPasswordForm.reset();
+  };
+
+  const formatCountdown = (seconds) => {
+    const safeSeconds = Math.max(0, Number(seconds) || 0);
+    const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, "0");
+    const remainingSeconds = String(safeSeconds % 60).padStart(2, "0");
+
+    return `${minutes}:${remainingSeconds}`;
   };
 
   if (showForgotPassword) {
@@ -831,10 +854,18 @@ const Login = () => {
                 <Text
                   fontSize="14px"
                   color="#ef6820"
-                  cursor={isSendingOtp ? "not-allowed" : "pointer"}
+                  cursor={
+                    isSendingOtp || otpResendSeconds > 0
+                      ? "not-allowed"
+                      : "pointer"
+                  }
                   onClick={handleResendOtp}
-                  opacity={isSendingOtp ? 0.6 : 1}>
-                  {isSendingOtp ? "Sending..." : "Resend"}
+                  opacity={isSendingOtp || otpResendSeconds > 0 ? 0.6 : 1}>
+                  {isSendingOtp
+                    ? "Sending..."
+                    : otpResendSeconds > 0
+                    ? `Resend in ${formatCountdown(otpResendSeconds)}`
+                    : "Resend"}
                 </Text>
               </Flex>
 
