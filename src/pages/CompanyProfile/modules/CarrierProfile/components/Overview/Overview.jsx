@@ -1,24 +1,24 @@
 import {SidebarTabs} from "../SidebarTabs";
-import {InfoAccordion} from "../../../../components/InfoAccordion";
 import {Box} from "@chakra-ui/react";
 import {State} from "../State";
+import {Safety} from "../Safety";
+import Insights from "../Insights";
 import {Equipment} from "../Equipment";
 import {Authority} from "../Authority";
-import {Safety} from "../Safety";
-import {Inspections} from "../Inspections";
-import {ActiveAndPendingInsurance} from "../ActiveAndPendingInsurance";
-import {Operations} from "../Operations";
 import {Violation} from "../Violation";
+import {Operations} from "../Operations";
+import {Connection} from "../Connection";
+import Assessments from "../Assessments";
+import {useState, useEffect} from "react";
 import {Performance} from "../Performance";
 import {MatchedData} from "../MatchedData";
-import {Connection} from "../Connection";
-import {VictimIdentity} from "../VictimIdentity";
-import Assessments from "../Assessments";
-import Insights from "../Insights";
+import {Inspections} from "../Inspections";
 import {useQuery} from "@tanstack/react-query";
 import {useSearchParams} from "react-router-dom";
-import {useState, useEffect} from "react";
+import {VictimIdentity} from "../VictimIdentity";
 import carrierService from "@services/carrierService";
+import {InfoAccordion} from "../../../../components/InfoAccordion";
+import {ActiveAndPendingInsurance} from "../ActiveAndPendingInsurance";
 
 export const Overview = ({carrierDetails, generalInfo}) => {
   const [searchParams] = useSearchParams();

@@ -21,10 +21,10 @@ import {
 import React, {useState, useRef} from "react";
 import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {tableActionsNeeded} from "../components/mockElements";
-import TripsFiltersComponent from "../modules/TripsFiltersComponent";
+import {tableActionsNeeded} from "../../components/mockElements";
+import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import TimeCounter from "@components/TimeCounter";
-import TripRowDetails from "../components/TripRowDetails";
+import TripRowDetails from "../../components/TripRowDetails";
 
 function ActionsNeeded() {
   const navigate = useNavigate();

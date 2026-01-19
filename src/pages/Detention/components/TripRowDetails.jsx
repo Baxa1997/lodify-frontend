@@ -16,7 +16,6 @@ import {useNavigate} from "react-router-dom";
 const StickyButtons = ({
   trip,
   handleRowClick,
-  navigate,
   tableScrollRef,
   sidebarOpen = true,
   parentContainerRef,

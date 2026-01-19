@@ -24,6 +24,8 @@ const TripsFiltersComponent = ({
   onActionButtonClick = () => {},
   onLastAddButtonClick = () => {},
 }) => {
+
+  
   return (
     <Flex
       p={"12px 16px"}

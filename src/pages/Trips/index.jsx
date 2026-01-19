@@ -4,7 +4,7 @@ import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import HeadBreadCrumb from "../../components/HeadBreadCrumb";
 import styles from "../../styles/tabs.module.scss";
 import AddTripMenu from "./modules/AddTripMenu";
-import ActionsNeeded from "./Tabs/ActionsNeeded";
+import ActionsNeeded from "./Tabs/ActionsNeeded/ActionsNeeded";
 import HistoryTab from "./Tabs/HistoryTab";
 import TransitTab from "./Tabs/TransitTab.jsx";
 import UpcomingTab from "./Tabs/UpcomingTab";
