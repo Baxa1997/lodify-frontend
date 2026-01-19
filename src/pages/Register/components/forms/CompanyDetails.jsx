@@ -47,8 +47,11 @@ const SearchToggle = ({
   } = useGetLodifyMC(mcNumber, {
     queryKey: ["GET_MC_DATA", mcNumber],
     enabled: Boolean(mcNumber) && searchType === "MC",
+    onSuccess: (data) => {
+      console.log('mcDatamcData', data)
+    },
   });
-
+  console.log('mcDatamcData', mcData)
   useEffect(() => {
     if (isSuccess && data && searchType === "US DOT") {
       const responseData = data?.data?.[0];
@@ -84,10 +87,10 @@ const SearchToggle = ({
       }
     }
   }, [isSuccess, data, fmcsa, reset, getValues, searchType]);
-
+  console.log('mcDatamcData', mcData)
   useEffect(() => {
     if (isSuccessMC && mcData && searchType === "MC") {
-      const responseData = mcData?.data?.response;
+      const responseData = mcData?.data;
 
       if (responseData) {
         const isTaken =
@@ -97,17 +100,18 @@ const SearchToggle = ({
           setSearchStatus("taken");
           setCompanyData(responseData);
         } else {
+          console.log('responseData', responseData)
           setSearchStatus("success");
           setCompanyData(responseData);
           reset({
             ...getValues(),
             mc_number: mcNumber,
-            physical_address1: responseData?.phy_street,
-            city: responseData?.phy_city,
-            state: responseData?.phy_state,
-            zip_code: responseData?.phy_zip,
-            country: responseData?.phy_country,
-            email: responseData?.email_address ?? mcData?.data?.email,
+            physical_address1: responseData?.physical_address1 ?? responseData?.physical_address,
+            city: responseData?.city,
+            state: responseData?.state,
+            zip_code: responseData?.zip,
+            country: responseData?.country,
+            email: responseData?.email,
             phone: `+1${responseData?.telephone ?? responseData?.phone}`,
             legal_name: responseData?.legal_name,
             dba_name: responseData?.dba_name,
@@ -150,7 +154,7 @@ const SearchToggle = ({
       localStorage.setItem("number_type", "US DOT");
     }
   }, []);
-
+  console.log("watchcchchchc", watch())
   return (
     <>
       <Box maxWidth="300px" mb="32px">
@@ -289,10 +293,10 @@ const SearchToggle = ({
                 h="96px"
                 borderRadius="8px">
                 <Text fontWeight="400" color="#181D27">
-                  {mcData?.data?.response?.legal_name || ""}
+                  {mcData?.data?.legal_name || ""}
                 </Text>
                 <Text fontWeight="400" color="#181D27">
-                  {mcData?.data?.response?.mc_mx_ff_numbers?.[1] || ""}
+                  {mcData?.data?.mc_mx_ff_numbers?.[1] || ""}
                 </Text>
               </Box>
             </Box>

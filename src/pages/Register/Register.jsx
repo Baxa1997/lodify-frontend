@@ -138,13 +138,7 @@ const Register = () => {
     })();
 
     if (step === 3) {
-      console.log("Step 3 validation debug:", {
-        email: data.email,
-        emailTrimmed: data.email?.trim(),
-        isValid: isValid,
-        hasEmail: !!data.email,
-        emailLength: data.email?.length,
-      });
+
     }
 
     return isValid;

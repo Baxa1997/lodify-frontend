@@ -655,7 +655,7 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         <HFTextField
           borderColor={"#d6d7da"}
           control={control}
-          name="docket1"
+          name="mc_number"
           label="MC"
           placeholder="MC number"
           disabled
@@ -746,16 +746,16 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         />
       </Flex>
 
-      <Flex alignItems="center" justifyContent="space-between" mt={4} mb={2}>
+      {/* <Flex alignItems="center" justifyContent="space-between" mt={4} mb={2}>
         <Text fontSize="14px" color="#6B7280" fontWeight="400">
           Skip phone verification
         </Text>
-        {/* <Switch
+        <Switch
           colorScheme="orange"
           isChecked={skipPhoneVerification}
           onChange={(e) => setSkipPhoneVerification(e.target.checked)}
-        /> */}
-      </Flex>
+        />
+      </Flex> */}
 
       <Button
         mt={6}
