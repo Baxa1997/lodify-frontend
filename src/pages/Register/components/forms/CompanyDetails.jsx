@@ -51,7 +51,7 @@ const SearchToggle = ({
       console.log('mcDatamcData', data)
     },
   });
-  console.log('mcDatamcData', mcData)
+
   useEffect(() => {
     if (isSuccess && data && searchType === "US DOT") {
       const responseData = data?.data?.[0];
@@ -154,7 +154,7 @@ const SearchToggle = ({
       localStorage.setItem("number_type", "US DOT");
     }
   }, []);
-  console.log("watchcchchchc", watch())
+  console.log("watchcchchchc", watch(), mcNumber, searchType)
   return (
     <>
       <Box maxWidth="300px" mb="32px">
@@ -296,7 +296,7 @@ const SearchToggle = ({
                   {mcData?.data?.legal_name || ""}
                 </Text>
                 <Text fontWeight="400" color="#181D27">
-                  {mcData?.data?.mc_mx_ff_numbers?.[1] || ""}
+                  {mcNumber || ""}
                 </Text>
               </Box>
             </Box>
