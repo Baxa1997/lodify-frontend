@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Center,
+  Collapse,
   Flex,
   Menu,
   MenuButton,
@@ -26,7 +27,7 @@ import {FiInbox} from "react-icons/fi";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
@@ -37,6 +38,7 @@ import {tableElements} from "../../hooks";
 import AssignCarrier from "../../components/AssignCarrier";
 import {BsThreeDotsVertical} from "react-icons/bs";
 import {calculateTimeDifference} from "@utils/timeUtils";
+import TripRowDetails from "../../components/TripRowDetails";
 
 function ActiveTenders() {
   const queryClient = useQueryClient();
@@ -58,6 +60,8 @@ function ActiveTenders() {
   const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
     useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [expandedRows, setExpandedRows] = useState(new Set());
+  const tableScrollRef = useRef(null);
 
   const getLoadTypeColor = (loadType) => {
     const loadTypeColors = {
@@ -69,15 +73,6 @@ function ActiveTenders() {
     return loadTypeColors[loadType?.trim()] || "gray";
   };
 
-  // const getCustomerInfo = (trip) => {
-  //   return {
-  //     companyName: trip.shipper?.name || "N/A",
-  //     customer:
-  //       trip.shipper?.contact_name || trip.shipper?.customer_name || "N/A",
-  //     trips: trip.shipper?.total_trips || 0,
-  //     rate: trip.shipper?.rating || 0,
-  //   };
-  // };
 
   const {
     data: tripsData = [],
@@ -204,6 +199,19 @@ function ActiveTenders() {
     setCurrentPage(1);
   };
 
+  const toggleRowExpansion = (tripId, event) => {
+    event.stopPropagation();
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(tripId)) {
+        newSet.delete(tripId);
+      } else {
+        newSet.add(tripId);
+      }
+      return newSet;
+    });
+  };
+
   const totalPages = tripsData?.total_count
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
@@ -249,9 +257,10 @@ function ActiveTenders() {
 
       <Box mt={6}>
         <CTable
+          scrollRef={tableScrollRef}
           width="100%"
           height="calc(100vh - 330px)"
-          overflow="auto"
+          overflow="scroll"
           currentPage={currentPage}
           totalPages={totalPages}
           pageSize={pageSize}
@@ -267,7 +276,7 @@ function ActiveTenders() {
                 )
                 .map((element) => (
                   <CTableTh
-                    zIndex={8}
+                    zIndex={element.key === "actions" ? 10 : 8}
                     maxW="334px"
                     sortable={element.sortable}
                     sortDirection={
@@ -276,7 +285,15 @@ function ActiveTenders() {
                         : null
                     }
                     key={element.id}
-                    onSort={() => handleSort(element.key)}>
+                    onSort={() => handleSort(element.key)}
+                    position={element.key === "actions" ? "sticky" : "static"}
+                    right={element.key === "actions" ? "0" : "auto"}
+                    bg={element.key === "actions" ? "#fafafa" : "transparent"}
+                    boxShadow={
+                      element.key === "actions"
+                        ? "-2px 0 4px rgba(0,0,0,0.05)"
+                        : "none"
+                    }>
                     {element.name}
                   </CTableTh>
                 ))}
@@ -339,6 +356,7 @@ function ActiveTenders() {
               </CTableRow>
             ) : (
               trips?.map((trip, index) => {
+                const isExpanded = expandedRows.has(trip.id || trip.guid);
                 return (
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
@@ -348,7 +366,10 @@ function ActiveTenders() {
                           trip?.timer_expiration
                         ),
                         cursor: "pointer",
-                      }}>
+                      }}
+                      onClick={(e) =>
+                        toggleRowExpansion(trip.id || trip.guid, e)
+                      }>
                       <CTableTd>
                         <Text color="#181D27">
                           {trip.customer?.name || trip?.shipper?.name || ""}
@@ -364,6 +385,7 @@ function ActiveTenders() {
                           </Text>
                           <TripStatus
                             rowClick={handleRowClick}
+                            onExpand={toggleRowExpansion}
                             status={
                               trip?.current_trip === trip?.total_trips
                                 ? trip?.current_trip
@@ -535,18 +557,6 @@ function ActiveTenders() {
                             color="#535862">
                             {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
-
-                          {/* <Flex
-                            alignItems="center"
-                            justifyContent="center"
-                            border="1px solid #dcddde"
-                            w="24px"
-                            h="22px"
-                            borderRadius="50%"
-                            bg="#fff">
-                            {trip?.origin?.[0]?.equipment_availability?.[0] ??
-                              ""}
-                          </Flex> */}
                         </Flex>
                       </CTableTd>
 
@@ -649,7 +659,12 @@ function ActiveTenders() {
 
                       {clientType?.id !==
                         "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
-                        <CTableTd>
+                        <CTableTd
+                          position="sticky"
+                          right="0"
+                          bg={getRowBgColor(trip)}
+                          boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
+                          zIndex={5}>
                           <Flex alignItems="center" gap={"16px"}>
                             <Button
                               p="0"
@@ -693,6 +708,32 @@ function ActiveTenders() {
                           </Flex>
                         </CTableTd>
                       )}
+                    </CTableRow>
+
+                    <CTableRow>
+                      <CTableTd
+                        colSpan={
+                          tableElements?.filter((element) =>
+                            isBroker
+                              ? element.key !== "actions" &&
+                                element.key !== "invited_by"
+                              : element.key !== "carrier"
+                          ).length || tableElements.length
+                        }
+                        p={0}>
+                        <Collapse
+                          position="relative"
+                          in={isExpanded}
+                          animateOpacity>
+                          <TripRowDetails
+                            handleRowClick={handleRowClick}
+                            trip={trip}
+                            isExpanded={isExpanded}
+                            tableScrollRef={tableScrollRef}
+                            navigate={navigate}
+                          />
+                        </Collapse>
+                      </CTableTd>
                     </CTableRow>
                   </React.Fragment>
                 );

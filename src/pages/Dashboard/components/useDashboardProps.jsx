@@ -122,6 +122,7 @@ const useDashboardProps = () => {
             table: "national_average",
           },
         }),
+        enabled: Boolean(companies_id),
       select: (res) => res?.data || {},
     });
 
