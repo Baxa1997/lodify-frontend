@@ -35,8 +35,8 @@ export const metrics = ({generalInfo, new_info}) => {
     },
     {
       label: "Broker",
-      value: new_info?.broker === "N" ? "Inactive" : "Active",
-      status: new_info?.broker === "N" ? "error" : "success",
+      value: new_info?.broker_stat === "N" ? "Inactive" : "Active",
+      status: new_info?.broker_stat === "N" ? "error" : "success",
     },
     {
       label: "Safety Rating",
@@ -51,12 +51,12 @@ export const metrics = ({generalInfo, new_info}) => {
     {
       label: "Contract",
       value: `${contractMonths} ${contractMonths === 1 ? "month" : "months"}`,
-      status: generalInfo.broker_stat === "N" ? "error" : "success",
+      status: "success",
     },
     {
       label: "Operating Status",
       value: new_info?.operating_status,
-      status: "success",
+      status: Boolean(new_info?.operating_status) ? "success" : "error",
     },
     {
       label: "Certifications",
@@ -66,7 +66,7 @@ export const metrics = ({generalInfo, new_info}) => {
     {
       label: "TIN",
       value: new_info?.tin,
-      status: "success",
+      status: Boolean(new_info?.tin) ? "success" : "error",
     },
   ];
 };

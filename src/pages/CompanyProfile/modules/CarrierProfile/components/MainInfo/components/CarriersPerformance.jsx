@@ -2,29 +2,30 @@ import React from "react";
 import {Box, Text, Flex, HStack, Button, Tooltip, Link} from "@chakra-ui/react";
 
 export const CarriersPerformance = ({performanceData, performanceDatas}) => {
+
   const defaultData = {
     overall: {
-      score: "99%",
-      grade: "A",
+      score: performanceDatas?.overall || 0 + "%" || "0%",
+      grade: performanceDatas?.grade,
       gradeColor: "#10B981",
     },
     onTime: {
-      percentage: "100.0%",
+      percentage: performanceDatas?.on_time || 0 + "%" || "0%",
       change: "0.0%",
       period: "1 week",
     },
     acceptance: {
-      percentage: "100.0%",
+      percentage: performanceDatas?.acceptance || 0 + "%" || "0%",
       change: "0.0%",
       period: "1 week",
     },
     appUsage: {
-      percentage: "99.8%",
+      percentage: performanceDatas?.app_usage || 0 + "%" || "0%",
       change: "0.0%",
       period: "1 week",
     },
     disruptionFree: {
-      percentage: "100.0%",
+      percentage: performanceDatas?.disruption_free?.disruption_percentage || 0 + "%" || "0%",
       change: "0.0%",
       period: "1 week",
     },
@@ -156,13 +157,13 @@ export const CarriersPerformance = ({performanceData, performanceDatas}) => {
           period={data.appUsage.period}
           tooltipLabel="App usage percentage"
         />
-        {/* <MetricCard
+        <MetricCard
           label="Disruption free"
           value={data.disruptionFree.percentage}
           change={data.disruptionFree.change}
           period={data.disruptionFree.period}
           tooltipLabel="Disruption free percentage"
-        /> */}
+        />
       </Flex>
 
       <Flex
