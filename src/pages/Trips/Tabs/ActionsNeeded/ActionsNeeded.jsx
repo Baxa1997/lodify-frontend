@@ -135,7 +135,7 @@ const getPhone = (trip) => {
 }
 const {items: sortedTrips} = useSort(trips, sortConfig);
 
-
+  console.log('sortedTripssortedTrips', sortedTrips)
 
   return (
     <Box mt={"26px"}>
@@ -218,7 +218,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.guid);
                 return (
                   <React.Fragment key={trip.guid || index}>
