@@ -45,12 +45,13 @@ export const getRowBackgroundColor = (time) => {
   return "#FECACA";
 };
 
-export const getActionButtonText = (time) => {
-  if (time === 0) return "Call Carrier";
+export const getActionButtonText = (time, isBroker) => {
+
+  if (time === 0) return isBroker ? "Call Carrier" : "Call Driver";
   if (time > 3600) return "Send Message";
-  if (time > 1800) return "Send Email";
-  if (time > 900) return "Call Carrier";
-  return "Call Carrier";
+  if (time > 1800) return isBroker ? "Send Email" : "Send Message";
+  if (time > 900) return isBroker ? "Call Carrier" : "Call Driver";
+  return isBroker ? "Call Carrier" : "Call Driver";
 };
 
 export const getActionButtonColor = (time) => {

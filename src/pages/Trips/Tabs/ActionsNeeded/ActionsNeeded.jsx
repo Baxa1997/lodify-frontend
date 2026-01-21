@@ -26,6 +26,7 @@ import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import TimeCounter from "@components/TimeCounter";
 import TripRowDetails from "../../components/TripRowDetails";
 import checkedPhone from "@hooks/checkedPhone";
+import { useSort } from "@hooks/useSort";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
@@ -129,7 +130,12 @@ function ActionsNeeded() {
     });
   };
 
-  const phone = isBroker ? tripsData?.carrier?.telephone : tripsData?.broker?.telephone;
+const getPhone = (trip) => {
+  return isBroker ? checkedPhone(trip?.carrier?.telephone) : checkedPhone(trip?.current_driver_phone || trip?.drivers?.phone);
+}
+const {items: sortedTrips} = useSort(trips, sortConfig);
+
+
 
   return (
     <Box mt={"26px"}>
@@ -287,11 +293,11 @@ function ActionsNeeded() {
                         <TimeCounter arriveBy={trip?.stop?.arrive_by} />
                       </CTableTd>
 
-                      <CTableTd>
+                      {/* <CTableTd>
                         <Text color="#181D27">
                           {trip?.pickup_reason ?? "-"}
                         </Text>
-                      </CTableTd>
+                      </CTableTd> */}
 
                       <CTableTd>
                         <Text color="#181D27">
@@ -304,7 +310,7 @@ function ActionsNeeded() {
                           e.stopPropagation();
                           
                         }} alignItems="center" gap={2}>
-                          <Link href={`tel:${checkedPhone(phone)}`} target="_blank">
+                          <Link href={`tel:${getPhone(trip)}`} target="_blank">
                           <Text
                             color={getActionButtonColor(
                               calculateTimeDifference(
@@ -321,7 +327,7 @@ function ActionsNeeded() {
                                   trip?.stop?.arrive_by ||
                                   trip?.deadline ||
                                   trip.timer_seconds
-                              )
+                              ), isBroker
                             )}
                           </Text>
                           </Link>

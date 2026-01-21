@@ -120,19 +120,19 @@ export const tableActionsNeeded = [
   {
     id: 1,
     name: "Customer",
-    key: "customer",
+    key: "customer.name",
     sortable: true,
   },
   {
     id: 2,
     name: "Load ID",
-    key: "loadId",
+    key: "id",
     sortable: true,
   },
   {
     id: 3,
     name: "Origin",
-    key: "origin_address",
+    key: "origin.address",
     sortable: true,
   },
   {
@@ -144,21 +144,21 @@ export const tableActionsNeeded = [
   {
     id: 5,
     name: "Destination",
-    key: "destination",
+    key: "stop.address",
     sortable: true,
   },
   {
     id: 6,
     name: "Timer",
     key: "timer",
-    sortable: true,
+    sortable: false,
   },
-  {
-    id: 7,
-    name: "Reason",
-    key: "reason",
-    sortable: true,
-  },
+  // {
+  //   id: 7,
+  //   name: "Reason",
+  //   key: "reason",
+  //   sortable: true,
+  // },
 
   {
     id: 8,
@@ -171,6 +171,6 @@ export const tableActionsNeeded = [
     id: 9,
     name: "Actions",
     key: "actions",
-    sortable: true,
+    sortable: false,
   },
 ];
