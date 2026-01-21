@@ -15,6 +15,7 @@ import {
 import {useWatch} from "react-hook-form";
 import StepRenderer from "./StepRenderer";
 import styles from "../CarrierSetup.module.scss";
+import { useSelector } from "react-redux";
 
 const SetupMain = ({
   currentStep,
@@ -41,6 +42,8 @@ const SetupMain = ({
   onPaymentOtpVerified = () => {},
   onPaymentOtpSkip = () => {},
 }) => {
+  const userData = useSelector((state) => state.auth.user_data);
+  const isBroker = Boolean(userData?.brokers_id);
   const phoneVerified = useWatch({
     control,
     name: "payment.phone_verified",
@@ -59,7 +62,7 @@ const SetupMain = ({
     (!phoneVerified || !verificationId);
   return (
     <Box className={styles.mainContent} position={"relative"}>
-      <Flex
+     {!isBroker && <Flex
         width="100%"
         bg="#FAFAFA"
         p="6px 24px"
@@ -84,7 +87,7 @@ const SetupMain = ({
             Complete your carrier profile
           </Text>
         </Box>
-      </Flex>
+      </Flex>}
       <Box className={styles.formContainer}>
         {showSuccess ? (
           <Flex

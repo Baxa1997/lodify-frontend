@@ -189,7 +189,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentIdentity {
-  margin: 10px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 600px;
   min-height: 320px;
   background: $white;
@@ -202,7 +205,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentIdentityContact {
-  margin: 50px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 600px;
   min-height: 220px;
   background: $white;
@@ -215,7 +221,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentIdentityCertifications {
-  margin: 20px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 600px;
   min-height: 320px;
   background: $white;
@@ -228,7 +237,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentOperation {
-  margin: 40px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 600px;
   min-height: 320px;
   background: $white;
@@ -255,7 +267,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentInsurance {
-  margin: 50px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 440px;
   height: 200px;
   padding: 20px;
@@ -268,7 +283,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentInsuranceWorkersComp {
-  margin: 50px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 440px;
   max-height: calc(100vh - 200px);
   padding: 20px;
@@ -301,7 +319,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentPayment {
-  margin: 50px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 400px;
   max-height: calc(100vh - 200px);
   padding: 20px;
@@ -367,7 +388,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentQuestionnaire {
-  margin: 10px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 400px;
   max-height: calc(100vh - 120px);
   padding: 20px;
@@ -407,7 +431,10 @@ $shadow-button: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .stepContentContract {
-  margin: 20px auto 0;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -50%);
   width: 400px;
   max-height: calc(100vh - 140px);
   padding: 16px;

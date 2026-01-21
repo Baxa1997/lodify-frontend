@@ -30,7 +30,7 @@ const IdentityStep = ({control, subView = 1, isEditable = false, setValue}) => {
   });
 
   const shouldDisableFields = carrierSetup !== "true";
-  // First UI (subView === 1) should always be disabled
+
   const fieldDisabled =
     subView === 1 ? true : !isEditable || shouldDisableFields;
   const isContactFieldsDisabled = carrierSetup !== "true";
