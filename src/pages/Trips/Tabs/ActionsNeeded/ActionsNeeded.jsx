@@ -1,4 +1,4 @@
-import {Box, Flex, Text, Spinner, Center, Collapse} from "@chakra-ui/react";
+import {Box, Flex, Text, Spinner, Center, Collapse, Link} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -25,6 +25,7 @@ import {tableActionsNeeded} from "../../components/mockElements";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import TimeCounter from "@components/TimeCounter";
 import TripRowDetails from "../../components/TripRowDetails";
+import checkedPhone from "@hooks/checkedPhone";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
@@ -41,7 +42,8 @@ function ActionsNeeded() {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const isBroker = Boolean(brokersId);
+
 
   const {
     data: tripsData = [],
@@ -126,6 +128,8 @@ function ActionsNeeded() {
       return newSet;
     });
   };
+
+  const phone = isBroker ? tripsData?.carrier?.telephone : tripsData?.broker?.telephone;
 
   return (
     <Box mt={"26px"}>
@@ -296,7 +300,11 @@ function ActionsNeeded() {
                       </CTableTd>
 
                       <CTableTd>
-                        <Flex alignItems="center" gap={2}>
+                        <Flex onClick={(e) => {
+                          e.stopPropagation();
+                          
+                        }} alignItems="center" gap={2}>
+                          <Link href={`tel:${checkedPhone(phone)}`} target="_blank">
                           <Text
                             color={getActionButtonColor(
                               calculateTimeDifference(
@@ -316,6 +324,7 @@ function ActionsNeeded() {
                               )
                             )}
                           </Text>
+                          </Link>
                         </Flex>
                       </CTableTd>
                     </CTableRow>
