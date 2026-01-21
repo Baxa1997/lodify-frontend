@@ -153,7 +153,9 @@ function ClosedTenders({tripType = ""}) {
             <Box as={"tr"}>
               {closedTendersTableElements
                 ?.filter((element) =>
-                  isBroker ? element.key !== "invited_by" : true
+                  isBroker
+                ? element.key !== "actions" && element.key !== "invited_by"
+                : element.key !== "carrier"
                 )
                 .map((element) => (
                   <CTableTh
@@ -233,6 +235,58 @@ function ClosedTenders({tripType = ""}) {
                         </Text>
                       </CTableTd>
 
+                      {Boolean(!isBroker) && (
+                        <CTableTd>
+                    
+                            <Flex gap="12px">
+                              <Text
+                                h="20px"
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="#535862"
+                                cursor="pointer"
+                                _hover={{textDecoration: "underline"}}>
+                                {trip?.invited_by?.legal_name ?? ""}
+                              </Text>
+                            </Flex>
+                        </CTableTd>
+                      )}
+
+                      {Boolean(isBroker) && (
+                        <CTableTd>
+                          {trip?.carrier_2?.legal_name ? (
+                            <Flex alignItems="center" gap={2}>
+                              <Flex alignItems="center" gap={2}>
+                                <Text color="#535862" fontWeight="400">
+                                  {trip?.carrier_2?.legal_name ?? ""}
+                                </Text>
+
+                        
+                              </Flex>
+                            </Flex>
+                          ) : isBroker ? (
+                            <Button
+                              bg="none"
+                              border="none"
+                              color="#EF6820"
+                              fontWeight="600"
+                              px="0"
+                              _hover={{bg: "none"}}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsAssignCarrierModalOpen(true);
+                                setSelectedRow({
+                                  trip: trip,
+                                });
+                              }}>
+                              Assign
+                            </Button>
+                          ) : (
+                            ""
+                          )}
+                        </CTableTd>
+                      )}
+
                       <CTableTd minWidth="180px">
                         <Flex
                           gap="24px"
@@ -244,16 +298,7 @@ function ClosedTenders({tripType = ""}) {
                         </Flex>
                       </CTableTd>
 
-                      <CTableTd minWidth="180px">
-                        <Flex
-                          gap="24px"
-                          alignItems="center"
-                          justifyContent="space-between">
-                          <Text color="#181D27" cursor="pointer">
-                            {trip.reason || ""}
-                          </Text>
-                        </Flex>
-                      </CTableTd>
+                   
 
                       <CTableTd minWidth="180px">
                         <Flex gap="12px" alignItems="center">
