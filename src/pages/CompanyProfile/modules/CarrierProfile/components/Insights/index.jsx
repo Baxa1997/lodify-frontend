@@ -30,6 +30,7 @@ import {useMemo, useState, useEffect} from "react";
 import {EquipmentMatch} from "./EquipmentMatch";
 
 function Insights({
+  vinMatchData,
   vinMatchesData,
   addressMatchesBodyData,
   new_info,
@@ -212,7 +213,7 @@ function Insights({
     setAccordionIndex([]);
     setInsightsDetailsIndex([]);
   }, [companiesId]);
-  console.log("pendingInsuranceDatapendingInsuranceData", pendingInsuranceData);
+
   return (
     <InfoAccordionItem id="insights" index={accordionIndex}>
       <InfoAccordionButton>
@@ -270,15 +271,31 @@ function Insights({
                   <AssosiationReport
                     label="Broker Authority is Active"
                     insight={{date: "Observed March, 2024"}}
+                    matchData={{
+                      status: new_info?.broker_stat,
+                      authority: "Active"
+                    }}
+                    matchTitle="Broker Authority Status"
+                    matchDescription="Broker authority is currently active"
                   />
                 )}
                 {pendingInsuranceData?.some(
                   (insurance) => insurance?.cancl_effective_date
                 ) && (
-                  <AssosiationReport
-                    label="Insurance will be expired"
-                    insight={{date: insurance?.cancl_effective_date}}
-                  />
+                  pendingInsuranceData
+                    .filter((insurance) => insurance?.cancl_effective_date)
+                    .map((insurance, index) => (
+                      <AssosiationReport
+                        key={`insurance-${index}`}
+                        label="Insurance will be expired"
+                        insight={{date: insurance?.cancl_effective_date}}
+                        matchData={{
+                          expiration_date: insurance?.cancl_effective_date,
+                        }}
+                        matchTitle="Insurance Expiration"
+                        matchDescription={`Insurance will be expired on ${insurance?.cancl_effective_date}`}
+                      />
+                    ))
                 )}
                 {associationInsights
                   ?.filter((insight) => !insight.filtered)
@@ -289,52 +306,98 @@ function Insights({
                   <AssosiationReport
                     label="Physical Address"
                     insight={{date: "Matched"}}
+                    matchData={{
+                      matches: addressMatchesBodyData.physical_address.length,
+                    }}
+                    matchTitle="Physical Address Match"
+                    matchDescription={`Physical address was matching. Found ${addressMatchesBodyData.physical_address.length} match(es)`}
                   />
                 )}
                 {addressMatchesBodyData?.mailing_address?.length > 0 && (
                   <AssosiationReport
                     label="Mailing Address"
                     insight={{date: "Matched"}}
+                    matchData={{
+                      matches: addressMatchesBodyData.mailing_address.length,
+                    }}
+                    matchTitle="Mailing Address Match"
+                    matchDescription={`Mailing address was matching. Found ${addressMatchesBodyData.mailing_address.length} match(es)`}
                   />
                 )}
                 {company_officer_1?.length > 0 && (
                   <AssosiationReport
                     label="Company Officer 1"
                     insight={{date: "Matched"}}
+                    matchData={{
+                      matches: company_officer_1.length,
+                    }}
+                    matchTitle="Company Officer 1 Match"
+                    matchDescription={`Company Officer 1 was matching. Found ${company_officer_1.length} match(es)`}
                   />
                 )}
                 {company_officer_2?.length > 0 && (
                   <AssosiationReport
                     label="Company Officer 2"
                     insight={{date: "Matched"}}
+                    matchData={{
+                      matches: company_officer_2.length,
+                    }}
+                    matchTitle="Company Officer 2 Match"
+                    matchDescription={`Company Officer 2 was matching. Found ${company_officer_2.length} match(es)`}
                   />
                 )}
                 {email?.length > 0 && (
                   <AssosiationReport
                     label="Email"
                     insight={{date: "Matched"}}
+                    matchData={{
+                      matches: email.length,
+                    }}
+                    matchTitle="Email Match"
+                    matchDescription={`Email was matching. Found ${email.length} match(es)`}
                   />
                 )}
                 {phone?.length > 0 && (
                   <AssosiationReport
                     label="Phone"
                     insight={{date: "Matched"}}
+                    matchData={{
+                      matches: phone.length,
+                    }}
+                    matchTitle="Phone Match"
+                    matchDescription={`Phone was matching. Found ${phone.length} match(es)`}
                   />
                 )}
                 {vinMatchesData?.length > 0 && (
                   <AssosiationReport
-                  vinMatchesData={vinMatchesData}
                     label="VIN Match"
                     insight={{date: "Observed March, 2024"}}
+                    matchData={vinMatchData}
+                    matchTitle="VIN Match Details"
+                    matchDescription={vinMatchData?.percentage ? `VIN match was matching. Percentage is ${vinMatchData.percentage}%` : "VIN match information"}
                   />
                 )}
-                {changedFields?.map((field, index) => (
-                  <AssosiationReport
-                    key={`changed-${field.key}-${index}`}
-                    label={field.label}
-                    insight={{date: "Changed"}}
-                  />
-                ))}
+                {changedFields?.map((field, index) => {
+                  const matchDataObj = {
+                    old_value: field.oldValue,
+                    new_value: field.newValue,
+                  };
+                  
+                  if (field.addedTime) {
+                    matchDataObj.changed_at = field.addedTime;
+                  }
+
+                  return (
+                    <AssosiationReport
+                      key={`changed-${field.key}-${index}`}
+                      label={field.label}
+                      insight={field.addedTime ? {date: "Changed"} : {}}
+                      matchData={matchDataObj}
+                      matchTitle={`${field.label} Change Details`}
+                      matchDescription={`${field.label} was changed from previous value`}
+                    />
+                  );
+                })}
               </VStack>
             </Box>
             {virtualAddressData?.length > 0 && (

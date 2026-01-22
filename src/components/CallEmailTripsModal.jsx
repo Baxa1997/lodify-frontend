@@ -5,13 +5,14 @@ import { FiPhone, FiMail } from 'react-icons/fi'
 import checkedPhone from '@hooks/checkedPhone'
 
 const CallEmailTripsModal = ({trip = {}, isBroker, children}) => {
+
   const getPhone = (trip) => {
-    return isBroker ? checkedPhone(trip?.carrier?.telephone) : checkedPhone(trip?.current_driver_phone || trip?.drivers?.phone);
+    return isBroker ? checkedPhone(trip?.carrier?.telephone) : checkedPhone(trip?.current_driver_contact?.phone || trip?.current_driver_phone || trip?.drivers?.phone);
   }
 
   const getEmail = (trip) => {
 
-    return isBroker ? trip?.carrier?.email : trip?.drivers?.email || trip?.current_driver_email;
+    return isBroker ? trip?.carrier?.email : trip?.current_driver_contact?.email || trip?.drivers?.email || trip?.current_driver_email;
   }
 
   const phone = getPhone(trip);

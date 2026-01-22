@@ -88,7 +88,8 @@ export const powerUnits = ({new_info, uncategorizedCount}) => {
     },
     {
       title: "Box Trucks",
-      count: new_info?.truck_units,
+      // count: new_info?.truck_units,
+      count: 0
     },
 
     {

@@ -30,7 +30,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
     setAccordionIndex([]);
   }, [companies_id]);
 
-  const {data: vinMatchesData} = useQuery({
+  const {data: vinMatchesData = {}} = useQuery({
     queryKey: ["GET_VIN_MATCHES_DATA", companies_id],
     queryFn: () =>
       carrierService.getMatchedData({
@@ -42,7 +42,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
           table: "matches",
         },
       }),
-    select: (res) => res?.data?.response || [],
+    select: (res) => res?.data || {},
     enabled: Boolean(companies_id),
   });
 
@@ -119,7 +119,8 @@ export const Overview = ({carrierDetails, generalInfo}) => {
           <Box id="insights" key={`insights-wrapper-${companies_id}`}>
             <Insights
               new_info={new_info}
-              vinMatchesData={vinMatchesData}
+              vinMatchData={{percentage: vinMatchesData?.percentage, matched_vin: vinMatchesData?.matched_vins, total_vins: vinMatchesData?.total_vins}}
+              vinMatchesData={vinMatchesData?.response}
               contactsMatchesData={contactsMatchesData}
               addressMatchesBodyData={addressMatchesBodyData}
               pendingInsuranceData={pendingInsuranceData}
@@ -162,7 +163,7 @@ export const Overview = ({carrierDetails, generalInfo}) => {
             <MatchedData
               contactsMatchesData={contactsMatchesData}
               ipMatchesData={addressMatchesBodyData?.ip_address}
-              vinMatchesData={vinMatchesData}
+              vinMatchesData={vinMatchesData?.response}
               addressMatchesBodyData={addressMatchesBodyData}
             />
           </Box>

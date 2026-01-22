@@ -1,9 +1,14 @@
 import React from "react";
 import {Flex, Box, Text} from "@chakra-ui/react";
-import {AiOutlineExclamationCircle} from "react-icons/ai";
+import {VinmatchedData} from "./VinmatchedData";
 
-export const AssosiationReport = ({insight, label = ""}) => {
-  console.log('insightinsight', insight)
+export const AssosiationReport = ({
+  insight,
+  label = "",
+  matchData = {},
+  matchTitle = "",
+  matchDescription = "",
+}) => {
   return (
     <Flex
       minW="280px"
@@ -17,18 +22,19 @@ export const AssosiationReport = ({insight, label = ""}) => {
         <Text color="#181D27" fontSize="14px" fontWeight="500">
           {label || insight?.title}
         </Text>
-        <Text color="#6B7280" fontSize="14px" fontWeight="400">
-          {insight?.date}
-        </Text>
+        {insight?.date && (
+          <Text color="#6B7280" fontSize="14px" fontWeight="400">
+            {insight?.date}
+          </Text>
+        )}
       </Box>
-      <Box>
-        <AiOutlineExclamationCircle
-          width="20px"
-          height="20px"
-          fontSize="20px"
-          color="#EF6820"
+      {Object.keys(matchData).length > 0 && (
+        <VinmatchedData
+          matchData={matchData}
+          title={matchTitle}
+          description={matchDescription}
         />
-      </Box>
+      )}
     </Flex>
   );
 };
