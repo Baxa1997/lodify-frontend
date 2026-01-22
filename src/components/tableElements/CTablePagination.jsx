@@ -9,6 +9,7 @@ const CTablePagination = ({
   pageSizeOptions = [10, 25, 50, 100],
   onPageChange,
   onPageSizeChange,
+  rightContent,
   ...props
 }) => {
   return (
@@ -56,6 +57,7 @@ const CTablePagination = ({
       <Flex
         alignItems="center"
         gap={"12px"}>
+        {rightContent}
         <Button
           h={"32px"}
           p={"8px 14px"}

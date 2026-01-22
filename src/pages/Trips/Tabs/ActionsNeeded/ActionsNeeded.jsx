@@ -1,4 +1,4 @@
-import {Box, Flex, Text, Spinner, Center, Collapse, Link} from "@chakra-ui/react";
+import {Box, Flex, Text, Spinner, Center, Collapse, Link, Checkbox, Button, useToast} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -10,7 +10,7 @@ import CTableRow from "@components/tableElements/CTableRow";
 import {EmptyState} from "@components/tableElements/EmptyState";
 import {FiAlertCircle} from "react-icons/fi";
 import tripsService from "@services/tripsService";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
 import {
   calculateTimeDifference,
@@ -28,6 +28,7 @@ import TripRowDetails from "../../components/TripRowDetails";
 import checkedPhone from "@hooks/checkedPhone";
 import { useSort } from "@hooks/useSort";
 import useDebounce from "@hooks/useDebounce";
+import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
@@ -38,7 +39,11 @@ function ActionsNeeded() {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedTrips, setSelectedTrips] = useState(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const tableScrollRef = useRef(null);
+  const toast = useToast();
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
@@ -47,6 +52,7 @@ function ActionsNeeded() {
   );
   const isBroker = Boolean(brokersId);
   const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
 
   const {
     data: tripsData = [],
@@ -160,6 +166,91 @@ const columnWidths = {
 
 const {items: sortedTrips} = useSort(trips, sortConfig);
 
+  // Checkbox handlers
+  const handleSelectTrip = (tripGuid, isChecked) => {
+    setSelectedTrips((prev) => {
+      const newSet = new Set(prev);
+      if (isChecked) {
+        newSet.add(tripGuid);
+      } else {
+        newSet.delete(tripGuid);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = (isChecked) => {
+    if (isChecked) {
+      const allGuids = new Set(sortedTrips.map((trip) => trip.guid).filter(Boolean));
+      setSelectedTrips(allGuids);
+    } else {
+      setSelectedTrips(new Set());
+    }
+  };
+
+  const isAllSelected = sortedTrips.length > 0 && sortedTrips.every((trip) => selectedTrips.has(trip.guid));
+  const isIndeterminate = selectedTrips.size > 0 && !isAllSelected;
+
+  // Delete handler - opens confirmation modal
+  const handleDelete = () => {
+    if (selectedTrips.size === 0) return;
+    setIsDeleteModalOpen(true);
+  };
+
+  // Confirm delete - actually performs the deletion
+  const handleConfirmDelete = async () => {
+    if (selectedTrips.size === 0) return;
+
+    const selectedCount = selectedTrips.size;
+    setIsDeleting(true);
+    try {
+      // TODO: Replace with actual delete API call
+      // For now, using updateTripWith as a placeholder
+      const deletePromises = Array.from(selectedTrips).map((guid) =>
+        tripsService.updateTripWith({
+          app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+          environment_id: envId,
+          method: "delete",
+          object_data: {
+            guid: guid,
+          },
+          table: "late_trips",
+        })
+      );
+
+      await Promise.all(deletePromises);
+
+      // Invalidate queries to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["ACTIONS_NEEDED_TRIPS"] });
+
+      setSelectedTrips(new Set());
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+
+      toast({
+        title: "Trips Deleted",
+        description: `${selectedCount} trip(s) deleted successfully`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error deleting trips:", error);
+      setIsDeleting(false);
+      toast({
+        title: "Error",
+        description: "Failed to delete trips. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+  };
 
   return (
     <Box mt={"26px"}>
@@ -182,12 +273,62 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
           totalPages={totalPages}
           pageSize={pageSize}
           onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}>
+          onPageSizeChange={handlePageSizeChange}
+          paginationRightContent={
+            selectedTrips.size > 0 ? (
+              <Button
+                colorScheme="red"
+                onClick={handleDelete}
+                h={"32px"}
+                p={"8px 14px"}
+                borderRadius={"8px"}
+                size="sm"
+                fontWeight={"600"}>
+                Delete ({selectedTrips.size})
+              </Button>
+            ) : null
+          }>
           <CTableHead zIndex={1}>
             <Box as={"tr"}>
+              
               {tableActionsNeeded
                 ?.filter((element) => element.key !== "invited_by")
-                .map((element) => (
+                .map((element, index) => (
+                  index === 0 ? (
+                    <CTableTh
+                zIndex={-1}
+                width="50px"
+                w="50px"
+                maxW="50px"
+                minW="50px"
+                p='10px'
+                sortable={false}>
+                <Checkbox
+                  ml='4px'
+                  isChecked={isAllSelected}
+                  isIndeterminate={isIndeterminate}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  borderColor="#D5D7DA"
+                  sx={{
+                    "& .chakra-checkbox__control": {
+                      borderColor: "#D5D7DA",
+                      _checked: {
+                        bg: "#FF5B04",
+                        borderColor: "#FF5B04",
+                        _hover: {
+                          bg: "#FF5B04",
+                          borderColor: "#FF5B04",
+                        },
+                      },
+                      _indeterminate: {
+                        bg: "#FF5B04",
+                        borderColor: "#FF5B04",
+                      },
+                    },
+                  }}
+                />
+              </CTableTh>
+                  ) : (
                   <CTableTh
                     zIndex={-1}
                     width={columnWidths[element.key] || "auto"}
@@ -203,6 +344,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                     onSort={() => handleSort(element.key)}>
                     {element.name}
                   </CTableTh>
+                )
                 ))}
             </Box>
           </CTableHead>
@@ -211,7 +353,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
             {isLoading ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableActionsNeeded.length}
+                  colSpan={tableActionsNeeded.length + 1}
                   textAlign="center"
                   py={8}>
                   <Center minH="400px">
@@ -222,7 +364,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
             ) : error ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableActionsNeeded.length}
+                  colSpan={tableActionsNeeded.length + 1}
                   textAlign="center"
                   py={8}
                   color="red.500">
@@ -232,7 +374,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
             ) : trips.length === 0 ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableActionsNeeded.length}
+                  colSpan={tableActionsNeeded.length + 1}
                   textAlign="center"
                   p={0}
                   border="none">
@@ -246,6 +388,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
             ) : (
               sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.guid);
+                const isSelected = selectedTrips.has(trip.guid);
                 return (
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
@@ -255,6 +398,33 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                       bg={getRowBackgroundColor(
                         calculateTimeDifference(trip?.origin?.[0]?.arrive_by)
                       )}>
+                      <CTableTd
+                        width="50px"
+                        minW="50px"
+                        maxW="50px"
+                        p='10px'
+                        onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          ml='6px'
+                          isChecked={isSelected}
+                          onChange={(e) => handleSelectTrip(trip.guid, e.target.checked)}
+                          borderColor="#D5D7DA"
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{
+                            "& .chakra-checkbox__control": {
+                              borderColor: "#D5D7DA",
+                              _checked: {
+                                bg: "#FF5B04",
+                                borderColor: "#FF5B04",
+                                _hover: {
+                                  bg: "#FF5B04",
+                                  borderColor: "#FF5B04",
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </CTableTd>
                       <CTableTd 
                         width={columnWidths["shipper.name"]} 
                         minW={columnWidths["shipper.name"]} 
@@ -397,7 +567,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                     </CTableRow>
 
                     <CTableRow>
-                      <CTableTd colSpan={tableActionsNeeded.length} p={0}>
+                      <CTableTd colSpan={tableActionsNeeded.length + 1} p={0}>
                         <Collapse
                           position="relative"
                           in={isExpanded}
@@ -419,6 +589,15 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
           </CTableBody>
         </CTable>
       </Box>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Trips"
+        message={`Are you sure you want to delete ${selectedTrips.size} trip(s)? This action cannot be undone.`}
+        isLoading={isDeleting}
+      />
     </Box>
   );
 }

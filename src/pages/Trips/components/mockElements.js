@@ -118,6 +118,12 @@ export function getShortFileName(url, maxBaseLength = 5) {
 
 export const tableActionsNeeded = [
   {
+    id: 0,
+    name: "",
+    key: "checkbox",
+    sortable: false,
+  },
+  {
     id: 1,
     name: "Customer",
     key: "shipper.name",

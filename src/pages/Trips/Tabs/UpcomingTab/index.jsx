@@ -9,9 +9,11 @@ import {
   VStack,
   Spinner,
   Center,
+  Checkbox,
+  useToast,
 } from "@chakra-ui/react";
 import React, {useState, useRef} from "react";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
@@ -43,6 +45,7 @@ import TractorAssignmentModal from "./components/TractorAssignmentModal";
 import TrailerAssignmentMenu from "./components/TrailerAssignmentMenu";
 import TrailerAssignmentModal from "./components/TrailerAssignmentModal";
 import {useUpcomingProps} from "./components/useUpcomingProps";
+import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -88,7 +91,12 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedTrips, setSelectedTrips] = useState(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const tableScrollRef = useRef(null);
+  const toast = useToast();
+  const queryClient = useQueryClient();
   const envId = useSelector((state) => state.auth.environmentId);
   const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
@@ -221,6 +229,88 @@ function UpcomingTab({tripType = "", isActive = true}) {
     return hasUnassignedTrailer ? "220px" : "auto";
   };
 
+  // Checkbox handlers
+  const handleSelectTrip = (tripGuid, isChecked) => {
+    setSelectedTrips((prev) => {
+      const newSet = new Set(prev);
+      if (isChecked) {
+        newSet.add(tripGuid);
+      } else {
+        newSet.delete(tripGuid);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = (isChecked) => {
+    if (isChecked) {
+      const allGuids = new Set(trips.map((trip) => trip.guid || trip.id).filter(Boolean));
+      setSelectedTrips(allGuids);
+    } else {
+      setSelectedTrips(new Set());
+    }
+  };
+
+  const isAllSelected = trips.length > 0 && trips.every((trip) => selectedTrips.has(trip.guid || trip.id));
+  const isIndeterminate = selectedTrips.size > 0 && !isAllSelected;
+
+  // Delete handler - opens confirmation modal
+  const handleDelete = () => {
+    if (selectedTrips.size === 0) return;
+    setIsDeleteModalOpen(true);
+  };
+
+  // Confirm delete - actually performs the deletion
+  const handleConfirmDelete = async () => {
+    if (selectedTrips.size === 0) return;
+
+    const selectedCount = selectedTrips.size;
+    setIsDeleting(true);
+    try {
+      const deletePromises = Array.from(selectedTrips).map((guid) =>
+        tripsService.updateTripWith({
+          app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+          environment_id: envId,
+          method: "delete",
+          object_data: {
+            guid: guid,
+          },
+          table: "trips",
+        })
+      );
+
+      await Promise.all(deletePromises);
+
+      queryClient.invalidateQueries({ queryKey: ["UPCOMING_TRIPS"] });
+
+      setSelectedTrips(new Set());
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+
+      toast({
+        title: "Trips Deleted",
+        description: `${selectedCount} trip(s) deleted successfully`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error deleting trips:", error);
+      setIsDeleting(false);
+      toast({
+        title: "Error",
+        description: "Failed to delete trips. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+  };
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -242,9 +332,56 @@ function UpcomingTab({tripType = "", isActive = true}) {
           totalPages={totalPages}
           pageSize={pageSize}
           onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}>
+          onPageSizeChange={handlePageSizeChange}
+          paginationRightContent={
+            selectedTrips.size > 0 ? (
+              <Button
+                colorScheme="red"
+                onClick={handleDelete}
+                h={"32px"}
+                p={"8px 14px"}
+                borderRadius={"8px"}
+                size="sm"
+                fontWeight={"600"}>
+                Delete ({selectedTrips.size})
+              </Button>
+            ) : null
+          }>
           <CTableHead zIndex={8}>
             <Box as={"tr"}>
+              <CTableTh
+                p='10px'
+                zIndex={-1}
+                width="50px"
+                w="50px"
+                maxW="50px"
+                minW="50px"
+                sortable={false}>
+                <Checkbox
+                  ml='4px'
+                  isChecked={isAllSelected}
+                  isIndeterminate={isIndeterminate}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  borderColor="#D5D7DA"
+                  sx={{
+                    "& .chakra-checkbox__control": {
+                      borderColor: "#D5D7DA",
+                      _checked: {
+                        bg: "#FF5B04",
+                        borderColor: "#FF5B04",
+                        _hover: {
+                          bg: "#FF5B04",
+                          borderColor: "#FF5B04",
+                        },
+                      },
+                      _indeterminate: {
+                        bg: "#FF5B04",
+                        borderColor: "#FF5B04",
+                      },
+                    },
+                  }}
+                />
+              </CTableTh>
               {getOrderedColumns().map((element) => (
                 <CTableTh
                   maxW="334px"
@@ -347,7 +484,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
             {isLoading ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={getOrderedColumns().length + 1}
                   textAlign="center"
                   py={8}>
                   <Center minH="400px">
@@ -358,7 +495,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
             ) : trips.length === 0 ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.length}
+                  colSpan={getOrderedColumns().length + 1}
                   textAlign="center"
                   p={0}
                   border="none">
@@ -372,6 +509,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
             ) : (
               trips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
+                const isSelected = selectedTrips.has(trip.guid || trip.id);
                 return (
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
@@ -382,6 +520,33 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       onClick={(e) =>
                         toggleRowExpansion(trip.id || trip.guid, e)
                       }>
+                      <CTableTd
+                        width="50px"
+                        minW="50px"
+                        maxW="50px"
+                        p='10px'
+                        onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          ml='6px'
+                          isChecked={isSelected}
+                          onChange={(e) => handleSelectTrip(trip.guid || trip.id, e.target.checked)}
+                          borderColor="#D5D7DA"
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{
+                            "& .chakra-checkbox__control": {
+                              borderColor: "#D5D7DA",
+                              _checked: {
+                                bg: "#FF5B04",
+                                borderColor: "#FF5B04",
+                                _hover: {
+                                  bg: "#FF5B04",
+                                  borderColor: "#FF5B04",
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </CTableTd>
                       <CTableTd>
                         <Text color="#181D27">{trip.customer?.name || ""}</Text>
                       </CTableTd>
@@ -698,7 +863,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                     </CTableRow>
 
                     <CTableRow>
-                      <CTableTd colSpan={tableElements.length} p={0}>
+                      <CTableTd colSpan={getOrderedColumns().length + 1} p={0}>
                         <Collapse
                           position="relative"
                           in={isExpanded}
@@ -760,6 +925,15 @@ function UpcomingTab({tripType = "", isActive = true}) {
           setSelectedTripForTrailerAssignment(null);
         }}
         trip={selectedTripForTrailerAssignment}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Trips"
+        message={`Are you sure you want to delete ${selectedTrips.size} trip(s)? This action cannot be undone.`}
+        isLoading={isDeleting}
       />
     </Box>
   );

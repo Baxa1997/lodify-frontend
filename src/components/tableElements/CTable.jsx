@@ -15,6 +15,7 @@ const CTable = ({
   w = "100%",
   isPagination = true,
   scrollRef = null,
+  paginationRightContent,
   ...props
 }) => {
   const heightProps = {};
@@ -76,6 +77,7 @@ const CTable = ({
           pageSize={pageSize}
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
+          rightContent={paginationRightContent}
         />
       )}
     </Box>

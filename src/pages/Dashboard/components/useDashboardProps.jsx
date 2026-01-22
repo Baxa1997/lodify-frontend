@@ -149,6 +149,7 @@ const useDashboardProps = () => {
   const tripsData = [
     {
       title: "Upcoming",
+      tab: "upcoming",
       total: tripsCountData?.upcoming?.count,
       gaugeValue: tripsCountData?.upcoming?.late_count,
       gaugeLabel: calculateGaugeLabel(
@@ -162,6 +163,7 @@ const useDashboardProps = () => {
     },
     {
       title: "In Transit",
+      tab: "transit",
       total: tripsCountData?.in_transit?.count,
       gaugeValue: tripsCountData?.in_transit?.late_count,
       gaugeLabel: calculateGaugeLabel(
@@ -175,6 +177,7 @@ const useDashboardProps = () => {
     },
     {
       title: "History",
+      tab: "history",
       total: tripsCountData?.history?.count,
       gaugeValue: tripsCountData?.history?.late_count,
       gaugeLabel: calculateGaugeLabel(
