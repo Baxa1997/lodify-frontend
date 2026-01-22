@@ -37,6 +37,9 @@ function Insights({
   contactsMatchesData,
   pendingInsuranceData,
 }) {
+
+  console.log("contactsMatchesDatacontactsMatchesData", contactsMatchesData)
+  console.log("pendingInsuranceDatapendingInsuranceData", pendingInsuranceData)
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const companiesId = searchParams.get("id");
@@ -615,7 +618,7 @@ function Insights({
                                   ...item,
                                   fieldLabel: "Company Officer 1",
                                   address:
-                                    item?.name ||
+                                    item?.company_officer_1 ||
                                     item?.officer_name ||
                                     item?.contact ||
                                     "Not available",
@@ -632,7 +635,7 @@ function Insights({
                                   ...item,
                                   fieldLabel: "Company Officer 2",
                                   address:
-                                    item?.name ||
+                                    item?.company_officer_2 ||
                                     item?.officer_name ||
                                     item?.contact ||
                                     "Not available",

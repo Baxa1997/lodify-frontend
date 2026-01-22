@@ -297,10 +297,28 @@ const MyCarriers = () => {
                       fontWeight="700"
                       fontSize="14px"
                       _hover={{bg: "#FEF3EE"}}
-                      onClick={() => handleViewCarrier(carrier)}>
+                      onClick={() =>
+                        navigate(`/carrier-setup?id=${carrier.guid}`)
+                      }>
                       View
                     </Button>
                   </Flex>
+
+                  {/* <Flex
+                    p="10px 24px"
+                    borderTop="1px solid #E2E8F0"
+                    justify="flex-end">
+                    <Button
+                      size="sm"
+                      color="#EF6820"
+                      variant="ghost"
+                      fontWeight="700"
+                      fontSize="14px"
+                      _hover={{bg: "#FEF3EE"}}
+                      onClick={() => handleViewCarrier(carrier)}>
+                      View
+                    </Button>
+                  </Flex> */}
                 </Box>
               );
             })}

@@ -180,6 +180,10 @@ const AllCarriers = () => {
     return name.substring(0, 2).toUpperCase();
   };
 
+  const handleViewCarrier = (carrier) => {
+    navigate(`/admin/company?id=${carrier.guid}`);
+  };
+
   return (
     <Box>
       <Box mt="20px" mb="16px">
@@ -325,7 +329,7 @@ const AllCarriers = () => {
                     )}
                   </HStack>
 
-                  <Flex
+                  {/* <Flex
                     p="10px 24px"
                     borderTop="1px solid #E2E8F0"
                     justify="flex-end">
@@ -340,6 +344,22 @@ const AllCarriers = () => {
                         navigate(`/carrier-setup?id=${carrier.guid}`)
                       }>
                       Set up
+                    </Button>
+                  </Flex> */}
+
+                    <Flex
+                    p="10px 24px"
+                    borderTop="1px solid #E2E8F0"
+                    justify="flex-end">
+                    <Button
+                      size="sm"
+                      color="#EF6820"
+                      variant="ghost"
+                      fontWeight="700"
+                      fontSize="14px"
+                      _hover={{bg: "#FEF3EE"}}
+                      onClick={() => handleViewCarrier(carrier)}>
+                      Set Up
                     </Button>
                   </Flex>
                 </Box>
