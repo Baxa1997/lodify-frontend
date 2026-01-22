@@ -255,13 +255,23 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                       bg={getRowBackgroundColor(
                         calculateTimeDifference(trip?.origin?.[0]?.arrive_by)
                       )}>
-                      <CTableTd width={columnWidths["shipper.name"]} minW={columnWidths["shipper.name"]} maxW={columnWidths["shipper.name"]}>
+                      <CTableTd 
+                        width={columnWidths["shipper.name"]} 
+                        minW={columnWidths["shipper.name"]} 
+                        maxW={columnWidths["shipper.name"]}
+                        overflow="hidden"
+                        textOverflow="ellipsis">
                         <Text color="#181D27" noOfLines={1}>
                           {trip.customer?.name || trip?.shipper?.name || ""}
                         </Text>
                       </CTableTd>
 
-                      <CTableTd width={columnWidths["id"]} minW={columnWidths["id"]} maxW={columnWidths["id"]}>
+                      <CTableTd 
+                        width={columnWidths["id"]} 
+                        minW={columnWidths["id"]} 
+                        maxW={columnWidths["id"]}
+                        overflow="hidden"
+                        textOverflow="ellipsis">
                         <Flex
                           gap="24px"
                           alignItems="center"
@@ -270,7 +280,12 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         </Flex>
                       </CTableTd>
 
-                      <CTableTd width={columnWidths["origin.address"]} minW={columnWidths["origin.address"]} maxW={columnWidths["origin.address"]}>
+                      <CTableTd 
+                        width={columnWidths["origin.address"]} 
+                        minW={columnWidths["origin.address"]} 
+                        maxW={columnWidths["origin.address"]}
+                        whiteSpace="normal"
+                        overflow="hidden">
                         <Flex
                           alignItems="center"
                           gap="16px"
@@ -294,7 +309,12 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         </Flex>
                       </CTableTd>
 
-                      <CTableTd width={columnWidths["stop.address"]} minW={columnWidths["stop.address"]} maxW={columnWidths["stop.address"]}>
+                      <CTableTd 
+                        width={columnWidths["stop.address"]} 
+                        minW={columnWidths["stop.address"]} 
+                        maxW={columnWidths["stop.address"]}
+                        whiteSpace="normal"
+                        overflow="hidden">
                         <Box>
                           <Flex
                             gap="16px"
@@ -317,7 +337,11 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         </Box>
                       </CTableTd>
 
-                      <CTableTd width={columnWidths["timer"]} minW={columnWidths["timer"]} maxW={columnWidths["timer"]}>
+                      <CTableTd 
+                        width={columnWidths["timer"]} 
+                        minW={columnWidths["timer"]} 
+                        maxW={columnWidths["timer"]}
+                        overflow="hidden">
                         <TimeCounter arriveBy={trip?.stop?.arrive_by} />
                       </CTableTd>
 
@@ -327,13 +351,22 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         </Text>
                       </CTableTd> */}
 
-                      <CTableTd width={columnWidths["total_miles"]} minW={columnWidths["total_miles"]} maxW={columnWidths["total_miles"]}>
+                      <CTableTd 
+                        width={columnWidths["total_miles"]} 
+                        minW={columnWidths["total_miles"]} 
+                        maxW={columnWidths["total_miles"]}
+                        overflow="hidden"
+                        textOverflow="ellipsis">
                         <Text color="#181D27">
                           {trip?.total_miles?.toFixed(0) ?? "-"} miles
                         </Text>
                       </CTableTd>
 
-                      <CTableTd width={columnWidths["actions"]} minW={columnWidths["actions"]} maxW={columnWidths["actions"]}>
+                      <CTableTd 
+                        width={columnWidths["actions"]} 
+                        minW={columnWidths["actions"]} 
+                        maxW={columnWidths["actions"]}
+                        overflow="hidden">
                         <Flex onClick={(e) => {
                           e.stopPropagation();
                           
