@@ -1,4 +1,4 @@
-import {Box, Center, Flex, Spinner, Text} from "@chakra-ui/react";
+import {Box, Button, Center, Collapse, Flex, Spinner, Text} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -9,16 +9,21 @@ import {
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
 import {useQuery} from "@tanstack/react-query";
-import React, {useState} from "react";
-import {useSelector} from "react-redux";
+import React, {useRef, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {format} from "date-fns";
 import TenderInvitationsFiltersComponent from "../../components/TenderInvitationsFiltersComponent";
 import {closedTendersTableElements} from "../../hooks";
+import TripRowDetails from "../../components/TripRowDetails";
+import { sidebarActions } from "@store/sidebar";
 
 function ClosedTenders({tripType = ""}) {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const tableScrollRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedRows, setExpandedRows] = useState(new Set());
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,7 +133,29 @@ function ClosedTenders({tripType = ""}) {
     return `${displayHour}:${formattedMinute} ${ampm}`;
   }
 
-  return (
+  const handleRowClick = (id, trip) => {
+    setIsExpanded(!isExpanded);
+    dispatch(sidebarActions.setSidebar(false));
+    navigate(`/admin/trips/${id}`, {
+      state: {
+        label: `${trip?.drivers?.first_name}.${trip?.drivers?.last_name}`,
+      },
+    });
+  };
+
+  const toggleRowExpansion = (tripId, event) => {
+    event.stopPropagation();
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(tripId)) {
+        newSet.delete(tripId);
+      } else {
+        newSet.add(tripId);
+      }
+      return newSet;
+    });
+  };
+    return (
     <Box mt={"26px"}>
       <TenderInvitationsFiltersComponent
         filterButton={true}
@@ -208,13 +235,18 @@ function ClosedTenders({tripType = ""}) {
               </CTableRow>
             ) : (
               trips?.map((trip, index) => {
+                const isExpanded = expandedRows.has(trip.id || trip.guid);
                 return (
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
+                      onClick={(e) =>
+                        toggleRowExpansion(trip.id || trip.guid, e)
+                      }
                       style={{
                         backgroundColor: "white",
                         cursor: "pointer",
-                      }}>
+                      }}
+                      hover={false}>
                       <CTableTd>
                         <Flex
                           w="80px"
@@ -320,6 +352,30 @@ function ClosedTenders({tripType = ""}) {
                             {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
                           </Text>
                         </Flex>
+                      </CTableTd>
+                    </CTableRow>
+                    <CTableRow>
+                      <CTableTd
+                        colSpan={
+                          closedTendersTableElements?.filter((element) =>
+                            isBroker
+                              ? element.key !== "actions"
+                              : element.key !== "carrier"
+                          ).length || closedTendersTableElements.length
+                        }
+                        p={0}>
+                        <Collapse
+                          position="relative"
+                          in={isExpanded}
+                          animateOpacity>
+                          <TripRowDetails
+                            handleRowClick={handleRowClick}
+                            trip={trip}
+                            isExpanded={isExpanded}
+                            tableScrollRef={tableScrollRef}
+                            navigate={navigate}
+                          />
+                        </Collapse>
                       </CTableTd>
                     </CTableRow>
                   </React.Fragment>
