@@ -229,7 +229,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
     return hasUnassignedTrailer ? "220px" : "auto";
   };
 
-  // Checkbox handlers
+
   const handleSelectTrip = (tripGuid, isChecked) => {
     setSelectedTrips((prev) => {
       const newSet = new Set(prev);
@@ -254,32 +254,29 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const isAllSelected = trips.length > 0 && trips.every((trip) => selectedTrips.has(trip.guid || trip.id));
   const isIndeterminate = selectedTrips.size > 0 && !isAllSelected;
 
-  // Delete handler - opens confirmation modal
   const handleDelete = () => {
     if (selectedTrips.size === 0) return;
     setIsDeleteModalOpen(true);
   };
 
-  // Confirm delete - actually performs the deletion
+
   const handleConfirmDelete = async () => {
     if (selectedTrips.size === 0) return;
 
     const selectedCount = selectedTrips.size;
     setIsDeleting(true);
     try {
-      const deletePromises = Array.from(selectedTrips).map((guid) =>
-        tripsService.updateTripWith({
-          app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
-          environment_id: envId,
-          method: "delete",
-          object_data: {
-            guid: guid,
+        tripsService.deleteTrips({
+         "data": {
+          "method": "delete",
+          "object_data": {
+            "trip_ids": Array.from(selectedTrips),
+            "client_type": isBroker ? 'broker' : "carrier"
           },
-          table: "trips",
+          "table": "trip"
+    }
         })
-      );
 
-      await Promise.all(deletePromises);
 
       queryClient.invalidateQueries({ queryKey: ["UPCOMING_TRIPS"] });
 
@@ -306,7 +303,6 @@ function UpcomingTab({tripType = "", isActive = true}) {
       });
     }
   };
-
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };

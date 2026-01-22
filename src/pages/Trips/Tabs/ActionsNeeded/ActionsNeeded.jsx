@@ -166,7 +166,7 @@ const columnWidths = {
 
 const {items: sortedTrips} = useSort(trips, sortConfig);
 
-  // Checkbox handlers
+
   const handleSelectTrip = (tripGuid, isChecked) => {
     setSelectedTrips((prev) => {
       const newSet = new Set(prev);
@@ -190,37 +190,31 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
 
   const isAllSelected = sortedTrips.length > 0 && sortedTrips.every((trip) => selectedTrips.has(trip.guid));
   const isIndeterminate = selectedTrips.size > 0 && !isAllSelected;
+  console.log('selectedTripsselectedTrips', selectedTrips)
 
-  // Delete handler - opens confirmation modal
   const handleDelete = () => {
     if (selectedTrips.size === 0) return;
     setIsDeleteModalOpen(true);
   };
 
-  // Confirm delete - actually performs the deletion
   const handleConfirmDelete = async () => {
     if (selectedTrips.size === 0) return;
 
     const selectedCount = selectedTrips.size;
     setIsDeleting(true);
     try {
-      // TODO: Replace with actual delete API call
-      // For now, using updateTripWith as a placeholder
-      const deletePromises = Array.from(selectedTrips).map((guid) =>
-        tripsService.updateTripWith({
-          app_id: "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
-          environment_id: envId,
-          method: "delete",
-          object_data: {
-            guid: guid,
+        tripsService.deleteTrips({
+         "data": {
+          "method": "delete",
+          "object_data": {
+            "trip_ids": Array.from(selectedTrips),
+            "client_type": isBroker ? 'broker' : "carrier"
           },
-          table: "late_trips",
+          "table": "trip"
+    }
         })
-      );
 
-      await Promise.all(deletePromises);
 
-      // Invalidate queries to refresh the list
       queryClient.invalidateQueries({ queryKey: ["ACTIONS_NEEDED_TRIPS"] });
 
       setSelectedTrips(new Set());

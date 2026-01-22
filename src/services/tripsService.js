@@ -57,6 +57,8 @@ const tripsService = {
 
   getTripLocation: (data) =>
     httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
+  deleteTrips: (data) =>
+    httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
 };
 
 export default tripsService;
