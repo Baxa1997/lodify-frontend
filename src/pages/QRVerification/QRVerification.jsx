@@ -11,17 +11,23 @@ import {
   useToast,
   Spinner,
   Icon,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Flex,
 } from "@chakra-ui/react";
 import {MdCheckCircle, MdQrCodeScanner, MdLogout} from "react-icons/md";
+import {RiExternalLinkLine} from "react-icons/ri";
 import {authActions} from "../../store/auth/auth.slice";
 import styles from "./QRVerification.module.scss";
 import {useQuery} from "@tanstack/react-query";
 import qrVerificationService from "@services/qrVerificationService";
 import {MdOutlineErrorOutline} from "react-icons/md";
 import {MdOutlineRefresh} from "react-icons/md";
+import { IoMdCopy } from "react-icons/io";
+
 
 const QRVerification = () => {
-  const clientType = useSelector((state) => state);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
@@ -190,6 +196,31 @@ const QRVerification = () => {
     navigate("/login", {replace: true});
   };
 
+  const handleNavigateToLink = () => {
+    if (qrVerificationLinkData?.url) {
+      window.open(qrVerificationLinkData.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+
+      await navigator.clipboard.writeText(qrVerificationLinkData?.url);
+      // setCopied(true);
+      toast({
+        title: "Copied to clipboard",
+        description: "Verification link copied to clipboard",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy!", err);
+    }
+  };
+
   return (
     <div className={styles.verificationContainer}>
       <Container maxW="container.md" centerContent>
@@ -321,6 +352,116 @@ const QRVerification = () => {
                 </VStack>
               )}
             </Box>
+          </Box>
+
+          <Box className={styles.linkSection} mb={6}>
+            <Text
+              fontSize="14px"
+              fontWeight="500"
+              color="#374151"
+              mb={2}
+              textAlign="center">
+              Or go with link
+            </Text>
+            <InputGroup>
+              <Input
+                value={qrVerificationLinkData?.url || ""}
+                isDisabled
+                placeholder="Make a QR or go with link"
+                bg="#ffffff"
+                border="1px solid #e5e7eb"
+                borderRadius="12px"
+                fontSize="14px"
+                color="blue"
+                h="44px"
+                _disabled={{
+                  opacity: 1,
+                  cursor: "not-allowed",
+                  bg: "#f9fafb",
+                }}
+                _placeholder={{
+                  color: "#9ca3af",
+                }}
+                pr="50px"
+              />
+              <InputRightElement
+                width="auto"
+                pr={3}
+                pointerEvents={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? "auto" : "none"}>
+               <Flex>
+               <Box
+                  as="button"
+                  onClick={handleNavigateToLink}
+                  disabled={!qrVerificationLinkData?.url || isLoadingQR || isQRError}
+                  className={styles.linkIcon}
+                  cursor={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? "pointer" : "not-allowed"}
+                  opacity={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? 1 : 0.4}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  w="32px"
+                  h="32px"
+                  borderRadius="8px"
+                  transition="all 0.2s ease"
+                  _hover={
+                    qrVerificationLinkData?.url && !isLoadingQR && !isQRError
+                      ? {
+                          bg: "#f3f4f6",
+                          transform: "scale(1.1)",
+                        }
+                      : {}
+                  }
+                  _active={
+                    qrVerificationLinkData?.url && !isLoadingQR && !isQRError
+                      ? {
+                          transform: "scale(0.95)",
+                        }
+                      : {}
+                  }>
+                  <Icon
+                    as={RiExternalLinkLine}
+                    boxSize={5}
+                    color={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? "#ef6820" : "#9ca3af"}
+                  />
+                </Box>
+                <Box
+                  as="button"
+                  onClick={handleCopy}
+                  disabled={!qrVerificationLinkData?.url || isLoadingQR || isQRError}
+                  className={styles.linkIcon}
+                  cursor={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? "pointer" : "not-allowed"}
+                  opacity={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? 1 : 0.4}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  w="32px"
+                  h="32px"
+                  borderRadius="8px"
+                  transition="all 0.2s ease"
+                  _hover={
+                    qrVerificationLinkData?.url && !isLoadingQR && !isQRError
+                      ? {
+                          bg: "#f3f4f6",
+                          transform: "scale(1.1)",
+                        }
+                      : {}
+                  }
+                  _active={
+                    qrVerificationLinkData?.url && !isLoadingQR && !isQRError
+                      ? {
+                          transform: "scale(0.95)",
+                        }
+                      : {}
+                  }>
+                  <Icon
+                    as={IoMdCopy}
+                    boxSize={5}
+                    color={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? "#ef6820" : "#9ca3af"}
+                  />
+                </Box>
+               </Flex>
+              </InputRightElement>
+            </InputGroup>
           </Box>
 
           <Box className={styles.actionSection}>
