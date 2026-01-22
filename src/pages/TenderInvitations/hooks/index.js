@@ -89,7 +89,7 @@ export const closedTendersTableElements = [
   },
   {
     key: "carrier",
-    name: "Carrier",
+    name: "Accepted By",
     sortable: false,
   },
   {

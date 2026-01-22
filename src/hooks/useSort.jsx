@@ -7,7 +7,7 @@ export const useSort = (items, config = null) => {
   const getValue = (obj, path) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   };
-
+  
   const sortedItems = useMemo(() => {
     let sortableItems = [...items];
     if (sortConfig !== null) {

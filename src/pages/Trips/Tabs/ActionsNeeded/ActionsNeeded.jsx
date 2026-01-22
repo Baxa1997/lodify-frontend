@@ -27,10 +27,12 @@ import TimeCounter from "@components/TimeCounter";
 import TripRowDetails from "../../components/TripRowDetails";
 import checkedPhone from "@hooks/checkedPhone";
 import { useSort } from "@hooks/useSort";
+import useDebounce from "@hooks/useDebounce";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchFilter, setSearchFilter] = useState('');
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,7 +46,7 @@ function ActionsNeeded() {
     (state) => state.auth.user_data?.companies_id
   );
   const isBroker = Boolean(brokersId);
-
+  console.log('searchFiltersearchFilter', searchFilter)
 
   const {
     data: tripsData = [],
@@ -56,7 +58,7 @@ function ActionsNeeded() {
       currentPage,
       pageSize,
       sortConfig,
-      searchTerm,
+      searchFilter,
     ],
     queryFn: () =>
       tripsService.getList({
@@ -66,6 +68,9 @@ function ActionsNeeded() {
         object_data: {
           search: searchTerm,
           limit: pageSize,
+          filter:{
+            generated_id: searchFilter
+          },
           offset: (currentPage - 1) * pageSize,
           brokers_id:
             clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
@@ -130,12 +135,19 @@ function ActionsNeeded() {
     });
   };
 
+  const debouncedSearchFilter = useDebounce((val) => {
+    console.log('valval', val)
+    const searchValue = typeof val === "string" ? val : String(val || "");
+    setSearchFilter(searchValue);
+    setCurrentPage(1);
+  }, 500);
+
 const getPhone = (trip) => {
   return isBroker ? checkedPhone(trip?.carrier?.telephone) : checkedPhone(trip?.current_driver_phone || trip?.drivers?.phone);
 }
 const {items: sortedTrips} = useSort(trips, sortConfig);
 
-  console.log('sortedTripssortedTrips', sortedTrips)
+
 
   return (
     <Box mt={"26px"}>
@@ -144,7 +156,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
         actionButton={true}
         actionButtonText="Add Trip"
         onActionButtonClick={() => navigate("/admin/trips/add-trip")}
-        onSearch={handleSearch}
+        onSearch={debouncedSearchFilter}
         searchValue={searchTerm}
       />
 

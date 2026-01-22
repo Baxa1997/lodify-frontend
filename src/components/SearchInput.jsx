@@ -4,7 +4,7 @@ import {LuSearch, LuX} from "react-icons/lu";
 
 const SearchInput = ({
   placeholder = "Search",
-  onSearch,
+  onSearch = () => {},
   showKeyboardShortcut = true,
   size = "md",
   variant = "filled",
@@ -42,10 +42,10 @@ const SearchInput = ({
   }, []);
 
   const handleSearch = (value) => {
+    console.log('valuevalue', value)
     setSearchValue(value);
-    if (onSearch) {
-      onSearch(value);
-    }
+    onSearch(value);
+
   };
 
   const handleClear = () => {
