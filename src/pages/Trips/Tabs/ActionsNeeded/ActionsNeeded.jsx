@@ -1,4 +1,4 @@
-import {Box, Flex, Text, Spinner, Center, Collapse, Link, Checkbox, Button, useToast} from "@chakra-ui/react";
+import {Box, Flex, Text, Spinner, Center, Collapse, Checkbox, Button, useToast} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -25,10 +25,10 @@ import {tableActionsNeeded} from "../../components/mockElements";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
 import TimeCounter from "@components/TimeCounter";
 import TripRowDetails from "../../components/TripRowDetails";
-import checkedPhone from "@hooks/checkedPhone";
 import { useSort } from "@hooks/useSort";
 import useDebounce from "@hooks/useDebounce";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
+import CallEmailTripsModal from "@components/CallEmailTripsModal";
 
 function ActionsNeeded() {
   const navigate = useNavigate();
@@ -149,9 +149,6 @@ function ActionsNeeded() {
     setCurrentPage(1);
   }, 500);
 
-const getPhone = (trip) => {
-  return isBroker ? checkedPhone(trip?.carrier?.telephone) : checkedPhone(trip?.current_driver_phone || trip?.drivers?.phone);
-}
 
 
 const columnWidths = {
@@ -190,7 +187,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
 
   const isAllSelected = sortedTrips.length > 0 && sortedTrips.every((trip) => selectedTrips.has(trip.guid));
   const isIndeterminate = selectedTrips.size > 0 && !isAllSelected;
-  console.log('selectedTripsselectedTrips', selectedTrips)
+
 
   const handleDelete = () => {
     if (selectedTrips.size === 0) return;
@@ -531,11 +528,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         minW={columnWidths["actions"]} 
                         maxW={columnWidths["actions"]}
                         overflow="hidden">
-                        <Flex onClick={(e) => {
-                          e.stopPropagation();
-                          
-                        }} alignItems="center" gap={2}>
-                          <Link href={`tel:${getPhone(trip)}`} target="_blank">
+                        <CallEmailTripsModal trip={trip} isBroker={isBroker}>
                           <Text
                             color={getActionButtonColor(
                               calculateTimeDifference(
@@ -545,7 +538,8 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                                   trip.timer_seconds
                               )
                             )}
-                            fontWeight="600">
+                            fontWeight="600"
+                            cursor="pointer">
                             {getActionButtonText(
                               calculateTimeDifference(
                                 trip?.origin?.arrive_by ||
@@ -555,8 +549,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                               ), isBroker
                             )}
                           </Text>
-                          </Link>
-                        </Flex>
+                        </CallEmailTripsModal>
                       </CTableTd>
                     </CTableRow>
 

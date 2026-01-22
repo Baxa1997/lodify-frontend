@@ -323,6 +323,7 @@ function Insights({
                 )}
                 {vinMatchesData?.length > 0 && (
                   <AssosiationReport
+                  vinMatchesData={vinMatchesData}
                     label="VIN Match"
                     insight={{date: "Observed March, 2024"}}
                   />

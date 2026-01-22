@@ -3,6 +3,7 @@ import {Flex, Box, Text} from "@chakra-ui/react";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
 
 export const AssosiationReport = ({insight, label = ""}) => {
+  console.log('insightinsight', insight)
   return (
     <Flex
       minW="280px"
