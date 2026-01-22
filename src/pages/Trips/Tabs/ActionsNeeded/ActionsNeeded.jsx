@@ -18,7 +18,7 @@ import {
   getActionButtonText,
   getRowBackgroundColor,
 } from "@utils/timeUtils";
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useTransition} from "react";
 import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {tableActionsNeeded} from "../../components/mockElements";
@@ -34,7 +34,7 @@ function ActionsNeeded() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchFilter, setSearchFilter] = useState('');
   const [pageSize, setPageSize] = useState(10);
-  const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
+  const [sortConfig, setSortConfig] = useState({key: "shipper.name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
@@ -46,7 +46,7 @@ function ActionsNeeded() {
     (state) => state.auth.user_data?.companies_id
   );
   const isBroker = Boolean(brokersId);
-  console.log('searchFiltersearchFilter', searchFilter)
+  const [isPending, startTransition] = useTransition();
 
   const {
     data: tripsData = [],
@@ -103,9 +103,11 @@ function ActionsNeeded() {
   };
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({
+        key: key,
+        direction: sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc",
+      });
     });
   };
 
@@ -136,7 +138,6 @@ function ActionsNeeded() {
   };
 
   const debouncedSearchFilter = useDebounce((val) => {
-    console.log('valval', val)
     const searchValue = typeof val === "string" ? val : String(val || "");
     setSearchFilter(searchValue);
     setCurrentPage(1);
@@ -145,8 +146,19 @@ function ActionsNeeded() {
 const getPhone = (trip) => {
   return isBroker ? checkedPhone(trip?.carrier?.telephone) : checkedPhone(trip?.current_driver_phone || trip?.drivers?.phone);
 }
-const {items: sortedTrips} = useSort(trips, sortConfig);
 
+
+const columnWidths = {
+  "shipper.name": "200px",
+  "id": "150px",
+  "origin.address": "250px",
+  "stop.address": "250px",
+  "timer": "120px",
+  "total_miles": "130px",
+  "actions": "150px",
+};
+
+const {items: sortedTrips} = useSort(trips, sortConfig);
 
 
   return (
@@ -178,7 +190,9 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                 .map((element) => (
                   <CTableTh
                     zIndex={-1}
-                    maxW="334px"
+                    width={columnWidths[element.key] || "auto"}
+                    minW={columnWidths[element.key] || "80px"}
+                    maxW={columnWidths[element.key] || "334px"}
                     sortable={element.sortable}
                     sortDirection={
                       sortConfig.key === element.key
@@ -241,22 +255,22 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                       bg={getRowBackgroundColor(
                         calculateTimeDifference(trip?.origin?.[0]?.arrive_by)
                       )}>
-                      <CTableTd>
-                        <Text color="#181D27">
+                      <CTableTd width={columnWidths["shipper.name"]} minW={columnWidths["shipper.name"]} maxW={columnWidths["shipper.name"]}>
+                        <Text color="#181D27" noOfLines={1}>
                           {trip.customer?.name || trip?.shipper?.name || ""}
                         </Text>
                       </CTableTd>
 
-                      <CTableTd minWidth="180px">
+                      <CTableTd width={columnWidths["id"]} minW={columnWidths["id"]} maxW={columnWidths["id"]}>
                         <Flex
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
-                          <Text color="#181D27">{trip.id || ""}</Text>
+                          <Text color="#181D27" noOfLines={1}>{trip.id || ""}</Text>
                         </Flex>
                       </CTableTd>
 
-                      <CTableTd>
+                      <CTableTd width={columnWidths["origin.address"]} minW={columnWidths["origin.address"]} maxW={columnWidths["origin.address"]}>
                         <Flex
                           alignItems="center"
                           gap="16px"
@@ -268,7 +282,8 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                                 h="20px"
                                 fontSize="14px"
                                 fontWeight="500"
-                                color="#181D27">
+                                color="#181D27"
+                                noOfLines={1}>
                                 {`${trip.origin?.address ?? ""}` || ""}
                               </Text>
                               <Text h="20px">
@@ -279,7 +294,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         </Flex>
                       </CTableTd>
 
-                      <CTableTd>
+                      <CTableTd width={columnWidths["stop.address"]} minW={columnWidths["stop.address"]} maxW={columnWidths["stop.address"]}>
                         <Box>
                           <Flex
                             gap="16px"
@@ -290,7 +305,8 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                                 h="20px"
                                 fontSize="14px"
                                 fontWeight="500"
-                                color="#181D27">
+                                color="#181D27"
+                                noOfLines={1}>
                                 {`${trip.stop?.address ?? ""}` || ""}
                               </Text>
                               <Text h="20px">
@@ -301,7 +317,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         </Box>
                       </CTableTd>
 
-                      <CTableTd>
+                      <CTableTd width={columnWidths["timer"]} minW={columnWidths["timer"]} maxW={columnWidths["timer"]}>
                         <TimeCounter arriveBy={trip?.stop?.arrive_by} />
                       </CTableTd>
 
@@ -311,13 +327,13 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         </Text>
                       </CTableTd> */}
 
-                      <CTableTd>
+                      <CTableTd width={columnWidths["total_miles"]} minW={columnWidths["total_miles"]} maxW={columnWidths["total_miles"]}>
                         <Text color="#181D27">
                           {trip?.total_miles?.toFixed(0) ?? "-"} miles
                         </Text>
                       </CTableTd>
 
-                      <CTableTd>
+                      <CTableTd width={columnWidths["actions"]} minW={columnWidths["actions"]} maxW={columnWidths["actions"]}>
                         <Flex onClick={(e) => {
                           e.stopPropagation();
                           

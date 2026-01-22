@@ -120,7 +120,7 @@ export const tableActionsNeeded = [
   {
     id: 1,
     name: "Customer",
-    key: "customer.name",
+    key: "shipper.name",
     sortable: true,
   },
   {

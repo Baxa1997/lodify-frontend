@@ -13,7 +13,8 @@ const CTableTd = ({children, ...props}) => {
       borderColor="#E9EAEB"
       minWidth="80px"
       width="auto"
-      whiteSpace="nowrap"
+      overflow="hidden"
+      textOverflow="ellipsis"
       {...props}>
       {children}
     </Box>

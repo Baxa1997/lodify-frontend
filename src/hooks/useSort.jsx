@@ -1,21 +1,35 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 export const useSort = (items, config = null) => {
   const [sortConfig, setSortConfig] = useState(config);
-  console.log('configconfig', config)
+
+  useEffect(() => {
+    if (config !== null) {
+      setSortConfig(config);
+    }
+  }, [config]);
 
   const getValue = (obj, path) => {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    if (!path) return '';
+
+    return path.split('.').reduce((acc, part) => {
+      return acc && acc[part] !== undefined ? acc[part] : '';
+    }, obj);
   };
-  
+
   const sortedItems = useMemo(() => {
+    if (!items || items.length === 0) return items;
+    
     let sortableItems = [...items];
-    if (sortConfig !== null) {
+    
+    if (sortConfig !== null && sortConfig.key) {
       sortableItems.sort((a, b) => {
-        console.log('sortableItemssortableItems', sortableItems)
-        const aValue = getValue(a, sortConfig.key);
-        const bValue = getValue(b, sortConfig.key);
-        console.log('aValueaValue', aValue, bValue)
+        let aValue = getValue(a, sortConfig.key);
+        let bValue = getValue(b, sortConfig.key);
+
+        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
         if (aValue < bValue) {
           return sortConfig.direction === 'asc' ? -1 : 1;
         }
