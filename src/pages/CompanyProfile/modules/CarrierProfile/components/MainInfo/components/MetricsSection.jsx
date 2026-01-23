@@ -61,7 +61,7 @@ const MetricsSection = ({generalInfo, new_info}) => {
   return (
     <Box
       display="grid"
-      gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+      gridTemplateColumns="repeat(5, minmax(0, 1fr))"
       gap="20px"
       bg="white"
       borderRadius="12px">

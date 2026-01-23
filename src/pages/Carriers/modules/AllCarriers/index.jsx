@@ -225,7 +225,8 @@ const AllCarriers = () => {
                 <Box
                   key={carrier.guid}
                   w="100%"
-                  h="340px"
+                  h="100%"
+                  minH="400px"
                   bg="white"
                   borderRadius="12px"
                   border="1px solid #E2E8F0"
@@ -271,6 +272,7 @@ const AllCarriers = () => {
                     </VStack>
                   </Flex>
 
+                  <Box flex="1" display="flex" flexDirection="column">
                   <Text
                     px="20px"
                     fontSize="16px"
@@ -306,6 +308,28 @@ const AllCarriers = () => {
                     Address: {carrier.physical_address || "N/A"}
                   </Text>
 
+                  {carrier.company_officer_1 && (
+                      <Text
+                        px="20px"
+                        fontSize="14px"
+                        fontWeight="400"
+                        color="#535862"
+                        minH="24px">
+                        Officer 1: {carrier.company_officer_1 || "N/A"}
+                      </Text>
+                    )}
+
+                    {carrier.company_officer_2 && (
+                      <Text
+                        px="20px"
+                        fontSize="14px"
+                        fontWeight="400"
+                        color="#535862"
+                        minH="24px">
+                        Officer 2: {carrier.company_officer_2 || "N/A"}
+                      </Text>
+                    )}
+
                   <Text
                     px="20px"
                     fontSize="14px"
@@ -328,6 +352,7 @@ const AllCarriers = () => {
                       />
                     )}
                   </HStack>
+                  </Box>
 
                   {/* <Flex
                     p="10px 24px"
@@ -350,7 +375,7 @@ const AllCarriers = () => {
                     <Flex
                     p="10px 24px"
                     borderTop="1px solid #E2E8F0"
-                    justify="flex-end">
+                    justify="flex-end" mt="auto">
                     <Button
                       size="sm"
                       color="#EF6820"
@@ -359,7 +384,7 @@ const AllCarriers = () => {
                       fontSize="14px"
                       _hover={{bg: "#FEF3EE"}}
                       onClick={() => handleViewCarrier(carrier)}>
-                      Set Up
+                      View
                     </Button>
                   </Flex>
                 </Box>

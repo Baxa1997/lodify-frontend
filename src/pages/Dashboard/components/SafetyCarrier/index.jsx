@@ -88,12 +88,14 @@ const SafetyCarrier = ({
 
         return {
           title: item.basic_desc || "",
-          value: hasValidData ? `${percentage}%` : "0%",
+          value: hasValidData ? `${percentage}` : "0",
           hasData: hasValidData,
           progressValue: percentage,
           progressColor: progressColor(percentage),
           icon: progressIcon(percentage),
           statusText: progressStatus(percentage),
+          count: item.count || 0,
+          basic_desc: item.basic_desc || "",
         };
       });
     }
@@ -183,10 +185,10 @@ const SafetyCarrier = ({
             display="grid"
             gridTemplateColumns={{
               base: "1fr",
-              md: "repeat(2, 1fr)",
-              lg: "repeat(3, 1fr)",
+              md: "repeat(5, 1fr)",
+              lg: "repeat(5, 1fr)",
             }}
-            gap="24px">
+            gap="12px">
             {safetyMetrics.map((metric, index) => (
               <SafetyMetricCard key={index} {...metric} />
             ))}

@@ -172,7 +172,8 @@ const MyCarriers = () => {
                 <Box
                   key={carrier.guid}
                   w="100%"
-                  h="340px"
+                  h="100%"
+                  minH="400px"
                   bg="white"
                   borderRadius="12px"
                   border="1px solid #E2E8F0"
@@ -228,68 +229,93 @@ const MyCarriers = () => {
                     </VStack>
                   </Flex>
 
-                  <Text
-                    px="20px"
-                    fontSize="16px"
-                    fontWeight="600"
-                    color="#181D27"
-                    mb="8px"
-                    noOfLines={2}>
-                    {companyName}
-                  </Text>
-
-                  <Text
-                    px="20px"
-                    fontSize="14px"
-                    fontWeight="400"
-                    color="#535862">
-                    US DOT: {carrier.us_dot_number || "N/A"}
-                  </Text>
-
-                  <Text
-                    px="20px"
-                    fontSize="14px"
-                    fontWeight="400"
-                    color="#535862">
-                    Phone: {carrier.telephone || "N/A"}
-                  </Text>
-
-                  <Text
-                    px="20px"
-                    fontSize="14px"
-                    fontWeight="400"
-                    color="#535862"
-                    h="44px">
-                    Address: {carrier.physical_address || "N/A"}
-                  </Text>
-
-                  <Text
-                    px="20px"
-                    fontSize="14px"
-                    fontWeight="400"
-                    color="#535862"
-                    mb="8px">
-                    Connected {connectedDate}
-                  </Text>
-
-                  <HStack px="20px" spacing="6px" mb="12px">
-                    <Text fontSize="14px" color="#EF6820" fontWeight="500">
-                      {email || "N/A"}
+                  <Box flex="1" display="flex" flexDirection="column">
+                    <Text
+                      px="20px"
+                      fontSize="16px"
+                      fontWeight="600"
+                      color="#181D27"
+                      mb="8px"
+                      noOfLines={2}>
+                      {companyName}
                     </Text>
-                    {email && (
-                      <Icon
-                        as={ExternalLinkIcon}
-                        w="14px"
-                        h="14px"
-                        color="#EF6820"
-                      />
+
+                    <Text
+                      px="20px"
+                      fontSize="14px"
+                      fontWeight="400"
+                      color="#535862">
+                      US DOT: {carrier.us_dot_number || "N/A"}
+                    </Text>
+
+                    <Text
+                      px="20px"
+                      fontSize="14px"
+                      fontWeight="400"
+                      color="#535862">
+                      Phone: {carrier.telephone || "N/A"}
+                    </Text>
+
+                    <Text
+                      px="20px"
+                      fontSize="14px"
+                      fontWeight="400"
+                      color="#535862"
+                      minH="24px">
+                      Address: {carrier.physical_address || "N/A"}
+                    </Text>
+
+                    {carrier.company_officer_1 && (
+                      <Text
+                        px="20px"
+                        fontSize="14px"
+                        fontWeight="400"
+                        color="#535862"
+                        minH="24px">
+                        Officer 1: {carrier.company_officer_1 || "N/A"}
+                      </Text>
                     )}
-                  </HStack>
+
+                    {carrier.company_officer_2 && (
+                      <Text
+                        px="20px"
+                        fontSize="14px"
+                        fontWeight="400"
+                        color="#535862"
+                        minH="24px">
+                        Officer 2: {carrier.company_officer_2 || "N/A"}
+                      </Text>
+                    )}
+
+                    <Text
+                      px="20px"
+                      fontSize="14px"
+                      fontWeight="400"
+                      color="#535862"
+                      mb="8px">
+                      Connected {connectedDate}
+                    </Text>
+
+                    <HStack px="20px" spacing="6px" mb="12px">
+                      <Text fontSize="14px" color="#EF6820" fontWeight="500">
+                        {email || "N/A"}
+                      </Text>
+                      {email && (
+                        <Icon
+                          as={ExternalLinkIcon}
+                          w="14px"
+                          h="14px"
+                          color="#EF6820"
+                        />
+                      )}
+                    </HStack>
+                  </Box>
 
                   <Flex
                     p="10px 24px"
                     borderTop="1px solid #E2E8F0"
-                    justify="flex-end">
+                    justify="flex-end"
+                    mt="auto">
                     <Button
                       size="sm"
                       color="#EF6820"

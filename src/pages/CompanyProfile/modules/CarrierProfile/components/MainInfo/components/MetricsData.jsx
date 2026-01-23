@@ -26,6 +26,7 @@ const calculateMonthsFromDate = (dateString) => {
 
 export const metrics = ({generalInfo, new_info}) => {
   const contractMonths = calculateMonthsFromDate(new_info?.register_time);
+  console.log('new_infonew_info', new_info)
 
   return [
     {
@@ -44,10 +45,22 @@ export const metrics = ({generalInfo, new_info}) => {
       status: new_info?.safety_rating !== "None" ? "success" : "error",
     },
     {
+      label: "Officer 1",
+      value: new_info?.company_officer_1 || "N/A",
+      status: Boolean(new_info?.company_officer_1) ? "success" : "error",
+    },
+
+    {
+      label: "Officer 2",
+      value: new_info?.company_officer_2 || "N/A",
+      status: Boolean(new_info?.company_officer_2) ? "success" : "error",
+    },
+    {
       label: "ELD",
       value: getIntegrationName(new_info?.integrations),
       status: new_info?.integrations?.length > 0 ? "success" : "error",
     },
+
     {
       label: "Contract",
       value: `${contractMonths} ${contractMonths === 1 ? "month" : "months"}`,

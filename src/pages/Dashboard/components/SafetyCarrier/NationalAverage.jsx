@@ -58,13 +58,13 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
     }));
   }, [nationalAverage]);
 
-  const formattedDate = nationalAverageData?.date
-    ? new Date(nationalAverageData.date).toLocaleDateString("en-US", {
-        month: "2-digit",
-        day: "2-digit",
-        year: "numeric",
-      })
-    : "N/A";
+  // const formattedDate = nationalAverageData?.date
+  //   ? new Date(nationalAverageData.date).toLocaleDateString("en-US", {
+  //       month: "2-digit",
+  //       day: "2-digit",
+  //       year: "numeric",
+  //     })
+  //   : "N/A";
 
   const hasData =
     nationalAverageData?.us_driver_inspections ||
@@ -83,9 +83,6 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
           <Text fontSize="20px" fontWeight="700" color="#181D27" mb="0px">
             National Average
           </Text>
-          {/* <Text fontSize="12px" fontWeight="500" color="red" mb="4px">
-            as of Date {formattedDate}
-          </Text> */}
         </Box>
 
         <Link
