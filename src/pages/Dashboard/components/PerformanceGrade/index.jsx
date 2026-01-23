@@ -6,7 +6,6 @@ import EmptyState from "@components/EmptyState";
 import {RiLineChartLine} from "react-icons/ri";
 
 export const PerformanceGrade = ({performanceData = {}, isLoading = false}) => {
-  console.log("performanceDataperformanceData", performanceData);
   const performanceDataObj = {
     overall: {
       label: "Overall",

@@ -178,7 +178,7 @@ const AllBrokers = () => {
   const debouncedSearch = useDebounce((value) => {
     setSearchQuery(value);
   }, 500);
-
+  console.log('filteredCarriersfilteredCarriers', filteredCarriers)
   return (
     <Box>
       <Box mt="20px" mb="16px">
@@ -226,19 +226,17 @@ const AllBrokers = () => {
                   _last={{borderBottom: "none"}}>
                   <Td py="14px" borderBottom="none">
                     <Text fontSize="14px" fontWeight="600" color="#181D27">
-                      {carrier?.brokers_id_data?.company_name ||
-                        carrier?.brokers_id_data?.legal_name ||
-                        "N/A"}
+                      {carrier?.legal_name || "N/A"}
                     </Text>
                   </Td>
                   <Td py="14px" borderBottom="none">
                     <Text fontSize="14px" color="#535862">
-                      {carrier.brokers_id_data?.mailing_address || "N/A"}
+                      {carrier.email || "N/A"}
                     </Text>
                   </Td>
                   <Td py="14px" borderBottom="none">
                     <Text fontSize="14px" color="#535862">
-                      {carrier.brokers_id_data?.phone || "N/A"}
+                      {carrier?.phone || "N/A"}
                     </Text>
                   </Td>
                   <Td py="14px" borderBottom="none">

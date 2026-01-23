@@ -44,8 +44,8 @@ const authService = {
   updatePermissions: (data, params) =>
     requestAuth.put("v2/role-permission/detailed", {data}, {params}),
   roleCreate: (data, params) => requestAuth.post("v2/role", data, {params}),
-  updateUserIpAddress: (data) =>
-    httpRequest.put("v2/items/users", data, {
+  updateUserIpAddress: (slug, data) =>
+    httpRequest.put(`v2/items/${slug}`, data, {
       headers: {
         Authorization: "API-KEY",
         "x-api-key": "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",

@@ -58,7 +58,7 @@ const SafetyCarrier = ({
   safetyData = [],
   isLoading = false,
 }) => {
-  console.log("carrierInfoDatacarrierInfoDatacarrierInfoData", safetyData);
+
   const progressColor = (percentage) => {
     if (percentage > 50) return "#EF4444";
     if (percentage > 30) return "#F97316";

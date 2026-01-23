@@ -503,6 +503,7 @@ const TripRowDetails = ({
           },
         }}>
         {(tripData?.pickups || []).map((item, index) => (
+          console.log("itemitemitem", item),
           <Box key={item?.guid || index} mb={6}>
             <CTable
               zIndex={2}
@@ -766,6 +767,13 @@ const TripRowDetails = ({
                                     color="#FF4444">
                                     {formatExpiredTime(expiredTime)}
                                   </Text>
+                                  {item?.reports?.length > 0 && <Text color='#fff'>Reports:</Text>}
+                                  {item?.reports?.length > 0 && item?.reports?.map((report, index) => (
+                                    <Flex gap='4px' key={report?.id}>
+                                      <Text color='#fff'>{index + 1}.</Text>
+                                      <Text color='#fff'>{report?.description}</Text>
+                                    </Flex>
+                                  ))}
                                 </VStack>
                               </Box>
                             ) : null
@@ -779,7 +787,7 @@ const TripRowDetails = ({
                                 {formatScheduleDate(item?.arrive_by)}
                               </Text>
                               {isExpired && (
-                                <img src="/img/delayIcon.svg" alt="" />
+                                  <img src="/img/delayIcon.svg" alt="" />
                               )}
                             </Flex>
                             {Boolean(!isBroker) && (
@@ -788,7 +796,7 @@ const TripRowDetails = ({
                                 h="20px"
                                 p="0"
                                 bg="none"
-                                color="#EF6820"
+                                color={item?.reports?.length > 0 ? 'red' : "#EF6820"}
                                 borderRadius="8px"
                                 fontSize="14px"
                                 fontWeight="600"
@@ -798,7 +806,7 @@ const TripRowDetails = ({
                                   setSelectedPickup(item);
                                   setIsReportDelayOpen(true);
                                 }}>
-                                Report delay
+                              {item?.reports?.length > 0 ? 'Reported' : 'Report delay'}
                               </Button>
                             )}
                           </Box>

@@ -84,13 +84,14 @@ export const loginAction = createAsyncThunk(
       try {
         const ipAddress = data?.ip_address;
         const userGuid = res?.user?.guid || res?.user_data?.guid;
+        const slug = data?.client_type !== "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" ? "users" : "broker_users";
 
         if (
           ipAddress &&
-          userGuid &&
-          data?.client_type !== "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+          userGuid 
+          
         ) {
-          await authService.updateUserIpAddress({
+          await authService.updateUserIpAddress(slug,{
             data: {
               ip_address: ipAddress,
               guid: userGuid,

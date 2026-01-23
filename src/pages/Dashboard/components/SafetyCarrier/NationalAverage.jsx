@@ -6,6 +6,7 @@ import EmptyState from "@components/EmptyState";
 import {RiBarChartBoxLine} from "react-icons/ri";
 
 const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
+  console.log('nationalAverageDatanationalAverageData', nationalAverageData)
   const nationalAverage = [
     {
       title: "Driver",
@@ -25,12 +26,12 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
       title: "Vehicle",
       value:
         (
-          nationalAverageData?.us_vehicle_inspections?.national_average * 100 ||
+          nationalAverageData?.us_vehicle_inspections?.out_of_service_pct * 100 ||
           0
         ).toFixed(2) + "%",
       secondValue:
         (
-          nationalAverageData?.us_vehicle_inspections?.out_of_service_pct *
+          nationalAverageData?.us_vehicle_inspections?.national_average *
             100 || 0
         ).toFixed(2) + "%",
     },
@@ -39,12 +40,12 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
       title: "Hazmat",
       value:
         (
-          nationalAverageData?.us_hazmat_inspections?.national_average * 100 ||
+          nationalAverageData?.us_hazmat_inspections?.out_of_service_pct * 100 ||
           0
         ).toFixed(2) + "%",
       secondValue:
         (
-          nationalAverageData?.us_hazmat_inspections?.out_of_service_pct *
+          nationalAverageData?.us_hazmat_inspections?.national_average *
             100 || 0
         ).toFixed(2) + "%",
     },
