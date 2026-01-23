@@ -50,6 +50,7 @@ const Login = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [emailGuid, setEmailGuid] = useState("");
   const [otpResendSeconds, setOtpResendSeconds] = useState(0);
+  const [hasShownNoCompanyError, setHasShownNoCompanyError] = useState(false);
 
   const {
     register,
@@ -57,6 +58,7 @@ const Login = () => {
     formState: {errors},
     watch,
     setValue,
+    reset,
   } = useForm({
     defaultValues: {
       username: "",
@@ -209,6 +211,7 @@ const Login = () => {
   }, [getFormValue]);
 
   const onSubmit = async (data) => {
+    setHasShownNoCompanyError(false);
     getCompany(data);
   };
 
@@ -246,6 +249,7 @@ const Login = () => {
           );
         } else {
           dispatch(showAlert("The company does not exist", "error"));
+          setIsLoading(false);
         }
       })
       .catch((err) => {
@@ -418,6 +422,30 @@ const Login = () => {
     setValue("project_id", computedProjects?.[0]?.value);
   };
 
+  const noCompanyFoundError = () => {
+    if (hasShownNoCompanyError) {
+      return;
+    }
+    
+    setHasShownNoCompanyError(true);
+    toast({
+      title: "No company found",
+      description: "Please try again",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+      position: "top-right",
+    });
+    setValue("company_id", "");
+    setValue('environment_id', '')
+    setValue('project_id', '')
+    setValue('client_type', '')
+    setIsLoading(false);
+    setConnectionCheck(false);
+    setCompanies([]);
+    setIsUserId("");
+  }
+
   useEffect(() => {
     if (computedConnections?.length > 0) {
       computedConnections.forEach((connection, index) => {
@@ -426,7 +454,7 @@ const Login = () => {
           setSelectedCollection(connection.options[0]?.value);
           setValue(`tables[${index}].table_slug`, connection?.table_slug);
         } else {
-          // handleClickOpen();
+          noCompanyFoundError()
         }
       });
     }
