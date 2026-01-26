@@ -284,7 +284,7 @@ function TransitTab({tripType = "", isActive = true}) {
                 Multiple Carrier Assign ({selectedTrips.size})
               </Button>}
               
-              <Button
+              {/* <Button
               colorScheme="red"
               onClick={handleDelete}
               h={"32px"}
@@ -293,7 +293,8 @@ function TransitTab({tripType = "", isActive = true}) {
               size="sm"
               fontWeight={"600"}>
               Delete ({selectedTrips.size})
-            </Button></>
+            </Button> */}
+            </>
               
             ) : null
           }>
