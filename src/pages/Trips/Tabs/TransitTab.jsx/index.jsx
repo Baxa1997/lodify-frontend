@@ -475,14 +475,14 @@ function TransitTab({tripType = "", isActive = true}) {
                         <Text color="#181D27">{trip.customer?.name || ""}</Text>
                       </CTableTd>
 
-                      <CTableTd minWidth="180px">
+                      <CTableTd minWidth="120px">
                         <Flex
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
                           <Text color="#181D27">{trip.id || ""}</Text>
 
-                          <TripStatus
+                          {/* <TripStatus
                             rowClick={handleRowClick}
                             onExpand={toggleRowExpansion}
                             status={
@@ -491,8 +491,17 @@ function TransitTab({tripType = "", isActive = true}) {
                                 : trip?.current_trip + 1
                             }
                             tripId={trip.id || trip.guid}
-                          />
+                          /> */}
                         </Flex>
+                      </CTableTd>
+
+                      <CTableTd>
+                        <Box _hover={{opacity: 0.8}}>
+                          <TripProgress
+                            total_trips={trip.total_trips}
+                            current_trips={trip.current_trip}
+                          />
+                        </Box>
                       </CTableTd>
 
                       <CTableTd>
@@ -638,14 +647,6 @@ function TransitTab({tripType = "", isActive = true}) {
                         </Badge>
                       </CTableTd>
 
-                      <CTableTd>
-                        <Box _hover={{opacity: 0.8}}>
-                          <TripProgress
-                            total_trips={trip.total_trips}
-                            current_trips={trip.current_trip}
-                          />
-                        </Box>
-                      </CTableTd>
 
                       {Boolean(!isBroker) && (
                         <CTableTd

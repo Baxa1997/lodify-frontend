@@ -147,8 +147,6 @@ function HistoryTab({tripType = ""}) {
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
   const trips = tripsData?.response || [];
-  const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
-  const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
 
   return (
     <Box mt={"26px"}>
@@ -172,7 +170,7 @@ function HistoryTab({tripType = ""}) {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}>
-          <CTableHead zIndex={8}>
+          <CTableHead zIndex={10}>
             <Box as={"tr"}>
               {tableElements
                 ?.filter((element) =>
@@ -194,54 +192,40 @@ function HistoryTab({tripType = ""}) {
                     key={element.id}
                     onSort={() => handleSort(element.key)}
                     position={
-                      (element.key === "carrier" &&
-                        isBroker &&
-                        hasUnassignedCarrier) ||
-                      (element.key === "driver" &&
-                        !isBroker &&
-                        hasUnassignedDriver)
+                      (element.key === "carrier" && isBroker) ||
+                      (element.key === "driver" && !isBroker) ||
+                      element?.key === 'actions'
                         ? "sticky"
                         : "static"
                     }
                     right={
-                      (element.key === "carrier" &&
-                        isBroker &&
-                        hasUnassignedCarrier) ||
-                      (element.key === "driver" &&
-                        !isBroker &&
-                        hasUnassignedDriver)
+                      (element.key === "carrier" && isBroker) ||
+                      (element.key === "driver" && !isBroker)
+                        ? "120px"
+                        : element?.key === 'actions'
                         ? "0"
                         : "auto"
                     }
                     bg={
-                      (element.key === "carrier" &&
-                        isBroker &&
-                        hasUnassignedCarrier) ||
-                      (element.key === "driver" &&
-                        !isBroker &&
-                        hasUnassignedDriver)
+                      (element.key === "carrier" && isBroker) ||
+                      (element.key === "driver" && !isBroker) ||
+                      element?.key === 'actions'
                         ? "gray.50"
                         : "transparent"
                     }
                     boxShadow={
-                      (element.key === "carrier" &&
-                        isBroker &&
-                        hasUnassignedCarrier) ||
-                      (element.key === "driver" &&
-                        !isBroker &&
-                        hasUnassignedDriver)
+                      (element.key === "carrier" && isBroker) ||
+                      (element.key === "driver" && !isBroker) ||
+                      element?.key === 'actions'
                         ? "-2px 0 4px rgba(0,0,0,0.05)"
                         : "none"
                     }
                     zIndex={
-                      (element.key === "carrier" &&
-                        isBroker &&
-                        hasUnassignedCarrier) ||
-                      (element.key === "driver" &&
-                        !isBroker &&
-                        hasUnassignedDriver)
+                      (element.key === "carrier" && isBroker) ||
+                      (element.key === "driver" && !isBroker) ||
+                      element?.key === 'actions'
                         ? 9
-                        : -1
+                        : 1
                     }>
                     {element.name}
                   </CTableTh>
@@ -302,13 +286,13 @@ function HistoryTab({tripType = ""}) {
                         <Text color="#181D27">{trip.customer?.name || ""}</Text>
                       </CTableTd>
 
-                      <CTableTd minWidth="180px">
+                      <CTableTd minWidth="120px">
                         <Flex
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
                           <Text color="#181D27">{trip.id || ""}</Text>
-                          <TripStatus
+                          {/* <TripStatus
                             rowClick={handleRowClick}
                             onExpand={toggleRowExpansion}
                             status={
@@ -317,8 +301,17 @@ function HistoryTab({tripType = ""}) {
                                 : trip?.current_trip + 1
                             }
                             tripId={trip.id || trip.guid}
-                          />
+                          /> */}
                         </Flex>
+                      </CTableTd>
+
+                      <CTableTd>
+                        <Box cursor="pointer" _hover={{opacity: 0.8}}>
+                          <TripProgress
+                            total_trips={trip.total_trips}
+                            current_trips={trip.current_trip}
+                          />
+                        </Box>
                       </CTableTd>
 
                       <CTableTd>
@@ -467,26 +460,14 @@ function HistoryTab({tripType = ""}) {
                         </Badge>
                       </CTableTd>
 
-                      <CTableTd>
-                        <Box cursor="pointer" _hover={{opacity: 0.8}}>
-                          <TripProgress
-                            total_trips={trip.total_trips}
-                            current_trips={trip.current_trip}
-                          />
-                        </Box>
-                      </CTableTd>
 
                       {Boolean(!isBroker) && (
                         <CTableTd
-                          position={hasUnassignedDriver ? "sticky" : "static"}
-                          right={hasUnassignedDriver ? "0" : "auto"}
-                          bg={hasUnassignedDriver ? "white" : "transparent"}
-                          boxShadow={
-                            hasUnassignedDriver
-                              ? "-2px 0 4px rgba(0,0,0,0.05)"
-                              : "none"
-                          }
-                          zIndex={hasUnassignedDriver ? 5 : "auto"}>
+                          position="sticky"
+                          right="120px"
+                          bg="white"
+                          boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
+                          zIndex={8}>
                           <Flex alignItems="center" gap={2}>
                             {trip?.drivers?.first_name ? (
                               <Tooltip
@@ -548,15 +529,11 @@ function HistoryTab({tripType = ""}) {
 
                       {Boolean(isBroker) && (
                         <CTableTd
-                          position={hasUnassignedCarrier ? "sticky" : "static"}
-                          right={hasUnassignedCarrier ? "0" : "auto"}
-                          bg={hasUnassignedCarrier ? "white" : "transparent"}
-                          boxShadow={
-                            hasUnassignedCarrier
-                              ? "-2px 0 4px rgba(0,0,0,0.05)"
-                              : "none"
-                          }
-                          zIndex={hasUnassignedCarrier ? 5 : "auto"}>
+                          position="sticky"
+                          right="120px"
+                          bg="white"
+                          boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
+                          zIndex={8}>
                           {trip?.carrier?.legal_name && (
                             <Flex alignItems="center" gap={2}>
                               <Flex alignItems="center" gap={2}>
@@ -581,7 +558,12 @@ function HistoryTab({tripType = ""}) {
                         </Box>
                       </CTableTd>
 
-                      <CTableTd>
+                      <CTableTd
+                        position="sticky"
+                        right="0"
+                        bg="white"
+                        boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
+                        zIndex={9}>
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
