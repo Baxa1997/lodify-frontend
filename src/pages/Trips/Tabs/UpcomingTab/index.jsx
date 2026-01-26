@@ -53,19 +53,6 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const dispatch = useDispatch();
   const {getLoadTypeColor} = useUpcomingProps();
 
-  const getOrderedColumns = () => {
-    const filteredElements = tableElements?.filter((element) =>
-      isBroker
-        ? element.key !== "invited_by" &&
-          element?.key !== "driver" &&
-          element?.key !== "driver2" &&
-          element?.key !== "tracktor_unit_id" &&
-          element?.key !== "trailer_unit_id"
-        : element?.key !== "carrier"
-    );
-
-    return filteredElements;
-  };
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
@@ -107,6 +94,20 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+
+  const getOrderedColumns = () => {
+    const filteredElements = tableElements?.filter((element) =>
+      isBroker
+        ? element.key !== "invited_by" &&
+          element?.key !== "driver" &&
+          element?.key !== "driver2" &&
+          element?.key !== "tracktor_unit_id" &&
+          element?.key !== "trailer_unit_id"
+        : element?.key !== "carrier"
+    );
+
+    return filteredElements;
+  };
 
   const {
     data: tripsData = [],
@@ -327,7 +328,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
           paginationRightContent={
             selectedTrips.size > 0 ? (
              <>
-              <Button
+              {Boolean(isBroker) && <Button
                 colorScheme="blue"
                 onClick={() => setIsMultipleCarrierAssignModalOpen(true)}
                 h={"32px"}
@@ -336,7 +337,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                 size="sm"
                 fontWeight={"600"}>
                 Multiple Carrier Assign ({selectedTrips.size})
-              </Button>
+              </Button>}
 
               <Button
                 colorScheme="red"
