@@ -22,6 +22,7 @@ import tripsService from "@services/tripsService";
 import {parseISO, format} from "date-fns";
 import {useNavigate} from "react-router-dom";
 import ReportDelay from "./ReportDelay/ReportDelay";
+import { MdAccessTime } from "react-icons/md";
 
 const calculateExpiredTime = (apiTime) => {
   try {
@@ -787,10 +788,10 @@ const TripRowDetails = ({
                                 {formatScheduleDate(item?.arrive_by)}
                               </Text>
                               {isExpired && (
-                                  <img src="/img/delayIcon.svg" alt="" />
+                                 item?.reports?.length > 0 ? <img src="/img/delayIcon.svg" alt="" /> : <MdAccessTime fontSize="22px" color="#64748b" />
                               )}
                             </Flex>
-                            {Boolean(!isBroker) && (
+                            {Boolean(!isBroker) && item?.reports?.length === 0 && (
                               <Button
                                 mt="8px"
                                 h="20px"
@@ -806,7 +807,7 @@ const TripRowDetails = ({
                                   setSelectedPickup(item);
                                   setIsReportDelayOpen(true);
                                 }}>
-                              {item?.reports?.length > 0 ? 'Reported' : 'Report delay'}
+                              {'Report delay'}
                               </Button>
                             )}
                           </Box>
