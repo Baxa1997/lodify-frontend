@@ -6,9 +6,10 @@ import { useSelector } from 'react-redux'
 import tripsService from '@services/tripsService'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-function MultipleCarrierAssignModal({isOpen, onClose, loading, selectedTrips, keyRefetch = ''}) {
+function MultipleCarrierAssignModal({isOpen, onClose, selectedTrips, keyRefetch = '', setSelectedTrips = () => {}}) {
     const queryClient = useQueryClient();
     const [searchText, setSearchText] = useState('')
+    const [loading, setLoading] = useState(false)
     const envId = useSelector((state) => state.auth.environmentId);
     const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
     const [selectedCarrier, setSelectedCarrier] = useState({});
@@ -45,19 +46,21 @@ function MultipleCarrierAssignModal({isOpen, onClose, loading, selectedTrips, ke
         
 
     const handleAddCarrier = () => {
+        setLoading(true)
         const data = Array.from(selectedTrips).map((trip) => ({
-            companies_id: selectedCarrier?.value,
+          companies_id: selectedCarrier?.value,
             guid: trip
         }))
         tripsService.multipleCarrierAssign({
             objects: [...data],
         }).then(() => {
             queryClient.refetchQueries([keyRefetch]);
-
+            onClose();
+            setSelectedTrips(new Set());
         }).catch((error) => {
             console.log('error', error)
         }).finally(() => {
-            // setLoading(false)
+            setLoading(false)
         })
         setSearchText('')
         setSelectedCarrier({})
@@ -87,6 +90,7 @@ function MultipleCarrierAssignModal({isOpen, onClose, loading, selectedTrips, ke
             color="white"
             _hover={{bg: "#EF6820"}}
             isLoading={loading}
+            isDisabled={!selectedCarrier?.value}
           >
             Add Carrier
           </Button>

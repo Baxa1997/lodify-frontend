@@ -37,11 +37,13 @@ import {
   TripProgress,
   TripDriverVerification,
   getLoadTypeColor,
+  ReAssignCarrierButton,
 } from "./components/FunctionalComponent";
 import DriverAssignmentMenu from "../UpcomingTab/components/DriverAssignmentMenu";
 import DriverAssignmentModal from "../UpcomingTab/components/DriverAssignmentModal";
 import TripRowDetails from "../../components/TripRowDetails";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
+import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
 
 function TransitTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -61,6 +63,7 @@ function TransitTab({tripType = "", isActive = true}) {
   const [selectedTrips, setSelectedTrips] = useState(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMultipleCarrierAssignModalOpen, setIsMultipleCarrierAssignModalOpen] = useState(false);
   const envId = useSelector((state) => state.auth.environmentId);
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -269,16 +272,29 @@ function TransitTab({tripType = "", isActive = true}) {
           onPageSizeChange={handlePageSizeChange}
           paginationRightContent={
             selectedTrips.size > 0 ? (
-              <Button
-                colorScheme="red"
-                onClick={handleDelete}
+              <>  
+              {Boolean(isBroker) && <Button
+                colorScheme="blue"
+                onClick={() => setIsMultipleCarrierAssignModalOpen(true)}
                 h={"32px"}
                 p={"8px 14px"}
                 borderRadius={"8px"}
                 size="sm"
                 fontWeight={"600"}>
-                Delete ({selectedTrips.size})
-              </Button>
+                Multiple Carrier Assign ({selectedTrips.size})
+              </Button>}
+              
+              <Button
+              colorScheme="red"
+              onClick={handleDelete}
+              h={"32px"}
+              p={"8px 14px"}
+              borderRadius={"8px"}
+              size="sm"
+              fontWeight={"600"}>
+              Delete ({selectedTrips.size})
+            </Button></>
+              
             ) : null
           }>
           <CTableHead zIndex={6}>
@@ -335,38 +351,63 @@ function TransitTab({tripType = "", isActive = true}) {
                         : null
                     }
                     key={element.id}
-                    onSort={() => handleSort(element.key)}
+                    // onSort={() => handleSort(element.key)}
                     position={
-                      element.key === "driver" &&
-                      !isBroker
+                      (element.key === "carrier" &&
+                        isBroker) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker)
+                        ?  "sticky"
+                        : "static" ||
+                        element?.key === 'actions'
                         ? "sticky"
                         : "static"
-                      || element?.key === 'actions'
-                      ? "sticky"
-                      : "static"
                     }
                     right={
-                      element.key === "driver" &&
-                      !isBroker
-                      ? '150px'
-                      : element?.key === 'actions' ? "0" : "auto"
+                      element.key === "carrier" &&
+                      isBroker
+                        ? "150px"
+                        : element.key === "driver" &&
+                          !isBroker
+                        ? '150px'
+                        : element.key === "tracktor_unit_id" &&
+                          !isBroker
+                        ? '382px'
+                        : element?.key === 'actions' ? "0" : "auto"
                     }
                     bg={
-                      element.key === "driver" &&
-                      !isBroker 
+                      (element.key === "carrier" &&
+                        isBroker) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker)
+                        ? "gray.50"
+                        : "transparent" || element?.key === 'actions'
                         ? "gray.50"
                         : "transparent"
-                      || element?.key === 'actions' ? "gray.50" : "transparent"
                     }
                     boxShadow={
-                      element.key === "driver" &&
-                      !isBroker 
+                      (element.key === "carrier" &&
+                        isBroker) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker)
+                      
                         ? "-2px 0 4px rgba(0,0,0,0.05)"
                         : "none"
                     }
                     zIndex={
-                      element.key === "driver" &&
-                      !isBroker || element?.key === 'actions'
+                      (element.key === "carrier" &&
+                        isBroker) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker
+                        ) 
                         ? 9
                         : -1
                     }>
@@ -680,6 +721,55 @@ function TransitTab({tripType = "", isActive = true}) {
                         </CTableTd>
                       )}
 
+                      {Boolean(isBroker) && (
+                        <CTableTd
+                          position={ "sticky"}
+                          right={"150px"}
+                          bg={ "white"}
+                          boxShadow={ "-2px 0 4px rgba(0,0,0,0.05)"}
+                          zIndex={ 5}>
+                          {trip?.carrier?.legal_name ? (
+                            <Flex alignItems="center" gap={2}>
+                              <Flex alignItems="center" gap={2}>
+                                <Text color="#535862" fontWeight="400">
+                                  {trip?.carrier?.legal_name}
+                                </Text>
+
+                                {isBroker && (
+                                  <ReAssignCarrierButton
+                                    carrierType="team"
+                                    trip={trip}
+                                    setSelectedRow={setSelectedRow}
+                                    setIsAssignCarrierModalOpen={
+                                      setIsAssignCarrierModalOpen
+                                    }
+                                  />
+                                )}
+                              </Flex>
+                            </Flex>
+                          ) : isBroker ? (
+                            <Button
+                              bg="none"
+                              border="none"
+                              color="#EF6820"
+                              fontWeight="600"
+                              px="0"
+                              _hover={{bg: "none"}}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsAssignCarrierModalOpen(true);
+                                setSelectedRow({
+                                  trip: trip,
+                                });
+                              }}>
+                              Assign
+                            </Button>
+                          ) : (
+                            ""
+                          )}
+                        </CTableTd>
+                      )}
+
                       <CTableTd width='150px' position="sticky" right="0" bg="white">
                         <Button
                           onClick={(e) => {
@@ -754,6 +844,13 @@ function TransitTab({tripType = "", isActive = true}) {
         title="Delete Trips"
         message={`Are you sure you want to delete ${selectedTrips.size} trip(s)? This action cannot be undone.`}
         isLoading={isDeleting}
+      />
+      <MultipleCarrierAssignModal
+        keyRefetch={'TRANSIT_TRIPS'}
+        isOpen={isMultipleCarrierAssignModalOpen}
+        onClose={() => setIsMultipleCarrierAssignModalOpen(false)}
+        selectedTrips={selectedTrips}
+        setSelectedTrips={setSelectedTrips}
       />
     </Box>
   );

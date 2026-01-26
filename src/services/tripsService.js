@@ -1,3 +1,4 @@
+import httpRequestNoToken from "@utils/httpRequestNoToken";
 import httpRequest from "../utils/httpRequest";
 
 const tripsService = {
@@ -56,7 +57,13 @@ const tripsService = {
   },
 
   multipleCarrierAssign: (data) => {
-    return httpRequest.patch(`v2/items/orders`, {data});
+    return httpRequestNoToken.patch(`v2/items/orders`, {data}, {
+      headers: {
+        Authorization: "API-KEY",
+        "x-api-key": "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+        "Content-Type": "application/json",
+      },
+    });
   },
 
   getTripLocation: (data) =>

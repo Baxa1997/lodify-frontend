@@ -288,7 +288,6 @@ function UpcomingTab({tripType = "", isActive = true}) {
         isClosable: true,
       });
     } catch (error) {
-      console.error("Error deleting trips:", error);
       setIsDeleting(false);
       toast({
         title: "Error",
@@ -907,13 +906,14 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
 
       <MultipleCarrierAssignModal
-      keyRefetch={'UPCOMING_TRIPS'}
+        keyRefetch={'UPCOMING_TRIPS'}
         isOpen={isMultipleCarrierAssignModalOpen}
         onClose={() => setIsMultipleCarrierAssignModalOpen(false)}
         loading={loading}
         selectedTrips={selectedTrips}
         setSelectedTrips={setSelectedTrips}
         setLoading={setLoading}
+
       /> 
     </Box>
   );
