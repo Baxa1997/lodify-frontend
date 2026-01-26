@@ -46,6 +46,7 @@ import TrailerAssignmentMenu from "./components/TrailerAssignmentMenu";
 import TrailerAssignmentModal from "./components/TrailerAssignmentModal";
 import {useUpcomingProps} from "./components/useUpcomingProps";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
+import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -88,6 +89,8 @@ function UpcomingTab({tripType = "", isActive = true}) {
     selectedTripForTrailerAssignment,
     setSelectedTripForTrailerAssignment,
   ] = useState(null);
+  const [isMultipleCarrierAssignModalOpen, setIsMultipleCarrierAssignModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
@@ -323,6 +326,18 @@ function UpcomingTab({tripType = "", isActive = true}) {
           onPageSizeChange={handlePageSizeChange}
           paginationRightContent={
             selectedTrips.size > 0 ? (
+             <>
+              <Button
+                colorScheme="blue"
+                onClick={() => setIsMultipleCarrierAssignModalOpen(true)}
+                h={"32px"}
+                p={"8px 14px"}
+                borderRadius={"8px"}
+                size="sm"
+                fontWeight={"600"}>
+                Multiple Carrier Assign ({selectedTrips.size})
+              </Button>
+
               <Button
                 colorScheme="red"
                 onClick={handleDelete}
@@ -333,6 +348,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                 fontWeight={"600"}>
                 Delete ({selectedTrips.size})
               </Button>
+             </>
             ) : null
           }>
           <CTableHead zIndex={8}>
@@ -887,6 +903,17 @@ function UpcomingTab({tripType = "", isActive = true}) {
         message={`Are you sure you want to delete ${selectedTrips.size} trip(s)? This action cannot be undone.`}
         isLoading={isDeleting}
       />
+
+
+      <MultipleCarrierAssignModal
+      keyRefetch={'UPCOMING_TRIPS'}
+        isOpen={isMultipleCarrierAssignModalOpen}
+        onClose={() => setIsMultipleCarrierAssignModalOpen(false)}
+        loading={loading}
+        selectedTrips={selectedTrips}
+        setSelectedTrips={setSelectedTrips}
+        setLoading={setLoading}
+      /> 
     </Box>
   );
 }

@@ -55,6 +55,10 @@ const tripsService = {
     );
   },
 
+  multipleCarrierAssign: (data) => {
+    return httpRequest.patch(`v2/items/orders`, {data});
+  },
+
   getTripLocation: (data) =>
     httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),
   deleteTrips: (data) =>
