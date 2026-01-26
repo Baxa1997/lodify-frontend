@@ -327,6 +327,7 @@ function TransitTab({tripType = "", isActive = true}) {
                 .map((element) => (
                   <CTableTh
                     maxW="334px"
+                    minW='150px'
                     sortable={element.sortable}
                     sortDirection={
                       sortConfig.key === element.key
@@ -337,36 +338,35 @@ function TransitTab({tripType = "", isActive = true}) {
                     onSort={() => handleSort(element.key)}
                     position={
                       element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver
+                      !isBroker
                         ? "sticky"
                         : "static"
+                      || element?.key === 'actions'
+                      ? "sticky"
+                      : "static"
                     }
                     right={
                       element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver
-                        ? "0"
-                        : "auto"
+                      !isBroker
+                      ? '150px'
+                      : element?.key === 'actions' ? "0" : "auto"
                     }
                     bg={
                       element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver
+                      !isBroker 
                         ? "gray.50"
                         : "transparent"
+                      || element?.key === 'actions' ? "gray.50" : "transparent"
                     }
                     boxShadow={
                       element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver
+                      !isBroker 
                         ? "-2px 0 4px rgba(0,0,0,0.05)"
                         : "none"
                     }
                     zIndex={
                       element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver
+                      !isBroker || element?.key === 'actions'
                         ? 9
                         : -1
                     }>
@@ -593,11 +593,6 @@ function TransitTab({tripType = "", isActive = true}) {
                         </CTableTd>
                       )}
 
-                      <CTableTd>
-                        <Text color="#181D27">
-                          {trip?.tractors?.plate_number ?? "---"}
-                        </Text>
-                      </CTableTd>
 
                       <CTableTd>
                         <Box>
@@ -648,28 +643,6 @@ function TransitTab({tripType = "", isActive = true}) {
                       </CTableTd>
 
 
-                      {Boolean(!isBroker) && (
-                        <CTableTd
-                          position={hasUnassignedDriver ? "sticky" : "static"}
-                          right={hasUnassignedDriver ? "0" : "auto"}
-                          bg={hasUnassignedDriver ? "white" : "transparent"}
-                          boxShadow={
-                            hasUnassignedDriver
-                              ? "-2px 0 4px rgba(0,0,0,0.05)"
-                              : "none"
-                          }
-                          zIndex={hasUnassignedDriver ? 5 : "auto"}>
-                          <DriverAssignmentMenu
-                            trip={trip}
-                            onAssignClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedTripForAssignment(trip);
-                              setIsDriverAssignmentModalOpen(true);
-                            }}
-                          />
-                        </CTableTd>
-                      )}
-
                       <CTableTd>
                         <Text>${trip?.total_rates}</Text>
                       </CTableTd>
@@ -683,6 +656,31 @@ function TransitTab({tripType = "", isActive = true}) {
                       </CTableTd>
 
                       <CTableTd>
+                        <Text color="#181D27">
+                          {trip?.tractors?.plate_number ?? "---"}
+                        </Text>
+                      </CTableTd>
+
+
+                      {Boolean(!isBroker) && (
+                        <CTableTd
+                          position={ "sticky"}
+                          right={'150px'}
+                          bg={ "white"}
+                          boxShadow={ "-2px 0 4px rgba(0,0,0,0.05)"}
+                          zIndex={ 5}>
+                          <DriverAssignmentMenu
+                            trip={trip}
+                            onAssignClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTripForAssignment(trip);
+                              setIsDriverAssignmentModalOpen(true);
+                            }}
+                          />
+                        </CTableTd>
+                      )}
+
+                      <CTableTd width='150px' position="sticky" right="0" bg="white">
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();

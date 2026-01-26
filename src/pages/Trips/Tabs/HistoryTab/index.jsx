@@ -183,6 +183,7 @@ function HistoryTab({tripType = ""}) {
                 .map((element) => (
                   <CTableTh
                     maxW="334px"
+                    minW="150px"
                     sortable={element.sortable}
                     sortDirection={
                       sortConfig.key === element.key
@@ -201,7 +202,7 @@ function HistoryTab({tripType = ""}) {
                     right={
                       (element.key === "carrier" && isBroker) ||
                       (element.key === "driver" && !isBroker)
-                        ? "120px"
+                        ? "150px"
                         : element?.key === 'actions'
                         ? "0"
                         : "auto"
@@ -461,10 +462,22 @@ function HistoryTab({tripType = ""}) {
                       </CTableTd>
 
 
+                      <CTableTd>
+                        <Text>${trip?.total_rates}</Text>
+                      </CTableTd>
+
+                      <CTableTd>
+                        <Box>
+                          <Text fontWeight="600" color="#181D27">
+                            {trip?.total_miles?.toFixed(0) || 0} miles
+                          </Text>
+                        </Box>
+                      </CTableTd>
+
                       {Boolean(!isBroker) && (
                         <CTableTd
                           position="sticky"
-                          right="120px"
+                          right="150px"
                           bg="white"
                           boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
                           zIndex={8}>
@@ -530,7 +543,7 @@ function HistoryTab({tripType = ""}) {
                       {Boolean(isBroker) && (
                         <CTableTd
                           position="sticky"
-                          right="120px"
+                          right="150px"
                           bg="white"
                           boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
                           zIndex={8}>
@@ -545,18 +558,6 @@ function HistoryTab({tripType = ""}) {
                           )}
                         </CTableTd>
                       )}
-
-                      <CTableTd>
-                        <Text>${trip?.total_rates}</Text>
-                      </CTableTd>
-
-                      <CTableTd>
-                        <Box>
-                          <Text fontWeight="600" color="#181D27">
-                            {trip?.total_miles?.toFixed(0) || 0} miles
-                          </Text>
-                        </Box>
-                      </CTableTd>
 
                       <CTableTd
                         position="sticky"

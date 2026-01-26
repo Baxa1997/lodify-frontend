@@ -210,18 +210,10 @@ function UpcomingTab({tripType = "", isActive = true}) {
   );
   const COLUMN_WIDTH = 180;
 
-  const getDriverPosition = () => {
-    if (!hasUnassignedDriver) return "auto";
-    let offset = 0;
-    if (hasUnassignedTractor) offset += COLUMN_WIDTH;
-    if (hasUnassignedTrailer) offset += COLUMN_WIDTH;
-    return `${offset - 360}px`;
-  };
 
   const getTractorPosition = () => {
-    if (!hasUnassignedTractor) return "auto";
     let offset = 0;
-    if (hasUnassignedTrailer) offset += COLUMN_WIDTH;
+    offset += COLUMN_WIDTH;
     return `${offset + 200}px`;
   };
 
@@ -381,6 +373,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
               {getOrderedColumns().map((element) => (
                 <CTableTh
                   maxW="334px"
+                  minW="150px"
                   sortable={element.sortable}
                   sortDirection={
                     sortConfig.key === element.key ? sortConfig.direction : null
@@ -389,68 +382,49 @@ function UpcomingTab({tripType = "", isActive = true}) {
                   onSort={() => handleSort(element.key)}
                   position={
                     (element.key === "carrier" &&
-                      isBroker &&
-                      hasUnassignedCarrier) ||
+                      isBroker) ||
                     (element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver) ||
+                      !isBroker) ||
                     (element.key === "tracktor_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTractor) ||
-                    (element.key === "trailer_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTrailer)
+                      !isBroker)
+                      ?  "sticky"
+                      : "static" ||
+                      element?.key === 'actions'
                       ? "sticky"
                       : "static"
                   }
                   right={
                     element.key === "carrier" &&
-                    isBroker &&
-                    hasUnassignedCarrier
-                      ? "0"
+                    isBroker
+                      ? "150px"
                       : element.key === "driver" &&
-                        !isBroker &&
-                        hasUnassignedDriver
-                      ? getDriverPosition()
+                        !isBroker
+                      ? '150px'
                       : element.key === "tracktor_unit_id" &&
-                        !isBroker &&
-                        hasUnassignedTractor
-                      ? getTractorPosition()
-                      : element.key === "trailer_unit_id" &&
-                        !isBroker &&
-                        hasUnassignedTrailer
-                      ? getTrailerPosition()
-                      : "auto"
+                        !isBroker
+                      ? '382px'
+                      : element?.key === 'actions' ? "0" : "auto"
                   }
                   bg={
                     (element.key === "carrier" &&
-                      isBroker &&
-                      hasUnassignedCarrier) ||
+                      isBroker) ||
                     (element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver) ||
+                      !isBroker) ||
                     (element.key === "tracktor_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTractor) ||
-                    (element.key === "trailer_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTrailer)
+                      !isBroker)
+                      ? "gray.50"
+                      : "transparent" || element?.key === 'actions'
                       ? "gray.50"
                       : "transparent"
                   }
                   boxShadow={
                     (element.key === "carrier" &&
-                      isBroker &&
-                      hasUnassignedCarrier) ||
+                      isBroker) ||
                     (element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver) ||
+                      !isBroker) ||
                     (element.key === "tracktor_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTractor) ||
-                    (element.key === "trailer_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTrailer)
+                      !isBroker)
+                    
                       ? "-2px 0 4px rgba(0,0,0,0.05)"
                       : "none"
                   }
@@ -462,11 +436,8 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       !isBroker &&
                       hasUnassignedDriver) ||
                     (element.key === "tracktor_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTractor) ||
-                    (element.key === "trailer_unit_id" &&
-                      !isBroker &&
-                      hasUnassignedTrailer)
+                      !isBroker
+                      ) 
                       ? 9
                       : -1
                   }>
@@ -666,39 +637,13 @@ function UpcomingTab({tripType = "", isActive = true}) {
                         </CTableTd>
                       )}
 
-                      {Boolean(!isBroker) && (
-                        <CTableTd
-                          position={hasUnassignedTractor ? "sticky" : "static"}
-                          right={getTractorPosition()}
-                          bg={hasUnassignedTractor ? "white" : "transparent"}
-                          boxShadow={
-                            hasUnassignedTractor
-                              ? "-2px 0 4px rgba(0,0,0,0.05)"
-                              : "none"
-                          }
-                          zIndex={hasUnassignedTractor ? 5 : "auto"}>
-                          <TractorAssignmentMenu
-                            trip={trip}
-                            onAssignClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedTripForTractorAssignment(trip);
-                              setIsTractorAssignmentModalOpen(true);
-                            }}
-                          />
-                        </CTableTd>
-                      )}
+                     
 
                       {Boolean(!isBroker) && (
                         <CTableTd
-                          position={hasUnassignedTrailer ? "sticky" : "static"}
-                          right={getTrailerPosition()}
-                          bg={hasUnassignedTrailer ? "white" : "transparent"}
-                          boxShadow={
-                            hasUnassignedTrailer
-                              ? "-2px 0 4px rgba(0,0,0,0.05)"
-                              : "none"
-                          }
-                          zIndex={hasUnassignedTrailer ? 5 : "auto"}>
+                          right={'400px'}
+                          bg={ "white"}
+                          zIndex={5}>
                           <TrailerAssignmentMenu
                             trip={trip}
                             onAssignClick={(e) => {
@@ -737,19 +682,52 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           {trip.origin?.[0]?.load_type?.label ?? ""}
                         </Badge>
                       </CTableTd>
+                 
 
+                      <CTableTd>
+                        <Box>
+                          <Text fontWeight="600" color="#181D27">
+                            ${trip?.total_rates}
+                          </Text>
+                          <Text fontWeight={400} color="#535862">
+                            {"$2.50/mi"}
+                          </Text>
+                        </Box>
+                      </CTableTd>
+
+                      <CTableTd>
+                        <Box>
+                          <Text fontWeight="600" color="#181D27">
+                            {trip?.total_miles?.toFixed(0) || 0} miles
+                          </Text>
+                        </Box>
+                      </CTableTd>
 
                       {Boolean(!isBroker) && (
                         <CTableTd
-                          position={hasUnassignedDriver ? "sticky" : "static"}
-                          right={getDriverPosition()}
-                          bg={hasUnassignedDriver ? "white" : "transparent"}
-                          boxShadow={
-                            hasUnassignedDriver
-                              ? "-2px 0 4px rgba(0,0,0,0.05)"
-                              : "none"
-                          }
-                          zIndex={hasUnassignedDriver ? 5 : "auto"}>
+                          position={"sticky"}
+                          right={'382px'}
+                          bg={ "white"}
+                          boxShadow={ "-2px 0 4px rgba(0,0,0,0.05)"}
+                          zIndex={ 5}>
+                          <TractorAssignmentMenu
+                            trip={trip}
+                            onAssignClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTripForTractorAssignment(trip);
+                              setIsTractorAssignmentModalOpen(true);
+                            }}
+                          />
+                        </CTableTd>
+                      )}
+
+                      {Boolean(!isBroker) && (
+                        <CTableTd
+                          position={"sticky"}
+                          right={'150px'}
+                          bg={ "white"}
+                          boxShadow={ "-2px 0 4px rgba(0,0,0,0.05)"}
+                          zIndex={ 5}>
                           <DriverAssignmentMenu
                             trip={trip}
                             onAssignClick={(e) => {
@@ -763,15 +741,11 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
                       {Boolean(isBroker) && (
                         <CTableTd
-                          position={hasUnassignedCarrier ? "sticky" : "static"}
-                          right={hasUnassignedCarrier ? "0" : "auto"}
-                          bg={hasUnassignedCarrier ? "white" : "transparent"}
-                          boxShadow={
-                            hasUnassignedCarrier
-                              ? "-2px 0 4px rgba(0,0,0,0.05)"
-                              : "none"
-                          }
-                          zIndex={hasUnassignedCarrier ? 5 : "auto"}>
+                          position={ "sticky"}
+                          right={"150px"}
+                          bg={ "white"}
+                          boxShadow={ "-2px 0 4px rgba(0,0,0,0.05)"}
+                          zIndex={ 5}>
                           {trip?.carrier?.legal_name ? (
                             <Flex alignItems="center" gap={2}>
                               <Flex alignItems="center" gap={2}>
@@ -814,26 +788,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                         </CTableTd>
                       )}
 
-                      <CTableTd>
-                        <Box>
-                          <Text fontWeight="600" color="#181D27">
-                            ${trip?.total_rates}
-                          </Text>
-                          <Text fontWeight={400} color="#535862">
-                            {"$2.50/mi"}
-                          </Text>
-                        </Box>
-                      </CTableTd>
-
-                      <CTableTd>
-                        <Box>
-                          <Text fontWeight="600" color="#181D27">
-                            {trip?.total_miles?.toFixed(0) || 0} miles
-                          </Text>
-                        </Box>
-                      </CTableTd>
-
-                      <CTableTd>
+                      <CTableTd width='150px' position="sticky" right="0" bg="white">
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
