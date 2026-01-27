@@ -5,9 +5,6 @@ import {
   Flex,
   VStack,
   HStack,
-  Badge,
-  Tooltip,
-  Button,
   IconButton,
 } from "@chakra-ui/react";
 import {DataTable} from "@components/DataTable";
@@ -170,7 +167,7 @@ export const Users = () => {
     return head;
   });
 
-  const formattedVerifiedUsers = formatVerifiedUsersData(verifiedUsersBodyData);
+  // const formattedVerifiedUsers = formatVerifiedUsersData(verifiedUsersBodyData);
   const formattedContacts = formatContactsData(contactsBodyData);
 
   const handleContactStatusToggle = (status) => {
@@ -243,10 +240,10 @@ export const Users = () => {
             bg="white"
             border="1px solid #E5E7EB"
             borderRadius="12px"
-            overflow="hidden">
+            overflow="auto" >
             <DataTable
               headData={enhancedVerifiedUsersHeadData}
-              data={formattedVerifiedUsers}
+              data={verifiedUsersBodyData}
               pagination
               count={verifiedUsersCount}
               page={verifiedUsersPage}
@@ -255,6 +252,7 @@ export const Users = () => {
               setPage={setVerifiedUsersPage}
               tableProps={{
                 layout: "fixed",
+                height: "calc(100vh - 305px)",
                 variant: "simple",
               }}
             />

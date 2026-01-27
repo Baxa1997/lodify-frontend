@@ -1,6 +1,8 @@
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {useGetTable} from "@services/items.service";
+import { useQuery } from "@tanstack/react-query";
+import usersService from "@services/usersService";
 
 export const useUsersProps = () => {
   const [searchParams] = useSearchParams();
@@ -16,17 +18,17 @@ export const useUsersProps = () => {
     "Dispatch",
   ]);
 
-  const {data: verifiedUsersData} = useGetTable(
-    "verified_users",
-    {},
-    {
-      data: JSON.stringify({
-        companies_id,
-        offset: (verifiedUsersPage - 1) * verifiedUsersLimit,
-        limit: verifiedUsersLimit,
-      }),
-    }
-  );
+  // const {data: verifiedUsersData} = useGetTable(
+  //   "verified_users",
+  //   {},
+  //   {
+  //     data: JSON.stringify({
+  //       companies_id,
+  //       offset: (verifiedUsersPage - 1) * verifiedUsersLimit,
+  //       limit: verifiedUsersLimit,
+  //     }),
+  //   }
+  // );
 
   const {data: contactsData} = useGetTable(
     "contacts",
@@ -41,44 +43,29 @@ export const useUsersProps = () => {
     }
   );
 
-  const defaultVerifiedUsers = [
-    {
-      name: "Samantha Cole",
-      phone: "(309) 660-7884",
-      phoneStatus: "verified",
-      email: "samantha.cole@nussbaum.com",
-      firstSeen: "6/13/25 at 8:17am Minonk, Illinois",
-      lastSeen: "6/13/25 at 8:17am Minonk, Illinois",
-      country: "-",
-    },
-    {
-      name: "Jeni Nussbaum",
-      phone: "(309) 660-7884",
-      phoneStatus: "verified",
-      email: "jeni.nussbaum@nussbaum.com",
-      firstSeen: "7/18/23 at 10:25am Jacksonville, Illinois",
-      lastSeen: "6/13/25 at 10:25am Peoria Heights, Illinois",
-      country: "United States",
-    },
-    {
-      name: "Tim Bradle",
-      phone: "-",
-      phoneStatus: null,
-      email: "tim.bradle@nussbaum.com",
-      firstSeen: "7/20/23 at 12:42pm Jacksonville, Illinois",
-      lastSeen: "7/20/23 at 12:42pm Jacksonville, Illinois",
-      country: "United States",
-    },
-    {
-      name: "Rusty Damerell",
-      phone: "-",
-      phoneStatus: null,
-      email: "rusty.damerell@nussbaum.com",
-      firstSeen: "6/13/25 at 8:17pm Peoria Heights, Illinois",
-      lastSeen: "1/13/25 at 8:17pm Peoria Heights, Illinois",
-      country: "-",
-    },
-  ];
+  const {data: usersListData = {}} = useQuery({
+    queryKey: ["GET_USERS_DATA", companies_id],
+    queryFn: () => usersService.getList({companies_id:companies_id}, "users"),
+    select: (res) => res?.data || {},
+    enabled: !!companies_id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+  });
+
+
+
+    const userListMappedData = useMemo(() => {
+      return usersListData?.response?.map((item) => ({
+        id: item?.id,
+        name: item?.first_name + " " + item?.last_name,
+        phone: item?.phone,
+        email: item?.email,
+        ip_address: item?.ip_address,
+        role: item?.role_id_data?.name,
+      }))
+    }, [usersListData]);
+
 
   const defaultContacts = [
     {
@@ -133,8 +120,8 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "First Seen",
-      key: "first_seen",
+      label: "IP Address",
+      key: "ip_address",
       thProps: {
         width: "220px",
         px: "16px",
@@ -146,8 +133,8 @@ export const useUsersProps = () => {
       },
     },
     {
-      label: "Last Seen",
-      key: "last_seen",
+      label: "Role",
+      key: "role",
       thProps: {
         width: "220px",
         px: "16px",
@@ -158,19 +145,7 @@ export const useUsersProps = () => {
         py: "12px",
       },
     },
-    {
-      label: "Country",
-      key: "country",
-      thProps: {
-        width: "150px",
-        px: "16px",
-        py: "12px",
-      },
-      tdProps: {
-        px: "16px",
-        py: "12px",
-      },
-    },
+   
   ];
 
   const contactsHeadData = [
@@ -241,10 +216,12 @@ export const useUsersProps = () => {
     },
   ];
 
+
+
   return {
     verifiedUsersHeadData,
-    verifiedUsersBodyData: verifiedUsersData?.response || defaultVerifiedUsers,
-    verifiedUsersCount: verifiedUsersData?.count || defaultVerifiedUsers.length,
+    verifiedUsersBodyData: userListMappedData,
+    verifiedUsersCount: usersListData?.count ,
     verifiedUsersPage,
     setVerifiedUsersPage,
     verifiedUsersLimit,

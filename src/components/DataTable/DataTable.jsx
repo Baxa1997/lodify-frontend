@@ -11,6 +11,7 @@ import {
   Spinner,
   Center,
   Button,
+  Text,
 } from "@chakra-ui/react";
 import {useState, useRef, useEffect} from "react";
 import SimplePagination from "@components/SimplePagination";
@@ -119,7 +120,7 @@ export const DataTable = ({
 
   return (
     <Box borderRadius="12px" display="flex" flexDirection="column" {...props}>
-      <Box flex="1" overflow="auto" maxH={maxH}>
+      <Box flex="1" overflowY="auto" overflowX="auto" maxH={maxH}>
         <Table variant="simple" tableLayout="auto" {...tableProps}>
           {caption && <TableCaption>{caption}</TableCaption>}
           <Thead
@@ -144,6 +145,7 @@ export const DataTable = ({
                   letterSpacing="0.5px"
                   borderBottom="1px solid #E5E7EB"
                   verticalAlign="middle"
+                  bgColor="#F9FAFB"
                   px={head?.thProps?.px || "20px"}
                   py={head?.thProps?.py || "12px"}
                   {...head.thProps}>
@@ -177,6 +179,16 @@ export const DataTable = ({
                 <Td colSpan={headData.length}>
                   <Center h="calc(100vh - 420px)" py={8}>
                     <Spinner size="lg" color="#ff5b04" />
+                  </Center>
+                </Td>
+              </Tr>
+            ) : !data || data.length === 0 ? (
+              <Tr>
+                <Td colSpan={headData.length}>
+                  <Center h="calc(100vh - 420px)" py={8}>
+                    <Text fontSize="14px" color="#6B7280">
+                      No data available
+                    </Text>
                   </Center>
                 </Td>
               </Tr>
