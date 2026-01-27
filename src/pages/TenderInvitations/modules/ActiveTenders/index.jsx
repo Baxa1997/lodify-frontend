@@ -13,6 +13,7 @@ import {
   Text,
   Tooltip,
   VStack,
+  Checkbox,
 } from "@chakra-ui/react";
 import {
   CTable,
@@ -39,6 +40,7 @@ import AssignCarrier from "../../components/AssignCarrier";
 import {BsThreeDotsVertical} from "react-icons/bs";
 import {calculateTimeDifference} from "@utils/timeUtils";
 import TripRowDetails from "../../components/TripRowDetails";
+import MultipleActionModal from "./MultipleActionModal";
 
 function ActiveTenders() {
   const queryClient = useQueryClient();
@@ -52,10 +54,16 @@ function ActiveTenders() {
   const [loadingTripId, setLoadingTripId] = useState(null);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const isBroker = Boolean(brokersId);
+  const [selectedTrips, setSelectedTrips] = useState(new Set());
+  const [isMultipleActionModalOpen, setIsMultipleActionModalOpen] = useState(false);
+  const [currentAction, setCurrentAction] = useState(null);
+  const [isMultiActionLoading, setIsMultiActionLoading] = useState(false);
+  const [selectedBrokerId, setSelectedBrokerId] = useState('')
 
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const userId = useSelector((state) => state.auth.userId);
   const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
     useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -156,7 +164,7 @@ function ActiveTenders() {
       .rejectTrip(computedData)
       .then((res) => {
         queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
+        // queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         setLoadingTripId(null);
       })
       .catch((error) => {
@@ -243,6 +251,90 @@ function ActiveTenders() {
     return "white";
   };
 
+
+  const handleSelectTrip = (trip, tripId, checked) => {
+    setSelectedBrokerId(trip?.invited_by?.guid)
+    setSelectedTrips((prev) => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(tripId);
+      } else {
+        newSet.delete(tripId);
+      }
+      return newSet;
+    })
+  };
+
+  const handleAcceptTrips = () => {
+    setIsMultiActionLoading(true)
+    const data = {
+      objects: Array.from(selectedTrips)?.map((tripGuid) => (
+        {
+          companies_id: companiesId,
+          guid: tripGuid,
+          users_id: userId,
+        }
+      ))
+    }
+
+    tripsService.multipleAction('orders', data).then((res) => {
+      queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+
+      setSelectedTrips(new Set())
+      setIsMultipleActionModalOpen(false)
+    }).catch((error) => {
+      console.error('Error rejecting trips:', error)
+    }).finally(() => {
+      setIsMultiActionLoading(false)
+    })
+  }
+
+  const handleRejectTrips = () => {
+    setIsMultiActionLoading(true)
+    const data = {
+      objects: Array.from(selectedTrips)?.map((tripGuid) => (
+        {
+          brokers_id: selectedBrokerId,
+          companies_id: companiesId,
+          orders_id: tripGuid,
+          is_new: true,
+          date_time: new Date().toISOString(),
+
+        }
+      ))
+    }
+
+    tripsService.multipleAction('rejected_trips', data).then((res) => {
+      queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+
+      setSelectedTrips(new Set())
+      setIsMultipleActionModalOpen(false)
+    }).catch((error) => {
+      console.error('Error rejecting trips:', error)
+    }).finally(() => {
+      setIsMultiActionLoading(false)
+    })
+  }
+
+  const handleMultipleAction = (action, trips) => {
+    setIsMultipleActionModalOpen(true)
+    setCurrentAction(action);
+    
+  };
+
+  const selectedTripsSet = selectedTrips instanceof Set ? selectedTrips : new Set(selectedTrips);
+  const isAllSelected = trips?.length > 0 && trips?.every((trip) => selectedTripsSet.has(trip?.guid));
+  const isIndeterminate = selectedTripsSet.size > 0 && !isAllSelected;
+
+  const handleSelectAll = (isChecked) => {
+    if (isChecked) {
+      const allGuids = new Set(trips?.map((trip) => trip.guid).filter(Boolean));
+      setSelectedTrips(allGuids);
+    } else {
+      setSelectedTrips(new Set());
+    }
+  };
+
   return (
     <Box mt={"26px"}>
       <TenderInvitationsFiltersComponent
@@ -264,9 +356,51 @@ function ActiveTenders() {
           totalPages={totalPages}
           pageSize={pageSize}
           onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}>
+          onPageSizeChange={handlePageSizeChange}
+          paginationRightContent={
+            selectedTripsSet.size > 0 ? (
+             <>
+             <Button h={"32px"} p={"8px 14px"} borderRadius={"8px"} size="sm" fontWeight={"600"} colorScheme="green" onClick={() => handleMultipleAction('accept', selectedTrips)}>Accept ({selectedTripsSet.size})</Button>
+             <Button h={"32px"} p={"8px 14px"} borderRadius={"8px"} size="sm" fontWeight={"600"} colorScheme="red" onClick={() => handleMultipleAction('reject', selectedTrips)}>Reject ({selectedTripsSet.size})</Button>
+             </>
+            ) : null
+          }
+          >
           <CTableHead zIndex={9}>
             <Box as={"tr"}>
+            <CTableTh
+                p='10px'
+                zIndex={-1}
+                width="50px"
+                w="50px"
+                maxW="50px"
+                minW="50px"
+                sortable={false}>
+                <Checkbox
+                  ml='4px'
+                  isChecked={isAllSelected}
+                  isIndeterminate={isIndeterminate}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  borderColor="#D5D7DA"
+                  sx={{
+                    "& .chakra-checkbox__control": {
+                      borderColor: "#D5D7DA",
+                      _checked: {
+                        bg: "#FF5B04",
+                        borderColor: "#FF5B04",
+                        _hover: {
+                          bg: "#FF5B04",
+                          borderColor: "#FF5B04",
+                        },
+                      },
+                      _indeterminate: {
+                        bg: "#FF5B04",
+                        borderColor: "#FF5B04",
+                      },
+                    },
+                  }}
+                />
+              </CTableTh>
               {tableElements
                 ?.filter((element) =>
                   isBroker
@@ -355,7 +489,7 @@ function ActiveTenders() {
               </CTableRow>
             ) : (
               trips?.map((trip, index) => {
-                const isExpanded = expandedRows.has(trip.id || trip.guid);
+                const isExpanded = expandedRows.has(trip.guid);
                 return (
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
@@ -369,6 +503,33 @@ function ActiveTenders() {
                       onClick={(e) =>
                         toggleRowExpansion(trip.id || trip.guid, e)
                       }>
+                        <CTableTd
+                        width="50px"
+                        minW="50px"
+                        maxW="50px"
+                        p='10px'
+                        onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          ml='6px'
+                          // isChecked={isSelected}
+                          onChange={(e) => handleSelectTrip(trip,trip.guid || trip.id, e.target.checked)}
+                          borderColor="#D5D7DA"
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{
+                            "& .chakra-checkbox__control": {
+                              borderColor: "#D5D7DA",
+                              _checked: {
+                                bg: "#FF5B04",
+                                borderColor: "#FF5B04",
+                                _hover: {
+                                  bg: "#FF5B04",
+                                  borderColor: "#FF5B04",
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </CTableTd>
                       <CTableTd>
                         <Text color="#181D27">
                           {trip.customer?.name || trip?.shipper?.name || ""}
@@ -745,6 +906,17 @@ function ActiveTenders() {
         selectedRow={selectedRow}
         isOpen={isAssignCarrierModalOpen}
         onClose={() => setIsAssignCarrierModalOpen(false)}
+      />
+
+      <MultipleActionModal
+        acceptAction={handleAcceptTrips}
+        rejectAction={handleRejectTrips}
+        action={currentAction}
+        isOpen={isMultipleActionModalOpen}
+        onClose={() => setIsMultipleActionModalOpen(false)}
+        selectedTrips={selectedTrips}
+        onConfirm={handleMultipleAction}
+        isLoading={isMultiActionLoading}
       />
     </Box>
   );

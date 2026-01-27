@@ -97,7 +97,6 @@ const AssignCarrier = ({isOpen, onClose, selectedRow = {}}) => {
     return carriersData;
   }, [carriersData, selectedRow]);
 
-  console.log("selectedRowselectedRow", selectedRow);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>

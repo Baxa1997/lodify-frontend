@@ -65,6 +65,15 @@ const tripsService = {
       },
     });
   },
+  multipleAction: (slug, data) => {
+    return httpRequestNoToken.patch(`v2/items/${slug}`, {data}, {
+      headers: {
+        Authorization: "API-KEY",
+        "x-api-key": "P-oyMjPNZutmtcfQSnv1Lf3K55J80CkqyP",
+        "Content-Type": "application/json",
+      },
+    });
+  },
 
   getTripLocation: (data) =>
     httpRequest.post("v2/invoke_function/lodify-trip-gateway", data),

@@ -17,7 +17,6 @@ const SimpleTimer = ({
   const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
-    // Keep the time string as-is (with or without Z) - calculateTimeDifference handles it correctly
     const calculatedTime = calculateTimeDifference(timeFromAPI);
 
     setTimeLeft(calculatedTime);
@@ -62,7 +61,7 @@ const SimpleTimer = ({
       }
     };
   }, [isRunning, timeLeft, onTimeUp]);
-  console.log("timeLefttimeLeft", timeLeft);
+
   return (
     <Box
       display="flex"

@@ -17,6 +17,7 @@ import TenderInvitationsFiltersComponent from "../../components/TenderInvitation
 import {closedTendersTableElements} from "../../hooks";
 import TripRowDetails from "../../components/TripRowDetails";
 import { sidebarActions } from "@store/sidebar";
+import { formatDate } from "@utils/dateFormats";
 
 function ClosedTenders({tripType = ""}) {
   const dispatch = useDispatch();
@@ -154,6 +155,7 @@ function ClosedTenders({tripType = ""}) {
       return newSet;
     });
   };
+
     return (
     <Box mt={"26px"}>
       <TenderInvitationsFiltersComponent
@@ -337,19 +339,13 @@ function ClosedTenders({tripType = ""}) {
                             fontSize={"12px"}
                             fontWeight={500}
                             color="#181D27">
-                            {trip?.origin?.[0]?.arrive_by &&
-                              format(
-                                trip?.origin?.[0]?.arrive_by,
-                                "MM/dd/yyyy"
+                           
+                             { format(
+                                trip?.date_time,
+                                "MM/dd/yyyy HH:mm"
                               )}
                           </Text>
-                          <Text
-                            fontSize={"14px"}
-                            color="#181D27"
-                            fontWeight={400}
-                            h="20px">
-                            {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
-                          </Text>
+                         
                         </Flex>
                       </CTableTd>
                     </CTableRow>

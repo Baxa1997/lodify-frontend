@@ -239,7 +239,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
   const handleSelectAll = (isChecked) => {
     if (isChecked) {
-      const allGuids = new Set(trips.map((trip) => trip.guid || trip.id).filter(Boolean));
+      const allGuids = new Set(trips.map((trip) => trip.guid).filter(Boolean));
       setSelectedTrips(allGuids);
     } else {
       setSelectedTrips(new Set());
