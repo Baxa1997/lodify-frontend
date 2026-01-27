@@ -49,7 +49,7 @@ const DriverAssignmentMenu = ({trip, onAssignClick}) => {
             </VStack>
           </Box>
         }>
-        <Box flex="1">
+        <Box flex="1" minWidth="155px">
           {driver1Name && (
             <Text color="#535862" fontWeight="400" fontSize="14px">
               {driver1Name}
