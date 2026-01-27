@@ -67,16 +67,16 @@ export const useInspectionsProps = ({new_info}) => {
       sortable: true,
     },
     {
-      label: "Flat Number",
+      label: "Unit License",
       key: "unit_license",
     },
     {
-      label: "Type",
-      key: "unit_type_desc",
+      label: "Unit Make",
+      key: "unit_make",
     },
     {
       label: "Total Violations",
-      key: "total_violations",
+      key: "basic_viol",
     },
     {
       label: "OSS Violations",

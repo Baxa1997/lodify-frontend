@@ -5,6 +5,10 @@ const tripsService = {
   getList: (data) => {
     return httpRequest.post("v2/invoke_function/lodify-trip-gateway", {data});
   },
+  getListItems: (slug, data) => {
+    const dataParam = JSON.stringify(data);
+    return httpRequest.get(`v2/items/${slug}?data=${encodeURIComponent(dataParam)}`);
+  },
   getLoadsList: (data) => {
     return httpRequest.post("v2/invoke_function/lodify-trip-gateway", {data});
   },

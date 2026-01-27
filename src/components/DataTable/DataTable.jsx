@@ -30,6 +30,7 @@ export const DataTable = ({
   tableProps = {},
   count = 0,
   maxH,
+  onRowClick,
   ...props
 }) => {
   const [expandedRows, setExpandedRows] = useState(new Set());
@@ -182,7 +183,10 @@ export const DataTable = ({
             ) : (
               data?.map((row, rowIndex) => (
                 <>
-                  <Tr>
+                  <Tr
+                    cursor={onRowClick ? "pointer" : "default"}
+                    _hover={onRowClick ? {bg: "#F9FAFB"} : {}}
+                    onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}>
                     {headData?.map((head, colIndex) => {
                       if (colIndex === 0) {
                         return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Box,
   Text,
@@ -17,6 +17,7 @@ import {
 import {DataTable} from "@components/DataTable";
 import {useInspectionsProps} from "./useInspectionsProps";
 import {calculateMonthsFromDate} from "@utils/calculateRegisterTime";
+import InspectionDetailsModal from "./InspectionDetailsModal";
 
 export const Inspections = ({new_info}) => {
   const {
@@ -34,6 +35,19 @@ export const Inspections = ({new_info}) => {
     inspectionsCardsData,
     refetchInspectionsCount,
   } = useInspectionsProps({new_info});
+
+  const [selectedInspection, setSelectedInspection] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRowClick = (inspection) => {
+    setSelectedInspection(inspection);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedInspection(null);
+  };
 
   return (
     <Box>
@@ -138,6 +152,7 @@ export const Inspections = ({new_info}) => {
                   setPage={setPage}
                   refetch={refetch}
                   isLoading={isLoading}
+                  onRowClick={handleRowClick}
                   tableProps={{
                     layout: "fixed",
                   }}
@@ -147,6 +162,12 @@ export const Inspections = ({new_info}) => {
           </VStack>
         </InfoAccordionPanel>
       </InfoAccordionItem>
+
+      <InspectionDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        inspection={selectedInspection}
+      />
     </Box>
   );
 };
