@@ -332,9 +332,9 @@ const TripRowDetails = ({
   const navigateHook = useNavigate();
   const navigate = navigateProp || navigateHook;
   const envId = useSelector((state) => state.auth.environmentId);
-  const clientType = useSelector((state) => state.auth.clientType);
-  const sidebarOpen = useSelector((state) => state.sidebar.sidebar);
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const sidebarOpen = useSelector((state) => state.sidebar.sidebar);  
+  const isBroker = Boolean(brokersId);
   const [isReportDelayOpen, setIsReportDelayOpen] = useState(false);
   const [selectedPickup, setSelectedPickup] = useState(null);
   const tripRowDetailsRef = useRef(null);

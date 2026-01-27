@@ -30,10 +30,10 @@ const INDEX_TO_TAB = ["actions", "upcoming", "transit", "history"];
 
 const Trips = () => {
   const [isAutomatedAddTrip, setIsAutomatedAddTrip] = useState(false);
-  const clientType = useSelector((state) => state.auth.clientType);
   const [tripType, setTripType] = useState("tender");
   const [searchParams, setSearchParams] = useSearchParams();
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const isBroker = Boolean(brokersId);
 
   const tabFromQuery = searchParams.get(TAB_PARAM);
   const selectedTabIndex = useMemo(() => {
@@ -83,7 +83,7 @@ const Trips = () => {
             <Tab>Upcoming</Tab>
             <Tab>In Transit</Tab>
             <Tab>
-              {clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+                {isBroker
                 ? "History"
                 : "Completed"}
             </Tab>

@@ -4,11 +4,10 @@ import {useSelector} from "react-redux";
 import carrierService from "@services/carrierService";
 
 const useDashboardProps = () => {
-  const clientType = useSelector((state) => state.auth.clientType);
   const {companies_id} = useSelector((state) => state.auth.user_data);
   const {brokers_id} = useSelector((state) => state.auth.user_data);
 
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const isBroker = Boolean(brokers_id);
   const companyType = isBroker ? "brokers_id" : "companies_id";
 
   const {data: tripsCountData = {}, isLoading: isTripsLoading} = useQuery({

@@ -13,8 +13,8 @@ import StopAssignments from "./StopAssignments";
 import {useSelector} from "react-redux";
 
 function PickupFieldsComponent({control, field, index}) {
-  const clientType = useSelector((state) => state.auth.clientType);
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const isBroker = Boolean(brokersId);
 
   const normalizeFieldType = (type) => {
     return Array.isArray(type) && type.length > 0 ? type[0]?.toLowerCase() : "";

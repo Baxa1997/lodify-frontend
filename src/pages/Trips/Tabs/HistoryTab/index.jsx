@@ -47,12 +47,11 @@ function HistoryTab({tripType = ""}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRows, setExpandedRows] = useState(new Set());
   const envId = useSelector((state) => state.auth.environmentId);
-  const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const isBroker = Boolean(brokersId);
 
   const {
     data: tripsData = [],
@@ -77,15 +76,15 @@ function HistoryTab({tripType = ""}) {
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           carriers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? undefined
               : companiesId,
           brokers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? brokersId
               : undefined,
           client_type:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? "broker"
               : "carrier",
           trip_type: tripType,

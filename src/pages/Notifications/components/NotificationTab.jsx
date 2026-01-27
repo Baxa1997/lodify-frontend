@@ -28,25 +28,21 @@ function NotificationTab() {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const cancelRef = useRef();
-  const clientType = useSelector((state) => state.auth.clientType);
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const isBroker = Boolean(brokersId);
   const clientTypeValue = isBroker ? "broker" : "carrier";
 
   const handleViewNotification = (notification) => {
-    // Open modal immediately for smooth UX
     setSelectedNotification(notification);
     setIsModalOpen(true);
 
-    // Mark notification as read in the background (non-blocking)
     if (
       notification?.guid &&
       (notification?.is_read === false || notification?.is_read === 0)
     ) {
-      // Fire and forget - don't await
       notificationService
         .markAsRead(notification.guid)
         .then(() => {
-          // Invalidate and refetch notifications to update the UI
           queryClient.invalidateQueries({queryKey: ["NOTIFICATIONS"]});
           queryClient.invalidateQueries({queryKey: ["NOTIFICATION_COUNT"]});
         })

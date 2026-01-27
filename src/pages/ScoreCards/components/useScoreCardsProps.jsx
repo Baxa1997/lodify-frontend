@@ -4,11 +4,10 @@ import dashboardService from "@services/dashboardService";
 import {useSelector} from "react-redux";
 
 const useScoreCardsProps = () => {
-  const clientType = useSelector((state) => state.auth.clientType);
   const {companies_id} = useSelector((state) => state.auth.user_data);
   const {brokers_id} = useSelector((state) => state.auth.user_data);
   const [filterRange, setFilterRange] = useState("last_6_active_weeks");
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const isBroker = Boolean(brokers_id);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const offset = (page - 1) * limit;

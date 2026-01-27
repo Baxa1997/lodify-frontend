@@ -97,9 +97,9 @@ const Performance = ({
       ],
     },
   };
-
-  const clientType = useSelector((state) => state.auth.clientType);
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const isBroker = Boolean(brokersId);
   return (
     <>
       {!isBroker && (

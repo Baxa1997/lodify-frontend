@@ -50,9 +50,8 @@ function ActiveTenders() {
   const [searchTerm, setSearchTerm] = useState("");
   const envId = useSelector((state) => state.auth.environmentId);
   const [loadingTripId, setLoadingTripId] = useState(null);
-  const clientType = useSelector((state) => state.auth.clientType);
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const isBroker = Boolean(brokersId);
 
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
@@ -97,15 +96,15 @@ function ActiveTenders() {
           offset: (currentPage - 1) * pageSize,
           timer_expired: false,
           carriers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? undefined
               : companiesId,
           brokers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? brokersId
               : undefined,
           client_type:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? "broker"
               : "carrier",
           trip_type: "tender",
@@ -306,7 +305,7 @@ function ActiveTenders() {
                 <CTableTd
                   colSpan={
                     tableElements?.filter((element) =>
-                      clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+                      isBroker
                         ? element.key !== "actions"
                         : true
                     ).length || tableElements.length
@@ -323,7 +322,7 @@ function ActiveTenders() {
                 <CTableTd
                   colSpan={
                     tableElements?.filter((element) =>
-                      clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+                      isBroker
                         ? element.key !== "actions"
                         : true
                     ).length || tableElements.length
@@ -339,7 +338,7 @@ function ActiveTenders() {
                 <CTableTd
                   colSpan={
                     tableElements?.filter((element) =>
-                      clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+                        isBroker
                         ? element.key !== "actions"
                         : true
                     ).length || tableElements.length
@@ -657,8 +656,7 @@ function ActiveTenders() {
                         </Button>
                       </CTableTd>
 
-                      {clientType?.id !==
-                        "96ef3734-3778-4f91-a4fb-d8b9ffb17acf" && (
+                      {!isBroker && (
                         <CTableTd
                           position="sticky"
                           right="0"

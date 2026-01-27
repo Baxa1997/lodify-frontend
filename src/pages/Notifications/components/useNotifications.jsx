@@ -12,9 +12,9 @@ export const useNotifications = ({
   onViewNotification = () => {},
 }) => {
   const navigate = useNavigate();
-  const clientType = useSelector((state) => state.auth.clientType);
   const userId = useSelector((state) => state.auth.userId);
-  const isBroker = clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf";
+  const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const isBroker = Boolean(brokersId);
 
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
