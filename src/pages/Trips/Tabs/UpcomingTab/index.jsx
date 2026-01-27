@@ -205,9 +205,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const trips = tripsData?.response || [];
   const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
   const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
-  const hasUnassignedTractor = trips.some(
-    (trip) => !trip?.tractors?.plate_number && !trip?.tractors?.licence_plate
-  );
+
   const hasUnassignedTrailer = trips.some(
     (trip) => !trip?.trailers?.plate_number
   );
@@ -300,7 +298,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-
+  console.log('tripssssssss', trips)
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -388,7 +386,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
               {getOrderedColumns().map((element) => (
                 <CTableTh
                   maxW="334px"
-                  minW="150px"
+                  minW={element?.key === 'driver' ? "235px" : '150px'}
                   sortable={element.sortable}
                   sortDirection={
                     sortConfig.key === element.key ? sortConfig.direction : null
@@ -651,6 +649,47 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           </Tooltip>
                         </CTableTd>
                       )}
+
+
+                        <CTableTd>
+                          <Tooltip
+                            bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                            color="white"
+                            borderRadius="md"
+                            p="6px 10px"
+                            hasArrow
+                            label={
+                              <Box minW="180px">
+                                <VStack spacing={1} align="start">
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {`${trip?.carrier_user?.first_name} ${trip?.carrier_user?.last_name}`}
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    Carrier
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {trip?.carrier?.legal_name}
+                                  </Text>
+                                </VStack>
+                              </Box>
+                            }
+                            placement="bottom-start"
+                            openDelay={300}>
+                            <Flex alignItems="center">
+                              <Text>{trip?.carrier?.legal_name ?? ""}</Text>
+                            </Flex>
+                          </Tooltip>
+                        </CTableTd>
+
 
                      
 

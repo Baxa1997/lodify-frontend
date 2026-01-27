@@ -132,6 +132,7 @@ function ActiveTenders() {
       data: {
         companies_id: companiesId,
         guid: trip?.guid,
+        users_id: userId,
       },
     };
     tripsService

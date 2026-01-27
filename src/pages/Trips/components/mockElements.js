@@ -38,18 +38,25 @@ export const tableElements = [
   
   {
     id: 7,
+    name: "Accepted By",
+    key: "accepted_by",
+    sortable: true,
+  },
+  
+  {
+    id: 8,
     name: "Trailer Unit # & ID",
     key: "trailer_unit_id",
     sortable: true,
   },
   {
-    id: 8,
+    id: 9,
     name: "Equipment",
     key: "equipment",
     sortable: true,
   },
   {
-    id: 9,
+    id: 10,
     name: "Load Type",
     key: "loadType",
     sortable: true,
@@ -57,14 +64,14 @@ export const tableElements = [
 
 
   {
-    id: 10,
+    id: 11,
     name: "Rate",
     key: "rate",
     sortable: true,
   },
 
   {
-    id: 11,
+    id: 12,
     name: "Total Miles",
     key: "total_miles",
     sortable: true,
@@ -72,19 +79,19 @@ export const tableElements = [
 
 
   {
-    id: 12,
+    id: 13,
     name: "Tracktor Unit # & ID",
     key: "tracktor_unit_id",
     sortable: true,
   },
   {
-    id: 13,
+    id: 14,
     name: "Carrier",
     key: "carrier",
     sortable: false,
   },
   {
-    id: 14,
+    id: 15,
     name: "Driver",
     key: "driver",
     sortable: true,

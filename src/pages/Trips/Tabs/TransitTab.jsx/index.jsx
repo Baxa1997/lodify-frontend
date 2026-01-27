@@ -247,7 +247,7 @@ function TransitTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-
+  console.log('tripssssssss', trips)
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -343,7 +343,7 @@ function TransitTab({tripType = "", isActive = true}) {
                 .map((element) => (
                   <CTableTh
                     maxW="334px"
-                    minW='150px'
+                    minW={element?.key === 'driver' ? "235px" : '150px'}
                     sortable={element.sortable}
                     sortDirection={
                       sortConfig.key === element.key
@@ -356,10 +356,8 @@ function TransitTab({tripType = "", isActive = true}) {
                       (element.key === "carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
-                        !isBroker) ||
-                      (element.key === "tracktor_unit_id" &&
-                        !isBroker)
-                        ?  "sticky"
+                        !isBroker) 
+                       ?  "sticky"
                         : "static" ||
                         element?.key === 'actions'
                         ? "sticky"
@@ -372,9 +370,6 @@ function TransitTab({tripType = "", isActive = true}) {
                         : element.key === "driver" &&
                           !isBroker
                         ? '150px'
-                        : element.key === "tracktor_unit_id" &&
-                          !isBroker
-                        ? '382px'
                         : element?.key === 'actions' ? "0" : "auto"
                     }
                     bg={
@@ -404,10 +399,7 @@ function TransitTab({tripType = "", isActive = true}) {
                       (element.key === "carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
-                        !isBroker) ||
-                      (element.key === "tracktor_unit_id" &&
-                        !isBroker
-                        ) 
+                        !isBroker) 
                         ? 9
                         : -1
                     }>
@@ -633,6 +625,43 @@ function TransitTab({tripType = "", isActive = true}) {
                           </Tooltip>
                         </CTableTd>
                       )}
+
+                        <CTableTd>
+                          <Tooltip
+                            p="6px 10px"
+                            borderRadius="md"
+                            bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                            label={
+                              <Box color="white" minW="180px">
+                                <VStack spacing={1} align="start">
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {`${trip?.carrier_user?.first_name} ${trip?.carrier_user?.last_name}`}
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    Carrier
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {trip?.carrier?.legal_name}
+                                  </Text>
+                                </VStack>
+                              </Box>
+                            }
+                            placement="bottom-start"
+                            openDelay={300}>
+                            <Flex alignItems="center">
+                              <Text>{trip?.carrier?.legal_name ?? ""}</Text>
+                            </Flex>
+                          </Tooltip>
+                        </CTableTd>
 
 
                       <CTableTd>

@@ -406,6 +406,43 @@ function HistoryTab({tripType = ""}) {
                         </CTableTd>
                       )}
 
+<CTableTd>
+                          <Tooltip
+                            p="6px 10px"
+                            borderRadius="md"
+                            bg="linear-gradient(to bottom, #1a365d, #2d3748)"
+                            label={
+                              <Box color="white" minW="180px">
+                                <VStack spacing={1} align="start">
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {`${trip?.carrier_user?.first_name} ${trip?.carrier_user?.last_name}`}
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    Carrier
+                                  </Text>
+                                  <Text
+                                    fontSize="14px"
+                                    fontWeight="600"
+                                    color="white">
+                                    {trip?.carrier?.legal_name}
+                                  </Text>
+                                </VStack>
+                              </Box>
+                            }
+                            placement="bottom-start"
+                            openDelay={300}>
+                            <Flex alignItems="center">
+                              <Text>{trip?.carrier?.legal_name ?? ""}</Text>
+                            </Flex>
+                          </Tooltip>
+                        </CTableTd>
+
                       <CTableTd>
                         <Text color="#181D27">
                           {trip?.tractors?.plate_number ?? "---"}
