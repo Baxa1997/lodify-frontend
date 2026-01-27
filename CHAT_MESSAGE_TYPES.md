@@ -127,20 +127,16 @@ The chat now uses the **`fileService.folderUpload`** method to upload all files 
 import fileService from "@services/fileService";
 
 const handleFileSend = async () => {
-  // Prepare FormData
   const formData = new FormData();
   formData.append("file", selectedFile);
 
-  // Upload to CDN using fileService
   const response = await fileService.folderUpload(formData, {
-    folder_name: "chat", // Files stored in "chat" folder
+    folder_name: "chat",
   });
 
-  // Construct full URL
   const fileUrl = `https://cdn.u-code.io/${response?.link}`;
-  const fileType = getFileType(selectedFile); // auto-detected
+  const fileType = getFileType(selectedFile); 
 
-  // Send message with file info
   onSendMessage(fileUrl, fileType, {
     name: selectedFile.name,
     size: selectedFile.size,
@@ -246,7 +242,7 @@ MessageBubble rendering with type: image Component: ImageMessage
 In `MessageInput.jsx`:
 
 ```javascript
-const maxSize = 20 * 1024 * 1024; // Change to 20MB
+const maxSize = 20 * 1024 * 1024;
 ```
 
 ### Add More File Icons
@@ -257,8 +253,7 @@ In `FileMessage.jsx`:
 const iconMap = {
   pdf: "📄",
   doc: "📝",
-  psd: "🎨", // Add your custom icons
-  // ...
+  psd: "🎨", 
 };
 ```
 
@@ -267,6 +262,6 @@ const iconMap = {
 In `ImageMessage.jsx`:
 
 ```javascript
-maxW = "500px"; // Change max width
-maxH = "500px"; // Change max height
+maxW = "500px";
+maxH = "500px"; 
 ```

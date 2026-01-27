@@ -97,15 +97,15 @@ function TransitTab({tripType = "", isActive = true}) {
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           carriers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? undefined
               : companiesId,
           brokers_id:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? brokersId
               : undefined,
           client_type:
-            clientType?.id === "96ef3734-3778-4f91-a4fb-d8b9ffb17acf"
+            isBroker
               ? "broker"
               : "carrier",
           trip_type: tripType,
