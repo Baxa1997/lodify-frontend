@@ -21,6 +21,7 @@ import {useForm, Controller} from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import tripsService from "@services/tripsService";
+import { useQueryClient } from "@tanstack/react-query";
 
 const delayReasons = [
   "Guard Shack Delay",
@@ -41,6 +42,7 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
       resume_at: "",
     },
   });
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [selectedReason, setSelectedReason] = useState("");
   const [selectedDateTime, setSelectedDateTime] = useState(null);
@@ -57,7 +59,6 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
     setLoading(true);
 
     try {
-      // Format date to ISO string for API
       const formattedDateTime = selectedDateTime.toISOString();
 
       const requestData = {
@@ -75,6 +76,7 @@ const ReportDelay = ({isOpen, onClose, trip = {}, pickup = {}}) => {
       reset();
       setSelectedReason("");
       setSelectedDateTime(null);
+      queryClient.refetchQueries(['TRIP_DETAILS']);
       onClose();
     } catch (error) {
       console.error("Error reporting delay:", error);

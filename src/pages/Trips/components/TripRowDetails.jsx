@@ -19,7 +19,7 @@ import {
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
 import tripsService from "@services/tripsService";
-import {parseISO, format} from "date-fns";
+import {parseISO, format, isAfter} from "date-fns";
 import {useNavigate} from "react-router-dom";
 import ReportDelay from "./ReportDelay/ReportDelay";
 import { MdAccessTime } from "react-icons/md";
@@ -475,6 +475,13 @@ const TripRowDetails = ({
     return `${baseHeight + minRows * rowHeight + padding}px`;
   };
 
+  const dateCompareExpired = (date) => {
+    const currentDate = new Date();
+    if(isAfter(currentDate, date)) {
+      return true;
+    } else false
+  }
+
   return (
     <Box
       ref={tripRowDetailsRef}
@@ -766,13 +773,13 @@ const TripRowDetails = ({
                                     fontSize="14px"
                                     fontWeight="600"
                                     color="#FF4444">
-                                    {formatExpiredTime(expiredTime)}
+                                    {formatExpiredTime(calculateExpiredTime(item?.reports?.[item?.reports?.length - 1]?.date_time || item?.arrive_by))}
                                   </Text>
                                   {item?.reports?.length > 0 && <Text color='#fff'>Reports:</Text>}
                                   {item?.reports?.length > 0 && item?.reports?.map((report, index) => (
                                     <Flex gap='4px' key={report?.id}>
                                       <Text color='#fff'>{index + 1}.</Text>
-                                      <Text color='#fff'>{report?.description}</Text>
+                                      <Text color='#fff'>{report?.reason}</Text>
                                     </Flex>
                                   ))}
                                 </VStack>
@@ -785,19 +792,19 @@ const TripRowDetails = ({
                           <Box>
                             <Flex gap="6px">
                               <Text fontSize="14px" color={"#181d27"}>
-                                {formatScheduleDate(item?.arrive_by)}
+                                {formatScheduleDate(item?.reports?.[item?.reports?.length - 1]?.date_time || item?.arrive_by)}
                               </Text>
-                              {isExpired && (
-                                 item?.reports?.length > 0 ? <img src="/img/delayIcon.svg" alt="" /> : <MdAccessTime fontSize="22px" color="#64748b" />
-                              )}
+                              {/* {isExpired && ( */}
+                                 {dateCompareExpired(item?.reports?.[item?.reports?.length - 1]?.date_time) ? <img src="/img/delayIcon.svg" alt="" /> : <MdAccessTime fontSize="22px" color="#64748b" />}
+                              {/* )} */}
                             </Flex>
-                            {Boolean(!isBroker) && item?.reports?.length === 0 && (
+                            {Boolean(!isBroker) && (
                               <Button
                                 mt="8px"
                                 h="20px"
                                 p="0"
                                 bg="none"
-                                color={item?.reports?.length > 0 ? 'red' : "#EF6820"}
+                                color={"#EF6820"}
                                 borderRadius="8px"
                                 fontSize="14px"
                                 fontWeight="600"
