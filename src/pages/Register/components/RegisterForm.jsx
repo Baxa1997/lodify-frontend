@@ -13,6 +13,7 @@ const RegisterForm = ({
   onNext = () => {},
   onBack = () => {},
   registerSuccess = false,
+  isLoggingIn = false,
   onSubmit = () => {},
   getValues = () => {},
   handleStepChange = () => {},
@@ -64,6 +65,7 @@ const RegisterForm = ({
             onBack={onBack}
             handleStepChange={handleStepChange}
             registerSuccess={registerSuccess}
+            isLoggingIn={isLoggingIn}
           />
         </Box>
       </Box>

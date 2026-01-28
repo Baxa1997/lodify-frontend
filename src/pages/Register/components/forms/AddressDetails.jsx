@@ -7,6 +7,7 @@ import {
   Button,
   Link,
   useToast,
+  Switch,
 } from "@chakra-ui/react";
 import OtpInput from "react-otp-input";
 import HFTextField from "../../../../components/HFTextField";
@@ -746,7 +747,7 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
         />
       </Flex>
 
-      {/* <Flex alignItems="center" justifyContent="space-between" mt={4} mb={2}>
+      <Flex alignItems="center" justifyContent="space-between" mt={4} mb={2}>
         <Text fontSize="14px" color="#6B7280" fontWeight="400">
           Skip phone verification
         </Text>
@@ -755,7 +756,7 @@ const AddressDetails = ({control, errors, watch, onNext, onBack, setValue}) => {
           isChecked={skipPhoneVerification}
           onChange={(e) => setSkipPhoneVerification(e.target.checked)}
         />
-      </Flex> */}
+      </Flex>
 
       <Button
         mt={6}

@@ -15,6 +15,7 @@ const StepRenderer = ({
   onNext = () => {},
   onBack = () => {},
   registerSuccess = false,
+  isLoggingIn = false,
 }) => {
   switch (currentStep) {
     case 1:
@@ -53,6 +54,7 @@ const StepRenderer = ({
           onNext={onNext}
           control={control}
           registerSuccess={registerSuccess}
+          isLoggingIn={isLoggingIn}
         />
       );
     default:

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Box, Text, Button, VStack, Flex} from "@chakra-ui/react";
+import {Box, Text, Button, VStack, Flex, Spinner} from "@chakra-ui/react";
 import HFTextField from "../../../../components/HFTextField";
 import {useNavigate} from "react-router-dom";
 import {useWatch} from "react-hook-form";
@@ -11,6 +11,7 @@ const VerificationStep = ({
   onNext = () => {},
   control,
   registerSuccess = false,
+  isLoggingIn = false,
 }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +30,19 @@ const VerificationStep = ({
       setIsLoading(false);
     }
   };
+
+  if (registerSuccess && isLoggingIn) {
+    return (
+      <Box borderRadius="12px" bg="white" mt="20px">
+        <Flex alignItems="center" justifyContent="center" flexDirection="column" py={10}>
+          <Text fontSize="16px" color="#6B7280" mb={4}>
+            Signing you in...
+          </Text>
+          <Spinner size="lg" color="#EF6820" thickness="3px" />
+        </Flex>
+      </Box>
+    );
+  }
 
   return !registerSuccess ? (
     <Box borderRadius="12px" bg="white">
@@ -121,7 +135,6 @@ const VerificationStep = ({
             rules={{
               required: "Please confirm your password",
               validate: (value) => {
-                console.log("passwordValuepasswordValue", passwordValue);
                 if (!value) return "Please confirm your password";
                 if (value !== passwordValue) {
                   return "Passwords do not match";
@@ -143,7 +156,7 @@ const VerificationStep = ({
           isLoading={isLoading}
           loadingText="Creating Account..."
           mt={4}>
-          Login
+          Create Account
         </Button>
 
         <Flex align="center" gap="8px" justify="center" w="100%">

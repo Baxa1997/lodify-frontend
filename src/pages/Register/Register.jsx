@@ -2,16 +2,27 @@ import React, {useState, useEffect} from "react";
 import {useNavigate, useLocation} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import {Flex, useToast} from "@chakra-ui/react";
+import {useDispatch, useSelector} from "react-redux";
 import RegisterSidebar from "./components/RegisterSidebar";
 import RegisterForm from "./components/RegisterForm";
 import authService from "../../services/auth/authService";
+import {authActions} from "../../store/auth/auth.slice";
+import {loginAction} from "../../store/auth/auth.thunk";
+import IPAddressFinder from "@utils/getIpAddress";
 import styles from "./MultiStepRegister.module.scss";
 
+const PROJECT_ID = "7380859b-8dac-4fe3-b7aa-1fdfcdb4f5c1";
+
 const Register = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const {ip} = IPAddressFinder();
+  const qrVerified = useSelector((state) => state?.auth?.qrVerified);
+  const isAuth = useSelector((state) => state?.auth?.isAuth);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [role, setRole] = useState("");
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const toast = useToast();
@@ -216,6 +227,94 @@ const Register = () => {
     }
   };
 
+  const postRegisterLogin = async (data) => {
+    setIsLoggingIn(true);
+    try {
+      const loginPayload = {
+        username: data?.login ?? "",
+        password: data?.password ?? "",
+      };
+      const res = await authService.multiCompanyLogin(loginPayload, {
+        project_id: PROJECT_ID,
+      });
+      const companies = res?.companies ?? [];
+      if (!companies.length) {
+        toast({
+          title: "Login after registration",
+          description: "Account created. Please sign in manually.",
+          status: "info",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+        return;
+      }
+      const company = companies[0];
+      const project = company?.projects?.[0];
+      const resourceEnvs = project?.resource_environments ?? [];
+      const env = resourceEnvs[0];
+      const clientTypes = env?.client_types?.response ?? [];
+      const clientType = clientTypes[0];
+      const company_id = company?.id;
+      const project_id = project?.id;
+      const environment_id = env?.environment_id;
+      const client_type = clientType?.guid;
+      const environment_ids = resourceEnvs?.map((el) => el?.environment_id) ?? [];
+      const access_type = env?.access_type;
+
+      localStorage.setItem(
+        "new_router",
+        project?.new_router || "false"
+      );
+      localStorage.setItem("newUi", project?.new_design || false);
+      project?.new_layout
+        ? localStorage.setItem("detailPage", "SidePeek")
+        : localStorage.setItem("detailPage", "");
+      localStorage.setItem("newLayout", project?.new_layout || false);
+
+      dispatch(authActions.setStatus(access_type));
+
+      await dispatch(
+        loginAction({
+          username: data.login,
+          password: data.password,
+          company_id,
+          project_id,
+          environment_id,
+          client_type,
+          ip_address: ip,
+          environment_ids,
+          email: data.email,
+          phone: data.phone,
+        })
+      ).unwrap();
+    } catch (err) {
+      toast({
+        title: "Account created",
+        description:
+          err?.message ||
+          "Please sign in with your login and password.",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  useEffect(() => {
+    if (registerSuccess && isAuth) {
+      if (!qrVerified) {
+        navigate("/qr-verification", {replace: true});
+      } else {
+        const from = location.state?.from?.pathname || "/admin/dashboard";
+        navigate(from, {replace: true});
+      }
+    }
+  }, [registerSuccess, isAuth, qrVerified, navigate, location.state]);
+
   const onSubmit = async (data) => {
     const passwordValidation = validatePassword(data.password);
     if (passwordValidation !== true) {
@@ -270,8 +369,9 @@ const Register = () => {
 
       await authService
         .register(apiData)
-        .then((res) => {
+        .then(async () => {
           setRegisterSuccess(true);
+          await postRegisterLogin(data);
         })
         .catch((err) => {
           toast({
@@ -283,7 +383,6 @@ const Register = () => {
             isClosable: true,
             position: "top-right",
           });
-          console.log("errerr", err);
         });
     } catch (error) {
       toast({
@@ -328,6 +427,7 @@ const Register = () => {
         onBack={handleBack}
         isLoading={isLoading}
         registerSuccess={registerSuccess}
+        isLoggingIn={isLoggingIn}
         handleStepChange={handleStepChange}
         getStepValidation={getStepValidation}
       />
