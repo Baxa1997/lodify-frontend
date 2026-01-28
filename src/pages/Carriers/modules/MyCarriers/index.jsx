@@ -311,7 +311,7 @@ const MyCarriers = () => {
                     </HStack>
                   </Box>
 
-                  <Flex
+                  {/* <Flex
                     p="10px 24px"
                     borderTop="1px solid #E2E8F0"
                     justify="flex-end"
@@ -324,13 +324,15 @@ const MyCarriers = () => {
                       fontSize="14px"
                       _hover={{bg: "#FEF3EE"}}
                       onClick={() =>
-                        navigate(`/carrier-setup?id=${carrier.guid}`)
+                        const handleViewCarrier = (carrier) => {
+                          navigate(`/admin/company?id=${carrier.guid}`);
+                        };
                       }>
                       View
                     </Button>
-                  </Flex>
+                  </Flex> */}
 
-                  {/* <Flex
+                  <Flex
                     p="10px 24px"
                     borderTop="1px solid #E2E8F0"
                     justify="flex-end">
@@ -344,7 +346,7 @@ const MyCarriers = () => {
                       onClick={() => handleViewCarrier(carrier)}>
                       View
                     </Button>
-                  </Flex> */}
+                  </Flex>
                 </Box>
               );
             })}

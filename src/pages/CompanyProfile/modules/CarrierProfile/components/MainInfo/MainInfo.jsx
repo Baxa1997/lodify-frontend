@@ -162,6 +162,11 @@ export const MainInfo = ({generalInfo}) => {
     return parts.join(" / ");
   };
 
+  // navigate(`/carrier-setup?id=${carrier.guid}`)
+  const handleViewCarrier = () => {
+    navigate(`/carrier-setup?id=${carrierId}`);
+  };
+
   return (
     <Box className={styles.container}>
       <Box className={styles.headerSection}>
@@ -199,7 +204,7 @@ export const MainInfo = ({generalInfo}) => {
                 _hover={{bg: "#D45A1A"}}
                 isLoading={isConnecting}
                 loadingText="Connecting..."
-                onClick={handleConnectCarrier}>
+                onClick={handleViewCarrier}>
                 Connect Carrier
               </Button>
             )}
