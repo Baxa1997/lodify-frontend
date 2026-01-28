@@ -64,8 +64,8 @@ const AdminLayout = () => {
           {sidebarOpen ? (
             <Box px={"24px"} mt={"16px"} className={styles.sidebarSearch}>
               <Flex h='40px' alignItems='center'>
+               <Tooltip label={companyName} placement="right" hasArrow> 
                 {companyName && (
-    
                   <Box mb="10px">
                     <Box
                       as="span"
@@ -78,10 +78,10 @@ const AdminLayout = () => {
                       overflow="hidden"
                       textOverflow="ellipsis"
                       whiteSpace="nowrap">
-                      {companyName}
+                      {companyName.length > 20 ? companyName.slice(0, 20) + '...' : companyName}
                     </Box>
                   </Box>
-              )}
+              )}</Tooltip>
               </Flex>
 
               <SearchInput
