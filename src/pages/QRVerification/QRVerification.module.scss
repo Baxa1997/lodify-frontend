@@ -132,7 +132,8 @@
   color: #6b7280;
   text-align: center;
   line-height: 1.5;
-  max-width: 440px;
+  max-width: 700px;
+  min-width: 640px;
 
   @media (max-width: 768px) {
     font-size: 14px;
@@ -310,7 +311,7 @@
 .actionSection {
   width: 100%;
   max-width: 400px;
-  margin: 32px auto 0;
+  margin: 12px auto 0;
 
   @media (max-width: 768px) {
     max-width: 100%;
@@ -318,7 +319,7 @@
   }
 
   @media (max-width: 480px) {
-    margin: 20px auto 0;
+    margin: 10px auto 0;
   }
 }
 

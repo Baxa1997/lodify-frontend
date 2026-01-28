@@ -225,7 +225,7 @@ const QRVerification = () => {
     <div className={styles.verificationContainer}>
       <Container maxW="container.md" centerContent>
         <Box className={styles.verificationCard}>
-          <VStack spacing={3} mb={6}>
+          <VStack spacing={2} mb={6}>
             <Box className={styles.iconWrapper}>
               <Icon
                 as={MdQrCodeScanner}
@@ -235,7 +235,7 @@ const QRVerification = () => {
             </Box>
             <Text className={styles.title}>Mobile Verification Required</Text>
             <Text className={styles.subtitle}>
-              Scan the QR code below with your mobile device to continue
+            To continue, open the Lodify App, select 'Scan QR', and scan the code above. We will verify your passport details against our system to complete the process.
             </Text>
           </VStack>
 
