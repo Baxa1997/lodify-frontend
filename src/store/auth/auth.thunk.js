@@ -18,7 +18,11 @@ const getCarrierStatus = (companies_id, dispatch, key = 'companies_id') => {
     })
     .then((res) => {
       const setupSkip = res?.data?.response[0]?.setup_skip;
+      const companyOfficer1 = res?.data?.response[0]?.company_officer_1;
+      const companyOfficer2 = res?.data?.response[0]?.company_officer_2;
       dispatch(authActions.setCompanyName(res?.data?.response[0]?.legal_name))
+      dispatch(authActions.setCompanyOfficer1(companyOfficer1))
+      dispatch(authActions.setCompanyOfficer2(companyOfficer2))
       if(key === 'companies_id') {
         localStorage.setItem(
           "carrierStatus",

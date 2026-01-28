@@ -35,6 +35,8 @@ const QRVerification = () => {
   const [qrValue, setQrValue] = useState("");
   const roleInfo = useSelector((state) => state?.auth?.roleInfo);
   const clientTypeId = useSelector((state) => state?.auth?.clientType?.id);
+  const companyOfficer1 = useSelector((state) => state?.auth?.companyOfficer1);
+  const companyOfficer2 = useSelector((state) => state?.auth?.companyOfficer2);
 
   const userId = useSelector((state) => state?.auth?.userId);
 
@@ -204,9 +206,7 @@ const QRVerification = () => {
 
   const handleCopy = async () => {
     try {
-
       await navigator.clipboard.writeText(qrVerificationLinkData?.url);
-      // setCopied(true);
       toast({
         title: "Copied to clipboard",
         description: "Verification link copied to clipboard",
@@ -215,7 +215,6 @@ const QRVerification = () => {
         isClosable: true,
         position: "top-right",
       });
-      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy!", err);
     }
@@ -229,15 +228,32 @@ const QRVerification = () => {
             <Box className={styles.iconWrapper}>
               <Icon
                 as={MdQrCodeScanner}
-                boxSize={{base: 8, md: 10, lg: 12}}
+                boxSize={{base: 6, md: 6, lg: 6}}
                 color="#ef6820"
               />
             </Box>
             <Text className={styles.title}>Mobile Verification Required</Text>
             <Text className={styles.subtitle}>
-            To continue, open the Lodify App, select 'Scan QR', and scan the code above. We will verify your passport details against our system to complete the process.
+            To continue, open the <strong>Lodify App</strong>, select <strong>'Scan QR'</strong>, and scan the code above. We will verify your passport details against our system to complete the process.
             </Text>
+
+            {(companyOfficer1 || companyOfficer2) && (
+              <Flex className={styles.officersRow} w="100%" flexDirection="column" justify="space-between" >
+                {companyOfficer1 ? (
+                  <Text className={styles.officerLabel}> <strong>Company Officer 1:</strong> {companyOfficer1}</Text>
+                ) : (
+                  <Box flex={1} />
+                )}
+                {companyOfficer2 ? (
+                  <Text className={styles.officerLabel}><strong>Company Officer 2:</strong> {companyOfficer2}</Text>
+                ) : (
+                  <Box flex={1} />
+                )}
+              </Flex>
+            )}
           </VStack>
+
+         
 
           <Box className={styles.qrSection}>
             <Box className={styles.qrWrapper}>
@@ -388,7 +404,7 @@ const QRVerification = () => {
                 width="auto"
                 pr={3}
                 pointerEvents={qrVerificationLinkData?.url && !isLoadingQR && !isQRError ? "auto" : "none"}>
-               <Flex>
+               <Flex >
                <Box
                   as="button"
                   onClick={handleNavigateToLink}

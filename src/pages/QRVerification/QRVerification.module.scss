@@ -78,8 +78,8 @@
 }
 
 .iconWrapper {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   background: linear-gradient(135deg, #f8e6dc 0%, #fde8dc 100%);
   border-radius: 20px;
   display: flex;
@@ -133,11 +133,64 @@
   text-align: center;
   line-height: 1.5;
   max-width: 700px;
-  min-width: 640px;
+  min-width: 600px;
+
+  strong {
+    color: #000;
+  }
 
   @media (max-width: 768px) {
     font-size: 14px;
   }
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
+}
+
+.officersRow {
+  margin-top: 12px;
+  padding: 0 8px;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 8px;
+  }
+}
+
+.officerLabel {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  flex: 0 1 auto;
+  max-width: 50%;
+  margin: 0 auto;
+
+
+  strong {
+    color: #000;
+  }
+
+  // &:first-of-type {
+  //   text-align: left;
+
+  //   @media (max-width: 768px) {
+  //     text-align: center;
+  //     max-width: none;
+  //   }
+  // }
+
+  // &:last-of-type {
+  //   text-align: right;
+
+  //   @media (max-width: 768px) {
+  //     text-align: center;
+  //     max-width: none;
+  //   }
+  // }
 
   @media (max-width: 480px) {
     font-size: 13px;
@@ -188,8 +241,8 @@
   border: 2px solid #f3f4f6;
   transition: all 0.3s ease;
   animation: scaleIn 0.5s ease-out 0.3s both;
-  width: 290px;
-  height: 290px;
+  width: 260px;
+  height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -22,6 +22,8 @@ const initialState = {
   carrierStatusLoaded: false,
   companyName: "",
   qrVerified: false,
+  companyOfficer1: '',
+  companyOfficer2: '',
 };
 
 export const { actions: authActions, reducer: authReducer } = createSlice({
@@ -117,6 +119,12 @@ export const { actions: authActions, reducer: authReducer } = createSlice({
     logout: (state) => initialState,
     setStatus(state, payload) {
       state.access_type = payload;
+    },
+    setCompanyOfficer1(state, { payload }) {
+      state.companyOfficer1 = payload ?? '';
+    },
+    setCompanyOfficer2(state, { payload }) {
+      state.companyOfficer2 = payload ?? '';
     },
     setCarrierStatusLoaded(state, { payload }) {
       state.carrierStatusLoaded = payload;
