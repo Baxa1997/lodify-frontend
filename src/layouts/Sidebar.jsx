@@ -62,7 +62,6 @@ const Sidebar = ({sidebarOpen = false, searchValue = ""}) => {
 
             const showBadge = item.id === "notifications" && unreadCount > 0;
             
-            // Add data-tour attributes for tour guide
             const getTourAttr = (itemId) => {
               const tourMap = {
                 dashboard: "dashboard",

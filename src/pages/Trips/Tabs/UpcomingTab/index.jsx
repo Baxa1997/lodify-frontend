@@ -47,6 +47,7 @@ import TrailerAssignmentModal from "./components/TrailerAssignmentModal";
 import {useUpcomingProps} from "./components/useUpcomingProps";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
+import { useSort } from "@hooks/useSort";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -206,21 +207,18 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
   const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
 
-  const hasUnassignedTrailer = trips.some(
-    (trip) => !trip?.trailers?.plate_number
-  );
-  const COLUMN_WIDTH = 180;
-
-
-  const getTractorPosition = () => {
-    let offset = 0;
-    offset += COLUMN_WIDTH;
-    return `${offset + 200}px`;
+  const columnWidths = {
+    "shipper.name": "200px",
+    "id": "150px",
+    "origin.address": "250px",
+    "stop.address": "250px",
+    "timer": "120px",
+    "total_miles": "130px",
+    "actions": "150px",
+    "carrier": '270px'
   };
 
-  const getTrailerPosition = () => {
-    return hasUnassignedTrailer ? "220px" : "auto";
-  };
+  const {items: sortedTrips} = useSort(trips, sortConfig);
 
 
   const handleSelectTrip = (tripGuid, isChecked) => {
@@ -298,7 +296,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-  console.log('tripssssssss', trips)
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -385,8 +383,9 @@ function UpcomingTab({tripType = "", isActive = true}) {
               </CTableTh>
               {getOrderedColumns().map((element) => (
                 <CTableTh
-                  maxW="334px"
-                  minW={element?.key === 'driver' ? "235px" : '150px'}
+                  width={columnWidths[element.key] || "auto"}
+                  minW={columnWidths[element.key] || "80px"}
+                  maxW={columnWidths[element.key] || "334px"}
                   sortable={element.sortable}
                   sortDirection={
                     sortConfig.key === element.key ? sortConfig.direction : null
@@ -487,7 +486,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
                 const isSelected = selectedTrips.has(trip.guid || trip.id);
                 return (

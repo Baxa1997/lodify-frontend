@@ -1,7 +1,7 @@
 import {useState, Suspense, useEffect, useRef} from "react";
 import {Outlet, useNavigate, useLocation} from "react-router-dom";
 import styles from "./AdminLayout.module.scss";
-import {Box, IconButton, Tooltip} from "@chakra-ui/react";
+import {Box, IconButton, Tooltip, Text, Flex} from "@chakra-ui/react";
 import {LuSearch} from "react-icons/lu";
 import SearchInput from "../components/SearchInput";
 import Sidebar from "./Sidebar";
@@ -15,6 +15,7 @@ const AdminLayout = () => {
   const location = useLocation();
   const pathname = location.pathname;
   const sidebarOpen = useSelector((state) => state.sidebar.sidebar);
+  const companyName = useSelector((state) => state.auth.companyName);
   const [searchValue, setSearchValue] = useState("");
   const [showSearchInput, setShowSearchInput] = useState(false);
   const searchInputRef = useRef(null);
@@ -61,7 +62,28 @@ const AdminLayout = () => {
             )}
           </div>
           {sidebarOpen ? (
-            <Box px={"24px"} mt={"20px"} className={styles.sidebarSearch}>
+            <Box px={"24px"} mt={"16px"} className={styles.sidebarSearch}>
+              <Flex h='40px' alignItems='center'>
+                {companyName && (
+    
+                  <Box mb="10px">
+                    <Box
+                      as="span"
+                      display="block"
+                      fontSize="18px"
+                      fontWeight="700"
+                      color="#fff"
+                      textTransform="uppercase"
+                      letterSpacing="0.5px"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap">
+                      {companyName}
+                    </Box>
+                  </Box>
+              )}
+              </Flex>
+
               <SearchInput
                 placeholder="Search"
                 onSearch={(value) => setSearchValue(value)}
@@ -81,19 +103,49 @@ const AdminLayout = () => {
               />
             </Box>
           ) : (
-            <Box className={styles.sidebarSearchIcon}>
-              <Tooltip label="Search" placement="right" hasArrow>
-                <IconButton
-                  aria-label="Search"
-                  icon={<LuSearch size={20} />}
-                  variant="ghost"
-                  color="white"
-                  _hover={{bg: "rgba(255, 255, 255, 0.1)"}}
-                  onClick={() => setShowSearchInput(!showSearchInput)}
-                  size="sm"
-                  className={styles.searchIconButton}
-                />
-              </Tooltip>
+            <Box px={"12px"} mt={"16px"}>
+              {companyName && (
+                <Tooltip
+                  label={companyName}
+                  placement="right"
+                  hasArrow
+                  bg="#1a1a1a"
+                  color="#fff"
+                  fontSize="12px">
+                  <Box
+                    w="40px"
+                    h="40px"
+                    mx='auto'
+                    bg="transparent"
+                    border="0.5px solid rgba(255, 255, 255, 0.1)"
+                    borderRadius="8px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    cursor="default">
+                    <Text
+                      fontSize="16px"
+                      fontWeight="600"
+                      color="#fff">
+                      {companyName.charAt(0).toUpperCase()}
+                    </Text>
+                  </Box>
+                </Tooltip>
+              )}
+              <Box className={styles.sidebarSearchIcon}>
+                <Tooltip label="Search" placement="right" hasArrow>
+                  <IconButton
+                    aria-label="Search"
+                    icon={<LuSearch size={20} />}
+                    variant="ghost"
+                    color="white"
+                    _hover={{bg: "rgba(255, 255, 255, 0.1)"}}
+                    onClick={() => setShowSearchInput(!showSearchInput)}
+                    size="sm"
+                    className={styles.searchIconButton}
+                  />
+                </Tooltip>
+              </Box>
             </Box>
           )}
         </div>

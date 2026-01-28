@@ -44,6 +44,7 @@ import DriverAssignmentModal from "../UpcomingTab/components/DriverAssignmentMod
 import TripRowDetails from "../../components/TripRowDetails";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
+import { useSort } from "@hooks/useSort";
 
 function TransitTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -129,6 +130,19 @@ function TransitTab({tripType = "", isActive = true}) {
     setCurrentPage(1);
   };
 
+  const columnWidths = {
+    "shipper.name": "200px",
+    "id": "150px",
+    "origin.address": "250px",
+    "stop.address": "250px",
+    "timer": "120px",
+    "total_miles": "130px",
+    "actions": "150px",
+  };
+  
+  const {items: sortedTrips} = useSort(tripsData?.response, sortConfig);
+  
+
   const handleSort = (key) => {
     setSortConfig({
       key,
@@ -167,7 +181,6 @@ function TransitTab({tripType = "", isActive = true}) {
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
   const trips = tripsData?.response || [];
-  const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
 
 
   const handleSelectTrip = (tripGuid, isChecked) => {
@@ -247,7 +260,7 @@ function TransitTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-  console.log('tripssssssss', trips)
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent

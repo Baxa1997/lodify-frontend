@@ -21,6 +21,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const userData = useSelector((state) => state.auth.user_data);
+  const companyName = useSelector((state) => state.auth.companyName);
 
   const handleLogout = () => {
     dispatch(authActions.logout());
@@ -29,10 +30,6 @@ const SidebarFooter = ({sidebarOpen = true}) => {
     localStorage.removeItem("carrierStatus");
     localStorage.removeItem("auth");
     navigate("/login", {replace: true});
-  };
-
-  const handleSettingsClick = () => {
-    navigate("settings");
   };
 
   useEffect(() => {
@@ -55,27 +52,6 @@ const SidebarFooter = ({sidebarOpen = true}) => {
     <div className={styles.sidebarFooter} data-tour="profile">
       {sidebarOpen ? (
         <>
-          {/* <Button
-            variant="ghost"
-            p={"8px 12px"}
-            h={"40px"}
-            mb={"16px"}
-            cursor={"pointer"}
-            borderRadius={"6px"}
-            bg="transparent"
-            _hover={{bg: "rgba(255, 255, 255, 0.1)"}}
-            _active={{bg: "rgba(255, 255, 255, 0.1)"}}
-            onClick={handleSettingsClick}
-            gap="8px"
-            width="100%"
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-start">
-            <img src="/img/setting.svg" alt="" width="20" height="20" />
-            <Text fontSize={"16px"} fontWeight={"600"} color={"#CECFD2"}>
-              Settings
-            </Text>
-          </Button> */}
           <Box ref={profileRef} position="relative" zIndex={99999}>
             <Menu
               isOpen={isProfileOpen}
@@ -90,8 +66,8 @@ const SidebarFooter = ({sidebarOpen = true}) => {
                 gap={"8px"}
                 borderRadius={"12px"}
                 border={"0.5px solid #eee"}
-                p={"8px 12px"}
-                h={"64px"}
+                p={"4px 12px"}
+                h={"58px"}
                 cursor={"pointer"}
                 _hover={{bg: "transparent"}}
                 _active={{bg: "#1a1f2a"}}
@@ -196,7 +172,7 @@ const SidebarFooter = ({sidebarOpen = true}) => {
             </Button>
           </Tooltip> */}
 
-          <Box ref={profileRef} position="relative" zIndex={10001}>
+          <Box w='48px' mx='auto' ref={profileRef} position="relative" zIndex={10001}>
             <Menu
               isOpen={isProfileOpen}
               onClose={() => setIsProfileOpen(false)}

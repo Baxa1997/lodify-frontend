@@ -88,7 +88,7 @@ export const tableElements = [
     id: 14,
     name: "Carrier",
     key: "carrier",
-    sortable: false,
+    sortable: true,
   },
   {
     id: 15,

@@ -5,25 +5,27 @@ import {store} from "..";
 import {companyActions} from "../company/company.slice";
 import {showAlert} from "../alert/alert.thunk";
 
-const getCarrierStatus = (companies_id, dispatch) => {
+const getCarrierStatus = (companies_id, dispatch, key = 'companies_id') => {
   authService
     .getCarrierStatus({
       data: {
         method: "get",
         object_data: {
-          companies_id: companies_id,
+          [key]: companies_id,
         },
         table: "company",
       },
     })
     .then((res) => {
       const setupSkip = res?.data?.response[0]?.setup_skip;
-
-      localStorage.setItem(
-        "carrierStatus",
-        setupSkip === true ? "true" : "false"
-      );
-      dispatch(authActions.setCarrierStatusLoaded(true));
+      dispatch(authActions.setCompanyName(res?.data?.response[0]?.legal_name))
+      if(key === 'companies_id') {
+        localStorage.setItem(
+          "carrierStatus",
+          setupSkip === true ? "true" : "false"
+        );
+        dispatch(authActions.setCarrierStatusLoaded(true))
+      }
     })
     .catch((err) => {
       console.error("Failed to get carrier status:", err);
@@ -47,8 +49,12 @@ export const loginAction = createAsyncThunk(
         })
       );
 
-      if (Boolean(!res?.user_data?.brokers_id)) {
-        getCarrierStatus(res?.user_data?.companies_id, dispatch);
+      if (Boolean(res?.user_data?.brokers_id)) {
+        getCarrierStatus(res?.user_data?.brokers_id, dispatch, 'brokers_id');
+      } else if (Boolean(!res?.user_data?.brokers_id)) {
+        getCarrierStatus(res?.user_data?.companies_id, dispatch, 'companies_id');
+        localStorage.setItem("carrierStatus", "true");
+        dispatch(authActions.setCarrierStatusLoaded(true));
       } else {
         localStorage.setItem("carrierStatus", "true");
         dispatch(authActions.setCarrierStatusLoaded(true));
