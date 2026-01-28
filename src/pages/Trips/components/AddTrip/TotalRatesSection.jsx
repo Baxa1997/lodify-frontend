@@ -11,6 +11,8 @@ const TotalRatesSection = ({watch, control}) => {
       : 0;
   };
 
+
+
   return (
     <Box
       display="grid"
@@ -24,7 +26,6 @@ const TotalRatesSection = ({watch, control}) => {
         <Controller
           name="total_rates"
           control={control}
-          defaultValue="7915.00"
           render={({field}) => (
             <Box bg="white" w="100%">
               <Text fontSize="14px" fontWeight="500" color="#717680" mb="12px">
@@ -45,7 +46,6 @@ const TotalRatesSection = ({watch, control}) => {
         <Controller
           name="total_miles"
           control={control}
-          defaultValue="7915.00"
           render={({field}) => (
             <Box bg="white">
               <Text fontSize="14px" fontWeight="500" color="#717680" mb="12px">
@@ -55,7 +55,7 @@ const TotalRatesSection = ({watch, control}) => {
               <Divider borderColor="#E9EAEB" mb="12px" />
 
               <Text fontSize="20px" fontWeight="700" color="#181D27">
-                {watch("total_miles") || 0} mi
+                {watch("total_miles")?.toFixed(2) || 0} mi
               </Text>
             </Box>
           )}
