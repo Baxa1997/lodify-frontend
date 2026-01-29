@@ -19,7 +19,7 @@ import tripsService from "@services/tripsService";
 import {useQueryClient} from "@tanstack/react-query";
 import SearchableSelect from "@components/SearchableSelect";
 
-const TrailerAssignmentModal = ({isOpen, onClose, trip}) => {
+const TrailerAssignmentModal = ({isOpen, onClose, trip, refetchKey = "UPCOMING_TRIPS"}) => {
   const queryClient = useQueryClient();
   const [selectedTrailer, setSelectedTrailer] = useState(null);
   const [trailerSearchText, setTrailerSearchText] = useState("");
@@ -84,7 +84,7 @@ const TrailerAssignmentModal = ({isOpen, onClose, trip}) => {
       };
 
       await tripsService.updateOrder(updateData);
-      queryClient.invalidateQueries({queryKey: ["UPCOMING_TRIPS"]});
+      queryClient.invalidateQueries({queryKey: [refetchKey]});
       onClose();
     } catch (error) {
       console.error("Error assigning trailer:", error);

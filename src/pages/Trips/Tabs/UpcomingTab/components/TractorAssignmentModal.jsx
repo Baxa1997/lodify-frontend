@@ -21,7 +21,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useSelector} from "react-redux";
 import SearchableSelect from "@components/SearchableSelect";
 
-const TractorAssignmentModal = ({isOpen, onClose, trip}) => {
+const TractorAssignmentModal = ({isOpen, onClose, trip, refetchKey = "UPCOMING_TRIPS"}) => {
   const queryClient = useQueryClient();
   const [selectedTractor, setSelectedTractor] = useState(null);
   const [tractorSearchText, setTractorSearchText] = useState("");
@@ -93,7 +93,7 @@ const TractorAssignmentModal = ({isOpen, onClose, trip}) => {
       };
 
       await tripsService.updateOrder(updateData);
-      queryClient.invalidateQueries({queryKey: ["UPCOMING_TRIPS"]});
+      queryClient.invalidateQueries({queryKey: [refetchKey]});
       onClose();
     } catch (error) {
       console.error("Error assigning tractor:", error);

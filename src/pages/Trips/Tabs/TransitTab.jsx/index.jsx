@@ -41,6 +41,10 @@ import {
 } from "./components/FunctionalComponent";
 import DriverAssignmentMenu from "../UpcomingTab/components/DriverAssignmentMenu";
 import DriverAssignmentModal from "../UpcomingTab/components/DriverAssignmentModal";
+import TractorAssignmentMenu from "../UpcomingTab/components/TractorAssignmentMenu";
+import TractorAssignmentModal from "../UpcomingTab/components/TractorAssignmentModal";
+import TrailerAssignmentMenu from "../UpcomingTab/components/TrailerAssignmentMenu";
+import TrailerAssignmentModal from "../UpcomingTab/components/TrailerAssignmentModal";
 import TripRowDetails from "../../components/TripRowDetails";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
@@ -55,6 +59,18 @@ function TransitTab({tripType = "", isActive = true}) {
     useState(false);
   const [selectedTripForAssignment, setSelectedTripForAssignment] =
     useState(null);
+  const [isTractorAssignmentModalOpen, setIsTractorAssignmentModalOpen] =
+    useState(false);
+  const [
+    selectedTripForTractorAssignment,
+    setSelectedTripForTractorAssignment,
+  ] = useState(null);
+  const [isTrailerAssignmentModalOpen, setIsTrailerAssignmentModalOpen] =
+    useState(false);
+  const [
+    selectedTripForTrailerAssignment,
+    setSelectedTripForTrailerAssignment,
+  ] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
@@ -169,7 +185,10 @@ function TransitTab({tripType = "", isActive = true}) {
     : 0;
   const trips = tripsData?.response || [];
   const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
-
+  const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
+  const hasUnassignedTrailer = trips.some(
+    (trip) => !trip?.trailers?.plate_number
+  );
 
   const handleSelectTrip = (tripGuid, isChecked) => {
     setSelectedTrips((prev) => {
@@ -337,80 +356,80 @@ function TransitTab({tripType = "", isActive = true}) {
                   }}
                 />
               </CTableTh>
-              {tableElements
-                ?.filter((element) =>
-                  isBroker
-                    ? element.key !== "invited_by" &&
-                      element?.key !== "driver" &&
-                      element?.key !== "driver2"
-                    : element?.key !== "carrier"
-                )
-                .map((element) => (
-                  <CTableTh
-                    maxW="334px"
-                    minW={element?.key === 'driver' ? "235px" : '150px'}
-                    sortable={element.sortable}
-                    sortDirection={
-                      sortConfig.key === element.key
-                        ? sortConfig.direction
-                        : null
-                    }
-                    key={element.id}
-                    // onSort={() => handleSort(element.key)}
-                    position={
-                      (element.key === "carrier" &&
-                        isBroker) ||
-                      (element.key === "driver" &&
-                        !isBroker) 
-                       ?  "sticky"
-                        : "static" ||
+              {getOrderedColumns().map((element) => (
+                <CTableTh
+                  maxW="334px"
+                  minW={element?.key === 'driver' ? "235px" : '150px'}
+                  sortable={element.sortable}
+                  sortDirection={
+                    sortConfig.key === element.key
+                      ? sortConfig.direction
+                      : null
+                  }
+                  key={element.id}
+                  onSort={() => handleSort(element.key)}
+                  position={
+                    (element.key === "carrier" &&
+                      isBroker) ||
+                    (element.key === "driver" &&
+                      !isBroker) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker)
+                      ? "sticky"
+                      : "static" ||
                         element?.key === 'actions'
                         ? "sticky"
                         : "static"
-                    }
-                    right={
-                      element.key === "carrier" &&
-                      isBroker
-                        ? "150px"
-                        : element.key === "driver" &&
-                          !isBroker
-                        ? '150px'
-                        : element?.key === 'actions' ? "0" : "auto"
-                    }
-                    bg={
-                      (element.key === "carrier" &&
-                        isBroker) ||
-                      (element.key === "driver" &&
-                        !isBroker) ||
-                      (element.key === "tracktor_unit_id" &&
-                        !isBroker)
-                        ? "gray.50"
-                        : "transparent" || element?.key === 'actions'
-                        ? "gray.50"
-                        : "transparent"
-                    }
-                    boxShadow={
-                      (element.key === "carrier" &&
-                        isBroker) ||
-                      (element.key === "driver" &&
-                        !isBroker) ||
-                      (element.key === "tracktor_unit_id" &&
-                        !isBroker)
-                      
-                        ? "-2px 0 4px rgba(0,0,0,0.05)"
-                        : "none"
-                    }
-                    zIndex={
-                      (element.key === "carrier" &&
-                        isBroker) ||
-                      (element.key === "driver" &&
-                        !isBroker) 
-                        ? 9
-                        : -1
-                    }>
-                    {element.name}
-                  </CTableTh>
-                ))}
+                  }
+                  right={
+                    element.key === "carrier" &&
+                    isBroker
+                      ? "150px"
+                      : element.key === "driver" &&
+                        !isBroker
+                      ? '150px'
+                      : element.key === "tracktor_unit_id" &&
+                        !isBroker
+                      ? '382px'
+                      : element?.key === 'actions' ? "0" : "auto"
+                  }
+                  bg={
+                    (element.key === "carrier" &&
+                      isBroker) ||
+                    (element.key === "driver" &&
+                      !isBroker) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker)
+                      ? "gray.50"
+                      : "transparent" || element?.key === 'actions'
+                      ? "gray.50"
+                      : "transparent"
+                  }
+                  boxShadow={
+                    (element.key === "carrier" &&
+                      isBroker) ||
+                    (element.key === "driver" &&
+                      !isBroker) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker)
+                      ? "-2px 0 4px rgba(0,0,0,0.05)"
+                      : "none"
+                  }
+                  zIndex={
+                    (element.key === "carrier" &&
+                      isBroker &&
+                      hasUnassignedCarrier) ||
+                    (element.key === "driver" &&
+                      !isBroker &&
+                      hasUnassignedDriver) ||
+                    (element.key === "tracktor_unit_id" &&
+                      !isBroker)
+                      ? 9
+                      : -1
+                  }>
+                  {element.name}
+                </CTableTh>
+              ))}
             </Box>
           </CTableHead>
 
@@ -418,13 +437,7 @@ function TransitTab({tripType = "", isActive = true}) {
             {isLoading ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.filter((element) =>
-                    isBroker
-                      ? element.key !== "invited_by" &&
-                        element?.key !== "driver" &&
-                        element?.key !== "driver2"
-                      : element?.key !== "carrier"
-                  ).length + 1}
+                  colSpan={getOrderedColumns().length + 1}
                   textAlign="center"
                   py={8}>
                   <Center minH="400px">
@@ -435,13 +448,7 @@ function TransitTab({tripType = "", isActive = true}) {
             ) : error ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.filter((element) =>
-                    isBroker
-                      ? element.key !== "invited_by" &&
-                        element?.key !== "driver" &&
-                        element?.key !== "driver2"
-                      : element?.key !== "carrier"
-                  ).length + 1}
+                  colSpan={getOrderedColumns().length + 1}
                   textAlign="center"
                   py={8}
                   color="red.500">
@@ -451,13 +458,7 @@ function TransitTab({tripType = "", isActive = true}) {
             ) : trips.length === 0 ? (
               <CTableRow>
                 <CTableTd
-                  colSpan={tableElements.filter((element) =>
-                    isBroker
-                      ? element.key !== "invited_by" &&
-                        element?.key !== "driver" &&
-                        element?.key !== "driver2"
-                      : element?.key !== "carrier"
-                  ).length + 1}
+                  colSpan={getOrderedColumns().length + 1}
                   textAlign="center"
                   p={0}
                   border="none">
@@ -669,13 +670,21 @@ function TransitTab({tripType = "", isActive = true}) {
                         </CTableTd>
 
 
-                      <CTableTd>
-                        <Box>
-                          <Text h="20px" color="#181D27">
-                            {trip?.trailers?.plate_number ?? "---"}
-                          </Text>
-                        </Box>
-                      </CTableTd>
+                      {Boolean(!isBroker) && (
+                        <CTableTd
+                          right="400px"
+                          bg="white"
+                          zIndex={5}>
+                          <TrailerAssignmentMenu
+                            trip={trip}
+                            onAssignClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTripForTrailerAssignment(trip);
+                              setIsTrailerAssignmentModalOpen(true);
+                            }}
+                          />
+                        </CTableTd>
+                      )}
 
                       <CTableTd>
                         <Flex gap="12px" justifyContent="space-between">
@@ -730,17 +739,28 @@ function TransitTab({tripType = "", isActive = true}) {
                         </Box>
                       </CTableTd>
 
-                      <CTableTd>
-                        <Text color="#181D27">
-                          {trip?.tractors?.plate_number ?? "---"}
-                        </Text>
-                      </CTableTd>
-
+                      {Boolean(!isBroker) && (
+                        <CTableTd
+                          position="sticky"
+                          right="382px"
+                          bg="white"
+                          boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
+                          zIndex={5}>
+                          <TractorAssignmentMenu
+                            trip={trip}
+                            onAssignClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTripForTractorAssignment(trip);
+                              setIsTractorAssignmentModalOpen(true);
+                            }}
+                          />
+                        </CTableTd>
+                      )}
 
                       {Boolean(!isBroker) && (
                         <CTableTd
-                          position={ "sticky"}
-                          right={'150px'}
+                          position="sticky"
+                          right="150px"
                           bg={ "white"}
                           boxShadow={ "-2px 0 4px rgba(0,0,0,0.05)"}
                           zIndex={ 5}>
@@ -868,6 +888,26 @@ function TransitTab({tripType = "", isActive = true}) {
           setSelectedTripForAssignment(null);
         }}
         trip={selectedTripForAssignment}
+      />
+
+      <TractorAssignmentModal
+        isOpen={isTractorAssignmentModalOpen}
+        onClose={() => {
+          setIsTractorAssignmentModalOpen(false);
+          setSelectedTripForTractorAssignment(null);
+        }}
+        trip={selectedTripForTractorAssignment}
+        refetchKey="TRANSIT_TRIPS"
+      />
+
+      <TrailerAssignmentModal
+        isOpen={isTrailerAssignmentModalOpen}
+        onClose={() => {
+          setIsTrailerAssignmentModalOpen(false);
+          setSelectedTripForTrailerAssignment(null);
+        }}
+        trip={selectedTripForTrailerAssignment}
+        refetchKey="TRANSIT_TRIPS"
       />
 
       <DeleteConfirmationModal

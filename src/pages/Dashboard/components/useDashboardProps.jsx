@@ -116,12 +116,12 @@ const useDashboardProps = () => {
           data: {
             method: "get",
             object_data: {
-              companies_id: companies_id,
+              [companyType]: isBroker ? brokers_id : companies_id,
             },
             table: "national_average",
           },
         }),
-        enabled: Boolean(companies_id),
+        enabled: Boolean(isBroker ? brokers_id : companies_id),
       select: (res) => res?.data || {},
     });
 
