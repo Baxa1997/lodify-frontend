@@ -12,7 +12,7 @@ import {
   Checkbox,
   useToast,
 } from "@chakra-ui/react";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -68,6 +68,7 @@ function TransitTab({tripType = "", isActive = true}) {
   const toast = useToast();
   const queryClient = useQueryClient();
   const brokersId = useSelector((state) => state.auth.user_data?.brokers_id);
+  const tableScrollRef = useRef(null);
 
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
@@ -191,6 +192,19 @@ function TransitTab({tripType = "", isActive = true}) {
     }
   };
 
+  const getOrderedColumns = () => {
+    const filteredElements = tableElements?.filter((element) =>
+      isBroker
+        ? element?.key !== "driver" &&
+          element?.key !== "driver2" &&
+          element?.key !== "tracktor_unit_id" &&
+          element?.key !== "trailer_unit_id"
+        : element?.key !== "carrier"
+    );
+
+    return filteredElements;
+  };
+
   const isAllSelected = trips.length > 0 && trips.every((trip) => selectedTrips.has(trip.guid || trip.id));
   const isIndeterminate = selectedTrips.size > 0 && !isAllSelected;
 
@@ -247,7 +261,7 @@ function TransitTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-  console.log('tripssssssss', trips)
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -261,6 +275,7 @@ function TransitTab({tripType = "", isActive = true}) {
 
       <Box mt={6}>
         <CTable
+          scrollRef={tableScrollRef}
           width="100%"
           height={isBroker ? "calc(100vh - 332px)" : "calc(100vh - 280px)"}
           overflow="auto"
@@ -283,16 +298,6 @@ function TransitTab({tripType = "", isActive = true}) {
                 Multiple Carrier Assign ({selectedTrips.size})
               </Button>}
               
-              {/* <Button
-              colorScheme="red"
-              onClick={handleDelete}
-              h={"32px"}
-              p={"8px 14px"}
-              borderRadius={"8px"}
-              size="sm"
-              fontWeight={"600"}>
-              Delete ({selectedTrips.size})
-            </Button> */}
             </>
               
             ) : null
@@ -826,18 +831,17 @@ function TransitTab({tripType = "", isActive = true}) {
                     </CTableRow>
 
                     <CTableRow>
-                      <CTableTd colSpan={tableElements.filter((element) =>
-                        isBroker
-                          ? element.key !== "invited_by" &&
-                            element?.key !== "driver" &&
-                            element?.key !== "driver2"
-                          : element?.key !== "carrier"
-                      ).length + 1} p={0}>
-                        <Collapse in={isExpanded} animateOpacity>
+                      <CTableTd colSpan={getOrderedColumns().length + 1} p={0}>
+                        <Collapse
+                          position="relative"
+                          in={isExpanded}
+                          animateOpacity>
                           <TripRowDetails
                             handleRowClick={handleRowClick}
                             trip={trip}
                             isExpanded={isExpanded}
+                            tableScrollRef={tableScrollRef}
+                            navigate={navigate}
                           />
                         </Collapse>
                       </CTableTd>
