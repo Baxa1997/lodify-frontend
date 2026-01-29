@@ -2,7 +2,7 @@ export const tableElements = [
   {
     id: 1,
     name: "Customer",
-    key: "customer.name",
+    key: "customer",
     sortable: true,
   },
   {
@@ -32,14 +32,14 @@ export const tableElements = [
   {
     id: 6,
     name: "Invited By",
-    key: "invited_by.legal_name",
+    key: "invited_by",
     sortable: true,
   },
   
   {
     id: 7,
     name: "Accepted By",
-    key: "carrier.legal_name",
+    key: "accepted_by",
     sortable: true,
   },
   
@@ -87,8 +87,8 @@ export const tableElements = [
   {
     id: 14,
     name: "Carrier",
-    key: "carrier.legal_name",
-    sortable: true,
+    key: "carrier",
+    sortable: false,
   },
   {
     id: 15,

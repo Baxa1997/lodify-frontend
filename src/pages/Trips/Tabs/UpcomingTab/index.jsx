@@ -12,7 +12,7 @@ import {
   Checkbox,
   useToast,
 } from "@chakra-ui/react";
-import React, {useState, useRef, useTransition} from "react";
+import React, {useState, useRef} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -47,7 +47,6 @@ import TrailerAssignmentModal from "./components/TrailerAssignmentModal";
 import {useUpcomingProps} from "./components/useUpcomingProps";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
-import { useSort } from "@hooks/useSort";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -56,7 +55,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortConfig, setSortConfig] = useState({key: "shipper.name", direction: "asc"});
+  const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
   const [searchTerm, setSearchTerm] = useState("");
   const [isAssignDriverModalOpen, setIsAssignDriverModalOpen] = useState(false);
   const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
@@ -94,12 +93,12 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
-  const [isPending, startTransition] = useTransition();
 
   const getOrderedColumns = () => {
     const filteredElements = tableElements?.filter((element) =>
       isBroker
-        ? element?.key !== "driver" &&
+        ? element.key !== "invited_by" &&
+          element?.key !== "driver" &&
           element?.key !== "driver2" &&
           element?.key !== "tracktor_unit_id" &&
           element?.key !== "trailer_unit_id"
@@ -166,12 +165,9 @@ function UpcomingTab({tripType = "", isActive = true}) {
   };
 
   const handleSort = (key) => {
-    console.log('keykeykeykey', key, sortConfig)
-    startTransition(() => {
-      setSortConfig({
-        key: key,
-        direction: sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc",
-      });
+    setSortConfig({
+      key,
+      direction: sortConfig.direction === "asc" ? "desc" : "asc",
     });
   };
 
@@ -210,20 +206,21 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
   const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
 
-  const columnWidths = {
-    "customer.name": "200px",
-    "id": "150px",
-    "origin.[0].address": "350px",
-    "invited_by.legal_name": "200px",
-    "carrier.legal_name": "200px",
-    "stop.address": "250px",
-    "timer": "120px",
-    "total_miles": "130px",
-    "actions": "150px",
-    "carrier": '270px'
+  const hasUnassignedTrailer = trips.some(
+    (trip) => !trip?.trailers?.plate_number
+  );
+  const COLUMN_WIDTH = 180;
+
+
+  const getTractorPosition = () => {
+    let offset = 0;
+    offset += COLUMN_WIDTH;
+    return `${offset + 200}px`;
   };
 
-  const {items: sortedTrips} = useSort(trips, sortConfig);
+  const getTrailerPosition = () => {
+    return hasUnassignedTrailer ? "220px" : "auto";
+  };
 
 
   const handleSelectTrip = (tripGuid, isChecked) => {
@@ -270,7 +267,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
             "client_type": isBroker ? 'broker' : "carrier"
           },
           "table": "trip"
-        }
+    }
         })
 
 
@@ -301,7 +298,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-
+  console.log('tripssssssss', trips)
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -388,9 +385,8 @@ function UpcomingTab({tripType = "", isActive = true}) {
               </CTableTh>
               {getOrderedColumns().map((element) => (
                 <CTableTh
-                  width={columnWidths[element.key] || "auto"}
-                  minW={columnWidths[element.key] || "80px"}
-                  maxW={columnWidths[element.key] || "334px"}
+                  maxW="334px"
+                  minW={element?.key === 'driver' ? "235px" : '150px'}
                   sortable={element.sortable}
                   sortDirection={
                     sortConfig.key === element.key ? sortConfig.direction : null
@@ -398,7 +394,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                   key={element.id}
                   onSort={() => handleSort(element.key)}
                   position={
-                    (element.name === "Carrier" &&
+                    (element.key === "carrier" &&
                       isBroker) ||
                     (element.key === "driver" &&
                       !isBroker) ||
@@ -411,7 +407,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       : "static"
                   }
                   right={
-                    element.name === "Carrier" &&
+                    element.key === "carrier" &&
                     isBroker
                       ? "150px"
                       : element.key === "driver" &&
@@ -423,7 +419,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       : element?.key === 'actions' ? "0" : "auto"
                   }
                   bg={
-                    (element.name === "Carrier" &&
+                    (element.key === "carrier" &&
                       isBroker) ||
                     (element.key === "driver" &&
                       !isBroker) ||
@@ -435,7 +431,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       : "transparent"
                   }
                   boxShadow={
-                    (element.name === "Carrier" &&
+                    (element.key === "carrier" &&
                       isBroker) ||
                     (element.key === "driver" &&
                       !isBroker) ||
@@ -446,7 +442,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       : "none"
                   }
                   zIndex={
-                    (element.name === "Carrier" &&
+                    (element.key === "carrier" &&
                       isBroker &&
                       hasUnassignedCarrier) ||
                     (element.key === "driver" &&
@@ -491,7 +487,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                 </CTableTd>
               </CTableRow>
             ) : (
-              sortedTrips?.map((trip, index) => {
+              trips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
                 const isSelected = selectedTrips.has(trip.guid || trip.id);
                 return (

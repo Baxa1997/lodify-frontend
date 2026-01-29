@@ -12,7 +12,7 @@ import {
   Checkbox,
   useToast,
 } from "@chakra-ui/react";
-import React, {useState, useTransition} from "react";
+import React, {useState} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -44,7 +44,6 @@ import DriverAssignmentModal from "../UpcomingTab/components/DriverAssignmentMod
 import TripRowDetails from "../../components/TripRowDetails";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
-import { useSort } from "@hooks/useSort";
 
 function TransitTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -130,32 +129,11 @@ function TransitTab({tripType = "", isActive = true}) {
     setCurrentPage(1);
   };
 
-  const columnWidths = {
-    "customer.name": "200px",
-    "id": "150px",
-    "origin.[0].address": "350px",
-    "invited_by.legal_name": "200px",
-    "carrier.legal_name": "200px",
-    "stop.address": "250px",
-    "timer": "120px",
-    "actions": "150px",
-    "carrier": '270px',
-    'driver': '235px',
-    'driver2': '235px',
-    'tracktor_unit_id': '235px',
-  };
-
-  
-  const {items: sortedTrips} = useSort(tripsData?.response, sortConfig);
-  const [isPending, startTransition] = useTransition();
-
   const handleSort = (key) => {
-    startTransition(() => {
-      setSortConfig({
-        key,
-        direction: sortConfig.direction === "asc" ? "desc" : "asc",
-      });
-    })
+    setSortConfig({
+      key,
+      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    });
   };
 
   const handleRowClick = (id, trip) => {
@@ -189,6 +167,7 @@ function TransitTab({tripType = "", isActive = true}) {
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
   const trips = tripsData?.response || [];
+  const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
 
 
   const handleSelectTrip = (tripGuid, isChecked) => {
@@ -268,7 +247,7 @@ function TransitTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-
+  console.log('tripssssssss', trips)
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -303,6 +282,17 @@ function TransitTab({tripType = "", isActive = true}) {
                 fontWeight={"600"}>
                 Multiple Carrier Assign ({selectedTrips.size})
               </Button>}
+              
+              {/* <Button
+              colorScheme="red"
+              onClick={handleDelete}
+              h={"32px"}
+              p={"8px 14px"}
+              borderRadius={"8px"}
+              size="sm"
+              fontWeight={"600"}>
+              Delete ({selectedTrips.size})
+            </Button> */}
             </>
               
             ) : null
@@ -352,9 +342,8 @@ function TransitTab({tripType = "", isActive = true}) {
                 )
                 .map((element) => (
                   <CTableTh
-                    width={columnWidths[element.key] || "auto"}
-                    minW={columnWidths[element.key] || "80px"}
-                    maxW={columnWidths[element.key] || "334px"}
+                    maxW="334px"
+                    minW={element?.key === 'driver' ? "235px" : '150px'}
                     sortable={element.sortable}
                     sortDirection={
                       sortConfig.key === element.key
@@ -362,9 +351,9 @@ function TransitTab({tripType = "", isActive = true}) {
                         : null
                     }
                     key={element.id}
-                    onSort={() => handleSort(element.key)}
+                    // onSort={() => handleSort(element.key)}
                     position={
-                      (element.name === "Carrier" &&
+                      (element.key === "carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) 
@@ -375,7 +364,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : "static"
                     }
                     right={
-                      element.name === "Carrier" &&
+                      element.key === "carrier" &&
                       isBroker
                         ? "150px"
                         : element.key === "driver" &&
@@ -384,7 +373,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : element?.key === 'actions' ? "0" : "auto"
                     }
                     bg={
-                      (element.name === "Carrier" &&
+                      (element.key === "carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) ||
@@ -396,7 +385,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : "transparent"
                     }
                     boxShadow={
-                      (element.name === "Carrier" &&
+                      (element.key === "carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) ||
@@ -407,7 +396,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : "none"
                     }
                     zIndex={
-                      (element.name === "Carrier" &&
+                      (element.key === "carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) 
@@ -475,7 +464,7 @@ function TransitTab({tripType = "", isActive = true}) {
                 </CTableTd>
               </CTableRow>
             ) : (
-              sortedTrips?.map((trip, index) => {
+              trips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
                 const isSelected = selectedTrips.has(trip.guid || trip.id);
                 return (
@@ -598,6 +587,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         </Box>
                       </CTableTd>
 
+                      {Boolean(!isBroker) && (
                         <CTableTd>
                           <Tooltip
                             p="6px 10px"
@@ -634,6 +624,7 @@ function TransitTab({tripType = "", isActive = true}) {
                             </Flex>
                           </Tooltip>
                         </CTableTd>
+                      )}
 
                         <CTableTd>
                           <Tooltip

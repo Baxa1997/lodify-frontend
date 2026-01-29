@@ -22,11 +22,12 @@ export const useSort = (items, config = null) => {
     if (!items || items.length === 0) return items;
     
     let sortableItems = [...items];
+    const sortKey = sortConfig?.sortKey ?? sortConfig?.key;
     
-    if (sortConfig !== null && sortConfig.key) {
+    if (sortConfig !== null && sortKey) {
       sortableItems.sort((a, b) => {
-        let aValue = getValue(a, sortConfig.key);
-        let bValue = getValue(b, sortConfig.key);
+        let aValue = getValue(a, sortKey);
+        let bValue = getValue(b, sortKey);
 
         const isNumeric = !isNaN(aValue) && !isNaN(bValue) && aValue !== '' && bValue !== '';
         
@@ -46,12 +47,13 @@ export const useSort = (items, config = null) => {
     return sortableItems;
   }, [items, sortConfig]);
 
-  const requestSort = (key) => {
+  const requestSort = (sortKey) => {
     let direction = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+    const currentSortKey = sortConfig?.sortKey ?? sortConfig?.key;
+    if (sortConfig && currentSortKey === sortKey && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
-    setSortConfig({ key, direction });
+    setSortConfig({ sortKey, direction });
   };
 
   return { items: sortedItems, requestSort, sortConfig };
