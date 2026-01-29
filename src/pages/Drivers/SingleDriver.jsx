@@ -10,7 +10,13 @@ import CustomRadio from "../../components/CustomRadio";
 import Select from "../../components/Select";
 import driversService from "../../services/driversService";
 import styles from "../../styles/tabs.module.scss";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
+import Documents from "./components/Documents";
+
+const formatDateIfValid = (value) => {
+  const date = value ? new Date(value) : null;
+  return date && isValid(date) ? format(date, "yyyy-MM-dd") : null;
+};
 
 const SingleDriver = () => {
   const {id} = useParams();
@@ -101,8 +107,8 @@ const SingleDriver = () => {
         last_name: driverData?.response?.last_name || "",
         phone: driverData?.response?.phone || "",
         email: driverData?.response?.email || "",
-        date_of_birth: format(new Date(driverData?.response?.date_of_birth), "yyyy-MM-dd") || null,
-        hire_date: format(new Date(driverData?.response?.hire_date), "yyyy-MM-dd") || null,
+        date_of_birth: formatDateIfValid(driverData?.response?.date_of_birth),
+        hire_date: formatDateIfValid(driverData?.response?.hire_date),
         address: driverData?.response?.address || "",
         address_2: driverData?.response?.address_2 || "",
         country: driverData?.response?.country || "",
@@ -113,8 +119,8 @@ const SingleDriver = () => {
         medical_card: driverData?.response?.medical_card || "",
         region: driverData?.response?.region || "",
         status: Array.isArray(driverData?.response?.status)
-          ? driverData?.response?.status[0] === 'Ready' ? 'Active' : driverData?.response?.status[0] || ""
-          : driverData?.response?.status[0] === 'Ready' ? 'Active' : driverData?.response?.status || "",
+          ? driverData?.response?.status?.[0] === 'Ready' ? 'Active' : driverData?.response?.status?.[0] || ""
+          : driverData?.response?.status?.[0] === 'Ready' ? 'Active' : driverData?.response?.status || "",
         companies_id: driverData?.response?.companies_id || null,
         guid: id || "",
         client_type_id: "8edba75a-eb27-4f41-9b28-59053aad29a4",
@@ -122,8 +128,8 @@ const SingleDriver = () => {
         emergency_first_name: driverData?.response?.emergency_first_name || "",
         emergency_last_name: driverData?.response?.emergency_last_name || "",
         emergency_phone: driverData?.response?.emergency_phone || "",
-        relationship: Array.isArray(driverData?.response?.relationship)
-          ? driverData?.response?.relationship[0] || ""
+        relationship: Array.isArray(driverData?.response?.relationship ?? [])
+          ? driverData?.response?.relationship?.[0] || ""
           : driverData?.response?.relationship || "",
       };
       reset(formData);
@@ -767,9 +773,7 @@ const SingleDriver = () => {
         </TabPanel>
 
         <TabPanel>
-          <Box mt={"32px"}>
-            <Text>Driver Documents will be displayed here</Text>
-          </Box>
+           <Documents driverData={driverData} />
         </TabPanel>
       </Tabs>
     </Flex>
