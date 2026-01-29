@@ -208,7 +208,7 @@ export const PerformanceByDrivers = ({
             2025
           </Text>
         </Box>
-        <Link
+        {/* <Link
           href="#"
           fontSize="14px"
           color="#EF6820"
@@ -230,7 +230,7 @@ export const PerformanceByDrivers = ({
             ?
           </Flex>
           What are active weeks?
-        </Link>
+        </Link> */}
       </Flex>
 
       <Flex

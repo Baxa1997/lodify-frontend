@@ -86,7 +86,7 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
           </Text>
         </Box>
 
-        <Link
+        {/* <Link
           href="#"
           fontSize="14px"
           color="#EF6820"
@@ -109,7 +109,7 @@ const NationalAverage = ({nationalAverageData = {}, isLoading = false}) => {
             ?
           </Flex>
           View FAQs
-        </Link>
+        </Link> */}
       </Flex>
 
       {isLoading ? (

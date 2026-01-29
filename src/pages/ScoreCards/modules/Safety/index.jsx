@@ -60,7 +60,7 @@ const Safety = ({safetyData = [], isLoading = false}) => {
             Updated on {ordinalDay} {currentMonth} 2025
           </Text>
         </Box>
-        <Link
+        {/* <Link
           href="#"
           fontSize="14px"
           color="#EF6820"
@@ -84,7 +84,7 @@ const Safety = ({safetyData = [], isLoading = false}) => {
             ?
           </Flex>
           View FAQs
-        </Link>
+        </Link> */}
       </Flex>
 
       <UnderReviewSection />

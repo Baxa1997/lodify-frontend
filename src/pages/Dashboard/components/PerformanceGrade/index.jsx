@@ -67,7 +67,7 @@ export const PerformanceGrade = ({performanceData = {}, isLoading = false}) => {
             2025
           </Text>
         </Box>
-        <Link
+        {/* <Link
           href="#"
           fontSize="14px"
           color="#EF6820"
@@ -89,7 +89,7 @@ export const PerformanceGrade = ({performanceData = {}, isLoading = false}) => {
             ?
           </Flex>
           What are active weeks?
-        </Link>
+        </Link> */}
       </Flex>
 
       {isLoading ? (

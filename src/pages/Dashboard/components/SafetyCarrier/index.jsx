@@ -124,7 +124,7 @@ const SafetyCarrier = ({
         <Text fontSize="20px" fontWeight="700" color="#181D27" mb="4px">
           {carrierInfoData?.legal_name || "Lodify safety status"}
         </Text>
-        <Link
+        {/* <Link
           href="#"
           fontSize="14px"
           color="#EF6820"
@@ -147,7 +147,7 @@ const SafetyCarrier = ({
             ?
           </Flex>
           View FAQs
-        </Link>
+        </Link> */}
       </Flex>
       {isLoading ? (
         <LoadingState height="300px" size="lg" />

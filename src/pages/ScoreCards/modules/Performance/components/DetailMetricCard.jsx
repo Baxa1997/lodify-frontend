@@ -151,7 +151,7 @@ const DetailedMetricCard = ({
               </VStack>
             </Flex>
 
-            <Flex
+            {/* <Flex
               alignItems="center"
               justifyContent="flex-end"
               p="12px 20px"
@@ -165,7 +165,7 @@ const DetailedMetricCard = ({
                 View details
               </Link>
               <MdKeyboardArrowRight color="#EF6820" w="20px" h="20px" />
-            </Flex>
+            </Flex> */}
           </>
         ) : (
           <EmptyState

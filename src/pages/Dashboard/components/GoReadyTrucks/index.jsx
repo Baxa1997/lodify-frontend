@@ -34,7 +34,7 @@ export const GoReadyTrucks = () => {
             speed, and mileage on the map.
           </Text>
         </Box>
-        <Link
+        {/* <Link
           href="#"
           fontSize="14px"
           color="#EF6820"
@@ -46,7 +46,7 @@ export const GoReadyTrucks = () => {
           whiteSpace="nowrap">
           View details
           <IoIosArrowForward />
-        </Link>
+        </Link> */}
       </Flex>
 
       <Tabs index={activeTab} onChange={setActiveTab}>

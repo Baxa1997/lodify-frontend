@@ -126,7 +126,7 @@ export const PerformanceGrade = ({
             </Text>
           )}
         </Box>
-        <Link
+        {/* <Link
           href="#"
           fontSize="14px"
           color="#EF6820"
@@ -148,7 +148,7 @@ export const PerformanceGrade = ({
             ?
           </Flex>
           What are active weeks?
-        </Link>
+        </Link> */}
       </Flex>
 
       {isLoading ? (
