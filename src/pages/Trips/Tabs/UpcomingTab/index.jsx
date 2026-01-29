@@ -97,8 +97,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const getOrderedColumns = () => {
     const filteredElements = tableElements?.filter((element) =>
       isBroker
-        ? element.key !== "invited_by" &&
-          element?.key !== "driver" &&
+        ? element?.key !== "driver" &&
           element?.key !== "driver2" &&
           element?.key !== "tracktor_unit_id" &&
           element?.key !== "trailer_unit_id"
