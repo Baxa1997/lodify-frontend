@@ -10,6 +10,7 @@ import CustomRadio from "../../components/CustomRadio";
 import Select from "../../components/Select";
 import driversService from "../../services/driversService";
 import styles from "../../styles/tabs.module.scss";
+import { format } from "date-fns";
 
 const SingleDriver = () => {
   const {id} = useParams();
@@ -100,20 +101,20 @@ const SingleDriver = () => {
         last_name: driverData?.response?.last_name || "",
         phone: driverData?.response?.phone || "",
         email: driverData?.response?.email || "",
-        date_of_birth: driverData?.response?.date_of_birth || null,
-        hire_date: driverData?.response?.hire_date || null,
+        date_of_birth: format(new Date(driverData?.response?.date_of_birth), "yyyy-MM-dd") || null,
+        hire_date: format(new Date(driverData?.response?.hire_date), "yyyy-MM-dd") || null,
         address: driverData?.response?.address || "",
         address_2: driverData?.response?.address_2 || "",
         country: driverData?.response?.country || "",
         state: driverData?.response?.state || "",
         zip_code: driverData?.response?.zip_code || "",
         cdl_class: driverData?.response?.cdl_class || "",
-        licence: driverData?.response?.licence || "",
+        licence: driverData?.response?.license_number || "",
         medical_card: driverData?.response?.medical_card || "",
         region: driverData?.response?.region || "",
         status: Array.isArray(driverData?.response?.status)
-          ? driverData?.response?.status[0] || ""
-          : driverData?.response?.status || "",
+          ? driverData?.response?.status[0] === 'Ready' ? 'Active' : driverData?.response?.status[0] || ""
+          : driverData?.response?.status[0] === 'Ready' ? 'Active' : driverData?.response?.status || "",
         companies_id: driverData?.response?.companies_id || null,
         guid: id || "",
         client_type_id: "8edba75a-eb27-4f41-9b28-59053aad29a4",
@@ -340,7 +341,7 @@ const SingleDriver = () => {
                             fontSize={"14px"}
                             color={"#181D27"}
                             mb={"8px"}>
-                            Data of Birth{" "}
+                            Date of Birth{" "}
                             <span style={{color: "#1570EF"}}>*</span>
                           </Text>
                           <HFTextField

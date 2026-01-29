@@ -11,8 +11,9 @@ export const useSort = (items, config = null) => {
 
   const getValue = (obj, path) => {
     if (!path) return '';
-
-    return path.split('.').reduce((acc, part) => {
+    const normalizedPath = path.replace(/\[(\w+)\]/g, '.$1').replace(/^\./, '');
+    
+    return normalizedPath.split('.').reduce((acc, part) => {
       return acc && acc[part] !== undefined ? acc[part] : '';
     }, obj);
   };
@@ -27,15 +28,18 @@ export const useSort = (items, config = null) => {
         let aValue = getValue(a, sortConfig.key);
         let bValue = getValue(b, sortConfig.key);
 
-        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
-        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+        const isNumeric = !isNaN(aValue) && !isNaN(bValue) && aValue !== '' && bValue !== '';
+        
+        if (!isNumeric) {
+          if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+          if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+        } else {
+          aValue = parseFloat(aValue);
+          bValue = parseFloat(bValue);
+        }
 
-        if (aValue < bValue) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
       });
     }

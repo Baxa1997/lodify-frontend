@@ -12,7 +12,7 @@ import {
   Checkbox,
   useToast,
 } from "@chakra-ui/react";
-import React, {useState} from "react";
+import React, {useState, useTransition} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -131,23 +131,31 @@ function TransitTab({tripType = "", isActive = true}) {
   };
 
   const columnWidths = {
-    "shipper.name": "200px",
+    "customer.name": "200px",
     "id": "150px",
-    "origin.address": "250px",
+    "origin.[0].address": "350px",
+    "invited_by.legal_name": "200px",
+    "carrier.legal_name": "200px",
     "stop.address": "250px",
     "timer": "120px",
-    "total_miles": "130px",
     "actions": "150px",
+    "carrier": '270px',
+    'driver': '235px',
+    'driver2': '235px',
+    'tracktor_unit_id': '235px',
   };
+
   
   const {items: sortedTrips} = useSort(tripsData?.response, sortConfig);
-  
+  const [isPending, startTransition] = useTransition();
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
-    });
+    startTransition(() => {
+      setSortConfig({
+        key,
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+      });
+    })
   };
 
   const handleRowClick = (id, trip) => {
@@ -295,17 +303,6 @@ function TransitTab({tripType = "", isActive = true}) {
                 fontWeight={"600"}>
                 Multiple Carrier Assign ({selectedTrips.size})
               </Button>}
-              
-              {/* <Button
-              colorScheme="red"
-              onClick={handleDelete}
-              h={"32px"}
-              p={"8px 14px"}
-              borderRadius={"8px"}
-              size="sm"
-              fontWeight={"600"}>
-              Delete ({selectedTrips.size})
-            </Button> */}
             </>
               
             ) : null
@@ -355,8 +352,9 @@ function TransitTab({tripType = "", isActive = true}) {
                 )
                 .map((element) => (
                   <CTableTh
-                    maxW="334px"
-                    minW={element?.key === 'driver' ? "235px" : '150px'}
+                    width={columnWidths[element.key] || "auto"}
+                    minW={columnWidths[element.key] || "80px"}
+                    maxW={columnWidths[element.key] || "334px"}
                     sortable={element.sortable}
                     sortDirection={
                       sortConfig.key === element.key
@@ -364,9 +362,9 @@ function TransitTab({tripType = "", isActive = true}) {
                         : null
                     }
                     key={element.id}
-                    // onSort={() => handleSort(element.key)}
+                    onSort={() => handleSort(element.key)}
                     position={
-                      (element.key === "carrier" &&
+                      (element.name === "Carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) 
@@ -377,7 +375,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : "static"
                     }
                     right={
-                      element.key === "carrier" &&
+                      element.name === "Carrier" &&
                       isBroker
                         ? "150px"
                         : element.key === "driver" &&
@@ -386,7 +384,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : element?.key === 'actions' ? "0" : "auto"
                     }
                     bg={
-                      (element.key === "carrier" &&
+                      (element.name === "Carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) ||
@@ -398,7 +396,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : "transparent"
                     }
                     boxShadow={
-                      (element.key === "carrier" &&
+                      (element.name === "Carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) ||
@@ -409,7 +407,7 @@ function TransitTab({tripType = "", isActive = true}) {
                         : "none"
                     }
                     zIndex={
-                      (element.key === "carrier" &&
+                      (element.name === "Carrier" &&
                         isBroker) ||
                       (element.key === "driver" &&
                         !isBroker) 
@@ -477,7 +475,7 @@ function TransitTab({tripType = "", isActive = true}) {
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
                 const isSelected = selectedTrips.has(trip.guid || trip.id);
                 return (
@@ -600,7 +598,6 @@ function TransitTab({tripType = "", isActive = true}) {
                         </Box>
                       </CTableTd>
 
-                      {Boolean(!isBroker) && (
                         <CTableTd>
                           <Tooltip
                             p="6px 10px"
@@ -637,7 +634,6 @@ function TransitTab({tripType = "", isActive = true}) {
                             </Flex>
                           </Tooltip>
                         </CTableTd>
-                      )}
 
                         <CTableTd>
                           <Tooltip
