@@ -162,10 +162,12 @@ const SearchableSelectDrivers = ({
     }
 
     onChange(newSelection);
-
-    // Don't close the dropdown - let user select multiple drivers
-    // Only clear search text after selection
     setSearchText("");
+
+    if (newSelection.length >= maxSelections) {
+      setIsOpen(false);
+      setIsFocused(false);
+    }
   };
 
   const handleRemove = (optionToRemove, e) => {

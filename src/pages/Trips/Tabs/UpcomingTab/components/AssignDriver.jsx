@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -6,83 +6,305 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  Text,
+  ModalFooter,
   Button,
+  Text,
+  Box,
   Flex,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
-import {useForm} from "react-hook-form";
-import HFSelect from "@components/HFSelect";
+import driversService from "@services/driversService";
+import {useQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
 import {useQueryClient} from "@tanstack/react-query";
+import SearchableSelectDrivers from "@components/SearchableSelectDrivers";
 
-const AssignDriver = ({isOpen, onClose, selectedRow = {}}) => {
+const AssignDriver = ({isOpen, onClose, selectedRow = {}, trip: tripProp}) => {
   const queryClient = useQueryClient();
-  const {control, handleSubmit} = useForm();
+  const trip = tripProp ?? selectedRow?.trip;
+
+  const [selectedDrivers, setSelectedDrivers] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = (data) => {
-    setLoading(true);
-    const computedData = {
-      data: {
-        guid: selectedRow?.trip?.guid,
-        [selectedRow?.driverType === "solo" ? "drivers_id" : "drivers_id_2"]:
-          data?.driver,
-      },
-    };
-    tripsService
-      .assignDriver(computedData)
-      .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["UPCOMING_TRIPS"]});
-        onClose();
-      })
-      .finally(() => {
-        setLoading(false);
+  const maxSelections = useMemo(() => {
+    const driverType = trip?.driver_type;
+    if (Array.isArray(driverType)) {
+      return driverType.includes("Team") ? 2 : 1;
+    }
+    if (typeof driverType === "string") {
+      return driverType === "Team" ? 2 : 1;
+    }
+    return 2;
+  }, [trip?.driver_type]);
+
+  const {data: driversData = [], isLoading} = useQuery({
+    queryKey: ["DRIVERS_LIST"],
+    queryFn: () => driversService.getList({}),
+    select: (res) => res?.data?.response || [],
+  });
+
+  const driverOptions = useMemo(() => {
+    return driversData.map((driver) => {
+      const label =
+        `${driver.first_name || ""} ${driver.last_name || ""}`.trim() ||
+        "Driver";
+      return {
+        label,
+        value: driver.guid,
+        driverData: driver,
+      };
+    });
+  }, [driversData]);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchText) return driverOptions;
+    const searchLower = searchText.toLowerCase();
+    return driverOptions.filter((option) =>
+      option.label.toLowerCase().includes(searchLower)
+    );
+  }, [driverOptions, searchText]);
+
+  useEffect(() => {
+    if (isOpen && trip) {
+      const initialDrivers = [];
+
+      if (trip?.drivers) {
+        const driver1Guid = trip.drivers.guid || trip?.drivers_id;
+        const label =
+          `${trip.drivers.first_name || ""} ${
+            trip.drivers.last_name || ""
+          }`.trim() || "Driver";
+
+        if (driver1Guid) {
+          const driver1Option = driverOptions.find((opt) => {
+            if (opt.value === driver1Guid) return true;
+            if (opt.value && driver1Guid) {
+              return String(opt.value) === String(driver1Guid);
+            }
+            if (label && opt.label) {
+              return opt.label.toLowerCase() === label.toLowerCase();
+            }
+            return false;
+          });
+          if (driver1Option) {
+            initialDrivers.push(driver1Option);
+          } else {
+            initialDrivers.push({
+              label,
+              value: driver1Guid,
+              driverData: trip.drivers,
+            });
+          }
+        } else if (label !== "Driver") {
+          initialDrivers.push({
+            label,
+            value: trip.drivers.id || trip?.drivers_id || "",
+            driverData: trip.drivers,
+          });
+        }
+      } else if (trip?.drivers_id && driverOptions.length > 0) {
+        const driver1Option = driverOptions.find(
+          (opt) =>
+            opt.value === trip.drivers_id ||
+            String(opt.value) === String(trip.drivers_id)
+        );
+        if (driver1Option) {
+          initialDrivers.push(driver1Option);
+        }
+      }
+
+      const isTeam = Array.isArray(trip?.driver_type)
+        ? trip.driver_type.includes("Team")
+        : trip?.driver_type === "Team";
+
+      if (isTeam) {
+        if (trip?.drivers_2) {
+          const driver2Guid = trip.drivers_2.guid || trip?.drivers_id_2;
+          const label =
+            `${trip.drivers_2.first_name || ""} ${
+              trip.drivers_2.last_name || ""
+            }`.trim() || "Driver";
+
+          if (driver2Guid) {
+            const driver2Option = driverOptions.find((opt) => {
+              if (opt.value === driver2Guid) return true;
+              if (opt.value && driver2Guid) {
+                return String(opt.value) === String(driver2Guid);
+              }
+              if (label && opt.label) {
+                return opt.label.toLowerCase() === label.toLowerCase();
+              }
+              return false;
+            });
+            if (driver2Option) {
+              initialDrivers.push(driver2Option);
+            } else {
+              initialDrivers.push({
+                label,
+                value: driver2Guid,
+                driverData: trip.drivers_2,
+              });
+            }
+          } else if (label !== "Driver") {
+            initialDrivers.push({
+              label,
+              value: trip.drivers_2.id || trip?.drivers_id_2 || "",
+              driverData: trip.drivers_2,
+            });
+          }
+        } else if (trip?.drivers_id_2 && driverOptions.length > 0) {
+          const driver2Option = driverOptions.find(
+            (opt) =>
+              opt.value === trip.drivers_id_2 ||
+              String(opt.value) === String(trip.drivers_id_2)
+          );
+          if (driver2Option) {
+            initialDrivers.push(driver2Option);
+          }
+        }
+      }
+
+      setSelectedDrivers(initialDrivers);
+    } else if (isOpen && !trip) {
+      setSelectedDrivers([]);
+    }
+  }, [trip, isOpen, driverOptions]);
+
+  useEffect(() => {
+    if (
+      isOpen &&
+      trip &&
+      driverOptions.length > 0 &&
+      selectedDrivers.length > 0
+    ) {
+      const updatedDrivers = selectedDrivers.map((selectedDriver) => {
+        const matchingOption = driverOptions.find((opt) => {
+          if (opt.value === selectedDriver.value) return true;
+          if (opt.value && selectedDriver.value) {
+            return String(opt.value) === String(selectedDriver.value);
+          }
+          if (opt.label && selectedDriver.label) {
+            return opt.label.toLowerCase() === selectedDriver.label.toLowerCase();
+          }
+          return false;
+        });
+        return matchingOption || selectedDriver;
       });
+
+      const needsUpdate = updatedDrivers.some((updated, idx) => {
+        const original = selectedDrivers[idx];
+        if (!original) return false;
+        const valueMatches =
+          updated.value === original.value ||
+          (updated.value &&
+            original.value &&
+            String(updated.value) === String(original.value));
+        return valueMatches && updated !== original;
+      });
+
+      if (needsUpdate) {
+        setSelectedDrivers(updatedDrivers);
+      }
+    }
+  }, [driverOptions.length, isOpen]);
+
+  useEffect(() => {
+    if (isOpen && selectedDrivers.length > maxSelections) {
+      setSelectedDrivers(selectedDrivers.slice(0, maxSelections));
+    }
+  }, [maxSelections, isOpen, selectedDrivers.length]);
+
+  const assignDrivers = async (drivers) => {
+    if (!drivers?.length || !trip?.guid) return;
+    setLoading(true);
+    try {
+      const isTeam = maxSelections === 2;
+      const computedData = {
+        data: {
+          guid: trip.guid,
+          drivers_id: drivers[0]?.value || null,
+          drivers_id_2: isTeam ? drivers[1]?.value || null : null,
+        },
+      };
+      await tripsService.assignDriver(computedData);
+      queryClient.refetchQueries(["UPCOMING_TRIPS"]);
+      handleClose();
+    } catch (error) {
+      console.error("Error assigning drivers:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = () => assignDrivers(selectedDrivers);
+
+  const handleClose = () => {
+    setSearchText("");
+    onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal isOpen={isOpen} onClose={handleClose} size="lg" isCentered>
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Assign Driver</ModalHeader>
+      <ModalContent borderRadius="12px">
+        <ModalHeader fontSize="18px" fontWeight="600" color="#181D27" pb="16px">
+          {trip?.drivers || trip?.drivers_2
+            ? "Reassign Drivers"
+            : "Assign Drivers"}
+        </ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          <Text fontSize="16px" fontWeight="500" color="gray.700" mb={2}>
-            Select Driver
-          </Text>
-          <HFSelect
-            control={control}
-            name="driver"
-            options={[]}
-            view_fields={["first_name", "last_name"]}
-            table_slug="drivers"
-          />
+        <ModalBody pb="0px">
+          <VStack spacing="20px" align="stretch">
+            <Box>
+              <Flex alignItems="center" gap={2} mb="6px">
+                <Text fontSize="14px" fontWeight="500" color="#414651">
+                  Drivers <span style={{color: "#FF6B35"}}>*</span>
+                </Text>
+              </Flex>
+              <SearchableSelectDrivers
+                options={filteredOptions}
+                value={selectedDrivers}
+                onChange={setSelectedDrivers}
+                maxSelections={maxSelections}
+                placeholder={
+                  maxSelections === 2
+                    ? "Select drivers (max 2)"
+                    : "Select driver"
+                }
+                searchPlaceholder="Search drivers..."
+                searchText={searchText}
+                setSearchText={setSearchText}
+                isDisabled={isLoading || loading}
+              />
+            </Box>
+          </VStack>
+        </ModalBody>
 
-          <Flex mt={4} justifyContent="flex-end" gap={2}>
+        <ModalFooter>
+          <HStack spacing="12px">
             <Button
-              onClick={onClose}
               variant="outline"
-              borderColor="#EF6820"
-              color="#EF6820"
-              fontSize="14px"
-              fontWeight="500"
-              px={4}
-              py={2}
-              borderRadius="8px"
-              _hover={{bg: "gray.50", borderColor: "#EF6820"}}>
+              border="1px solid #D5D7DA"
+              color="#414651"
+              bg="white"
+              _hover={{bg: "#F8F9FA"}}
+              onClick={handleClose}
+              isDisabled={loading}>
               Cancel
             </Button>
             <Button
-              type="submit"
-              bg="#EF6820"
+              bg="#FF6B35"
               color="white"
-              _hover={{bg: "#EF6820"}}
-              onClick={handleSubmit(onSubmit)}
-              isLoading={loading}>
-              Assign
+              _hover={{bg: "#E55A2B"}}
+              onClick={handleSubmit}
+              isLoading={loading}
+              isDisabled={selectedDrivers.length === 0}>
+              {trip?.drivers || trip?.drivers_2 ? "Reassign" : "Assign"}
             </Button>
-          </Flex>
-        </ModalBody>
+          </HStack>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

@@ -214,35 +214,36 @@ const DriverAssignmentModal = ({isOpen, onClose, trip}) => {
     }
   }, [driverOptions.length, isOpen]);
 
-  // Enforce maxSelections limit - remove excess drivers if driver_type is Solo
+
   useEffect(() => {
     if (isOpen && selectedDrivers.length > maxSelections) {
       setSelectedDrivers(selectedDrivers.slice(0, maxSelections));
     }
   }, [maxSelections, isOpen, selectedDrivers.length]);
 
-  const handleSubmit = async () => {
-    if (selectedDrivers.length === 0) return;
-
+  const assignDrivers = async (drivers) => {
+    if (!drivers?.length || !trip?.guid) return;
     setLoading(true);
     try {
       const isTeam = maxSelections === 2;
       const computedData = {
         data: {
-          guid: trip?.guid,
-          drivers_id: selectedDrivers[0]?.value || null,
-          drivers_id_2: isTeam ? selectedDrivers[1]?.value || null : null,
+          guid: trip.guid,
+          drivers_id: drivers[0]?.value || null,
+          drivers_id_2: isTeam ? drivers[1]?.value || null : null,
         },
       };
       await tripsService.assignDriver(computedData);
-      queryClient.invalidateQueries({queryKey: ["UPCOMING_TRIPS"]});
-      onClose();
+      queryClient.refetchQueries(["UPCOMING_TRIPS"]);
+      handleClose();
     } catch (error) {
       console.error("Error assigning drivers:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSubmit = () => assignDrivers(selectedDrivers);
 
   const handleClose = () => {
     setSearchText("");
