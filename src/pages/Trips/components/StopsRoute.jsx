@@ -101,7 +101,7 @@ function StopsRoute({stop, index, initialStops, displayIndex}) {
             </Text>
           </Box>
 
-          {/* IF INDEX === 1 or IF THERE IS A IMAGES LIST */}
+
           {stop?.images?.length > 0 && (
             <Box
               display="flex"
@@ -148,11 +148,11 @@ function StopsRoute({stop, index, initialStops, displayIndex}) {
                   />
                 </Box>
               ))}
-              {/* </Flex> */}
+
             </Box>
           )}
 
-          {/* IF THERE A FILE EXIST ATTACHMENTS */}
+
           {stop?.files?.length > 0 && (
             <Box
               w="100%"
