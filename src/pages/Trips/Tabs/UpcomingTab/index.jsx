@@ -224,6 +224,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const {items: sortedTrips} = useSort(trips, sortConfig);
 
 
+
   const handleSelectTrip = (tripGuid, isChecked) => {
     setSelectedTrips((prev) => {
       const newSet = new Set(prev);
@@ -536,7 +537,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
-                          <Text color="#181D27">{trip.id || ""}</Text>
+                          <Text color="#181D27">{trip.reference || ""}</Text>
                           {/* <TripStatus
                             rowClick={handleRowClick}
                             onExpand={toggleRowExpansion}

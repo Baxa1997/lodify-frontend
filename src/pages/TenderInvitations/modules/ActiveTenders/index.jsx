@@ -545,7 +545,7 @@ function ActiveTenders() {
                           alignItems="center"
                           justifyContent="space-between">
                           <Text color="#181D27" cursor="pointer">
-                            {trip.id || ""}
+                            {trip.reference || ""}
                           </Text>
                           <TripStatus
                             rowClick={handleRowClick}

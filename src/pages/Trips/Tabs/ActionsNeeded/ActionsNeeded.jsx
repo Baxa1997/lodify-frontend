@@ -19,7 +19,7 @@ import {
   getRowBackgroundColor,
 } from "@utils/timeUtils";
 import React, {useState, useRef, useTransition} from "react";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {tableActionsNeeded} from "../../components/mockElements";
 import TripsFiltersComponent from "../../modules/TripsFiltersComponent";
@@ -29,8 +29,10 @@ import { useSort } from "@hooks/useSort";
 import useDebounce from "@hooks/useDebounce";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import CallEmailTripsModal from "@components/CallEmailTripsModal";
+import {sidebarActions} from "@store/sidebar";
 
 function ActionsNeeded() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchFilter, setSearchFilter] = useState('');
@@ -127,17 +129,24 @@ function ActionsNeeded() {
     : 0;
   const trips = tripsData?.response || [];
 
-  const handleRowClick = (tripGuid) => {
+  const handleRowClick = (id, trip) => {
+    dispatch(sidebarActions.setSidebar(false));
+    navigate(`/admin/trips/${id}`, {
+      state: {
+        label: `${trip?.drivers?.first_name}.${trip?.drivers?.last_name}`,
+        tripType: "actions_needed",
+      },
+    });
+  };
+
+  const toggleRowExpansion = (tripId, event) => {
+    event.stopPropagation();
     setExpandedRows((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(tripGuid)) {
-        newSet.delete(tripGuid);
-        if (selectedRow === tripGuid) {
-          setSelectedRow(null);
-        }
+      if (newSet.has(tripId)) {
+        newSet.delete(tripId);
       } else {
-        newSet.add(tripGuid);
-        setSelectedRow(tripGuid);
+        newSet.add(tripId);
       }
       return newSet;
     });
@@ -242,6 +251,8 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
+
+
 
   return (
     <Box mt={"26px"}>
@@ -384,7 +395,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                   <React.Fragment key={trip.guid || index}>
                     <CTableRow
                       hover={false}
-                      onClick={() => handleRowClick(trip.guid)}
+                      onClick={(e) => toggleRowExpansion(trip.guid, e)}
                       style={{cursor: "pointer"}}
                       bg={getRowBackgroundColor(
                         calculateTimeDifference(trip?.origin?.[0]?.arrive_by)
@@ -437,7 +448,7 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
-                          <Text color="#181D27" noOfLines={1}>{trip.id || ""}</Text>
+                          <Text color="#181D27" noOfLines={1}>{trip.reference || ""}</Text>
                         </Flex>
                       </CTableTd>
 

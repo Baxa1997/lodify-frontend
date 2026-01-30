@@ -8,8 +8,8 @@ export const tableElements = [
   },
   {
     id: 2,
-    name: "Trip ID",
-    key: "tripId",
+    name: "Reference ID ",
+    key: "reference",
     sortKey: "id",
     sortable: true,
   },
@@ -158,8 +158,8 @@ export const tableActionsNeeded = [
   },
   {
     id: 2,
-    name: "Load ID",
-    key: "id",
+    name: "Reference ID",
+    key: "reference",
     sortable: true,
   },
   {

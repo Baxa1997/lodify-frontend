@@ -334,7 +334,7 @@ function HistoryTab({tripType = ""}) {
                           gap="24px"
                           alignItems="center"
                           justifyContent="space-between">
-                          <Text color="#181D27">{trip.id || ""}</Text>
+                          <Text color="#181D27">{trip.reference || ""}</Text>
                           {/* <TripStatus
                             rowClick={handleRowClick}
                             onExpand={toggleRowExpansion}

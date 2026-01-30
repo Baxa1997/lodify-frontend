@@ -6,7 +6,7 @@ export const tableElements = [
   },
   {
     key: "load_id",
-    name: "Load ID",
+    name: "Reference ID",
     sortable: true,
   },
   {
@@ -94,7 +94,7 @@ export const closedTendersTableElements = [
   },
   {
     key: "load_id",
-    name: "Load ID",
+    name: "Reference ID",
     sortable: true,
   },
   // {

@@ -511,7 +511,6 @@ const TripRowDetails = ({
           },
         }}>
         {(tripData?.pickups || []).map((item, index) => (
-          console.log("itemitemitem", item),
           <Box key={item?.guid || index} mb={6}>
             <CTable
               zIndex={2}
@@ -568,6 +567,9 @@ const TripRowDetails = ({
                           </Text>
                           <Text color="#000" fontWeight="500">
                             BOL #{item?.bol ?? "---"}
+                          </Text>
+                          <Text color="#000" fontWeight="500">
+                            REF #{item?.reference ?? "---"}
                           </Text>
                         </>
                       )}
