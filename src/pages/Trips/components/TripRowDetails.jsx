@@ -481,7 +481,7 @@ const TripRowDetails = ({
       return true;
     } else false
   }
-
+console.log("tripDatatripData", tripData)
   return (
     <Box
       ref={tripRowDetailsRef}
@@ -581,29 +581,23 @@ const TripRowDetails = ({
                       <Text color={"#414651"} fontWeight={"500"}>
                         Tractor Unit #
                       </Text>
-                      <Text>{trip?.tractors?.plate_number ?? "---"}</Text>
+                      <Text>{tripData?.tractors?.unit ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
-                        Tractor ID
+                        Plate Number
                       </Text>
-                      <Text>{trip?.tractors?.external_id ?? "---"}</Text>
+                      <Text>{tripData?.tractors?.plate_number ?? "---"}</Text>
                     </Flex>
 
                     <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
                       <Text color={"#414651"} fontWeight={"500"}>
                         Trailer Unit #
                       </Text>
-                      <Text>{trip?.trailers?.plate_number ?? "---"}</Text>
+                      <Text>{tripData?.trailers?.unit ?? "---"}</Text>
                     </Flex>
 
-                    <Flex mb={"8px"} fontSize="14px" color="#181d27" gap="8px">
-                      <Text color={"#414651"} fontWeight={"500"}>
-                        Trailer ID
-                      </Text>
-                      <Text>{trip?.trailers?.external_id ?? "---"}</Text>
-                    </Flex>
 
                     <Flex alignItems={"center"} gap={"16px"}>
                       <Text color={"#414651"} fontWeight={"500"}>

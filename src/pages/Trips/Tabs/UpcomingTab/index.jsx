@@ -48,6 +48,7 @@ import {useUpcomingProps} from "./components/useUpcomingProps";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
 import { useSort } from "@hooks/useSort";
+import { format, isValid } from "date-fns";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -538,16 +539,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           alignItems="center"
                           justifyContent="space-between">
                           <Text color="#181D27">{trip.reference || ""}</Text>
-                          {/* <TripStatus
-                            rowClick={handleRowClick}
-                            onExpand={toggleRowExpansion}
-                            status={
-                              trip?.current_trip === trip?.total_trips
-                                ? trip?.current_trip
-                                : trip?.current_trip + 1
-                            }
-                            tripId={trip.id || trip.guid}
-                          /> */}
+               
                         </Flex>
                       </CTableTd>
 
@@ -566,20 +558,33 @@ function UpcomingTab({tripType = "", isActive = true}) {
                           gap="16px"
                           justifyContent="space-between">
                           <Box>
-                            <>
+                            <VStack align="stretch" spacing={0} gap={0}>
                               <Text
-                                h="20px"
                                 fontSize="14px"
                                 fontWeight="500"
                                 color="#181D27">
-                                {`${trip.origin?.[0]?.address ?? ""} / ${
-                                  trip?.origin?.[0]?.address_2 ?? ""
-                                }` || ""}
+                                {[
+                                  trip.origin?.[0]?.city,
+                                  trip.origin?.[0]?.state,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ") || "—"}
                               </Text>
-                              <Text h="20px">
-                                {formatDate(trip?.origin?.[0]?.depart_at ?? "")}
+                              <Text
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="gray.450">
+                                {[
+                                  trip.origin?.[0]?.address,
+                                  trip.origin?.[0]?.address_2,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" / ") || "—"}
                               </Text>
-                            </>
+                              <Text fontSize="14px" color="gray.450">
+                                {isValid(new Date(trip?.origin?.[0]?.depart_at)) && format(new Date(trip?.origin?.[0]?.depart_at), "MM/dd/yyyy HH:mm")}
+                              </Text>
+                            </VStack>
                           </Box>
                           <TripStatus status={trip?.total_trips} />
                         </Flex>
@@ -592,18 +597,34 @@ function UpcomingTab({tripType = "", isActive = true}) {
                             alignItems="center"
                             justifyContent="space-between">
                             <Box>
-                              <Text
-                                h="20px"
-                                fontSize="14px"
-                                fontWeight="500"
-                                color="#181D27">
-                                {`${trip.stop?.[0]?.address ?? ""} / ${
-                                  trip?.stop?.[0]?.address_2 ?? ""
-                                }` || ""}
-                              </Text>
-                              <Text h="20px">
-                                {formatDate(trip?.stop?.[0]?.arrive_by ?? "")}
-                              </Text>
+                              <VStack align="stretch" spacing={0} gap={0}>
+                                <Text
+                                  fontSize="14px"
+                                  fontWeight="500"
+                                  color="#181D27">
+                                  {[
+                                    trip.stop?.[0]?.city,
+                                    trip.stop?.[0]?.state,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(", ") || "—"}
+                                </Text>
+                                <Text
+                                  fontSize="14px"
+                                  fontWeight="500"
+                                  color="gray.450">
+                                  {[
+                                    trip.stop?.[0]?.address,
+                                    trip.stop?.[0]?.address_2,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" / ") || "—"}
+                                </Text>
+                                <Text fontSize="14px" color="gray.450">
+                                  {isValid(new Date(trip?.stop?.[0]?.arrive_by)) &&
+                                    format(new Date(trip?.stop?.[0]?.arrive_by), "MM/dd/yyyy HH:mm")}
+                                </Text>
+                              </VStack>
                             </Box>
                             <TripDriverVerification trip={trip} />
                           </Flex>

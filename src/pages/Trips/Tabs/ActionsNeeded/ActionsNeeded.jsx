@@ -1,4 +1,4 @@
-import {Box, Flex, Text, Spinner, Center, Collapse, Checkbox, Button, useToast} from "@chakra-ui/react";
+import {Box, Flex, Text, VStack, Spinner, Center, Collapse, Checkbox, Button, useToast} from "@chakra-ui/react";
 import {
   CTable,
   CTableBody,
@@ -12,6 +12,7 @@ import {FiAlertCircle} from "react-icons/fi";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
+import {format, isValid} from "date-fns";
 import {
   calculateTimeDifference,
   getActionButtonColor,
@@ -463,20 +464,31 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                           gap="16px"
                           justifyContent="space-between">
                           <Box>
-                            <>
-                              {" "}
+                            <VStack align="stretch" spacing={0} gap={0}>
                               <Text
-                                h="20px"
                                 fontSize="14px"
                                 fontWeight="500"
                                 color="#181D27"
                                 noOfLines={1}>
-                                {`${trip.origin?.address ?? ""}` || ""}
+                                {[trip.origin?.city, trip.origin?.state]
+                                  .filter(Boolean)
+                                  .join(", ") || "—"}
                               </Text>
-                              <Text h="20px">
-                                {formatDate(trip?.origin?.arrive_by ?? "")}
+                              <Text
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="gray.450"
+                                noOfLines={1}>
+                                {[trip.origin?.address, trip.origin?.address_2]
+                                  .filter(Boolean)
+                                  .join(" / ") || "—"}
                               </Text>
-                            </>
+                              <Text fontSize="14px" color="gray.450">
+                                {trip?.origin?.arrive_by &&
+                                  isValid(new Date(trip.origin.arrive_by)) &&
+                                  format(new Date(trip.origin.arrive_by), "MM/dd/yyyy HH:mm")}
+                              </Text>
+                            </VStack>
                           </Box>
                         </Flex>
                       </CTableTd>
@@ -488,24 +500,31 @@ const {items: sortedTrips} = useSort(trips, sortConfig);
                         whiteSpace="normal"
                         overflow="hidden">
                         <Box>
-                          <Flex
-                            gap="16px"
-                            alignItems="center"
-                            justifyContent="space-between">
-                            <Box>
-                              <Text
-                                h="20px"
-                                fontSize="14px"
-                                fontWeight="500"
-                                color="#181D27"
-                                noOfLines={1}>
-                                {`${trip.stop?.address ?? ""}` || ""}
-                              </Text>
-                              <Text h="20px">
-                                {formatDate(trip?.stop?.arrive_by ?? "")}
-                              </Text>
-                            </Box>
-                          </Flex>
+                          <VStack align="stretch" spacing={0} gap={0}>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="500"
+                              color="#181D27"
+                              noOfLines={1}>
+                              {[trip.stop?.city, trip.stop?.state]
+                                .filter(Boolean)
+                                .join(", ") || "—"}
+                            </Text>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="500"
+                              color="gray.450"
+                              noOfLines={1}>
+                              {[trip.stop?.address, trip.stop?.address_2]
+                                .filter(Boolean)
+                                .join(" / ") || "—"}
+                            </Text>
+                            <Text fontSize="14px" color="gray.450">
+                              {trip?.stop?.arrive_by &&
+                                isValid(new Date(trip.stop.arrive_by)) &&
+                                format(new Date(trip.stop.arrive_by), "MM/dd/yyyy HH:mm")}
+                            </Text>
+                          </VStack>
                         </Box>
                       </CTableTd>
 

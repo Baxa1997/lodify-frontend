@@ -32,7 +32,7 @@ import React, {useState, useRef, useTransition} from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
-import {format} from "date-fns";
+import {format, isValid} from "date-fns";
 import SimpleTimer from "@components/SimpleTimer";
 import TenderInvitationsFiltersComponent from "../../components/TenderInvitationsFiltersComponent";
 import {tableElements} from "../../hooks";
@@ -565,51 +565,72 @@ function ActiveTenders() {
                           gap="16px"
                           justifyContent="space-between">
                           <Box>
-                            <>
+                            <VStack align="stretch" spacing={0} gap={0}>
                               <Text
-                                h="20px"
                                 fontSize="14px"
                                 fontWeight="500"
                                 color="#181D27"
                                 cursor="pointer">
-                                {`${trip.origin?.[0]?.address ?? ""} / ${
-                                  trip?.origin?.[0]?.address_2 ?? ""
-                                }` || ""}
+                                {[
+                                  trip.origin?.[0]?.city,
+                                  trip.origin?.[0]?.state,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ") || "—"}
                               </Text>
-                              <Text h="20px">
-                                {formatDate(trip?.origin?.[0]?.depart_at ?? "")}
+                              <Text
+                                fontSize="14px"
+                                fontWeight="500"
+                                color="gray.450"
+                                cursor="pointer">
+                                {[
+                                  trip.origin?.[0]?.address,
+                                  trip.origin?.[0]?.address_2,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" / ") || "—"}
                               </Text>
-                            </>
+                              <Text fontSize="14px" color="gray.450">
+                                {isValid(new Date(trip?.origin?.[0]?.depart_at)) &&
+                                  format(new Date(trip?.origin?.[0]?.depart_at), "MM/dd/yyyy HH:mm")}
+                              </Text>
+                            </VStack>
                           </Box>
                           <TripStatus status={trip?.total_trips} />
                         </Flex>
                       </CTableTd>
                       <CTableTd>
                         <Box>
-                          <Flex
-                            gap="16px"
-                            alignItems="center"
-                            justifyContent="space-between">
-                            <Box>
-                              <>
-                                <Text
-                                  h="20px"
-                                  fontSize="14px"
-                                  fontWeight="500"
-                                  color="#181D27"
-                                  cursor="pointer">
-                                  {`${trip.last_stop?.[0]?.address ?? ""} / ${
-                                    trip?.last_stop?.[0]?.address_2 ?? ""
-                                  }` || ""}
-                                </Text>
-                                <Text h="20px">
-                                  {formatDate(
-                                    trip?.last_stop?.[0]?.arrive_by ?? ""
-                                  )}
-                                </Text>
-                              </>
-                            </Box>
-                          </Flex>
+                          <VStack align="stretch" spacing={0} gap={0}>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="500"
+                              color="#181D27"
+                              cursor="pointer">
+                              {[
+                                trip.last_stop?.[0]?.city,
+                                trip.last_stop?.[0]?.state,
+                              ]
+                                .filter(Boolean)
+                                .join(", ") || "—"}
+                            </Text>
+                            <Text
+                              fontSize="14px"
+                              fontWeight="500"
+                              color="gray.450"
+                              cursor="pointer">
+                              {[
+                                trip.last_stop?.[0]?.address,
+                                trip.last_stop?.[0]?.address_2,
+                              ]
+                                .filter(Boolean)
+                                .join(" / ") || "—"}
+                            </Text>
+                            <Text fontSize="14px" color="gray.450">
+                              {isValid(new Date(trip?.last_stop?.[0]?.arrive_by)) &&
+                                format(new Date(trip?.last_stop?.[0]?.arrive_by), "MM/dd/yyyy HH:mm")}
+                            </Text>
+                          </VStack>
                         </Box>
                       </CTableTd>
                       <CTableTd>

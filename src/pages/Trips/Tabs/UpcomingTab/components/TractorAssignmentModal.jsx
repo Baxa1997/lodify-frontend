@@ -35,6 +35,8 @@ const TractorAssignmentModal = ({isOpen, onClose, trip, refetchKey = "UPCOMING_T
     queryFn: () =>
       assetsService.getList({
         companies_id: companiesId,
+        limit: 100,
+        offset: 0,
         ...(tractorSearchText && {search: tractorSearchText}),
       }),
     select: (res) => res?.data?.response || [],
@@ -43,10 +45,10 @@ const TractorAssignmentModal = ({isOpen, onClose, trip, refetchKey = "UPCOMING_T
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
-  console.log("tractorsDatatractorsDatatractorsData", tractorsData);
+
   const tractorOptions = useMemo(() => {
     return tractorsData.map((tractor) => ({
-      label: tractor.licence_plate || tractor.name || "N/A",
+      label: tractor.licence_plate || "N/A",
       value: tractor.guid,
       tractorData: tractor,
     }));

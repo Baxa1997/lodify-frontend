@@ -6,6 +6,8 @@ const TractorAssignmentMenu = ({trip, onAssignClick}) => {
   const tractorPlate =
     trip?.tractors?.plate_number || trip?.tractors?.licence_plate || "";
 
+
+
   return (
     <Flex alignItems="center" gap={2} onClick={(e) => e.stopPropagation()}>
       {tractorPlate ? (

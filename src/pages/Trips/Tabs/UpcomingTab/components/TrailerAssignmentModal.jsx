@@ -34,10 +34,10 @@ const TrailerAssignmentModal = ({isOpen, onClose, trip, refetchKey = "UPCOMING_T
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
-  console.log("trailersDatatrailersDatatrailersData", trailersData);
+
   const trailerOptions = useMemo(() => {
     return trailersData.map((trailer) => ({
-      label: trailer.plate_number || trailer.external_id || "N/A",
+      label: trailer.unit || trailer.plate_number || "N/A",
       value: trailer.guid,
       trailerData: trailer,
     }));
