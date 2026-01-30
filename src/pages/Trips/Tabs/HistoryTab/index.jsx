@@ -194,8 +194,7 @@ function HistoryTab({tripType = ""}) {
               {tableElements
                 ?.filter((element) =>
                   isBroker
-                    ? element.key !== "invited_by" &&
-                      element?.key !== "driver" &&
+                    ? element?.key !== "driver" &&
                       element?.key !== "driver2"
                     : element?.key !== "carrier"
                 )
@@ -409,7 +408,6 @@ function HistoryTab({tripType = ""}) {
                         </Box>
                       </CTableTd>
 
-                      {Boolean(!isBroker) && (
                         <CTableTd>
                           <Tooltip
                             p={"6px 10px"}
@@ -448,9 +446,8 @@ function HistoryTab({tripType = ""}) {
                             </Flex>
                           </Tooltip>
                         </CTableTd>
-                      )}
 
-<CTableTd>
+                      <CTableTd>
                           <Tooltip
                             p="6px 10px"
                             borderRadius="md"
@@ -487,19 +484,15 @@ function HistoryTab({tripType = ""}) {
                           </Tooltip>
                         </CTableTd>
 
-                      <CTableTd>
-                        <Text color="#181D27">
-                          {trip?.tractors?.plate_number ?? "---"}
-                        </Text>
-                      </CTableTd>
-
-                      <CTableTd>
+                        <CTableTd>
                         <Box>
                           <Text h="20px" color="#181D27">
                             {trip?.trailers?.plate_number ?? "---"}
                           </Text>
                         </Box>
                       </CTableTd>
+
+       
 
                       <CTableTd>
                         <Flex gap="12px" justifyContent="space-between">
@@ -552,6 +545,12 @@ function HistoryTab({tripType = ""}) {
                             {trip?.total_miles?.toFixed(0) || 0} miles
                           </Text>
                         </Box>
+                      </CTableTd>
+
+                      <CTableTd>
+                        <Text color="#181D27">
+                          {trip?.tractors?.plate_number ?? "---"}
+                        </Text>
                       </CTableTd>
 
                       {Boolean(!isBroker) && (

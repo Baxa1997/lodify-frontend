@@ -84,19 +84,6 @@ export const ScoreCardsPerformance = ({
             Updated on {ordinalDay} {currentMonth} 2025
           </Text>
         </Box>
-        <Link
-          href="#"
-          fontSize="14px"
-          color="#EF6820"
-          fontWeight="600"
-          display="flex"
-          alignItems="center"
-          gap="4px"
-          _hover={{textDecoration: "underline"}}
-          whiteSpace="nowrap">
-          View more
-          <IoIosArrowForward />
-        </Link>
       </Flex>
 
       {isLoading ? (

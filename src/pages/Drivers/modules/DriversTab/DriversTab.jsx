@@ -1,5 +1,5 @@
 import {Badge, Box, Flex, Image} from "@chakra-ui/react";
-import {useState} from "react";
+import {useState, useTransition} from "react";
 import {useNavigate} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import {useDispatch} from "react-redux";
@@ -15,10 +15,10 @@ import {
   CTableTh,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
-import {getLoadEligibilityColor} from "../../components/mockElements";
 import AddDriverModal from "../../components/AddDriverModal";
 import AddDriverCode from "../../components/AddDriverCode";
 import FileViewer from "@components/FileViewer";
+import { useSort } from "@hooks/useSort";
 
 export const DriversTab = () => {
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ export const DriversTab = () => {
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const [selectedDriverImage, setSelectedDriverImage] = useState(null);
   const offset = (currentPage - 1) * pageSize;
+  const [isPending, startTransition] = useTransition();
 
   const {data: driversData, isLoading} = useQuery({
     queryKey: [
@@ -83,9 +84,11 @@ export const DriversTab = () => {
   };
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({
+        key,
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+      });
     });
   };
 
@@ -126,6 +129,10 @@ export const DriversTab = () => {
     }
   };
 
+  const {items: sortedDrivers} = useSort(drivers, sortConfig);
+
+  console.log("sortedDriverssortedDrivers", drivers, sortedDrivers)
+
   if (isLoading) {
     return (
       <Box mt={"32px"}>
@@ -162,13 +169,13 @@ export const DriversTab = () => {
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "name" ? sortConfig.direction : null
+                  sortConfig.key === "first_name" ? sortConfig.direction : null
                 }
-                onSort={() => handleSort("name")}>
+                onSort={() => handleSort("first_name")}>
                 Name
               </CTableTh>
               <CTableTh
-                sortable={true}
+                sortable={false}
                 sortDirection={
                   sortConfig.key === "phone" ? sortConfig.direction : null
                 }
@@ -195,7 +202,7 @@ export const DriversTab = () => {
                 Status
               </CTableTh>
               <CTableTh
-                sortable={true}
+                sortable={false}
                 sortDirection={
                   sortConfig.key === "image" ? sortConfig.direction : null
                 }

@@ -104,24 +104,7 @@ export const CarriersPerformance = ({performanceData, performanceDatas}) => {
           </Text>
         </Box>
       </Flex>
-      <Link
-        href="#"
-        fontSize="14px"
-        color="#175CD3"
-        fontWeight="500"
-        display="flex"
-        alignItems="center"
-        gap="4px"
-        _hover={{textDecoration: "underline", color: "#EF6820"}}>
-        <Box
-          as="img"
-          src="/img/questionRound.svg"
-          alt="info"
-          w="14px"
-          h="14px"
-        />
-        How is my grade calculated?
-      </Link>
+
     </Box>
   );
 

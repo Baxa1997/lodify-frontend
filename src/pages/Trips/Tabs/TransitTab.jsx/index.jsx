@@ -605,7 +605,6 @@ function TransitTab({tripType = "", isActive = true}) {
                         </Box>
                       </CTableTd>
 
-                      {Boolean(!isBroker) && (
                         <CTableTd>
                           <Tooltip
                             p="6px 10px"
@@ -642,7 +641,6 @@ function TransitTab({tripType = "", isActive = true}) {
                             </Flex>
                           </Tooltip>
                         </CTableTd>
-                      )}
 
                         <CTableTd>
                           <Tooltip

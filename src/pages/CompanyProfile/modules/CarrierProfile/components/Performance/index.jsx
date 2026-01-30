@@ -159,24 +159,6 @@ export const Performance = ({performanceData}) => {
               </Text>
             </Box>
           </Flex>
-          <Link
-            href="#"
-            fontSize="14px"
-            color="#175CD3"
-            fontWeight="500"
-            display="flex"
-            alignItems="center"
-            gap="6px"
-            _hover={{textDecoration: "underline", color: "#EF6820"}}>
-            <Box
-              as="img"
-              src="/img/questionRound.svg"
-              alt="info"
-              w="16px"
-              h="16px"
-            />
-            How is my grade calculated?
-          </Link>
         </Box>
       );
     }

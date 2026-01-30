@@ -286,12 +286,6 @@ export const CompanyInfo = () => {
                   A
                 </Flex>
               </Flex>
-              <Flex color="#175CD3" gap="4px">
-                <img src="/img/questionRound.svg" alt="info" />
-                <Text color="#175CD3" fontSize="14px" fontWeight={600}>
-                  How is my grade calculated?
-                </Text>
-              </Flex>
             </Box>
 
             <Box

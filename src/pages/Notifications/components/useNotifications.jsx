@@ -5,7 +5,6 @@ import {Box, Text, Button, Flex} from "@chakra-ui/react";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {formatDate} from "@utils/dateFormats";
-import TimeCounter from "@components/TimeCounter";
 
 export const useNotifications = ({
   type = "Action Needed",
