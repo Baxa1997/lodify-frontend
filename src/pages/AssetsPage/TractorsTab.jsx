@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useTransition } from "react";
 import FiltersComponent from "../../components/FiltersComponent";
 import {Box, Flex} from "@chakra-ui/react";
 import {
@@ -18,11 +18,11 @@ import assetsService from "../../services/assetsService";
 import AddAssetsModal from "./components/AddAssetsModal";
 import {
   getLoadEligibilityColor,
-  getVerificationStatusColor,
   tractorTableElements,
 } from "./components/mockElements";
 import useDebounce from "../../hooks/useDebounce";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
+import { useSort } from "@hooks/useSort";
 
 const TractorsTab = () => {
   const navigate = useNavigate();
@@ -30,8 +30,9 @@ const TractorsTab = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
+  const [isPending, startTransition] = useTransition();
   const [sortConfig, setSortConfig] = useState({
-    key: "name",
+    key: "vehicle_number",
     direction: "asc",
   });
   const [isAddAssetsModalOpen, setIsAddAssetsModalOpen] = useState(false);
@@ -59,7 +60,6 @@ const TractorsTab = () => {
     refetchOnWindowFocus: false,
     staleTime: 0,
     select: (res) => (
-      console.log("res", res),
       {
         assets: res?.data?.response ?? [],
         total: res?.data?.count ?? 0,
@@ -70,6 +70,8 @@ const TractorsTab = () => {
   const assets = assetsData?.assets || [];
   const totalAssets = assetsData?.total || 0;
   const totalPages = Math.ceil(totalAssets / pageSize);
+
+  const {items: sortedAssets} = useSort(assets, sortConfig);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -87,9 +89,11 @@ const TractorsTab = () => {
   }, 500);
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({
+        key,
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+      });
     });
   };
 
@@ -116,7 +120,7 @@ const TractorsTab = () => {
       </Box>
     );
   }
-
+  console.log("sortedAssetssortedAssets", sortedAssets)
   return (
     <Box mt={"32px"}>
       <FiltersComponent
@@ -139,19 +143,19 @@ const TractorsTab = () => {
           <CTableHead>
             {tractorTableElements.map((element) => (
               <CTableTh
-                key={element.key}
+                key={element.sortKey}
                 sortable={element.sortable}
                 sortDirection={
-                  sortConfig.key === element.key ? sortConfig.direction : null
+                  sortConfig.key === element.sortKey ? sortConfig.direction : null
                 }
-                onSort={() => handleSort(element.key)}>
+                onSort={() => handleSort(element.sortKey)}>
                 {element.label}
               </CTableTh>
             ))}
           </CTableHead>
 
           <CTableBody>
-            {assets.map((asset, index) => (
+            {sortedAssets?.map((asset, index) => (
               <CTableRow
                 key={asset.id || asset.guid || index}
                 style={{
@@ -162,11 +166,11 @@ const TractorsTab = () => {
                 <CTableTd>{asset.vehicle_number || "N/A"}</CTableTd>
                 <CTableTd>{asset.licence_plate || "N/A"}</CTableTd>
                 <CTableTd>{asset.type?.[0] || "N/A"}</CTableTd>
-                <CTableTd>
+                {/* <CTableTd>
                   {asset.fuel_types_id_data?.name || asset.fuel_type || "N/A"}
-                </CTableTd>
+                </CTableTd> */}
                 <CTableTd>
-                  {asset.model_year || asset.modelYear || asset.year || "N/A"}
+                  { asset.year || "N/A"}
                 </CTableTd>
                 <CTableTd>{asset.vin_number || "N/A"}</CTableTd>
                 <CTableTd>

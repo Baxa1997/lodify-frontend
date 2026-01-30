@@ -18,6 +18,7 @@ import assetsService from "../../services/assetsService";
 import useDebounce from "../../hooks/useDebounce";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
 import {getVerificationStatusColor} from "./components/mockElements";
+import { useSort } from "@hooks/useSort";
 
 const TrailersTab = () => {
   const navigate = useNavigate();
@@ -62,6 +63,8 @@ const TrailersTab = () => {
   const totalAssets = assetsData?.total || 0;
   const totalPages = Math.ceil(totalAssets / pageSize);
 
+  const {items: sortedAssets} = useSort(assets, sortConfig);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -78,10 +81,12 @@ const TrailersTab = () => {
   }, 500);
 
   const handleSort = (key) => {
+   startTransition(() => {
     setSortConfig({
       key,
       direction: sortConfig.direction === "asc" ? "desc" : "asc",
     });
+   })
   };
 
   const handleRowClick = (assetId) => {
@@ -89,52 +94,6 @@ const TrailersTab = () => {
     navigate(`/admin/assets/${assetId}`);
   };
 
-  // const getVerificationStatusColor = (status) => {
-  //   if (Array.isArray(status)) {
-  //     const statusValue = status[0]?.toLowerCase();
-  //     switch (statusValue) {
-  //       case "verified":
-  //         return "green";
-  //       case "needs attention":
-  //       case "pending":
-  //       case "unverified":
-  //         return "red";
-  //       case "in review":
-  //       case "processing":
-  //         return "orange";
-  //       case "expired":
-  //         return "red";
-  //       case "approved":
-  //         return "green";
-  //       case "rejected":
-  //       case "denied":
-  //         return "red";
-  //       default:
-  //         return "gray";
-  //     }
-  //   }
-
-  //   switch (status?.toLowerCase()) {
-  //     case "verified":
-  //       return "green";
-  //     case "needs attention":
-  //     case "pending":
-  //     case "unverified":
-  //       return "red";
-  //     case "in review":
-  //     case "processing":
-  //       return "orange";
-  //     case "expired":
-  //       return "red";
-  //     case "approved":
-  //       return "green";
-  //     case "rejected":
-  //     case "denied":
-  //       return "red";
-  //     default:
-  //       return "gray";
-  //   }
-  // };
 
   if (isLoading) {
     return (
@@ -150,7 +109,7 @@ const TrailersTab = () => {
       </Box>
     );
   }
-
+  console.log("sortedAssetssortedAssets", assets)
   return (
     <Box mt={"32px"}>
       <FiltersComponent
@@ -172,69 +131,62 @@ const TrailersTab = () => {
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "unitNumber" ? sortConfig.direction : null
+                  sortConfig.key === "vehicle_number" ? sortConfig.direction : null
                 }
-                onSort={() => handleSort("unitNumber")}>
+                onSort={() => handleSort("vehicle_number")}>
                 Unit #
               </CTableTh>
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "type" ? sortConfig.direction : null
+                  sortConfig.key === "type.[0]" ? sortConfig.direction : null
                 }
-                onSort={() => handleSort("type")}>
+                onSort={() => handleSort("type.[0]")}>
                 Type
               </CTableTh>
+
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "make" ? sortConfig.direction : null
+                  sortConfig.key === "year" ? sortConfig.direction : null
                 }
-                onSort={() => handleSort("make")}>
-                Make
-              </CTableTh>
-              <CTableTh
-                sortable={true}
-                sortDirection={
-                  sortConfig.key === "fuel" ? sortConfig.direction : null
-                }
-                onSort={() => handleSort("fuel")}>
+                onSort={() => handleSort("year")}>
                 Model year
               </CTableTh>
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "modelYear" ? sortConfig.direction : null
+                  sortConfig.key === "licence_plate" ? sortConfig.direction : null
                 }
-                onSort={() => handleSort("modelYear")}>
+                onSort={() => handleSort("licence_plate")}>
                 License plate
               </CTableTh>
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "licensePlate"
+                  sortConfig.key === "vin_number"
                     ? sortConfig.direction
                     : null
                 }
-                onSort={() => handleSort("licensePlate")}>
+                onSort={() => handleSort("vin_number")}>
                 VIN
               </CTableTh>
 
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "verificationStatus"
+                  sortConfig.key === "verification_status"
                     ? sortConfig.direction
                     : null
                 }
-                onSort={() => handleSort("verificationStatus")}>
+                onSort={() => handleSort("verification_status")}>
                 Verification status
               </CTableTh>
             </Box>
           </CTableHead>
 
           <CTableBody>
-            {assets.map((asset, index) => (
+            {sortedAssets?.map((asset, index) => (
               <CTableRow
                 key={asset.id || asset.guid || index}
                 style={{
@@ -246,7 +198,6 @@ const TrailersTab = () => {
                 <CTableTd>
                   {asset.type?.[0] || asset.asset_type || "N/A"}
                 </CTableTd>
-                <CTableTd>{asset.make || "N/A"}</CTableTd>
                 <CTableTd>
                   {asset.model_year || asset.modelYear || asset.year || "N/A"}
                 </CTableTd>

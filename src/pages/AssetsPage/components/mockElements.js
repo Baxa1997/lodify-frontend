@@ -58,42 +58,49 @@ export const tractorTableElements = [
   {
     key: "unitNumber",
     label: "Unit #",
+    sortKey: "vehicle_number",
     sortable: true,
   },
 
   {
     key: "unitId",
     label: "Unit ID",
+    sortKey: "licence_plate",
     sortable: true,
   },
 
   {
     key: "tractor_type",
     label: "Tractor Type",
+    sortKey: "type.[0]",
     sortable: true,
   },
 
-  {
-    key: "make",
-    label: "Make",
-    sortable: true,
-  },
+  // {
+  //   key: "make",
+  //   label: "Make",
+  //   sortKey: "make",
+  //   sortable: true,
+  // },
 
   {
     key: "modelYear",
     label: "Model year",
+    sortKey: "year",
     sortable: true,
   },
 
   {
     key: "vin",
     label: "VIN",
+    sortKey: "vin_number",
     sortable: true,
   },
 
   {
     key: "load_eligibility",
     label: "Load eligibility",
+    sortKey: "load_eligibility",
     sortable: true,
   },
 ];

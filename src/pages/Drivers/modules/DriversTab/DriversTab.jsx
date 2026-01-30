@@ -131,7 +131,7 @@ export const DriversTab = () => {
 
   const {items: sortedDrivers} = useSort(drivers, sortConfig);
 
-  console.log("sortedDriverssortedDrivers", drivers, sortedDrivers)
+
 
   if (isLoading) {
     return (
@@ -185,12 +185,12 @@ export const DriversTab = () => {
               <CTableTh
                 sortable={true}
                 sortDirection={
-                  sortConfig.key === "licenseNumber"
+                  sortConfig.key === "email"
                     ? sortConfig.direction
                     : null
                 }
-                onSort={() => handleSort("licenseNumber")}>
-                Email Address #
+                onSort={() => handleSort("email")}>
+                Email
               </CTableTh>
 
               <CTableTh
@@ -213,7 +213,7 @@ export const DriversTab = () => {
           </CTableHead>
 
           <CTableBody>
-            {drivers.map((driver, index) => (
+            {sortedDrivers?.map((driver, index) => (
               <CTableRow
                 key={driver.id || driver.guid || index}
                 style={{
