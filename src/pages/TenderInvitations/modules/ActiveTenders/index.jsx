@@ -28,7 +28,7 @@ import {FiInbox} from "react-icons/fi";
 import tripsService from "@services/tripsService";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {formatDate} from "@utils/dateFormats";
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useTransition} from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {sidebarActions} from "@store/sidebar";
@@ -41,6 +41,7 @@ import {BsThreeDotsVertical} from "react-icons/bs";
 import {calculateTimeDifference} from "@utils/timeUtils";
 import TripRowDetails from "../../components/TripRowDetails";
 import MultipleActionModal from "./MultipleActionModal";
+import { useSort } from "@hooks/useSort";
 
 function ActiveTenders() {
   const queryClient = useQueryClient();
@@ -59,6 +60,7 @@ function ActiveTenders() {
   const [currentAction, setCurrentAction] = useState(null);
   const [isMultiActionLoading, setIsMultiActionLoading] = useState(false);
   const [selectedBrokerId, setSelectedBrokerId] = useState('')
+  const [isPending, startTransition] = useTransition();
 
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
@@ -187,9 +189,8 @@ function ActiveTenders() {
   };
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({key, direction: sortConfig.direction === "asc" ? "desc" : "asc"});
     });
   };
 
@@ -224,6 +225,8 @@ function ActiveTenders() {
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
   const trips = tripsData?.response || [];
+
+  const {items: sortedTrips} = useSort(trips, sortConfig);
 
   function formatToAmPm(timeString) {
     if (!timeString) return "";
@@ -468,7 +471,7 @@ function ActiveTenders() {
                   Error loading trips: {error?.message || "Unknown error"}
                 </CTableTd>
               </CTableRow>
-            ) : trips.length === 0 ? (
+            ) : sortedTrips.length === 0 ? (
               <CTableRow>
                 <CTableTd
                   colSpan={
@@ -489,7 +492,7 @@ function ActiveTenders() {
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.guid);
                 return (
                   <React.Fragment key={trip.guid || index}>

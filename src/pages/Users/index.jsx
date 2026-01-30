@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useMemo} from "react";
+import React, {useState, useCallback, useMemo, useTransition} from "react";
 import {Box, Flex, Text, Badge} from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -18,6 +18,7 @@ import usersService from "../../services/usersService";
 import {useQuery} from "@tanstack/react-query";
 import {tableHeading, getStatusColor} from "./components/mockElements";
 import useDebounce from "../../hooks/useDebounce";
+import { useSort } from "@hooks/useSort";
 
 const Users = () => {
   const clientTypeId = useSelector((state) => state?.auth?.clientType?.id);
@@ -28,7 +29,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
-
+  const [isPending, startTransition] = useTransition();
   const userData = useSelector((state) => state?.auth?.user_data);
 
   const roleType = userData?.brokers_id ? "broker_users" : "users";
@@ -83,6 +84,9 @@ const Users = () => {
   const totalUsers = usersData?.total || 0;
   const totalPages = Math.ceil(totalUsers / pageSize);
 
+  console.log('usersusers', users)
+  const {items: sortedUsers} = useSort(users, sortConfig);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -104,7 +108,9 @@ const Users = () => {
       if (sortConfig.key === key && sortConfig.direction === "asc") {
         direction = "desc";
       }
-      setSortConfig({key, direction});
+        startTransition(() => {
+          setSortConfig({key, direction});
+        });
     },
     [sortConfig]
   );
@@ -191,24 +197,21 @@ const Users = () => {
           onPageSizeChange={handlePageSizeChange}>
           <CTableHead>
             <Box as="tr">
-              {tableHeading?.map((heading) => (
+              {tableHeading?.map((element, idx) => (
                 <CTableTh
-                  key={heading.key}
-                  sortable={heading?.sortable}
+                  sortable={element?.sortable}
                   sortDirection={
-                    sortConfig.key === heading?.key
-                      ? sortConfig.direction
-                      : null
+                    sortConfig.key === element.key ? sortConfig.direction : null
                   }
-                  onSort={() => handleSort(heading?.key)}>
-                  {heading?.label}
+                  key={element.key || idx}
+                  onSort={() => handleSort(element.key)}>
+                  {element.label}
                 </CTableTh>
               ))}
             </Box>
           </CTableHead>
-
           <CTableBody>
-            {users?.map((user) => (
+            {sortedUsers?.map((user) => (
               <CTableRow
                 key={user?.id}
                 onClick={() => handleUserClick(user)}

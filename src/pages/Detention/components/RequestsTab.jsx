@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useTransition} from "react";
 import DetentionFilter from "./DetentionFilter";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
@@ -33,6 +33,7 @@ import {TripDriverVerification, TripStatus} from "./TableElements";
 import {formatDate} from "@utils/dateFormats";
 import {TripProgress} from "../../Trips/components/TabsElements";
 import DeclineDetentionModal from "./DeclineDetentionModal";
+import { useSort } from "@hooks/useSort";
 
 function RequestsTab({tabType = "Request", isActive = true}) {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ function RequestsTab({tabType = "Request", isActive = true}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const [isPending, startTransition] = useTransition();
 
   const getOrderedColumns = () => {
     const filteredColumns = isBroker
@@ -127,9 +129,11 @@ function RequestsTab({tabType = "Request", isActive = true}) {
   };
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({
+        key,
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+      });
     });
   };
 
@@ -223,6 +227,8 @@ function RequestsTab({tabType = "Request", isActive = true}) {
   const trips = tripsData?.response || [];
   const allSelected = trips.length > 0 && selectedTrips.size === trips.length;
 
+  const {items: sortedTrips} = useSort(trips, sortConfig);
+
   return (
     <Box mt={"26px"}>
       <DetentionFilter onSearch={handleSearch} searchValue={searchTerm} />
@@ -244,7 +250,7 @@ function RequestsTab({tabType = "Request", isActive = true}) {
                 <Checkbox
                   isChecked={allSelected}
                   isIndeterminate={
-                    selectedTrips.size > 0 && selectedTrips.size < trips.length
+                    selectedTrips.size > 0 && selectedTrips.size < sortedTrips.length
                   }
                   onChange={handleSelectAllTrips}
                   sx={{
@@ -280,10 +286,10 @@ function RequestsTab({tabType = "Request", isActive = true}) {
                   maxW="334px"
                   sortable={element.sortable}
                   sortDirection={
-                    sortConfig.key === element.key ? sortConfig.direction : null
+                    sortConfig.key === element.sortKey ? sortConfig.direction : null
                   }
-                  key={element.key || idx}
-                  onSort={() => handleSort(element.key)}>
+                  key={element.sortKey || idx}
+                  onSort={() => handleSort(element.sortKey)}>
                   {element.label}
                 </CTableTh>
               ))}
@@ -302,7 +308,7 @@ function RequestsTab({tabType = "Request", isActive = true}) {
                   </Center>
                 </CTableTd>
               </CTableRow>
-            ) : trips.length === 0 ? (
+            ) : sortedTrips.length === 0 ? (
               <CTableRow>
                 <CTableTd
                   colSpan={tableElementsRequests.length + 1}
@@ -317,7 +323,7 @@ function RequestsTab({tabType = "Request", isActive = true}) {
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
                 const isSelected = selectedTrips.has(trip.id || trip.guid);
                 return (

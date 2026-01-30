@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useTransition} from "react";
 import DetentionFilter from "./DetentionFilter";
 import {useQuery} from "@tanstack/react-query";
 import tripsService from "@services/tripsService";
@@ -30,8 +30,9 @@ import useDetentionProps from "./useDetentionProps";
 import {TripStatus, TripDriverVerification} from "./TableElements";
 import {formatDate} from "@utils/dateFormats";
 import {TripProgress} from "../../Trips/components/TabsElements";
+import { useSort } from "@hooks/useSort";
 
-function ResolutionTab({tabType = "Resolution", isActive = true}) {
+function ResolutionTab({tabType = "Resolution"}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const tableScrollRef = useRef(null);
@@ -48,6 +49,7 @@ function ResolutionTab({tabType = "Resolution", isActive = true}) {
   const companiesId = useSelector(
     (state) => state.auth.user_data?.companies_id
   );
+  const [isPending, startTransition] = useTransition();
 
   const getOrderedColumns = () => {
     return tableElementsRequests;
@@ -113,9 +115,11 @@ function ResolutionTab({tabType = "Resolution", isActive = true}) {
   };
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({
+        key,
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+      });
     });
   };
 
@@ -164,6 +168,8 @@ function ResolutionTab({tabType = "Resolution", isActive = true}) {
     : 0;
   const trips = tripsData?.response || [];
   const allSelected = trips.length > 0 && selectedTrips.size === trips.length;
+
+  const {items: sortedTrips} = useSort(trips, sortConfig);
 
   return (
     <Box mt={"26px"}>

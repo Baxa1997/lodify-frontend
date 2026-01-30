@@ -23,7 +23,7 @@ export const tableHeading = [
   },
   {
     label: "Roles",
-    key: "roles",
+    key: "role_id",
     sortable: true,
   },
   // {
