@@ -12,7 +12,7 @@ import {
   Checkbox,
   useToast,
 } from "@chakra-ui/react";
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useTransition} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -47,6 +47,7 @@ import TrailerAssignmentModal from "./components/TrailerAssignmentModal";
 import {useUpcomingProps} from "./components/useUpcomingProps";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
+import { useSort } from "@hooks/useSort";
 
 function UpcomingTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   ] = useState(null);
   const [isMultipleCarrierAssignModalOpen, setIsMultipleCarrierAssignModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [selectedRow, setSelectedRow] = useState(null);
@@ -164,9 +166,11 @@ function UpcomingTab({tripType = "", isActive = true}) {
   };
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({
+        key,
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+      });
     });
   };
 
@@ -202,24 +206,22 @@ function UpcomingTab({tripType = "", isActive = true}) {
     ? Math.ceil(tripsData.total_count / pageSize)
     : 0;
   const trips = tripsData?.response || [];
-  const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
-  const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
 
-  const hasUnassignedTrailer = trips.some(
-    (trip) => !trip?.trailers?.plate_number
-  );
-  const COLUMN_WIDTH = 180;
-
-
-  const getTractorPosition = () => {
-    let offset = 0;
-    offset += COLUMN_WIDTH;
-    return `${offset + 200}px`;
+  const columnWidths = {
+    "customer.name": "200px",
+    "id": "150px",
+    "origin.[0].address": "350px",
+    "stop.[0].address": "350px",
+    "invited_by.legal_name": "240px",
+    "carrier.legal_name": "240px",
+    "total_miles": "150px",
+    "drivers.first_name": '240px',
+    "tractors.tractors_plate": '200px',
+    "actions": "150px",
   };
 
-  const getTrailerPosition = () => {
-    return hasUnassignedTrailer ? "220px" : "auto";
-  };
+  
+  const {items: sortedTrips} = useSort(trips, sortConfig);
 
 
   const handleSelectTrip = (tripGuid, isChecked) => {
@@ -297,7 +299,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
   };
-  console.log('tripssssssss', trips)
+
   return (
     <Box mt={"26px"}>
       <TripsFiltersComponent
@@ -384,14 +386,15 @@ function UpcomingTab({tripType = "", isActive = true}) {
               </CTableTh>
               {getOrderedColumns().map((element) => (
                 <CTableTh
-                  maxW="334px"
-                  minW={element?.key === 'driver' ? "235px" : '150px'}
+                  width={columnWidths[element.sortKey] || "auto"}
+                  minW={columnWidths[element.sortKey] || "80px"}
+                  maxW={columnWidths[element.sortKey] || "334px"}
                   sortable={element.sortable}
                   sortDirection={
-                    sortConfig.key === element.key ? sortConfig.direction : null
+                    sortConfig.sortKey === element.sortKey ? sortConfig.direction : null
                   }
                   key={element.id}
-                  onSort={() => handleSort(element.key)}
+                  onSort={() => handleSort(element.sortKey)}
                   position={
                     (element.key === "carrier" &&
                       isBroker) ||
@@ -414,7 +417,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       ? '150px'
                       : element.key === "tracktor_unit_id" &&
                         !isBroker
-                      ? '382px'
+                      ? '390px'
                       : element?.key === 'actions' ? "0" : "auto"
                   }
                   bg={
@@ -442,11 +445,9 @@ function UpcomingTab({tripType = "", isActive = true}) {
                   }
                   zIndex={
                     (element.key === "carrier" &&
-                      isBroker &&
-                      hasUnassignedCarrier) ||
+                      isBroker) ||
                     (element.key === "driver" &&
-                      !isBroker &&
-                      hasUnassignedDriver) ||
+                      !isBroker ) ||
                     (element.key === "tracktor_unit_id" &&
                       !isBroker
                       ) 
@@ -471,7 +472,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                   </Center>
                 </CTableTd>
               </CTableRow>
-            ) : trips.length === 0 ? (
+            ) : sortedTrips.length === 0 ? (
               <CTableRow>
                 <CTableTd
                   colSpan={getOrderedColumns().length + 1}
@@ -486,7 +487,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
                 const isSelected = selectedTrips.has(trip.guid || trip.id);
                 return (
@@ -759,7 +760,7 @@ function UpcomingTab({tripType = "", isActive = true}) {
                       {Boolean(!isBroker) && (
                         <CTableTd
                           position={"sticky"}
-                          right={'382px'}
+                          right={'390px'}
                           bg={ "white"}
                           boxShadow={ "-2px 0 4px rgba(0,0,0,0.05)"}
                           zIndex={ 5}>

@@ -3,36 +3,42 @@ export const tableElements = [
     id: 1,
     name: "Customer",
     key: "customer",
+    sortKey: "customer.name",
     sortable: true,
   },
   {
     id: 2,
     name: "Trip ID",
     key: "tripId",
+    sortKey: "id",
     sortable: true,
   },
   {
     id: 3,
     name: "Status",
     key: "status",
+    sortKey: "status",
     sortable: false,
   },
   {
     id: 4,
     name: "Origin",
     key: "origin",
+    sortKey: "origin.[0].address",
     sortable: true,
   },
   {
     id: 5,
     name: "Stop",
     key: "stop",
+    sortKey: "stop.[0].address",
     sortable: true,
   },
   {
     id: 6,
     name: "Invited By",
     key: "invited_by",
+    sortKey: "invited_by.legal_name",
     sortable: true,
   },
   
@@ -40,6 +46,7 @@ export const tableElements = [
     id: 7,
     name: "Accepted By",
     key: "accepted_by",
+    sortKey: "carrier.legal_name",
     sortable: true,
   },
   
@@ -47,19 +54,22 @@ export const tableElements = [
     id: 8,
     name: "Trailer Unit # & ID",
     key: "trailer_unit_id",
-    sortable: true,
+    sortKey: "origin.[0].equipment_type.label",
+    sortable: false,
   },
   {
     id: 9,
     name: "Equipment",
     key: "equipment",
+    sortKey: "equipment",
     sortable: true,
   },
   {
     id: 10,
     name: "Load Type",
     key: "loadType",
-    sortable: true,
+    sortKey: "origin.[0].load_type.label",
+    sortable: false,
   },
 
 
@@ -67,6 +77,7 @@ export const tableElements = [
     id: 11,
     name: "Rate",
     key: "rate",
+    sortKey: "total_rates",
     sortable: true,
   },
 
@@ -74,6 +85,7 @@ export const tableElements = [
     id: 12,
     name: "Total Miles",
     key: "total_miles",
+    sortKey: "total_miles",
     sortable: true,
   },
 
@@ -82,18 +94,21 @@ export const tableElements = [
     id: 13,
     name: "Tracktor Unit # & ID",
     key: "tracktor_unit_id",
-    sortable: true,
+    sortKey: "tractors.tractors_plate",
+    sortable: false,
   },
   {
     id: 14,
     name: "Carrier",
     key: "carrier",
+    sortKey: "carrier",
     sortable: false,
   },
   {
     id: 15,
     name: "Driver",
     key: "driver",
+    sortKey: "drivers.first_name",
     sortable: true,
   },
 
@@ -101,6 +116,7 @@ export const tableElements = [
     id: 15,
     name: "Actions",
     key: "actions",
+    sortKey: "actions",
     sortable: false,
   },
 ];

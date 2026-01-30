@@ -48,6 +48,7 @@ import TrailerAssignmentModal from "../UpcomingTab/components/TrailerAssignmentM
 import TripRowDetails from "../../components/TripRowDetails";
 import DeleteConfirmationModal from "@components/DeleteConfirmationModal";
 import MultipleCarrierAssignModal from "@components/MultipleCarrierAssignModal";
+import { useSort } from "@hooks/useSort";
 
 function TransitTab({tripType = "", isActive = true}) {
   const navigate = useNavigate();
@@ -186,9 +187,23 @@ function TransitTab({tripType = "", isActive = true}) {
   const trips = tripsData?.response || [];
   const hasUnassignedDriver = trips.some((trip) => !trip?.drivers?.first_name);
   const hasUnassignedCarrier = trips.some((trip) => !trip?.carrier?.legal_name);
-  const hasUnassignedTrailer = trips.some(
-    (trip) => !trip?.trailers?.plate_number
-  );
+
+
+  const columnWidths = {
+    "customer.name": "200px",
+    "id": "150px",
+    "origin.[0].address": "350px",
+    "stop.[0].address": "350px",
+    "invited_by.legal_name": "240px",
+    "carrier.legal_name": "240px",
+    "total_miles": "150px",
+    "drivers.first_name": '240px',
+    "tractors.tractors_plate": '200px',
+    "actions": "150px",
+  };
+
+  
+  const {items: sortedTrips} = useSort(trips, sortConfig);
 
   const handleSelectTrip = (tripGuid, isChecked) => {
     setSelectedTrips((prev) => {
@@ -228,10 +243,6 @@ function TransitTab({tripType = "", isActive = true}) {
   const isIndeterminate = selectedTrips.size > 0 && !isAllSelected;
 
 
-  const handleDelete = () => {
-    if (selectedTrips.size === 0) return;
-    setIsDeleteModalOpen(true);
-  };
 
   const handleConfirmDelete = async () => {
     if (selectedTrips.size === 0) return;
@@ -358,16 +369,17 @@ function TransitTab({tripType = "", isActive = true}) {
               </CTableTh>
               {getOrderedColumns().map((element) => (
                 <CTableTh
-                  maxW="334px"
-                  minW={element?.key === 'driver' ? "235px" : '150px'}
+                  width={columnWidths[element.sortKey] || "auto"}
+                  maxW={columnWidths[element.sortKey] || "334px"}
+                  minW={columnWidths[element.sortKey] || "80px"}
                   sortable={element.sortable}
                   sortDirection={
-                    sortConfig.key === element.key
+                    sortConfig.sortKey === element.sortKey
                       ? sortConfig.direction
                       : null
                   }
                   key={element.id}
-                  onSort={() => handleSort(element.key)}
+                  onSort={() => handleSort(element.sortKey)}
                   position={
                     (element.key === "carrier" &&
                       isBroker) ||
@@ -390,7 +402,7 @@ function TransitTab({tripType = "", isActive = true}) {
                       ? '150px'
                       : element.key === "tracktor_unit_id" &&
                         !isBroker
-                      ? '382px'
+                      ? '390px'
                       : element?.key === 'actions' ? "0" : "auto"
                   }
                   bg={
@@ -455,7 +467,7 @@ function TransitTab({tripType = "", isActive = true}) {
                   Error loading trips: {error?.message || "Unknown error"}
                 </CTableTd>
               </CTableRow>
-            ) : trips.length === 0 ? (
+            ) : sortedTrips.length === 0 ? (
               <CTableRow>
                 <CTableTd
                   colSpan={getOrderedColumns().length + 1}
@@ -470,7 +482,7 @@ function TransitTab({tripType = "", isActive = true}) {
                 </CTableTd>
               </CTableRow>
             ) : (
-              trips?.map((trip, index) => {
+              sortedTrips?.map((trip, index) => {
                 const isExpanded = expandedRows.has(trip.id || trip.guid);
                 const isSelected = selectedTrips.has(trip.guid || trip.id);
                 return (
@@ -742,7 +754,7 @@ function TransitTab({tripType = "", isActive = true}) {
                       {Boolean(!isBroker) && (
                         <CTableTd
                           position="sticky"
-                          right="382px"
+                          right="390px"
                           bg="white"
                           boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
                           zIndex={5}>

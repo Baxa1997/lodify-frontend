@@ -10,7 +10,7 @@ import {
   Spinner,
   Center,
 } from "@chakra-ui/react";
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useTransition} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -36,11 +36,13 @@ import {
   getLoadTypeColor,
 } from "./components/FunctionalComponents";
 import TripRowDetails from "../../components/TripRowDetails";
+import { useSort } from "@hooks/useSort";
 
 function HistoryTab({tripType = ""}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const tableScrollRef = useRef(null);
+  const [isPending, startTransition] = useTransition();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
@@ -99,6 +101,22 @@ function HistoryTab({tripType = ""}) {
     staleTime: 0,
   });
 
+  const columnWidths = {
+    "customer.name": "200px",
+    "id": "150px",
+    "origin.[0].address": "350px",
+    "stop.[0].address": "350px",
+    "invited_by.legal_name": "240px",
+    "carrier.legal_name": "240px",
+    "total_miles": "150px",
+    "drivers.first_name": '240px',
+    "tractors.tractors_plate": '200px',
+    "actions": "150px",
+  };
+
+  
+  const {items: sortedTrips} = useSort(tripsData?.response, sortConfig);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -109,9 +127,11 @@ function HistoryTab({tripType = ""}) {
   };
 
   const handleSort = (key) => {
-    setSortConfig({
-      key,
-      direction: sortConfig.direction === "asc" ? "desc" : "asc",
+    startTransition(() => {
+      setSortConfig({
+        key,
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+      });
     });
   };
 
@@ -181,51 +201,75 @@ function HistoryTab({tripType = ""}) {
                 )
                 .map((element) => (
                   <CTableTh
-                    maxW="334px"
-                    minW="150px"
+                    width={columnWidths[element.sortKey] || "auto"}
+                    maxW={columnWidths[element.sortKey] || "334px"}
+                    minW={columnWidths[element.sortKey] || "80px"}
                     sortable={element.sortable}
                     sortDirection={
-                      sortConfig.key === element.key
+                      sortConfig.sortKey === element.sortKey
                         ? sortConfig.direction
                         : null
                     }
                     key={element.id}
-                    onSort={() => handleSort(element.key)}
+                    onSort={() => handleSort(element.sortKey)}
                     position={
-                      (element.key === "carrier" && isBroker) ||
-                      (element.key === "driver" && !isBroker) ||
-                      element?.key === 'actions'
+                      (element.key === "carrier" &&
+                        isBroker) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker)
+                        ?  "sticky"
+                        : "static" ||
+                        element?.key === 'actions'
                         ? "sticky"
                         : "static"
                     }
                     right={
-                      (element.key === "carrier" && isBroker) ||
-                      (element.key === "driver" && !isBroker)
+                      element.key === "carrier" &&
+                      isBroker
                         ? "150px"
-                        : element?.key === 'actions'
-                        ? "0"
-                        : "auto"
+                        : element.key === "driver" &&
+                          !isBroker
+                        ? '150px'
+                        : element.key === "tracktor_unit_id" &&
+                          !isBroker
+                        ? '390px'
+                        : element?.key === 'actions' ? "0" : "auto"
                     }
                     bg={
-                      (element.key === "carrier" && isBroker) ||
-                      (element.key === "driver" && !isBroker) ||
-                      element?.key === 'actions'
+                      (element.key === "carrier" &&
+                        isBroker) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker)
+                        ? "gray.50"
+                        : "transparent" || element?.key === 'actions'
                         ? "gray.50"
                         : "transparent"
                     }
                     boxShadow={
-                      (element.key === "carrier" && isBroker) ||
-                      (element.key === "driver" && !isBroker) ||
-                      element?.key === 'actions'
+                      (element.key === "carrier" &&
+                        isBroker) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker)
+                      
                         ? "-2px 0 4px rgba(0,0,0,0.05)"
                         : "none"
                     }
                     zIndex={
-                      (element.key === "carrier" && isBroker) ||
-                      (element.key === "driver" && !isBroker) ||
-                      element?.key === 'actions'
+                      (element.key === "carrier" &&
+                        isBroker ) ||
+                      (element.key === "driver" &&
+                        !isBroker) ||
+                      (element.key === "tracktor_unit_id" &&
+                        !isBroker
+                        ) 
                         ? 9
-                        : 1
+                        : -1
                     }>
                     {element.name}
                   </CTableTh>
