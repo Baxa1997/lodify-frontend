@@ -29,6 +29,7 @@ const TAB_MAP = {
 const INDEX_TO_TAB = ["actions", "upcoming", "transit", "history"];
 
 const Trips = () => {
+  console.log('I am here');
   const [isAutomatedAddTrip, setIsAutomatedAddTrip] = useState(false);
   const [tripType, setTripType] = useState("tender");
   const [searchParams, setSearchParams] = useSearchParams();
