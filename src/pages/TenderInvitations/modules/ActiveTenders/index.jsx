@@ -24,23 +24,24 @@ import {
   EmptyState,
 } from "@components/tableElements";
 import CTableRow from "@components/tableElements/CTableRow";
-import {FiInbox} from "react-icons/fi";
+import { FiInbox } from "react-icons/fi";
 import tripsService from "@services/tripsService";
-import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {formatDate} from "@utils/dateFormats";
-import React, {useState, useRef, useTransition} from "react";
-import {useSelector, useDispatch} from "react-redux";
-import {useNavigate} from "react-router-dom";
-import {sidebarActions} from "@store/sidebar";
-import {format, isValid} from "date-fns";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatDate } from "@utils/dateFormats";
+import React, { useState, useRef, useTransition } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { sidebarActions } from "@store/sidebar";
+import { format, isValid } from "date-fns";
 import SimpleTimer from "@components/SimpleTimer";
 import TenderInvitationsFiltersComponent from "../../components/TenderInvitationsFiltersComponent";
-import {tableElements} from "../../hooks";
+import { tableElements } from "../../hooks";
 import AssignCarrier from "../../components/AssignCarrier";
-import {BsThreeDotsVertical} from "react-icons/bs";
-import {calculateTimeDifference} from "@utils/timeUtils";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { calculateTimeDifference } from "@utils/timeUtils";
 import TripRowDetails from "../../components/TripRowDetails";
 import MultipleActionModal from "./MultipleActionModal";
+import MultipleAssignCarrier from "./MultipleAssignCarrier";
 import { useSort } from "@hooks/useSort";
 
 function ActiveTenders() {
@@ -49,7 +50,7 @@ function ActiveTenders() {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortConfig, setSortConfig] = useState({key: "name", direction: "asc"});
+  const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" });
   const [searchTerm, setSearchTerm] = useState("");
   const envId = useSelector((state) => state.auth.environmentId);
   const [loadingTripId, setLoadingTripId] = useState(null);
@@ -59,14 +60,16 @@ function ActiveTenders() {
   const [isMultipleActionModalOpen, setIsMultipleActionModalOpen] = useState(false);
   const [currentAction, setCurrentAction] = useState(null);
   const [isMultiActionLoading, setIsMultiActionLoading] = useState(false);
-  const [selectedBrokerId, setSelectedBrokerId] = useState('')
+  const [selectedBrokerId, setSelectedBrokerId] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const companiesId = useSelector(
-    (state) => state.auth.user_data?.companies_id
+    (state) => state.auth.user_data?.companies_id,
   );
   const userId = useSelector((state) => state.auth.userId);
   const [isAssignCarrierModalOpen, setIsAssignCarrierModalOpen] =
+    useState(false);
+  const [isMultipleAssignModalOpen, setIsMultipleAssignModalOpen] =
     useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [expandedRows, setExpandedRows] = useState(new Set());
@@ -140,8 +143,8 @@ function ActiveTenders() {
     tripsService
       .acceptTrip(data)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
+        queryClient.invalidateQueries({ queryKey: ["TRIPS_LIST_TENDER_ACTIVE"] });
+        queryClient.invalidateQueries({ queryKey: ["TRIPS_LIST_TENDER_CLOSED"] });
         setLoadingTripId(null);
       })
       .catch((error) => {
@@ -166,7 +169,7 @@ function ActiveTenders() {
     tripsService
       .rejectTrip(computedData)
       .then((res) => {
-        queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+        queryClient.invalidateQueries({ queryKey: ["TRIPS_LIST_TENDER_ACTIVE"] });
         // queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_CLOSED"]});
         setLoadingTripId(null);
       })
@@ -190,7 +193,7 @@ function ActiveTenders() {
 
   const handleSort = (key) => {
     startTransition(() => {
-      setSortConfig({key, direction: sortConfig.direction === "asc" ? "desc" : "asc"});
+      setSortConfig({ key, direction: sortConfig.direction === "asc" ? "desc" : "asc" });
     });
   };
 
@@ -226,7 +229,7 @@ function ActiveTenders() {
     : 0;
   const trips = tripsData?.response || [];
 
-  const {items: sortedTrips} = useSort(trips, sortConfig);
+  const { items: sortedTrips } = useSort(trips, sortConfig);
 
   function formatToAmPm(timeString) {
     if (!timeString) return "";
@@ -249,7 +252,7 @@ function ActiveTenders() {
     if (tenderTime === 0 && Boolean(trip?.carrier_2?.legal_name)) {
       return "#ffebeb";
     }
-    if (Boolean(!trip?.carrier_2?.legal_name)) {
+    if (!trip?.carrier_2?.legal_name) {
       return "rgb(241, 250, 255)";
     }
     return "white";
@@ -257,7 +260,7 @@ function ActiveTenders() {
 
 
   const handleSelectTrip = (trip, tripId, checked) => {
-    setSelectedBrokerId(trip?.invited_by?.guid)
+    setSelectedBrokerId(trip?.invited_by?.guid);
     setSelectedTrips((prev) => {
       const newSet = new Set(prev);
       if (checked) {
@@ -266,11 +269,11 @@ function ActiveTenders() {
         newSet.delete(tripId);
       }
       return newSet;
-    })
+    });
   };
 
   const handleAcceptTrips = () => {
-    setIsMultiActionLoading(true)
+    setIsMultiActionLoading(true);
     const data = {
       objects: Array.from(selectedTrips)?.map((tripGuid) => (
         {
@@ -278,23 +281,23 @@ function ActiveTenders() {
           guid: tripGuid,
           users_id: userId,
         }
-      ))
-    }
+      )),
+    };
 
-    tripsService.multipleAction('orders', data).then((res) => {
-      queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+    tripsService.multipleAction("orders", data).then((res) => {
+      queryClient.invalidateQueries({ queryKey: ["TRIPS_LIST_TENDER_ACTIVE"] });
 
-      setSelectedTrips(new Set())
-      setIsMultipleActionModalOpen(false)
+      setSelectedTrips(new Set());
+      setIsMultipleActionModalOpen(false);
     }).catch((error) => {
-      console.error('Error rejecting trips:', error)
+      console.error("Error rejecting trips:", error);
     }).finally(() => {
-      setIsMultiActionLoading(false)
-    })
-  }
+      setIsMultiActionLoading(false);
+    });
+  };
 
   const handleRejectTrips = () => {
-    setIsMultiActionLoading(true)
+    setIsMultiActionLoading(true);
     const data = {
       objects: Array.from(selectedTrips)?.map((tripGuid) => (
         {
@@ -305,25 +308,34 @@ function ActiveTenders() {
           date_time: new Date().toISOString(),
 
         }
-      ))
-    }
+      )),
+    };
 
-    tripsService.multipleAction('rejected_trips', data).then((res) => {
-      queryClient.invalidateQueries({queryKey: ["TRIPS_LIST_TENDER_ACTIVE"]});
+    tripsService.multipleAction("rejected_trips", data).then((res) => {
+      queryClient.invalidateQueries({ queryKey: ["TRIPS_LIST_TENDER_ACTIVE"] });
 
-      setSelectedTrips(new Set())
-      setIsMultipleActionModalOpen(false)
+      setSelectedTrips(new Set());
+      setIsMultipleActionModalOpen(false);
     }).catch((error) => {
-      console.error('Error rejecting trips:', error)
+      console.error("Error rejecting trips:", error);
     }).finally(() => {
-      setIsMultiActionLoading(false)
-    })
-  }
+      setIsMultiActionLoading(false);
+    });
+  };
 
   const handleMultipleAction = (action, trips) => {
-    setIsMultipleActionModalOpen(true)
+    setIsMultipleActionModalOpen(true);
     setCurrentAction(action);
     
+  };
+
+  const handleMultipleAssign = () => {
+    setIsMultipleAssignModalOpen(true);
+  };
+
+  const handleMultipleAssignClose = () => {
+    setIsMultipleAssignModalOpen(false);
+    setSelectedTrips(new Set()); // Clear selection after assignment
   };
 
   const selectedTripsSet = selectedTrips instanceof Set ? selectedTrips : new Set(selectedTrips);
@@ -363,23 +375,51 @@ function ActiveTenders() {
           onPageSizeChange={handlePageSizeChange}
           paginationRightContent={
             selectedTripsSet.size > 0 ? (
-             <>
-             <Button h={"32px"} p={"8px 14px"} borderRadius={"8px"} size="sm" fontWeight={"600"} colorScheme="green" onClick={() => handleMultipleAction('accept', selectedTrips)}>Accept ({selectedTripsSet.size})</Button>
-             <Button h={"32px"} p={"8px 14px"} borderRadius={"8px"} size="sm" fontWeight={"600"} colorScheme="red" onClick={() => handleMultipleAction('reject', selectedTrips)}>Reject ({selectedTripsSet.size})</Button>
-             </>
+              <>
+                <Button
+                  h={"32px"}
+                  p={"8px 14px"}
+                  borderRadius={"8px"}
+                  size="sm"
+                  fontWeight={"600"}
+                  colorScheme="green"
+                  onClick={() => handleMultipleAction("accept", selectedTrips)}
+                >Accept ({selectedTripsSet.size})</Button>
+                <Button
+                  h={"32px"}
+                  p={"8px 14px"}
+                  borderRadius={"8px"}
+                  size="sm"
+                  fontWeight={"600"}
+                  colorScheme="red"
+                  onClick={() => handleMultipleAction("reject", selectedTrips)}
+                >Reject ({selectedTripsSet.size})</Button>
+                {isBroker && (
+                  <Button
+                    h={"32px"}
+                    p={"8px 14px"}
+                    borderRadius={"8px"}
+                    size="sm"
+                    fontWeight={"600"}
+                    colorScheme="orange"
+                    onClick={handleMultipleAssign}
+                  >Assign ({selectedTripsSet.size})</Button>
+                )}
+              </>
             ) : null
           }
-          >
+        >
           <CTableHead zIndex={9}>
             <Box as={"tr"}>
-            <CTableTh
+              <CTableTh
                 p='10px'
                 zIndex={-1}
                 width="50px"
                 w="50px"
                 maxW="50px"
                 minW="50px"
-                sortable={false}>
+                sortable={false}
+              >
                 <Checkbox
                   ml='4px'
                   isChecked={isAllSelected}
@@ -409,7 +449,7 @@ function ActiveTenders() {
                 ?.filter((element) =>
                   isBroker
                     ? element.key !== "actions" && element.key !== "invited_by"
-                    : element.key !== "carrier"
+                    : element.key !== "carrier",
                 )
                 .map((element) => (
                   <CTableTh
@@ -430,7 +470,8 @@ function ActiveTenders() {
                       element.key === "actions"
                         ? "-2px 0 4px rgba(0,0,0,0.05)"
                         : "none"
-                    }>
+                    }
+                  >
                     {element.name}
                   </CTableTh>
                 ))}
@@ -445,13 +486,18 @@ function ActiveTenders() {
                     tableElements?.filter((element) =>
                       isBroker
                         ? element.key !== "actions"
-                        : true
+                        : true,
                     ).length || tableElements.length
                   }
                   textAlign="center"
-                  py={8}>
+                  py={8}
+                >
                   <Center minH="400px">
-                    <Spinner size="lg" color="#FF5B04" thickness="4px" />
+                    <Spinner
+                      size="lg"
+                      color="#FF5B04"
+                      thickness="4px"
+                    />
                   </Center>
                 </CTableTd>
               </CTableRow>
@@ -462,12 +508,13 @@ function ActiveTenders() {
                     tableElements?.filter((element) =>
                       isBroker
                         ? element.key !== "actions"
-                        : true
+                        : true,
                     ).length || tableElements.length
                   }
                   textAlign="center"
                   py={8}
-                  color="red.500">
+                  color="red.500"
+                >
                   Error loading trips: {error?.message || "Unknown error"}
                 </CTableTd>
               </CTableRow>
@@ -476,14 +523,15 @@ function ActiveTenders() {
                 <CTableTd
                   colSpan={
                     tableElements?.filter((element) =>
-                        isBroker
+                      isBroker
                         ? element.key !== "actions"
-                        : true
+                        : true,
                     ).length || tableElements.length
                   }
                   textAlign="center"
                   p={0}
-                  border="none">
+                  border="none"
+                >
                   <EmptyState
                     icon={FiInbox}
                     title="No active tenders"
@@ -500,19 +548,21 @@ function ActiveTenders() {
                       style={{
                         backgroundColor: getRowBgColor(
                           trip,
-                          trip?.timer_expiration
+                          trip?.timer_expiration,
                         ),
                         cursor: "pointer",
                       }}
                       onClick={(e) =>
                         toggleRowExpansion(trip.id || trip.guid, e)
-                      }>
-                        <CTableTd
+                      }
+                    >
+                      <CTableTd
                         width="50px"
                         minW="50px"
                         maxW="50px"
                         p='10px'
-                        onClick={(e) => e.stopPropagation()}>
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Checkbox
                           ml='6px'
                           // isChecked={isSelected}
@@ -543,8 +593,12 @@ function ActiveTenders() {
                         <Flex
                           gap="24px"
                           alignItems="center"
-                          justifyContent="space-between">
-                          <Text color="#181D27" cursor="pointer">
+                          justifyContent="space-between"
+                        >
+                          <Text
+                            color="#181D27"
+                            cursor="pointer"
+                          >
                             {trip.reference || ""}
                           </Text>
                           <TripStatus
@@ -563,14 +617,20 @@ function ActiveTenders() {
                         <Flex
                           alignItems="center"
                           gap="16px"
-                          justifyContent="space-between">
+                          justifyContent="space-between"
+                        >
                           <Box>
-                            <VStack align="stretch" spacing={0} gap={0}>
+                            <VStack
+                              align="stretch"
+                              spacing={0}
+                              gap={0}
+                            >
                               <Text
                                 fontSize="14px"
                                 fontWeight="500"
                                 color="#181D27"
-                                cursor="pointer">
+                                cursor="pointer"
+                              >
                                 {[
                                   trip.origin?.[0]?.city,
                                   trip.origin?.[0]?.state,
@@ -582,7 +642,8 @@ function ActiveTenders() {
                                 fontSize="14px"
                                 fontWeight="500"
                                 color="gray.450"
-                                cursor="pointer">
+                                cursor="pointer"
+                              >
                                 {[
                                   trip.origin?.[0]?.address,
                                   trip.origin?.[0]?.address_2,
@@ -590,7 +651,10 @@ function ActiveTenders() {
                                   .filter(Boolean)
                                   .join(" / ") || "—"}
                               </Text>
-                              <Text fontSize="14px" color="gray.450">
+                              <Text
+                                fontSize="14px"
+                                color="gray.450"
+                              >
                                 {isValid(new Date(trip?.origin?.[0]?.depart_at)) &&
                                   format(new Date(trip?.origin?.[0]?.depart_at), "MM/dd/yyyy HH:mm")}
                               </Text>
@@ -601,12 +665,17 @@ function ActiveTenders() {
                       </CTableTd>
                       <CTableTd>
                         <Box>
-                          <VStack align="stretch" spacing={0} gap={0}>
+                          <VStack
+                            align="stretch"
+                            spacing={0}
+                            gap={0}
+                          >
                             <Text
                               fontSize="14px"
                               fontWeight="500"
                               color="#181D27"
-                              cursor="pointer">
+                              cursor="pointer"
+                            >
                               {[
                                 trip.last_stop?.[0]?.city,
                                 trip.last_stop?.[0]?.state,
@@ -618,7 +687,8 @@ function ActiveTenders() {
                               fontSize="14px"
                               fontWeight="500"
                               color="gray.450"
-                              cursor="pointer">
+                              cursor="pointer"
+                            >
                               {[
                                 trip.last_stop?.[0]?.address,
                                 trip.last_stop?.[0]?.address_2,
@@ -626,7 +696,10 @@ function ActiveTenders() {
                                 .filter(Boolean)
                                 .join(" / ") || "—"}
                             </Text>
-                            <Text fontSize="14px" color="gray.450">
+                            <Text
+                              fontSize="14px"
+                              color="gray.450"
+                            >
                               {isValid(new Date(trip?.last_stop?.[0]?.arrive_by)) &&
                                 format(new Date(trip?.last_stop?.[0]?.arrive_by), "MM/dd/yyyy HH:mm")}
                             </Text>
@@ -634,21 +707,29 @@ function ActiveTenders() {
                         </Box>
                       </CTableTd>
                       <CTableTd>
-                        <Flex gap="24px" alignItems="center">
+                        <Flex
+                          gap="24px"
+                          alignItems="center"
+                        >
                           {" "}
                           <Box>
                             <Text
                               fontSize={"12px"}
                               fontWeight={500}
                               cursor="pointer"
-                              color="#181D27">
+                              color="#181D27"
+                            >
                               {trip?.origin?.[0]?.arrive_by &&
                                 format(
                                   trip?.origin?.[0]?.arrive_by,
-                                  "MM/dd/yyyy"
+                                  "MM/dd/yyyy",
                                 )}
                             </Text>
-                            <Text fontSize={"14px"} fontWeight={400} h="20px">
+                            <Text
+                              fontSize={"14px"}
+                              fontWeight={400}
+                              h="20px"
+                            >
                               {formatToAmPm(trip?.origin?.[0]?.arrive_by)}
                             </Text>
                           </Box>
@@ -661,15 +742,20 @@ function ActiveTenders() {
                             fontSize={"12px"}
                             fontWeight={500}
                             cursor="pointer"
-                            _hover={{textDecoration: "underline"}}
-                            color="#181D27">
+                            _hover={{ textDecoration: "underline" }}
+                            color="#181D27"
+                          >
                             {trip?.last_stop?.[0]?.arrive_by &&
                               format(
                                 trip?.last_stop?.[0]?.arrive_by,
-                                "MM/dd/yyyy"
+                                "MM/dd/yyyy",
                               )}
                           </Text>
-                          <Text fontSize={"14px"} fontWeight={400} h="20px">
+                          <Text
+                            fontSize={"14px"}
+                            fontWeight={400}
+                            h="20px"
+                          >
                             {formatToAmPm(trip?.last_stop?.[0]?.arrive_by)}
                           </Text>
                         </Box>
@@ -682,7 +768,8 @@ function ActiveTenders() {
                             fontWeight="500"
                             color="#535862"
                             cursor="pointer"
-                            _hover={{textDecoration: "underline"}}>
+                            _hover={{ textDecoration: "underline" }}
+                          >
                             ${trip?.total_rates ?? "0"}
                           </Text>
                         </Flex>
@@ -695,29 +782,39 @@ function ActiveTenders() {
                             bg="linear-gradient(to bottom, #1a365d, #2d3748)"
                             borderRadius="md"
                             label={
-                              <Box color="white" minW="180px">
-                                <VStack spacing={1} align="start">
+                              <Box
+                                color="white"
+                                minW="180px"
+                              >
+                                <VStack
+                                  spacing={1}
+                                  align="start"
+                                >
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
-                                    color="white">
+                                    color="white"
+                                  >
                                     {`${trip?.broker_user?.first_name} ${trip?.broker_user?.last_name}`}
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
-                                    color="white">
+                                    color="white"
+                                  >
                                     Broker
                                   </Text>
                                   <Text
                                     fontSize="14px"
                                     fontWeight="600"
-                                    color="white">
+                                    color="white"
+                                  >
                                     {trip?.invited_by?.legal_name}
                                   </Text>
                                 </VStack>
                               </Box>
-                            }>
+                            }
+                          >
                             <Flex gap="12px">
                               <Text
                                 h="20px"
@@ -725,7 +822,8 @@ function ActiveTenders() {
                                 fontWeight="500"
                                 color="#535862"
                                 cursor="pointer"
-                                _hover={{textDecoration: "underline"}}>
+                                _hover={{ textDecoration: "underline" }}
+                              >
                                 {trip?.invited_by?.legal_name ?? ""}
                               </Text>
                             </Flex>
@@ -734,12 +832,16 @@ function ActiveTenders() {
                       )}
 
                       <CTableTd>
-                        <Flex gap="12px" justifyContent="space-between">
+                        <Flex
+                          gap="12px"
+                          justifyContent="space-between"
+                        >
                           <Text
                             h="20px"
                             fontSize="14px"
                             fontWeight="500"
-                            color="#535862">
+                            color="#535862"
+                          >
                             {trip?.origin?.[0]?.equipment_type?.label ?? ""}
                           </Text>
                         </Flex>
@@ -748,7 +850,7 @@ function ActiveTenders() {
                       <CTableTd>
                         <Badge
                           colorScheme={getLoadTypeColor(
-                            trip.origin?.[0]?.load_type?.label ?? ""
+                            trip.origin?.[0]?.load_type?.label ?? "",
                           )}
                           variant="subtle"
                           px={3}
@@ -756,7 +858,8 @@ function ActiveTenders() {
                           borderRadius="full"
                           fontSize="12px"
                           fontWeight="500"
-                          _hover={{opacity: 0.8}}>
+                          _hover={{ opacity: 0.8 }}
+                        >
                           {trip.origin?.[0]?.load_type?.label ?? ""}
                         </Badge>
                       </CTableTd>
@@ -764,9 +867,18 @@ function ActiveTenders() {
                       {Boolean(isBroker) && (
                         <CTableTd>
                           {trip?.carrier_2?.legal_name ? (
-                            <Flex alignItems="center" gap={2}>
-                              <Flex alignItems="center" gap={2}>
-                                <Text color="#535862" fontWeight="400">
+                            <Flex
+                              alignItems="center"
+                              gap={2}
+                            >
+                              <Flex
+                                alignItems="center"
+                                gap={2}
+                              >
+                                <Text
+                                  color="#535862"
+                                  fontWeight="400"
+                                >
                                   {trip?.carrier_2?.legal_name ?? ""}
                                 </Text>
 
@@ -789,14 +901,15 @@ function ActiveTenders() {
                               color="#EF6820"
                               fontWeight="600"
                               px="0"
-                              _hover={{bg: "none"}}
+                              _hover={{ bg: "none" }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setIsAssignCarrierModalOpen(true);
                                 setSelectedRow({
                                   trip: trip,
                                 });
-                              }}>
+                              }}
+                            >
                               Assign
                             </Button>
                           ) : (
@@ -813,7 +926,8 @@ function ActiveTenders() {
                             <Text
                               fontSize="14px"
                               fontWeight="600"
-                              color="#535862">
+                              color="#535862"
+                            >
                               00:00:00
                             </Text>
                           </>
@@ -824,7 +938,7 @@ function ActiveTenders() {
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/admin/collabrations`, {
+                            navigate("/admin/collabrations", {
                               state: {
                                 tripId: trip.guid,
                                 tripName: trip.id,
@@ -837,7 +951,8 @@ function ActiveTenders() {
                           color="#EF6820"
                           fontWeight="600"
                           px="0"
-                          _hover={{bg: "none"}}>
+                          _hover={{ bg: "none" }}
+                        >
                           Send Message
                         </Button>
                       </CTableTd>
@@ -848,8 +963,12 @@ function ActiveTenders() {
                           right="0"
                           bg={getRowBgColor(trip)}
                           boxShadow="-2px 0 4px rgba(0,0,0,0.05)"
-                          zIndex={5}>
-                          <Flex alignItems="center" gap={"16px"}>
+                          zIndex={5}
+                        >
+                          <Flex
+                            alignItems="center"
+                            gap={"16px"}
+                          >
                             <Button
                               p="0"
                               minW="60px"
@@ -857,14 +976,18 @@ function ActiveTenders() {
                               fontWeight="600"
                               bg="none"
                               border="none"
-                              _hover={{bg: "none"}}
+                              _hover={{ bg: "none" }}
                               isDisabled={
                                 loadingTripId === `reject-${trip.guid}` ||
                                 loadingTripId === `accept-${trip.guid}`
                               }
-                              onClick={() => handleRejectTrip(trip)}>
+                              onClick={() => handleRejectTrip(trip)}
+                            >
                               {loadingTripId === `reject-${trip.guid}` ? (
-                                <Spinner size="sm" color="#ff5b04" />
+                                <Spinner
+                                  size="sm"
+                                  color="#ff5b04"
+                                />
                               ) : (
                                 "Reject"
                               )}
@@ -877,14 +1000,18 @@ function ActiveTenders() {
                               bg="none"
                               border="none"
                               color="#FF5B04"
-                              _hover={{bg: "none"}}
+                              _hover={{ bg: "none" }}
                               isDisabled={
                                 loadingTripId === `reject-${trip.guid}` ||
                                 loadingTripId === `accept-${trip.guid}`
                               }
-                              onClick={() => handleAcceptTrip(trip)}>
+                              onClick={() => handleAcceptTrip(trip)}
+                            >
                               {loadingTripId === `accept-${trip.guid}` ? (
-                                <Spinner size="sm" color="#FF5B04" />
+                                <Spinner
+                                  size="sm"
+                                  color="#FF5B04"
+                                />
                               ) : (
                                 "Accept"
                               )}
@@ -901,14 +1028,16 @@ function ActiveTenders() {
                             isBroker
                               ? element.key !== "actions" &&
                                 element.key !== "invited_by"
-                              : element.key !== "carrier"
+                              : element.key !== "carrier",
                           ).length || tableElements.length
                         }
-                        p={0}>
+                        p={0}
+                      >
                         <Collapse
                           position="relative"
                           in={isExpanded}
-                          animateOpacity>
+                          animateOpacity
+                        >
                           <TripRowDetails
                             handleRowClick={handleRowClick}
                             trip={trip}
@@ -943,11 +1072,17 @@ function ActiveTenders() {
         onConfirm={handleMultipleAction}
         isLoading={isMultiActionLoading}
       />
+
+      <MultipleAssignCarrier
+        isOpen={isMultipleAssignModalOpen}
+        onClose={handleMultipleAssignClose}
+        selectedTrips={selectedTrips}
+      />
     </Box>
   );
 }
 
-const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
+const TripStatus = ({ status, onExpand = () => {}, tripId = "" }) => {
   return (
     <Flex
       onClick={(e) => {
@@ -962,11 +1097,19 @@ const TripStatus = ({status, onExpand = () => {}, tripId = ""}) => {
       p="2px 8px"
       borderRadius="100px"
       border="1px solid #B2DDFF"
-      cursor="pointer">
-      <Text fontSize="12px" fontWeight="500" color="#175CD3">
+      cursor="pointer"
+    >
+      <Text
+        fontSize="12px"
+        fontWeight="500"
+        color="#175CD3"
+      >
         {status || 1}
       </Text>
-      {status !== 0 && <img src="/img/statusArrow.svg" alt="" />}
+      {status !== 0 && <img
+        src="/img/statusArrow.svg"
+        alt=""
+      />}
     </Flex>
   );
 };
@@ -988,8 +1131,9 @@ const ReAssignDriverButton = ({
           height="22px"
           bg="none"
           onClick={(e) => e.stopPropagation()}
-          as={Button}>
-          <BsThreeDotsVertical style={{width: "22px", height: "14px"}} />
+          as={Button}
+        >
+          <BsThreeDotsVertical style={{ width: "22px", height: "14px" }} />
         </MenuButton>
         <MenuList>
           <MenuItem
@@ -1000,8 +1144,12 @@ const ReAssignDriverButton = ({
                 trip: trip,
                 carrierType: carrierType,
               });
-            }}>
-            <Text color="#535862" fontWeight="600">
+            }}
+          >
+            <Text
+              color="#535862"
+              fontWeight="600"
+            >
               Re-Assign Carrier
             </Text>
           </MenuItem>
@@ -1011,12 +1159,18 @@ const ReAssignDriverButton = ({
   );
 };
 
-const TripDriverVerification = ({trip = {}}) => {
+const TripDriverVerification = ({ trip = {} }) => {
   const stop = trip?.origin?.[0];
 
   return (
-    <Flex gap="24px" alignItems="center">
-      <Box w="22px" h="22px">
+    <Flex
+      gap="24px"
+      alignItems="center"
+    >
+      <Box
+        w="22px"
+        h="22px"
+      >
         {stop?.equipment_availability?.[0] === "Required" ? (
           trip?.is_truck_verified ? (
             <img
@@ -1066,8 +1220,12 @@ const TripDriverVerification = ({trip = {}}) => {
         p="5px"
         gap="4px"
         bg={trip?.is_driver_verified ? "#DEFFEE" : "#EDEDED"}
-        borderRadius="16px">
-        <Box w="17px" h="17px">
+        borderRadius="16px"
+      >
+        <Box
+          w="17px"
+          h="17px"
+        >
           {trip?.driver_type?.[0] === "Team" &&
             (trip?.is_driver_verified ? (
               <img
@@ -1089,7 +1247,10 @@ const TripDriverVerification = ({trip = {}}) => {
               />
             ))}
         </Box>
-        <Box w="17px" h="17px">
+        <Box
+          w="17px"
+          h="17px"
+        >
           {trip?.is_driver_verified ? (
             <img
               src="/img/driverVerified.svg"
